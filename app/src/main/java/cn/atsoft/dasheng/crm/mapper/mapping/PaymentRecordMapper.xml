@@ -24,7 +24,7 @@
         record_id AS "recordId", detail_id AS "detailId", payment_id AS "paymentId", payment_amount AS "paymentAmount", remark AS "remark", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", order_id AS "orderId", status AS "status"
     </sql>
     <sql id="List">
-     o.coding AS "Coding", p.record_id AS "recordId", p.detail_id AS "detailId", p.payment_id AS "paymentId", p.payment_amount AS "paymentAmount", p.remark AS "remark", p.create_user AS "createUser", p.update_user AS "updateUser", p.create_time AS "createTime", p.update_time AS "updateTime", p.display AS "display", p.deptId AS "deptId", p.order_id AS "orderId", p.status AS "status", p.Money, "Money" p.min AS "min", p.max As "max"
+     o.coding AS "Coding", p.record_id AS "recordId", p.detail_id AS "detailId", p.payment_id AS "paymentId", p.payment_amount AS "paymentAmount", p.remark AS "remark", p.create_user AS "createUser", p.update_user AS "updateUser", p.create_time AS "createTime", p.update_time AS "updateTime", p.display AS "display", p.deptId AS "deptId", p.order_id AS "orderId", p.status AS "status"
     </sql>
 
 
@@ -119,8 +119,8 @@
                 <if test="paramCondition.paymentId != null">
                         and payment_id like CONCAT('%',#{paramCondition.paymentId},'%')
                 </if>
-                <if test="paramCondition.paymentAmount != null">
-                        and p.paymentAmount #{paramCondition.paymentAmount} between `min` #{paramCondition.min} AND `max` #{paramCondition.max}
+                <if test="paramCondition.money != null and paramCondition.money.min != null and paramCondition.money.max !=null">
+                        and p.payment_Amount  between  #{paramCondition.money.min} AND #{paramCondition.money.max}
                 </if>
                 <if test="paramCondition.remark != null and paramCondition.remark != ''">
                         and remark like CONCAT('%',#{paramCondition.remark},'%')
