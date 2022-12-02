@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.crm.model.result.PaymentRecordResult;
 import cn.atsoft.dasheng.crm.service.PaymentRecordService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import javafx.beans.binding.ObjectExpression;
@@ -74,10 +75,11 @@ public class PaymentRecordController extends BaseController {
 //        this.paymentRecordService.delete(paymentRecordParam);
 //        return ResponseData.success();
 //    }
+
     /**
      * 状态作废接口
      */
-    @RequestMapping(value = "/obsolete",method = RequestMethod.POST)
+    @RequestMapping(value = "/obsolete", method = RequestMethod.POST)
     @ApiOperation("作废")
     public ResponseData obsolete(@RequestBody PaymentRecordParam paymentRecordParam) {
         this.paymentRecordService.obsolete(paymentRecordParam);
@@ -96,7 +98,7 @@ public class PaymentRecordController extends BaseController {
         PaymentRecord detail = this.paymentRecordService.getById(paymentRecordParam.getRecordId());
         PaymentRecordResult result = new PaymentRecordResult();
         ToolUtil.copyProperties(detail, result);
-        paymentRecordService.format(new ArrayList<PaymentRecordResult>(){{
+        paymentRecordService.format(new ArrayList<PaymentRecordResult>() {{
             add(result);
         }});
 
@@ -114,6 +116,18 @@ public class PaymentRecordController extends BaseController {
     public PageInfo<PaymentRecordResult> list(@RequestBody(required = false) PaymentRecordParam paymentRecordParam) {
         if (ToolUtil.isEmpty(paymentRecordParam)) {
             paymentRecordParam = new PaymentRecordParam();
+        }
+        if (ToolUtil.isNotEmpty(paymentRecordParam.getMoney())) {
+            paymentRecordParam.setMoney(paymentRecordParam.getMoney());
+            if (ToolUtil.isNotEmpty((paymentRecordParam.getMoney().getMin()))) {
+                paymentRecordParam.getMoney().setMax(paymentRecordParam.getMoney().getMax());
+            }
+            if (ToolUtil.isNotEmpty(paymentRecordParam.getMoney().getMax())) {
+                paymentRecordParam.getMoney().setMin(paymentRecordParam.getMoney().getMin());
+            }
+            if (paymentRecordParam.getMoney().getMin() > paymentRecordParam.getMoney().getMax()) {
+                throw new ServiceException(500,"输入错误值，请重新输入");
+            }
         }
         return this.paymentRecordService.findPageBySpec(paymentRecordParam);
     }

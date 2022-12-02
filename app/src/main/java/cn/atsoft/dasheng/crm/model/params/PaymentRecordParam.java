@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.model.params;
 
+import cn.hutool.core.math.Money;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -25,7 +26,7 @@ import java.util.List;
 public class PaymentRecordParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private Money money;
 
     /**
      * 付款记录id
@@ -111,6 +112,11 @@ public class PaymentRecordParam implements Serializable, BaseValidatingParam {
     @Override
     public String checkParam() {
         return null;
+    }
+    @Data
+    public static class Money{
+        private int max;
+        private int min;
     }
 
 }
