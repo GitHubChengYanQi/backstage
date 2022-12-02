@@ -8,7 +8,6 @@ import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ContractResult;
 import cn.atsoft.dasheng.app.service.*;
-import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.*;
@@ -77,6 +76,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private BrandService brandService;
     @Autowired
     private InvoiceService invoiceService;
+    @Autowired
+    private OrderService orderService;
 
     @Override
     @Transactional
@@ -96,7 +97,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         this.save(entity);
 
-        if (ToolUtil.isNotEmpty(param.getGenerateContract())&&param.getGenerateContract() == 1) {   //创建合同
+        if (ToolUtil.isNotEmpty(param.getGenerateContract()) && param.getGenerateContract() == 1) {   //创建合同
             Contract contract = contractService.orderAddContract(entity.getOrderId(), param.getContractParam(), param, orderType);
             entity.setContractId(contract.getContractId());
             if (ToolUtil.isNotEmpty(contract.getContractId())) {
@@ -692,7 +693,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return contractDetailSet;
     }
 
-    private void format(List<OrderResult> data) {
+    @Override
+    public void format(List<OrderResult> data) {
         List<Long> customerIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         List<Long> orderIds = new ArrayList<>();

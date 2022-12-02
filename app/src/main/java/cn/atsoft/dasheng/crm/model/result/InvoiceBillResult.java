@@ -43,6 +43,8 @@ public class InvoiceBillResult implements Serializable {
 
     private MediaUrlResult mediaUrlResult;
 
+    private OrderResult orderResult;
+
     /**
      * 发票名称
      */
