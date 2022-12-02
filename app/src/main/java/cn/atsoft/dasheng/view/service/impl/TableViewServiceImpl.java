@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.view.service.impl;
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -32,7 +33,7 @@ public class TableViewServiceImpl extends ServiceImpl<TableViewMapper, TableView
     @Override
     public TableView add(TableViewParam param) {
 
-        Integer count = this.query().in("table_key", param.getTableKey()).eq("name", param.getName()).eq("display", 1).count();
+        Integer count = this.query().in("table_key", param.getTableKey()).eq("name", param.getName()).eq("create_user", LoginContextHolder.getContext().getUserId()).eq("display", 1).count();
         if (count > 0) {
             throw new ServiceException(500, "视图名称重复,请更换");
         }
