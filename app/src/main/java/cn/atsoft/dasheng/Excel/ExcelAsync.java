@@ -200,6 +200,7 @@ public class ExcelAsync {
 //                            skuExcelItem.setErrorSkuId(sku.getSkuId());
 //                           skuExcelItem.setType("codingRepeat");
 //                           throw new ServiceException(500, "编码重复");
+                            ToolUtil.copyProperties(newSku,sku);
                             newSku = sku;
                         }
                     }
@@ -221,7 +222,7 @@ public class ExcelAsync {
                 if (ToolUtil.isEmpty(skuExcelItem.getIsNotBatch()) || "".equals(skuExcelItem.getIsNotBatch())) {
                     throw new ServiceException(500, "二维码生成方式不可为空");
                 }
-                if (skuExcelItem.getIsNotBatch().equals("一物一码")) {
+                if (skuExcelItem.getIsNotBatch().equals("一批一码")) {
                     newSku.setBatch(1);
                 }
                 if (skuExcelItem.getIsNotBatch().equals("一件一码")) {
