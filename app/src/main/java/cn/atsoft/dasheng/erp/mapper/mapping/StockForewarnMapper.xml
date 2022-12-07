@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.erp.mapper.StockForewarnMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.StockForewarn">
+        <id column="forewarn_id" property="forewarnId" />
+        <result column="type" property="type" />
+        <result column="form_id" property="formId" />
+        <result column="inventory_floor" property="inventoryFloor" />
+        <result column="inventory_ceiling" property="inventoryCeiling" />
+        <result column="display" property="display" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        forewarn_id AS "forewarnId", type AS "type", form_id AS "formId", inventory_floor AS "inventoryFloor", inventory_ceiling AS "inventoryCeiling", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+    </sql>
+
+    <sql id="Left_Join">
+        f.form_id AS "formId",s.sku_name AS "s.name",c.name AS "c.name",spu.name AS "spu_name",p.name AS "p.name",s.specifications AS "specifications", f.forewarn_id AS "forewarnId", f.type AS "type", f.inventory_floor AS "inventoryFloor", f.inventory_ceiling AS "inventoryCeiling", f.display AS "display", f.create_user AS "createUser", f.update_user AS "updateUser", f.create_time AS "createTime", f.update_time AS "updateTime"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.StockForewarnResult" parameterType="cn.atsoft.dasheng.erp.model.params.StockForewarnParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_stock_forewarn where 1 = 1
+            <if test="paramCondition.forewarnId != null">
+                and forewarn_id like CONCAT('%',#{paramCondition.forewarnId},'%')
+            </if>
+            <if test="paramCondition.type != null and paramCondition.type != ''">
+                and type like CONCAT('%',#{paramCondition.type},'%')
+            </if>
+            <if test="paramCondition.formId != null">
+                and form_id like CONCAT('%',#{paramCondition.formId},'%')
+            </if>
+            <if test="paramCondition.inventoryFloor != null">
+                and inventory_floor like CONCAT('%',#{paramCondition.inventoryFloor},'%')
+            </if>
+            <if test="paramCondition.inventoryCeiling != null">
+                and inventory_ceiling like CONCAT('%',#{paramCondition.inventoryCeiling},'%')
+            </if>
+            <if test="paramCondition.display != null">
+                and display like CONCAT('%',#{paramCondition.display},'%')
+            </if>
+            <if test="paramCondition.createUser != null">
+                and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+            </if>
+            <if test="paramCondition.updateUser != null">
+                and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+            </if>
+            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+            </if>
+            <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.StockForewarnParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_stock_forewarn where 1 = 1
+                <if test="paramCondition.forewarnId != null">
+                        and forewarn_id like CONCAT('%',#{paramCondition.forewarnId},'%')
+                </if>
+                <if test="paramCondition.type != null and paramCondition.type != ''">
+                        and type like CONCAT('%',#{paramCondition.type},'%')
+                </if>
+                <if test="paramCondition.formId != null">
+                        and form_id like CONCAT('%',#{paramCondition.formId},'%')
+                </if>
+                <if test="paramCondition.inventoryFloor != null">
+                        and inventory_floor like CONCAT('%',#{paramCondition.inventoryFloor},'%')
+                </if>
+                <if test="paramCondition.inventoryCeiling != null">
+                        and inventory_ceiling like CONCAT('%',#{paramCondition.inventoryCeiling},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.StockForewarnResult" parameterType="cn.atsoft.dasheng.erp.model.params.StockForewarnParam">
+        select
+        <include refid="Left_Join"/>
+        from daoxin_erp_stock_forewarn f
+            LEFT JOIN goods_sku s ON f.form_id = s.sku_id
+            LEFT JOIN goods_spu spu ON spu.spu_id = s.spu_id
+            LEFT JOIN daoxin_erp_storehouse_positions p ON f.form_id = p.storehouse_positions_id
+            LEFT JOIN goods_spu_class c ON f.form_id = c.spu_classification_id
+            where 1 = 1 AND f.display = 1
+                <if test="paramCondition.forewarnId != null">
+                        and f.forewarn_id like CONCAT('%',#{paramCondition.forewarnId},'%')
+                </if>
+                <if test="paramCondition.type != null and paramCondition.type != ''">
+                        and f.type = #{paramCondition.type}
+                </if>
+                <if test="paramCondition.formId != null">
+                        and f.form_id = #{paramCondition.formId}
+                </if>
+                <if test="paramCondition.inventoryFloor != null">
+                        and f.inventory_floor like CONCAT('%',#{paramCondition.inventoryFloor},'%')
+                </if>
+                <if test="paramCondition.inventoryCeiling != null">
+                        and f.inventory_ceiling like CONCAT('%',#{paramCondition.inventoryCeiling},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and f.display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and f.create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and f.update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and f.create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and f.update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+
+        <if test="paramCondition.content != null and paramCondition.content != ''">
+                    and (s.sku_name like CONCAT ('%',#{paramCondition.content},'%')
+                    or c.name like CONCAT ('%',#{paramCondition.content},'%')
+                    or spu.name like CONCAT ('%',#{paramCondition.content },'%'))
+                    or s.specifications like CONCAT ('%',#{paramCondition.content},'%')
+                    or p.name like CONCAT ('%',#{paramCondition.content},'%')
+        </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.StockForewarnParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_stock_forewarn where 1 = 1
+                <if test="paramCondition.forewarnId != null">
+                        and forewarn_id like CONCAT('%',#{paramCondition.forewarnId},'%')
+                </if>
+                <if test="paramCondition.type != null and paramCondition.type != ''">
+                        and type like CONCAT('%',#{paramCondition.type},'%')
+                </if>
+                <if test="paramCondition.formId != null">
+                        and form_id like CONCAT('%',#{paramCondition.formId},'%')
+                </if>
+                <if test="paramCondition.inventoryFloor != null">
+                        and inventory_floor like CONCAT('%',#{paramCondition.inventoryFloor},'%')
+                </if>
+                <if test="paramCondition.inventoryCeiling != null">
+                        and inventory_ceiling like CONCAT('%',#{paramCondition.inventoryCeiling},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+    </select>
+
+</mapper>
