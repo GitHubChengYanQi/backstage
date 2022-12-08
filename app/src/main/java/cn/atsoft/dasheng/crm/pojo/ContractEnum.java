@@ -51,6 +51,7 @@ public enum ContractEnum {
     BCustomerPhone("供方公司电话"),         //供方公司电话
     BFax("供方公司传真"),         //供方公司传真
     BLegalMan("供方法人代表"),         //供方法人代表
+
     BLegalManPhone("供方法人电话"),            //需方法人电话
     BContacts("供方委托代表"),             //需方委托代表
     BPhone("供方代表电话"),         //需方代表电话

@@ -110,6 +110,10 @@ public class taskV1Controller {
     @RequestMapping(value = "/{v}/post", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData audit(@RequestBody AuditParam auditParam) {
+
+        //任务添加动态
+        shopCartService.auditDynamic(auditParam.getTaskId(), auditParam.getStatus());
+
         //添加备注
         remarksService.addNote(auditParam);
         this.activitiProcessLogService.judgeLog(auditParam.getTaskId(), auditParam.getLogIds());  //判断当前log状态

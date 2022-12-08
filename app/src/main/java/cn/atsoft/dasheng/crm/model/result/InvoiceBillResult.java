@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.crm.model.result;
 
+import cn.atsoft.dasheng.appBase.entity.Media;
+import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -37,7 +39,11 @@ public class InvoiceBillResult implements Serializable {
      * 附件
      */
     @ApiModelProperty("附件")
-    private String enclosureId;
+    private Long enclosureId;
+
+    private MediaUrlResult mediaUrlResult;
+
+    private OrderResult orderResult;
 
     /**
      * 发票名称
@@ -71,6 +77,19 @@ public class InvoiceBillResult implements Serializable {
      */
     @ApiModelProperty("部门编号")
     private Long deptId;
+
+    /**
+     * 关联订单
+     */
+    @ApiModelProperty("关联订单")
+    private Long orderId;
+
+    /**
+     * 编码
+     */
+    @ApiModelProperty("编码")
+    private String coding;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }
