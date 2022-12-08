@@ -97,6 +97,34 @@ public class ProductionPlan implements Serializable {
     @TableField("card_coding")
     private String cardCoding;
 
+    /**
+     * 类型
+     */
+    @TableField("type")
+    private String type;
+
+    /**
+     * 文件
+     */
+    @TableField("files")
+    private Long files;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Long getFiles() {
+        return files;
+    }
+
+    public void setFiles(Long files) {
+        this.files = files;
+    }
+
     public String getCardCoding() {
         return cardCoding;
     }

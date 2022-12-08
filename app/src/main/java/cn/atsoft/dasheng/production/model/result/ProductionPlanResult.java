@@ -101,6 +101,18 @@ public class ProductionPlanResult implements Serializable {
     private String cardCoding;
 
     /**
+     * 类型
+     */
+    @ApiModelProperty("类型")
+    private String type;
+
+    /**
+     * 文件
+     */
+    @ApiModelProperty("文件")
+    private Long files;
+
+    /**
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
