@@ -51,7 +51,7 @@ public class PhoneParam implements Serializable, BaseValidatingParam {
 //    @NotNull(message = "电话不能为空")
 //    @Length(min = 11, message = "手机最少位数是{min}")
 //    @ApiModelProperty("电话号码")
-    private Long phoneNumber;
+    private String phoneNumber;
 
     /**
      * 创建者

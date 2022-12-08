@@ -195,11 +195,13 @@ public class ExcelAsync {
                     skuExcelItem.setStandard(skuExcelItem.getStandard().replaceAll(" ", ""));
                     for (Sku sku : skus) {
                         if (ToolUtil.isNotEmpty(sku.getStandard()) && sku.getStandard().equals(skuExcelItem.getStandard())) {
-                            SkuResult results = skuService.getDetail(sku.getSkuId());
-                            skuExcelItem.setSimpleResult(results);
-                            skuExcelItem.setErrorSkuId(sku.getSkuId());
-                            skuExcelItem.setType("codingRepeat");
-                            throw new ServiceException(500, "编码重复");
+//                            SkuResult results = skuService.getDetail(sku.getSkuId());
+//                            skuExcelItem.setSimpleResult(results);
+//                            skuExcelItem.setErrorSkuId(sku.getSkuId());
+//                           skuExcelItem.setType("codingRepeat");
+//                           throw new ServiceException(500, "编码重复");
+                            ToolUtil.copyProperties(newSku,sku);
+                            newSku = sku;
                         }
                     }
                     newSku.setStandard(skuExcelItem.getStandard());
@@ -220,8 +222,11 @@ public class ExcelAsync {
                 if (ToolUtil.isEmpty(skuExcelItem.getIsNotBatch()) || "".equals(skuExcelItem.getIsNotBatch())) {
                     throw new ServiceException(500, "二维码生成方式不可为空");
                 }
-                if (skuExcelItem.getIsNotBatch().equals("是")) {
+                if (skuExcelItem.getIsNotBatch().equals("一批一码")) {
                     newSku.setBatch(1);
+                }
+                if (skuExcelItem.getIsNotBatch().equals("一件一码")) {
+                    newSku.setBatch(0);
                 }
                 //规格-----------------------------------------------------------------------------------------------
                 newSku.setSpecifications(skuExcelItem.getSpecifications());
@@ -356,7 +361,8 @@ public class ExcelAsync {
                 }
 
 
-                if (skuList.stream().noneMatch(item -> item.getStandard().equals(newSku.getStandard()))) {  //excel 重复数据
+                Sku finalNewSku = newSku;
+                if (skuList.stream().noneMatch(item -> item.getStandard().equals(finalNewSku.getStandard()))) {  //excel 重复数据
                     successNum++;
                     asynTaskDetail.setContentJson(JSON.toJSONString(skuExcelItem));
                     asynTaskDetail.setStatus(99);
@@ -376,7 +382,7 @@ public class ExcelAsync {
                 errorList.add(skuExcelItem);
             }
         }
-        skuService.saveBatch(skuList);
+        skuService.saveOrUpdateBatch(skuList);
         skuExcelResult.setErrorList(errorList);
         skuExcelResult.setSuccessNum(successNum);
         asynTask.setStatus(99);
@@ -581,12 +587,12 @@ public class ExcelAsync {
                 }
                 for (Customer customer : customers) {
                     if (customer.getCustomerName().equals(excel.getCustomer())) {
-                        excel.setCustomerId(customer.getCustomerId());
+
                         break;
                     }
                 }
                 if (ToolUtil.isEmpty(excel.getCustomerId())) {
-                    throw new ServiceException(500, "无此供应商");
+                    excel.setCustomerId(1498100531680026626L);
                 }
                 //库位-------------------------------------------------------------
                 if (ToolUtil.isEmpty(excel.getPosition())) {

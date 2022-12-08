@@ -108,6 +108,9 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
 
     public void addList(Long orderId, Long customerId, List<OrderDetailParam> params) {
         List<OrderDetail> details = new ArrayList<>();
+        if (ToolUtil.isEmpty(params)) {
+            return;
+        }
         for (OrderDetailParam param : params) {
             OrderDetail orderDetail = new OrderDetail();
             ToolUtil.copyProperties(param, orderDetail);

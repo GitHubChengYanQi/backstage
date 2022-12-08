@@ -257,7 +257,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             inventoryIds.add(inventoryResult.getInventoryTaskId());
         }
 
-        List<InventoryStock> stockList = inventoryStockService.query().in("inventory_id", inventoryIds)
+        List<InventoryStock> stockList =inventoryIds.size()==0?new ArrayList<>() : inventoryStockService.query().in("inventory_id", inventoryIds)
                 .eq("display", 1)
                 .ne("lock_status", 99)
                 .list();
