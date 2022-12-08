@@ -487,7 +487,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             datum.setStockNumber(stockNumber);
             datum.setApplyNumber(applyNumber);
         }
-        data.removeIf(i->ToolUtil.isEmpty(i.getCustomerResult()));
+        data.removeIf(i -> ToolUtil.isEmpty(i.getCustomerResult()));
 
     }
 
@@ -496,7 +496,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
      *
      * @param customerIds
      * @return
-    **/
+     **/
 
     @Override
     public List<SupplyResult> getSupplyByCustomerIds(List<Long> customerIds) {
@@ -540,6 +540,9 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     @Override
     public void OrdersBackFill(Long customerId, List<OrderDetailParam> params) {
         List<Supply> supplies = this.list();
+        if (ToolUtil.isEmpty(params)) {
+            return;
+        }
         for (OrderDetailParam param : params) {
             boolean judge = judge(customerId, param, supplies);
             if (judge) {

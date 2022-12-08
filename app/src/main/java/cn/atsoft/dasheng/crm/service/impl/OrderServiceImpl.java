@@ -29,6 +29,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.convert.NumberChineseFormatter;
 import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -386,7 +387,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     map.put(ContractEnum.BLegalMan.getDetail(), orderResult.getBcustomer().getLegal());
                     break;
                 case pickUpManPhone:
-                    map.put(ContractEnum.pickUpManPhone.getDetail(), orderResult.getAContactsPhone());
+                    if (ToolUtil.isNotEmpty(orderResult.getDeliverer())) {
+                        QueryWrapper<Phone> queryWrapper = new QueryWrapper<>();
+                        queryWrapper.lambda().eq(Phone::getContactsId, orderResult.getDeliverer().getContactsId());
+                        List<Phone> list = phoneService.list(queryWrapper);
+                        if (ToolUtil.isEmpty(list.get(0)) || ToolUtil.isEmpty(list.get(0).getPhoneNumber())){
+                            map.put(ContractEnum.pickUpManPhone.getDetail(), "");
+                        }else {
+                            map.put(ContractEnum.pickUpManPhone.getDetail(), list.get(0).getPhoneNumber());
+                        }
+                    } else {
+                        map.put(ContractEnum.pickUpManPhone.getDetail(), "");
+                    }
                     break;
                 case contractCoding:
                     if (ToolUtil.isEmpty(detail.getCoding())) {

@@ -108,7 +108,7 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
 
     public Integer addList(Long orderId, Long customerId, List<OrderDetailParam> params) {
         List<OrderDetail> details = new ArrayList<>();
-        int totalAmount = 0;   //所有物料总价
+        int totalAmount = 0;
         for (OrderDetailParam param : params) {
             OrderDetail orderDetail = new OrderDetail();
             ToolUtil.copyProperties(param, orderDetail);
