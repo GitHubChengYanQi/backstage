@@ -79,7 +79,7 @@
             parameterType="cn.atsoft.dasheng.production.model.params.SopDetailParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_production_sop_detail where 1 = 1
+        from daoxin_production_sop_detail where 1 = 1 and display = 1
         <if test="paramCondition.sopDetailId != null">
             and sop_detail_id like CONCAT('%',#{paramCondition.sopDetailId},'%')
         </if>

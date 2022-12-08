@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.appBase.entity.Media;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ShipSetp;
 import cn.atsoft.dasheng.production.entity.Sop;
 import cn.atsoft.dasheng.production.entity.SopDetail;
@@ -79,7 +80,12 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
 
     @Override
     public void delete(SopParam param) {
-        this.removeById(getKey(param));
+        if (ToolUtil.isEmpty(param.getSopId())) {
+            throw new ServiceException(500,"删除数据不存在");
+        }else {
+            param.setDisplay(0);
+            this.update(param);
+        }
     }
 
     @Override
