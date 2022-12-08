@@ -66,4 +66,5 @@ public interface InvoiceBillService extends IService<InvoiceBill> {
      */
      PageInfo<InvoiceBillResult> findPageBySpec(InvoiceBillParam param);
 
+    void format(List<InvoiceBillResult> param);
 }

@@ -161,10 +161,6 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
      */
     private String weight;
     /**
-     * 图幅
-     */
-    private String viewFrame;
-    /**
      * 材质id
      */
     private String materialId;

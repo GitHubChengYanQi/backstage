@@ -132,6 +132,19 @@ public class OrderDetail implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    /**
+     * 到货数量
+     */
+    @TableField("arrival_number")
+    private Integer arrivalNumber;
+
+    public Integer getArrivalNumber() {
+        return arrivalNumber;
+    }
+
+    public void setArrivalNumber(Integer arrivalNumber) {
+        this.arrivalNumber = arrivalNumber;
+    }
 
     public String getRemark() {
         return remark;

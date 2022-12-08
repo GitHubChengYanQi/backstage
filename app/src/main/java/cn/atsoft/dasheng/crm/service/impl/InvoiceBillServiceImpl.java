@@ -1,7 +1,6 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
-import cn.atsoft.dasheng.appBase.entity.Media;
 import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -10,12 +9,13 @@ import cn.atsoft.dasheng.crm.entity.InvoiceBill;
 import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.mapper.InvoiceBillMapper;
 import cn.atsoft.dasheng.crm.model.params.InvoiceBillParam;
-import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.InvoiceBillResult;
+import cn.atsoft.dasheng.crm.model.result.OrderResult;
 import  cn.atsoft.dasheng.crm.service.InvoiceBillService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.service.OrderService;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -26,7 +26,6 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -41,6 +40,9 @@ public class InvoiceBillServiceImpl extends ServiceImpl<InvoiceBillMapper, Invoi
 
     @Autowired
     private MediaService mediaService;
+
+    @Autowired
+    private OrderService orderService;
 
     @Override
     public InvoiceBill add(InvoiceBillParam param){
@@ -84,18 +86,32 @@ public class InvoiceBillServiceImpl extends ServiceImpl<InvoiceBillMapper, Invoi
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
+    @Override
     public void format(List<InvoiceBillResult> param){
         List<Long> mediaIds = new ArrayList<>();
-        for (InvoiceBillResult invoiceBillParam : param) {
-            if (ToolUtil.isNotEmpty(invoiceBillParam.getEnclosureId())){
-                mediaIds.add(invoiceBillParam.getEnclosureId());
+        List<Long> orderIds = new ArrayList<>();
+        for (InvoiceBillResult invoiceBillResult : param) {
+            if (ToolUtil.isNotEmpty(invoiceBillResult.getEnclosureId())){
+                mediaIds.add(invoiceBillResult.getEnclosureId());
+                orderIds.add(invoiceBillResult.getOrderId());
             }
             List<MediaUrlResult> mediaList = mediaIds.size() == 0 ? new ArrayList<>() : mediaService.getMediaUrlResults(mediaIds);
+            List<Order> orderList = orderIds.size() == 0 ? new ArrayList<>() : orderService.listByIds(orderIds);
+            List<OrderResult> orderResults = BeanUtil.copyToList(orderList,OrderResult.class, new CopyOptions());
+            orderService.format(orderResults);
             for (InvoiceBillResult billResult : param) {
                 if (ToolUtil.isNotEmpty(billResult.getEnclosureId())) {
                     for (MediaUrlResult media : mediaList) {
                         if (billResult.getEnclosureId().equals(media.getMediaId())) {
                             billResult.setMediaUrlResult(media);
+                            break;
+                        }
+                    }
+                }
+                if (ToolUtil.isNotEmpty(billResult.getOrderId())) {
+                    for (OrderResult orderResult : orderResults) {
+                        if (billResult.getOrderId().equals(orderResult.getOrderId())) {
+                            billResult.setOrderResult(orderResult);
                             break;
                         }
                     }

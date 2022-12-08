@@ -77,6 +77,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private BrandService brandService;
     @Autowired
     private InvoiceService invoiceService;
+    @Autowired
+    private OrderService orderService;
 
     @Override
     @Transactional

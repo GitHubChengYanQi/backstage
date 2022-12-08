@@ -155,6 +155,13 @@ public class InstockListParam extends AbstractDictMap implements Serializable, B
     @ApiModelProperty("")
     private Integer display;
 
+    private Long orderDetailId;
+
+    /**
+     * 到货数量
+     */
+    private  Integer arrivalNumber;
+
     /**
      * 部门编号
      */

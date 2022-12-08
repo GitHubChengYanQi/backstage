@@ -84,6 +84,9 @@ public class InvoiceBillController extends BaseController {
         InvoiceBill detail = this.invoiceBillService.getById(invoiceBillParam.getInvoiceBillId());
         InvoiceBillResult result = new InvoiceBillResult();
         ToolUtil.copyProperties(detail, result);
+        invoiceBillService.format(new ArrayList<InvoiceBillResult>(){{
+            add(result);
+        }});
 
 
         return ResponseData.success(result);
