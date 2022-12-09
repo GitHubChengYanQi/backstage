@@ -174,6 +174,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
                 for (SkuSimpleResult skuResult : skuResults) {
                     if (forewarnResult.getFormId().equals(skuResult.getSkuId())) {
                         forewarnResult.setSkuResult(skuResult);
+                        break;
                     }
                 }
             }
@@ -181,6 +182,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
                 for (SpuClassificationResult spuClassificationResult : classificationResults) {
                     if (forewarnResult.getFormId().equals(spuClassificationResult.getSpuClassificationId())) {
                         forewarnResult.setSpuClassificationResult(spuClassificationResult);
+                        break;
                     }
                 }
             }
@@ -188,12 +190,14 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
                 for (StorehousePositionsResult storehousePositionsResult : positionsResults) {
                     if (forewarnResult.getFormId().equals(storehousePositionsResult.getStorehousePositionsId())) {
                         forewarnResult.setStorehousePositionsResult(storehousePositionsResult);
+                        break;
                     }
                 }
             }
             if (ToolUtil.isNotEmpty(userIds)) {
                 for (UserResult userResult : userList) {
                     forewarnResult.setCreateUserResult(userResult);
+                    break;
                 }
             }
         }
