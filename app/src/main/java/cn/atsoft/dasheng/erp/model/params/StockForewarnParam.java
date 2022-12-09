@@ -28,6 +28,12 @@ public class StockForewarnParam implements Serializable, BaseValidatingParam {
     private String update;
 
     private String content;
+    //查询文字输入
+    private String keyWords;
+//    spuClassId
+    private Long classId;
+    //预警状态
+    private String forewarnStatus;
 
     /**
      * 预警序号

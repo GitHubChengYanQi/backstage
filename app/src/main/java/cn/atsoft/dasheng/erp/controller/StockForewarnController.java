@@ -104,6 +104,21 @@ public class StockForewarnController extends BaseController {
 
         return this.stockForewarnService.findPageBySpec(stockForewarnParam);
     }
+    /**
+     * 查询列表
+     *
+     * @author sjl
+     * @Date 2022-12-05
+     */
+    @RequestMapping(value = "/warningSku", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo warningSku(@RequestBody(required = false) StockForewarnParam stockForewarnParam) {
+        if(ToolUtil.isEmpty(stockForewarnParam)){
+            stockForewarnParam = new StockForewarnParam();
+        }
+
+        return this.stockForewarnService.showWaring(stockForewarnParam);
+    }
 
 
 

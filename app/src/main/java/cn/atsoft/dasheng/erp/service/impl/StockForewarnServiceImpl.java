@@ -1,9 +1,9 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.entity.StockForewarn;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
@@ -16,7 +16,6 @@ import cn.atsoft.dasheng.erp.service.StockForewarnService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
@@ -30,6 +29,7 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -56,6 +56,8 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
     @Override
     public void add(StockForewarnParam param) {
@@ -73,8 +75,8 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
              * 非强制的
              */
             Integer count = this.query().eq("form_id", param.getFormId()).count();
-            if (count > 0){
-                throw new ServiceException(1001,"此条件已设置，是否更新预警条件");
+            if (count > 0) {
+                throw new ServiceException(1001, "此条件已设置，是否更新预警条件");
             }
         }
         /**
@@ -96,8 +98,8 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
     @Override
     public void delete(StockForewarnParam param) {
         if (ToolUtil.isEmpty(param.getForewarnId())) {
-            throw new ServiceException(500,"删除目标不存在");
-        }else {
+            throw new ServiceException(500, "删除目标不存在");
+        } else {
             param.setDisplay(0);
             this.update(param);
         }
@@ -158,7 +160,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
             positionIds.add(stockForewarnResult.getFormId());
             userIds.add(stockForewarnResult.getCreateUser());
         }
-        List<SkuSimpleResult> skuResults  = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
+        List<SkuSimpleResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
 
         List<SpuClassification> spuClassificationList = classificationIds.size() == 0 ? new ArrayList<>() : spuClassificationService.listByIds(classificationIds);
         List<SpuClassificationResult> classificationResults = BeanUtil.copyToList(spuClassificationList, SpuClassificationResult.class, new CopyOptions());
@@ -198,5 +200,27 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
             }
         }
     }
+
+    @Override
+    public PageInfo showWaring(StockForewarnParam param) {
+        Page<StockForewarnResult> pageContext = this.getPageContext();
+        Page<StockForewarnResult> stockForewarnResultPage = this.baseMapper.warningSkuList(pageContext, param);
+
+        List<SkuSimpleResult> skuResult =stockForewarnResultPage.getRecords().size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(stockForewarnResultPage.getRecords().stream().map(StockForewarnResult::getSkuId).distinct().collect(Collectors.toList()));
+        for (StockForewarnResult record : stockForewarnResultPage.getRecords()) {
+            for (SkuSimpleResult skuSimpleResult : skuResult) {
+                if (record.getSkuId().equals(skuSimpleResult.getSkuId())){
+                    record.setSkuResult(skuSimpleResult);
+                    break;
+                }
+            }
+        }
+
+
+
+        return PageFactory.createPageInfo(stockForewarnResultPage);
+
+    }
+
 
 }

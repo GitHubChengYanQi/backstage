@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.StockForewarn;
 import cn.atsoft.dasheng.erp.model.params.StockForewarnParam;
 import cn.atsoft.dasheng.erp.model.result.StockForewarnResult;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -66,4 +67,5 @@ public interface StockForewarnService extends IService<StockForewarn> {
      */
      PageInfo<StockForewarnResult> findPageBySpec(StockForewarnParam param);
 
+    PageInfo showWaring(StockForewarnParam param);
 }
