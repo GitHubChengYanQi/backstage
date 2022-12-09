@@ -107,7 +107,7 @@ public class ProductionPlan implements Serializable {
      * 文件
      */
     @TableField("files")
-    private Long files;
+    private String files;
 
     public String getType() {
         return type;
@@ -117,11 +117,11 @@ public class ProductionPlan implements Serializable {
         this.type = type;
     }
 
-    public Long getFiles() {
+    public String getFiles() {
         return files;
     }
 
-    public void setFiles(Long files) {
+    public void setFiles(String files) {
         this.files = files;
     }
 

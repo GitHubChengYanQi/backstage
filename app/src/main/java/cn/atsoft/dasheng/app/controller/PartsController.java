@@ -1,8 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
-import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
-import cn.atsoft.dasheng.app.model.params.PartRequest;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.model.result.Item;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
@@ -28,7 +26,6 @@ import cn.atsoft.dasheng.app.wrapper.PartsSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.node.TreeNode;
 import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
 
-import javax.servlet.http.Part;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -356,6 +353,15 @@ public class PartsController extends BaseController {
     public ResponseData getParent(@RequestParam Long id) {
         List<PartsResult> treeParts = this.partsService.getParent(id);
         return ResponseData.success(treeParts);
+    }
+
+    /**
+     * 查看物料历史BOM
+     */
+    @RequestMapping(value = "/bomsByskuId", method = RequestMethod.GET)
+    @ApiOperation("点击查询")
+    public PageInfo bomsBySkuId(@RequestParam Long skuId) {
+        return this.partsService.findPageBySkuId(skuId);
     }
 
 }

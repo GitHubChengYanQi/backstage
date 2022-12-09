@@ -87,6 +87,12 @@ public interface PartsService extends IService<Parts> {
      */
     PageInfo findPageBySpec(PartsParam param);
 
+    /**
+     *
+     * 查询分页数据，通过skuId找到boms
+     */
+    PageInfo findPageBySkuId(Long skuId);
+
 
     List<Long> getSkuIdsByBom(Long skuId);
 

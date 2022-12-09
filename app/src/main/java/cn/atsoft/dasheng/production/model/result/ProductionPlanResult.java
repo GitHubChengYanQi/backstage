@@ -110,7 +110,7 @@ public class ProductionPlanResult implements Serializable {
      * 文件
      */
     @ApiModelProperty("文件")
-    private Long files;
+    private String files;
 
     /**
      * 修改时间

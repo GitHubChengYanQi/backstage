@@ -114,7 +114,35 @@ public class ProductionPlanDetail implements Serializable {
      * 合同编码
      */
     @TableField("contract_coding")
-    private  String contractCoding;
+    private String contractCoding;
+
+    /**
+     * 客户名称
+     */
+    @TableField("customer_name")
+    private String customerName;
+
+    /**
+     * bom清单id
+     */
+    @TableField("parts_id")
+    private Long partsId;
+
+    public Long getPartsId() {
+        return partsId;
+    }
+
+    public void setPartsId(Long partsId) {
+        this.partsId = partsId;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
 
     public String getContractCoding() {
         return contractCoding;
