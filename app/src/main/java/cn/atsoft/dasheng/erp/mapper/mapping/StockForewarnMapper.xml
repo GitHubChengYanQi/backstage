@@ -182,6 +182,7 @@
         INNER JOIN goods_spu spu ON spu.spu_classification_id = class.spu_classification_id
         INNER JOIN goods_sku sku ON sku.spu_id = spu.spu_id
         where 1 = 1 and sku.display = 1
+           and waring.display = 1
         <if test="paramCondition.keyWords != null and paramCondition.keyWords != '' ">
             and (
             spu.name like CONCAT ('%',#{paramCondition.keyWords},'%')
@@ -196,7 +197,6 @@
         sku.sku_id,
         waring.inventory_floor,
         waring.inventory_ceiling
-
         ) waringTb
         LEFT JOIN daoxin_erp_stock_details details ON details.sku_id = waringTb.skuId
         WHERE
@@ -206,15 +206,17 @@
         waringTb.skuId
         <choose>
             <when test="paramCondition.forewarnStatus == 'max'">
-                HAVING sum( details.number ) &gt;= waringTb.max
+                HAVING sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END )  &gt;= waringTb.max
             </when>
             <when test="paramCondition.forewarnStatus == 'min'">
-                HAVING sum( details.number ) &lt;= waringTb.min OR sum( details.number )IS NULL
+                HAVING sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) &lt;= waringTb.min
+                OR  sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) OR sum( details.number ) IS NULL
             </when>
             <otherwise>
                 HAVING
                 (
-                sum( details.number ) &lt;= waringTb.min OR sum( details.number ) &gt;= waringTb.max
+                sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) &lt;= waringTb.min
+                OR  sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) &gt;= waringTb.max
                 OR sum( details.number ) IS NULL
                 )
             </otherwise>
@@ -247,8 +249,9 @@
         LEFT JOIN goods_spu_class class ON spu.spu_classification_id = class.spu_classification_id
         WHERE
         sku.sku_id IS NOT NULL
-        AND waring.display = 1
-          and sku.display = 1
+        and sku.display = 1
+        and waring.display = 1
+
         <if test="paramCondition.keyWords != null and paramCondition.keyWords != '' ">
             and (
             spu.name like CONCAT ('%',#{paramCondition.keyWords},'%')
@@ -271,15 +274,17 @@
         waringTb.skuId
         <choose>
             <when test="paramCondition.forewarnStatus == 'max'">
-                HAVING sum( details.number ) &gt;= waringTb.max
+                sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) &gt;= waringTb.max
             </when>
             <when test="paramCondition.forewarnStatus == 'min'">
-                HAVING sum( details.number ) &lt;= waringTb.min OR sum( details.number )IS NULL
+                HAVING sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) IS NULL,
+                0,
+                sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) &lt;= waringTb.min OR sum( details.number )IS NULL
             </when>
         <otherwise>
             HAVING
             (
-            sum( details.number ) &lt;= waringTb.min OR sum( details.number ) &gt;= waringTb.max
+            sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) &lt;= waringTb.min OR sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) &gt;= waringTb.max
             OR sum( details.number ) IS NULL
             )
         </otherwise>
