@@ -74,7 +74,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
             /**
              * 非强制的
              */
-            Integer count = this.query().eq("form_id", param.getFormId()).count();
+            Integer count = this.lambdaQuery().eq(StockForewarn::getType,param.getType()).eq(StockForewarn::getFormId, param.getFormId()).eq(StockForewarn::getDisplay,1).count();
             if (count > 0) {
                 throw new ServiceException(1001, "此条件已设置，是否更新预警条件");
             }
