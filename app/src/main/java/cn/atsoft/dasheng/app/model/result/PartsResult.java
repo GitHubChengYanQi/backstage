@@ -100,12 +100,14 @@ public class PartsResult implements Serializable {
      * 创建时间
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     /**

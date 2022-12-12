@@ -684,7 +684,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     public void deleteBatch(SkuParam param) {
         List<Long> skuIds = param.getId();
-        Integer stockSku = skuIds.size() == 0 ? 0 : stockDetailsService.query().in("sku_id", skuIds).count();
+        Integer stockSku = skuIds.size() == 0 ? 0 : stockDetailsService.query().in("sku_id", skuIds).eq("display",1).eq("stage",1).count();
         if (stockSku > 0) {
             throw new ServiceException(500, "库存中中有此物品数据,删除终止");
 
