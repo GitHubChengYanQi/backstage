@@ -197,11 +197,14 @@ public class AnomalyDetailServiceImpl extends ServiceImpl<AnomalyDetailMapper, A
         activitiProcessTaskParam.setPid(processTask.getProcessTaskId());
         activitiProcessTaskParam.setMainTaskId(processTask.getProcessTaskId());
         activitiProcessTaskParam.setUserId(detail.getUserId());
-        Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+        activitiProcessTaskParam.setCreateUser(detail.getUserId());
+        ActivitiProcessTask entity = activitiProcessTaskService.getEntity(activitiProcessTaskParam);
+        activitiProcessTaskService.save(entity);
+        Long taskId = entity.getProcessTaskId();
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
             setFunction(MarkDownTemplateTypeEnum.forward);
             setType(1);
-            setItems("入库异常 转交您处理");
+            setItems("异常物料 转交给您处理");
             setUrl(mobileService.getMobileConfig().getUrl() + "/Receipts/ReceiptsDetail?id=" + taskId);
 //            setDescription("入库异常 转交处理");
             setSource("processTask");

@@ -68,6 +68,7 @@ public class CustomerResult implements Serializable {
     private ContactsResult defaultContactsResult;
     private UserResult createUserResult;
 
+
     /**
      * 客户id
      */
@@ -93,7 +94,6 @@ public class CustomerResult implements Serializable {
     private Long customerLevelId;
 
 
-
     /**
      * 注册资本
      */
@@ -117,7 +117,7 @@ public class CustomerResult implements Serializable {
      */
     @ApiModelProperty("邮编")
     private String zipCode;
-    
+
     private Integer status;
     private Integer blacklist;
     private Integer classification;

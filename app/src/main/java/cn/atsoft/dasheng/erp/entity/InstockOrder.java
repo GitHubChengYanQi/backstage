@@ -173,7 +173,6 @@ public class InstockOrder implements Serializable {
     private String origin;
 
 
-
     /**
      * 入库类型
      */
@@ -187,7 +186,7 @@ public class InstockOrder implements Serializable {
     public void setInstockType(String instockType) {
         this.instockType = instockType;
     }
-    
+
     public Long getStatus() {
         return status;
     }

@@ -33,6 +33,8 @@ public interface ShopCartService extends IService<ShopCart> {
 
     void addDynamicByTaskId(Long taskId, Long skuId, String content);
 
+    void auditDynamic(Long taskId, Integer status);
+
     Set<String> backType(List<String> types);
 
     void addList(List<ShopCartParam> params);

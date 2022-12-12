@@ -86,5 +86,32 @@ public class OrderUpload {
 
 
     }
+    public void upload(File file, Long userId) {
 
-}
+
+        try {
+
+            WxMediaUploadResult upload = wxCpService.getWxCpClient().getMediaService().upload("file", file);
+            String mediaId = upload.getMediaId();
+            WxuserInfo wxuserInfo = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").orderByDesc("create_time").last("limit 1").one();
+
+            if (ToolUtil.isNotEmpty(wxuserInfo)) {
+                UcOpenUserInfo userInfo = openUserInfoService.query().eq("source", "wxCp").eq("member_id", wxuserInfo.getMemberId()).one();
+                if (ToolUtil.isNotEmpty(userInfo)) {
+                    WxCpMessage wxCpMessage = new WxCpMessage();
+                    wxCpMessage.setToUser(userInfo.getUuid());
+                    wxCpMessage.setMsgType("file");
+                    wxCpMessage.setMediaId(mediaId);
+                    wxCpService.getWxCpClient().getMessageService().send(wxCpMessage);
+                }
+            }
+
+
+        } catch (WxErrorException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    }

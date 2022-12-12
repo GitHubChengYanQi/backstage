@@ -200,6 +200,7 @@ public class ExcelAsync {
 //                            skuExcelItem.setErrorSkuId(sku.getSkuId());
 //                           skuExcelItem.setType("codingRepeat");
 //                           throw new ServiceException(500, "编码重复");
+                            ToolUtil.copyProperties(newSku,sku);
                             newSku = sku;
                         }
                     }
@@ -221,10 +222,10 @@ public class ExcelAsync {
                 if (ToolUtil.isEmpty(skuExcelItem.getIsNotBatch()) || "".equals(skuExcelItem.getIsNotBatch())) {
                     throw new ServiceException(500, "二维码生成方式不可为空");
                 }
-                if (skuExcelItem.getIsNotBatch().equals("一物一码")) {
+                if (skuExcelItem.getIsNotBatch().equals("一批一码")) {
                     newSku.setBatch(1);
                 }
-                if (skuExcelItem.getIsNotBatch().equals("一批一码")) {
+                if (skuExcelItem.getIsNotBatch().equals("一件一码")) {
                     newSku.setBatch(0);
                 }
                 //规格-----------------------------------------------------------------------------------------------
@@ -586,12 +587,12 @@ public class ExcelAsync {
                 }
                 for (Customer customer : customers) {
                     if (customer.getCustomerName().equals(excel.getCustomer())) {
-                        excel.setCustomerId(customer.getCustomerId());
+
                         break;
                     }
                 }
                 if (ToolUtil.isEmpty(excel.getCustomerId())) {
-                    throw new ServiceException(500, "无此供应商");
+                    excel.setCustomerId(1498100531680026626L);
                 }
                 //库位-------------------------------------------------------------
                 if (ToolUtil.isEmpty(excel.getPosition())) {

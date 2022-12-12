@@ -152,6 +152,13 @@ public class OrderDetailResult implements Serializable {
      */
     @ApiModelProperty("部门id")
     private Long deptId;
+
+    /**
+     * 到货数量
+     */
+    @ApiModelProperty("到货数量")
+    private Integer arrivalNumber;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

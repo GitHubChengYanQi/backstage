@@ -19,6 +19,9 @@ public enum InStockActionEnum implements FormActionInterface {
             return 50L;
         }
     },
+    resubmit("再次提交") {  //再次提交
+
+    },
     revoke("撤回") {
         public Long getStatus() {
             return 49L;

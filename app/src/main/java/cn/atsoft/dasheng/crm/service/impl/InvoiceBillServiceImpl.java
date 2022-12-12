@@ -1,20 +1,30 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
+import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
+import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.InvoiceBill;
+import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.mapper.InvoiceBillMapper;
 import cn.atsoft.dasheng.crm.model.params.InvoiceBillParam;
 import cn.atsoft.dasheng.crm.model.result.InvoiceBillResult;
+import cn.atsoft.dasheng.crm.model.result.OrderResult;
 import  cn.atsoft.dasheng.crm.service.InvoiceBillService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.service.OrderService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,15 +38,27 @@ import java.util.List;
 @Service
 public class InvoiceBillServiceImpl extends ServiceImpl<InvoiceBillMapper, InvoiceBill> implements InvoiceBillService {
 
+    @Autowired
+    private MediaService mediaService;
+
+    @Autowired
+    private OrderService orderService;
+
     @Override
-    public void add(InvoiceBillParam param){
+    public InvoiceBill add(InvoiceBillParam param){
         InvoiceBill entity = getEntity(param);
         this.save(entity);
+        return entity;
     }
 
     @Override
     public void delete(InvoiceBillParam param){
-        this.removeById(getKey(param));
+        if (ToolUtil.isEmpty(param.getInvoiceBillId())){
+            throw new ServiceException(500,"所删除的目标不存在");
+        }else {
+            param.setDisplay(0);
+            this.update(param);
+        }
     }
 
     @Override
@@ -61,7 +83,42 @@ public class InvoiceBillServiceImpl extends ServiceImpl<InvoiceBillMapper, Invoi
     public PageInfo<InvoiceBillResult> findPageBySpec(InvoiceBillParam param){
         Page<InvoiceBillResult> pageContext = getPageContext();
         IPage<InvoiceBillResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
+    }
+    @Override
+    public void format(List<InvoiceBillResult> param){
+        List<Long> mediaIds = new ArrayList<>();
+        List<Long> orderIds = new ArrayList<>();
+        for (InvoiceBillResult invoiceBillResult : param) {
+            if (ToolUtil.isNotEmpty(invoiceBillResult.getEnclosureId())){
+                mediaIds.add(invoiceBillResult.getEnclosureId());
+                orderIds.add(invoiceBillResult.getOrderId());
+            }
+            List<MediaUrlResult> mediaList = mediaIds.size() == 0 ? new ArrayList<>() : mediaService.getMediaUrlResults(mediaIds);
+            List<Order> orderList = orderIds.size() == 0 ? new ArrayList<>() : orderService.listByIds(orderIds);
+            List<OrderResult> orderResults = BeanUtil.copyToList(orderList,OrderResult.class, new CopyOptions());
+            orderService.format(orderResults);
+            for (InvoiceBillResult billResult : param) {
+                if (ToolUtil.isNotEmpty(billResult.getEnclosureId())) {
+                    for (MediaUrlResult media : mediaList) {
+                        if (billResult.getEnclosureId().equals(media.getMediaId())) {
+                            billResult.setMediaUrlResult(media);
+                            break;
+                        }
+                    }
+                }
+                if (ToolUtil.isNotEmpty(billResult.getOrderId())) {
+                    for (OrderResult orderResult : orderResults) {
+                        if (billResult.getOrderId().equals(orderResult.getOrderId())) {
+                            billResult.setOrderResult(orderResult);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     private Serializable getKey(InvoiceBillParam param){
