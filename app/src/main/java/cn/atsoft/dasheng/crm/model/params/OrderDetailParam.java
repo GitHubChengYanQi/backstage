@@ -145,6 +145,16 @@ public class OrderDetailParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty
     private String contractCoding;
 
+    /**
+     * 客户名称
+     */
+    private String customerName;
+
+    /**
+     * bom清单id
+     */
+    private Long partsId;
+
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
