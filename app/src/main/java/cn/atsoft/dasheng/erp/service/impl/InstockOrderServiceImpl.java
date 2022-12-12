@@ -191,7 +191,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     public InstockOrder add(InstockOrderParam param) {
 
         List<OrderDetail> orderDetails = new ArrayList<>();
-        Map<Long,Long> arrivalNumber = new HashMap<>();
+        Map<Long, Long> arrivalNumber = new HashMap<>();
 
         if (ToolUtil.isEmpty(param.getListParams())) {
             throw new ServiceException(500, "入库物料不能为空");
@@ -204,7 +204,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             List<Long> orderDetailIds = new ArrayList<>();
             for (InstockListParam listParam : listParams) {
                 orderDetailIds.add(listParam.getOrderDetailId());
-                arrivalNumber.put(listParam.getOrderDetailId(),listParam.getNumber());
+                arrivalNumber.put(listParam.getOrderDetailId(), listParam.getNumber());
             }
 
             orderDetails = orderDetailService.list(new QueryWrapper<OrderDetail>() {{
@@ -462,12 +462,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             remarksService.addByMQ(remarksParam);
         }
 
-        if (param.getType().equals("purchaseOrder") && ToolUtil.isNotEmpty(param.getOrderId())) {
-
-                List<InstockListParam> listParams = param.getListParams();
-                /**
-                 * 循环更新到货数量字段。
-                 */
+        if (ToolUtil.isNotEmpty(param.getType()) && param.getType().equals("purchaseOrder") && ToolUtil.isNotEmpty(param.getOrderId())) {
+            /**
+             * 循环更新到货数量字段。
+             */
             for (OrderDetail orderDetail : orderDetails) {
                 orderDetail.setArrivalNumber((int) (orderDetail.getArrivalNumber() + arrivalNumber.get(orderDetail.getDetailId())));
                 orderDetailService.updateById(orderDetail);
@@ -1719,7 +1717,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             List<InstockListResult> instockListResults = new ArrayList<>();
 
             for (CustomerResult result : results) {
-                if (ToolUtil.isNotEmpty(datum.getCustomerId())&&datum.getCustomerId().equals(result.getCustomerId())) {
+                if (ToolUtil.isNotEmpty(datum.getCustomerId()) && datum.getCustomerId().equals(result.getCustomerId())) {
                     datum.setCustomerResult(result);
                     break;
                 }
