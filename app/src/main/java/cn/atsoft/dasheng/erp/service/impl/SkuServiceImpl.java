@@ -5,10 +5,7 @@ import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.params.Values;
-import cn.atsoft.dasheng.app.model.result.BrandResult;
-import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
-import cn.atsoft.dasheng.app.model.result.MaterialResult;
-import cn.atsoft.dasheng.app.model.result.UnitResult;
+import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.appBase.model.result.MediaResult;
 import cn.atsoft.dasheng.appBase.service.MediaService;
@@ -21,6 +18,7 @@ import cn.atsoft.dasheng.erp.enums.SearchTypeEnum;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.SkuMapper;
 import cn.atsoft.dasheng.erp.model.params.*;
+import cn.atsoft.dasheng.erp.model.params.SkuRequest;
 import cn.atsoft.dasheng.erp.model.request.SkuAttributeAndValue;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.pojo.*;
@@ -702,7 +700,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         partList.addAll(parts);
         partList = partList.stream().distinct().collect(Collectors.toList());
         if (ToolUtil.isNotEmpty(partList)) {
-            throw new ServiceException(500, "清单中有此物品数据,删除终止");
+            List<PartsResult> partsResults = BeanUtil.copyToList(partList, PartsResult.class);
+            partsService.format(partsResults);
+            throw new ServiceException(1001, JSON.toJSONString(partsResults));
         }
         List<Long> attributeValuesIds = new ArrayList<>();
         List<Long> attributeIds = new ArrayList<>();
