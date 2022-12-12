@@ -209,8 +209,8 @@
                 HAVING sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END )  &gt;= waringTb.max
             </when>
             <when test="paramCondition.forewarnStatus == 'min'">
-                HAVING sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) &lt;= waringTb.min
-                OR  sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) OR sum( details.number ) IS NULL
+                HAVING if(sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) &lt;= waringTb.min
+                OR  sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) )OR sum( details.number ) IS NULL
             </when>
             <otherwise>
                 HAVING
@@ -274,12 +274,13 @@
         waringTb.skuId
         <choose>
             <when test="paramCondition.forewarnStatus == 'max'">
-                sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) &gt;= waringTb.max
+                HAVING sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) &gt;= waringTb.max
             </when>
             <when test="paramCondition.forewarnStatus == 'min'">
-                HAVING sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) IS NULL,
+                HAVING
+                if(sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) IS NULL,
                 0,
-                sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) &lt;= waringTb.min OR sum( details.number )IS NULL
+                sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END )) &lt;= waringTb.min OR sum( details.number )IS NULL
             </when>
         <otherwise>
             HAVING
