@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetResult;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
@@ -25,7 +26,7 @@ public class ProductionWorkOrderResult implements Serializable {
     private ActivitiSetpSetResult setpSetResult;
 
     private Long stockNumber;
-
+    private SkuSimpleResult skuResult;
     private int completeNum ;
     private int toDoNum ;
     private int cardNumber;

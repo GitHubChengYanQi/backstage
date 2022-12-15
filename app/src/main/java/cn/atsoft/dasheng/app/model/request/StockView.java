@@ -20,6 +20,7 @@ public class StockView {
     private List<SkuAndNumber> skuAndNumbers;
     private List<UserAndNumber> userAndNumbers;
     private Date createDate;
+    private Date createTime;
     private Long status;
     private Map<String,Integer> numberByMonth;
     private Map<String,Integer> errorNumberByMonth;

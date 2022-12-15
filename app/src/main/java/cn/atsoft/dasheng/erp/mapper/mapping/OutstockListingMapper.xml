@@ -193,8 +193,6 @@ delivery_id
             parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
         SELECT
         create_user AS "createUser",
-        create_time AS "create_time",
-        create_time AS "create_time",
         count( DISTINCT sku_id ) AS "inSkuCount",
         SUM(number) AS "inNumCount",
         create_time AS "createTime"
@@ -405,7 +403,8 @@ delivery_id
         SELECT
         customer.`customer_name` AS "customerName",
         count( DISTINCT list.sku_id ) AS "outSkuCount",
-        sum( list.number ) AS "outNumCount"
+        sum( list.number ) AS "outNumCount",
+        customer.create_time AS "createTime"
         FROM
         daoxin_erp_outstock_listing list
         LEFT JOIN goods_inkind inkind ON list.inkind_id = inkind.inkind_id
@@ -428,7 +427,8 @@ delivery_id
         SELECT
         customer.`customer_name` AS "customerName",
         count( DISTINCT list.sku_id ) AS "outSkuCount",
-        sum( list.number ) AS "outNumCount"
+        sum( list.number ) AS "outNumCount",
+        customer.create_time AS "createTime"
         FROM
         daoxin_erp_outstock_listing list
         LEFT JOIN goods_inkind inkind ON list.inkind_id = inkind.inkind_id

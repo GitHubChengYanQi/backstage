@@ -208,7 +208,8 @@ storehouse_id
         SELECT
         class.`name` AS "spuClassName",
         count(distinct list.sku_id) AS "inSkuCount",
-        sum(list.instock_number)AS "inNumCount"
+        sum(list.instock_number)AS "inNumCount",
+        class.create_time AS "createTime"
         FROM daoxin_erp_instock_list list
         LEFT JOIN goods_sku sku on list.sku_id = sku.sku_id
         LEFT JOIN goods_spu spu on spu.spu_id = sku.spu_id
@@ -230,7 +231,8 @@ storehouse_id
         SELECT
             count(distinct list.sku_id) AS "inSkuCount",
             sum(list.number)AS "inNumCount",
-            instock.instock_type AS "type"
+            instock.instock_type AS "type",
+            list.create_time AS "createTime"
         FROM daoxin_erp_instock_log_detail list
                  LEFT JOIN daoxin_erp_instock_order instock on list.instock_order_id = instock.instock_order_id
         WHERE 1 = 1
@@ -249,7 +251,9 @@ storehouse_id
         SELECT
             house.`name` AS "storehouseName",
             count( DISTINCT list.sku_id ) AS "inSkuCount",
-            sum( list.number ) AS "inNumCount"
+            sum( list.number ) AS "inNumCount",
+            list.create_time AS "createTime"
+
         FROM
             daoxin_erp_instock_log_detail list
                 LEFT JOIN daoxin_erp_storehouse_positions position on position.storehouse_positions_id = list.storehouse_positions_id
@@ -298,7 +302,7 @@ storehouse_id
         customer.customer_name AS "customerName",
         count( DISTINCT list.sku_id ) AS "inSkuCount",
         sum( list.number ) AS "inNumCount",
-        create_time AS "createTime"
+        instock.create_time AS "createTime"
         FROM
         daoxin_erp_instock_log_detail list
         LEFT JOIN daoxin_erp_instock_order instock on list.instock_order_id = instock.instock_order_id

@@ -334,13 +334,14 @@ type
         FROM
         daoxin_erp_instock_log_detail list
         LEFT JOIN goods_sku sku ON list.sku_id = sku.sku_id
+        WHERE 1 = 1
         AND list.sku_id IS NOT NULL
         AND list.source IS NOT NULL
         AND list.source_id IS NOT NULL
         AND list.source = 'instock'
         GROUP BY
         list.create_user,list.sku_id
-        <if test="paramCondition.skuId != null">
+        <if test="paramCondition.userId != null">
             and list.create_user = #{paramCondition.userId}
         </if>
 
