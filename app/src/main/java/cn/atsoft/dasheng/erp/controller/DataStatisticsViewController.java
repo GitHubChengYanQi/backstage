@@ -428,6 +428,7 @@ public class DataStatisticsViewController extends BaseController {
 
                     List<SkuSimpleResult> skuResult = details.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(details.stream().map(StockView::getSkuId).distinct().collect(Collectors.toList()));
 //
+                    List<UserResult> userResultsByIds = userService.getUserResultsByIds(stockViews.getRecords().stream().map(StockView::getCreateUser).collect(Collectors.toList()));
 
                     for (StockView detail : details) {
                         for (SkuSimpleResult skuSimpleResult : skuResult) {
@@ -438,6 +439,12 @@ public class DataStatisticsViewController extends BaseController {
                         }
                     }
                     for (StockView record : stockViews.getRecords()) {
+                        for (UserResult userResultsById : userResultsByIds) {
+                            if(record.getCreateUser().equals(userResultsById.getUserId())){
+                                record.setUserResult(userResultsById);
+                                break; 
+                            }
+                        }
                         List<StockView.SkuAndNumber> skuAndNumbers = new ArrayList<>();
                         for (StockView detail : details) {
                             if (record.getCreateUser().equals(detail.getCreateUser())) {
