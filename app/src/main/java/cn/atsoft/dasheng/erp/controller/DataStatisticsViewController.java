@@ -330,17 +330,15 @@ public class DataStatisticsViewController extends BaseController {
     @RequestMapping(value = "/outStockOrderView", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData outStockOrderView(@RequestBody DataStatisticsViewParam param) {
-        if (param.getSearchType() != null) {
-            switch (param.getSearchType()) {
-                case ORDER_TYPE:
-                    return ResponseData.success(pickListsMapper.orderCountByType(param));
-                case ORDER_STATUS:
-                    return ResponseData.success(pickListsMapper.orderCountByStatus(param));
-                default:
-                    break;
-            }
-        }
-        return ResponseData.success();
+        Map<String, Object> result = new HashMap<>();
+
+//        List<StockView> stockViews = ;
+//        return ResponseData.success(stockViews);
+//        return ResponseData.success();
+
+        result.put("orderCountByType",pickListsMapper.orderCountByType(param));
+        result.put("orderCountByStatus",pickListsMapper.orderCountByStatus(param));
+        return ResponseData.success(result);
     }
 
     @RequestMapping(value = "/instockOrderView", method = RequestMethod.POST)
@@ -512,6 +510,7 @@ public class DataStatisticsViewController extends BaseController {
 
         return ResponseData.success(result);
     }
+
     @RequestMapping(value = "/outStockLogViewDetail", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData outStockLogViewDetail(@RequestBody DataStatisticsViewParam param) {
@@ -588,38 +587,7 @@ public class DataStatisticsViewController extends BaseController {
         return null;
     }
 
-    @RequestMapping(value = "/outstockOrderView", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    public ResponseData outStockOederView(@RequestBody DataStatisticsViewParam param) {
-        List<UserResult> userResults = new ArrayList<>();
-        Map<String, Object> result = new HashMap<>();
 
-        QueryChainWrapper<InstockOrder> typeWrapper = instockOrderService.query().select("count(instock_order_id) AS orderCount,create_user AS createUser").groupBy("type");
-        if (BeanUtil.isNotEmpty(param.getBeginTime()) && BeanUtil.isNotEmpty(param.getEndTime())) {
-            typeWrapper.between("create_time", DateUtil.format(param.getBeginTime(), "yyyy-MM-dd") + " 00:00:00", DateUtil.format(param.getEndTime(), "yyyy-MM-dd") + " 23:59:59");
-        }
-        List<InstockOrder> orderCountByUser = typeWrapper.list();
-        List<StockView> typeWrapperList = new ArrayList<>();
-
-        for (InstockOrder instockOrder : orderCountByUser) {
-            StockView stockView = new StockView();
-//                        stockView.setOrderCount(instockOrder.getOrderCount());
-            stockView.setCreateUser(instockOrder.getCreateUser());
-            stockView.setType(instockOrder.getType());
-            typeWrapperList.add(stockView);
-        }
-        result.put("typeWrapperList",typeWrapperList);
-        QueryChainWrapper<InstockOrder> statusWrapper = instockOrderService.query().select("count(instock_order_id) AS orderCount, type AS type ,create_user AS createUser").groupBy("status");
-        if (BeanUtil.isNotEmpty(param.getBeginTime()) && BeanUtil.isNotEmpty(param.getEndTime())) {
-            statusWrapper.between("create_time", DateUtil.format(param.getBeginTime(), "yyyy-MM-dd") + " 00:00:00", DateUtil.format(param.getEndTime(), "yyyy-MM-dd") + " 23:59:59");
-        }
-        List<InstockOrder> orderCountByStatus = statusWrapper.list();
-        List<StockView> stockViews = BeanUtil.copyToList(orderCountByStatus, StockView.class);
-
-        result.put("stockViews",stockViews);
-
-        return ResponseData.success(result);
-    }
 
     @RequestMapping(value = "/instockOrderCountViewByUser", method = RequestMethod.POST)
     @ApiOperation("新增")
