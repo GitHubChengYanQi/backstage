@@ -32,6 +32,7 @@ import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -481,6 +482,40 @@ public class DataStatisticsViewController extends BaseController {
     @ApiOperation("新增")
     public ResponseData outStockLogView(@RequestBody DataStatisticsViewParam param) {
         List<UserResult> userResults = new ArrayList<>();
+        Map<String, Object> result = new HashMap<>();
+
+        Page<StockView> logViews = outstockOrderMapper.groupByUser(PageFactory.defaultPage(), param);
+        userResults = logViews.getRecords().size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(logViews.getRecords().stream().map(StockView::getCreateUser).collect(Collectors.toList()));
+        for (StockView stockView : logViews.getRecords()) {
+            for (UserResult userResult : userResults) {
+                if (stockView.getCreateUser().equals(userResult.getUserId())) {
+                    stockView.setUserResult(userResult);
+                    break;
+                }
+            }
+        }
+        result.put("logViews", logViews);
+
+
+        Page<StockView> logDetailViews = outstockListingMapper.groupByUser(PageFactory.defaultPage(), param);
+        userResults = logDetailViews.getRecords().size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(logDetailViews.getRecords().stream().map(StockView::getCreateUser).collect(Collectors.toList()));
+        for (StockView stockView : logDetailViews.getRecords()) {
+            for (UserResult userResult : userResults) {
+                if (stockView.getCreateUser().equals(userResult.getUserId())) {
+                    stockView.setUserResult(userResult);
+                    break;
+                }
+            }
+        }
+        result.put("logDetailViews", logDetailViews);
+
+
+        return ResponseData.success(result);
+    }
+    @RequestMapping(value = "/outStockLogViewDetail", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData outStockLogViewDetail(@RequestBody DataStatisticsViewParam param) {
+        List<UserResult> userResults = new ArrayList<>();
         if (param.getSearchType() != null) {
             switch (param.getSearchType()) {
                 case ORDER_LOG:
@@ -514,7 +549,6 @@ public class DataStatisticsViewController extends BaseController {
         }
         return ResponseData.success();
     }
-
 
     @RequestMapping(value = "/instockLogViewDetail", method = RequestMethod.POST)
     @ApiOperation("新增")
@@ -558,39 +592,33 @@ public class DataStatisticsViewController extends BaseController {
     @ApiOperation("新增")
     public ResponseData outStockOederView(@RequestBody DataStatisticsViewParam param) {
         List<UserResult> userResults = new ArrayList<>();
-        if (param.getSearchType() != null) {
-            switch (param.getSearchType()) {
-                case ORDER_TYPE:
-                    QueryChainWrapper<InstockOrder> typeWrapper = instockOrderService.query().select("count(instock_order_id) AS orderCount,create_user AS createUser").groupBy("type");
-                    if (BeanUtil.isNotEmpty(param.getBeginTime()) && BeanUtil.isNotEmpty(param.getEndTime())) {
-                        typeWrapper.between("create_time", DateUtil.format(param.getBeginTime(), "yyyy-MM-dd") + " 00:00:00", DateUtil.format(param.getEndTime(), "yyyy-MM-dd") + " 23:59:59");
-                    }
-                    List<InstockOrder> orderCountByUser = typeWrapper.list();
-                    List<StockView> result = new ArrayList<>();
+        Map<String, Object> result = new HashMap<>();
 
-                    for (InstockOrder instockOrder : orderCountByUser) {
-                        StockView stockView = new StockView();
-//                        stockView.setOrderCount(instockOrder.getOrderCount());
-                        stockView.setCreateUser(instockOrder.getCreateUser());
-                        stockView.setType(instockOrder.getType());
-                        result.add(stockView);
-                    }
-
-                    return ResponseData.success(result);
-                case ORDER_STATUS:
-                    QueryChainWrapper<InstockOrder> statusWrapper = instockOrderService.query().select("count(instock_order_id) AS orderCount, type AS type ,create_user AS createUser").groupBy("status");
-                    if (BeanUtil.isNotEmpty(param.getBeginTime()) && BeanUtil.isNotEmpty(param.getEndTime())) {
-                        statusWrapper.between("create_time", DateUtil.format(param.getBeginTime(), "yyyy-MM-dd") + " 00:00:00", DateUtil.format(param.getEndTime(), "yyyy-MM-dd") + " 23:59:59");
-                    }
-                    List<InstockOrder> orderCountByStatus = statusWrapper.list();
-                    List<StockView> stockViews = BeanUtil.copyToList(orderCountByStatus, StockView.class);
-
-                    return ResponseData.success(stockViews);
-                default:
-                    break;
-            }
+        QueryChainWrapper<InstockOrder> typeWrapper = instockOrderService.query().select("count(instock_order_id) AS orderCount,create_user AS createUser").groupBy("type");
+        if (BeanUtil.isNotEmpty(param.getBeginTime()) && BeanUtil.isNotEmpty(param.getEndTime())) {
+            typeWrapper.between("create_time", DateUtil.format(param.getBeginTime(), "yyyy-MM-dd") + " 00:00:00", DateUtil.format(param.getEndTime(), "yyyy-MM-dd") + " 23:59:59");
         }
-        return ResponseData.success();
+        List<InstockOrder> orderCountByUser = typeWrapper.list();
+        List<StockView> typeWrapperList = new ArrayList<>();
+
+        for (InstockOrder instockOrder : orderCountByUser) {
+            StockView stockView = new StockView();
+//                        stockView.setOrderCount(instockOrder.getOrderCount());
+            stockView.setCreateUser(instockOrder.getCreateUser());
+            stockView.setType(instockOrder.getType());
+            typeWrapperList.add(stockView);
+        }
+        result.put("typeWrapperList",typeWrapperList);
+        QueryChainWrapper<InstockOrder> statusWrapper = instockOrderService.query().select("count(instock_order_id) AS orderCount, type AS type ,create_user AS createUser").groupBy("status");
+        if (BeanUtil.isNotEmpty(param.getBeginTime()) && BeanUtil.isNotEmpty(param.getEndTime())) {
+            statusWrapper.between("create_time", DateUtil.format(param.getBeginTime(), "yyyy-MM-dd") + " 00:00:00", DateUtil.format(param.getEndTime(), "yyyy-MM-dd") + " 23:59:59");
+        }
+        List<InstockOrder> orderCountByStatus = statusWrapper.list();
+        List<StockView> stockViews = BeanUtil.copyToList(orderCountByStatus, StockView.class);
+
+        result.put("stockViews",stockViews);
+
+        return ResponseData.success(result);
     }
 
     @RequestMapping(value = "/instockOrderCountViewByUser", method = RequestMethod.POST)
@@ -739,30 +767,30 @@ public class DataStatisticsViewController extends BaseController {
         List<StockView> stockViews = outstockListingMapper.groupByMonth(param);
 
 
-        int[] monthList = {0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11};
-        Date date = new Date();
-        List<String> monthListStr = new ArrayList<>();
-        for (int monthOffSet : monthList) {
-            monthListStr.add(DateUtil.format(DateUtil.offsetMonth(date, monthOffSet), "yyyy-MM"));
-        }
+//        int[] monthList = {0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11};
+//        Date date = new Date();
+//        List<String> monthListStr = new ArrayList<>();
+//        for (int monthOffSet : monthList) {
+//            monthListStr.add(DateUtil.format(DateUtil.offsetMonth(date, monthOffSet), "yyyy-MM"));
+//        }
+//
+//        Map<String, Integer> outstockNumberByMonth = new HashMap<>();
+//        for (String month : monthListStr) {
 
-        Map<String, Integer> outstockNumberByMonth = new HashMap<>();
-        for (String month : monthListStr) {
-
-            for (StockView stockView : stockViews) {
-                if (BeanUtil.isNotEmpty(stockView.getMonthOfYear()) && stockView.getMonthOfYear().equals(month)) {
-                    outstockNumberByMonth.put(month, stockView.getOrderCount());
-                }
-            }
-        }
-
-
-        StockView stockView = new StockView();
-
-        stockView.setNumberByMonth(outstockNumberByMonth);
+//            for (StockView stockView : stockViews) {
+//                if (BeanUtil.isNotEmpty(stockView.getMonthOfYear()) && stockView.getMonthOfYear().equals(month)) {
+//                    outstockNumberByMonth.put(month, stockView.getOrderCount());
+//                }
+//            }
+//        }
 
 
-        return ResponseData.success(stockView);
+//        StockView stockView = new StockView();
+//
+//        stockView.setNumberByMonth(outstockNumberByMonth);
+
+
+        return ResponseData.success(stockViews);
     }
 
     @RequestMapping(value = "/instockDetailBySpuClass", method = RequestMethod.POST)
@@ -888,21 +916,22 @@ public class DataStatisticsViewController extends BaseController {
 
     @RequestMapping(value = "/outStockDetailBySpuClass", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData outStockDetailBySpuClass(@RequestBody DataStatisticsViewParam param) {
+    public PageInfo outStockDetailBySpuClass(@RequestBody DataStatisticsViewParam param) {
         if (ToolUtil.isNotEmpty(param.getSearchType())) {
+            Page<Object> objectPage = PageFactory.defaultPage();
             switch (param.getSearchType()) {
                 case SPU_CLASS:
-                    return ResponseData.success(outstockListingMapper.outBySpuClassCount(param));
+                    return PageFactory.createPageInfo(outstockListingMapper.outBySpuClassCount(objectPage, param));
 
                 case TYPE:
-                    return ResponseData.success(outstockListingMapper.outByType(param));
+                    return PageFactory.createPageInfo(outstockListingMapper.outByType(objectPage, param));
 
                 case STOREHOUSE:
-                    return ResponseData.success(outstockListingMapper.outByStoreHouse(param));
+                    return PageFactory.createPageInfo(outstockListingMapper.outByStoreHouse(objectPage, param));
                 case PICK_USER:
-                    List<StockView> stockViews = outstockListingMapper.outByUser(param);
-                    List<UserResult> userResultsByIds = userService.getUserResultsByIds(stockViews.stream().map(StockView::getUserId).collect(Collectors.toList()));
-                    for (StockView stockView : stockViews) {
+                    IPage<StockView> stockViews = outstockListingMapper.outByUser(objectPage, param);
+                    List<UserResult> userResultsByIds = userService.getUserResultsByIds(stockViews.getRecords().stream().map(StockView::getUserId).collect(Collectors.toList()));
+                    for (StockView stockView : stockViews.getRecords()) {
                         for (UserResult userResultsById : userResultsByIds) {
 
                             if (userResultsById.getUserId().equals(stockView.getUserId())) {
@@ -912,10 +941,10 @@ public class DataStatisticsViewController extends BaseController {
                     }
 
 
-                    return ResponseData.success(stockViews);
+                    return PageFactory.createPageInfo(stockViews);
             }
         }
-        return ResponseData.success();
+        return new PageInfo();
     }
 
     @RequestMapping(value = "/outstockDetailByCustomer", method = RequestMethod.POST)
@@ -998,16 +1027,16 @@ public class DataStatisticsViewController extends BaseController {
 
 
     }
+
     @RequestMapping(value = "/instockOrders", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData instockOrders(@RequestBody DataStatisticsViewParam param) {
-
-        List<ActivitiProcessTask> instock = activitiProcessTaskService.lambdaQuery().eq(ActivitiProcessTask::getCreateUser, param.getUserId()).eq(ActivitiProcessTask::getType, "INSTOCK").list();
+        List<InstockOrder> list = instockOrderService.lambdaQuery().eq(InstockOrder::getCreateUser, param.getUserId()).eq(InstockOrder::getDisplay, 1).list();
+        List<ActivitiProcessTask> instock = list.size() == 0 ? new ArrayList<>() : activitiProcessTaskService.lambdaQuery().eq(ActivitiProcessTask::getCreateUser, param.getUserId()).eq(ActivitiProcessTask::getType, "INSTOCK").in(ActivitiProcessTask::getFormId, list).list();
         List<ActivitiProcessTaskResult> taskResults = BeanUtil.copyToList(instock, ActivitiProcessTaskResult.class);
         activitiProcessTaskService.format(taskResults);
         return ResponseData.success(taskResults);
     }
-
 
 
 }

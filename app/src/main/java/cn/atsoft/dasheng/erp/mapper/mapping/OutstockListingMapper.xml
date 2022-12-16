@@ -234,30 +234,38 @@ delivery_id
     </select>
     <select id="groupByMonth" resultType="cn.atsoft.dasheng.app.model.request.StockView"
             parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+
         SELECT
-        table2.create_time AS "monthOfYear",
+        table2.time AS "monthOfYear",
         sum(table2.orderCount) AS "orderCount"
         FROM
         (
         SELECT
-        DATE_FORMAT( create_time, '%Y-%m' ) AS "create_time",
-        COUNT( outstock_order_id ) AS "orderCount"
+        DATE_FORMAT( concat( DATE (create_time), ' ', floor( HOUR (create_time) /
+        <choose>
+            <when test="paramCondition.frame != null">
+                #{paramCondition.frame} ) * #{paramCondition.frame}
+            </when>
+            <otherwise>
+                1 ) * 1
+            </otherwise>
+        </choose>
+
+        ), '%Y-%m-%d %H' ) AS
+        `time`,
+        COUNT(outstock_order_id) AS "orderCount"
         FROM
         daoxin_erp_outstock_listing
         WHERE
         1 = 1
+
         GROUP BY
         create_time
         ) table2
         WHERE 1= 1
-        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
-            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
-            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
-            %H:%i:%s')
-            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
-            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
-        </if>
-        GROUP BY table2.create_time
+
+        GROUP BY  table2.time
+        ORDER BY  table2.time
     </select>
     <select id="count" resultType="cn.atsoft.dasheng.app.model.request.StockView"
             parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
@@ -283,7 +291,8 @@ delivery_id
         SELECT
         class.`name` AS "spuClassName",
         count( DISTINCT list.sku_id ) AS "outSkuCount",
-        sum( list.number ) AS "outNumCount"
+        sum( list.number ) AS "outNumCount",
+        list.create_time AS "createTime"
         FROM
         daoxin_erp_outstock_listing list
         LEFT JOIN goods_sku sku ON list.sku_id = sku.sku_id
@@ -339,7 +348,8 @@ delivery_id
         SELECT
         lists.type,
         count( DISTINCT list.sku_id ) AS "outSkuCount",
-        sum( list.number ) AS "outNumCount"
+        sum( list.number ) AS "outNumCount",
+        list.create_time AS "createTime"
         FROM
         daoxin_erp_outstock_listing list
         LEFT JOIN daoxin_erp_outstock_order outstock on list.outstock_order_id = outstock.outstock_order_id
@@ -361,7 +371,8 @@ delivery_id
         SELECT
         storehouse.`name`,
         count( DISTINCT list.sku_id ) AS "outSkuCount",
-        sum( list.number ) AS "outNumCount"
+        sum( list.number ) AS "outNumCount",
+        list.create_time AS "createTime"
         FROM
         daoxin_erp_outstock_listing list
 
@@ -383,7 +394,8 @@ delivery_id
         SELECT
         user.user_id AS "userId",
         count( DISTINCT list.sku_id ) AS "outSkuCount",
-        sum( list.number ) AS "outNumCount"
+        sum( list.number ) AS "outNumCount",
+        list.create_time AS "createTime"
         FROM
         daoxin_erp_outstock_listing list
         LEFT JOIN sys_user user ON list.create_user = user.user_id

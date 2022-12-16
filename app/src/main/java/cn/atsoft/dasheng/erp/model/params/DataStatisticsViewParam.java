@@ -10,6 +10,7 @@ import java.util.List;
 public class DataStatisticsViewParam {
     private Date beginTime;
     private Date endTime;
+    private Integer frame;//图表时间间隔
 
     private ViewTypeEnum searchType;
     private String type;
