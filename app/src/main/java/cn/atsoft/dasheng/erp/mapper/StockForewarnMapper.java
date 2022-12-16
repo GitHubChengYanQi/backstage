@@ -44,7 +44,8 @@ public interface StockForewarnMapper extends BaseMapper<StockForewarn> {
      * @Date 2022-12-05
      */
     Page<StockForewarnResult> customPageList(@Param("page") Page page, @Param("paramCondition") StockForewarnParam paramCondition);
-    Page<StockForewarnResult> warningSkuList(@Param("page") Page page, @Param("paramCondition") StockForewarnParam paramCondition);
+    Page<StockForewarnResult> warningSkuPageList(@Param("page") Page page, @Param("paramCondition") StockForewarnParam paramCondition);
+    List<StockForewarnResult> warningSkuList( @Param("paramCondition") StockForewarnParam paramCondition);
 
     /**
      * 获取分页map列表

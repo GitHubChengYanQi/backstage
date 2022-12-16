@@ -7,6 +7,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class StockForewarnParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
 
+    private List<Long> skuIds;
     private String update;
 
     private String content;

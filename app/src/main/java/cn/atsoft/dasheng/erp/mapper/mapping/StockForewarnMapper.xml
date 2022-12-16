@@ -155,6 +155,84 @@
     <select id="warningSkuList" resultType="cn.atsoft.dasheng.erp.model.result.StockForewarnResult"
             parameterType="cn.atsoft.dasheng.erp.model.params.StockForewarnParam">
         SELECT * from (
+        SELECT
+        waringTb.skuId AS "skuId",
+        waringTb.max AS "max",
+        waringTb.min AS "min",
+        waringTb.createTime AS "createTime",
+        waringTb.createUser AS "createUser",
+        IF
+        (
+        sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) IS NULL,
+        0,
+        sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END )) AS "number"
+
+        FROM
+        (
+        SELECT
+        sku.sku_id AS "skuId",
+        waring.inventory_floor AS "min",
+        waring.inventory_ceiling AS "max",
+        waring.create_user AS "createUser",
+        waring.create_time AS "createTime"
+        FROM
+        daoxin_erp_stock_forewarn waring
+        LEFT JOIN goods_sku sku ON sku.sku_id = waring.form_id
+        LEFT JOIN goods_spu spu ON sku.sku_id = spu.spu_id
+        LEFT JOIN goods_spu_class class ON spu.spu_classification_id = class.spu_classification_id
+        WHERE
+        sku.sku_id IS NOT NULL
+        and sku.display = 1
+        and waring.display = 1
+        <if test="paramCondition.skuIds!=null and paramCondition.skuIds.size >0">
+            and sku.sku_id in
+            <foreach collection="paramCondition.skuIds" item="skuId" index="index" open="(" separator="," close=")">
+                #{skuId}
+            </foreach>
+        </if>
+        <if test="paramCondition.keyWords != null and paramCondition.keyWords != '' ">
+            and (
+            spu.name like CONCAT ('%',#{paramCondition.keyWords},'%')
+            or sku.sku_name like CONCAT ('%',#{paramCondition.keyWords},'%')
+            or sku.standard like CONCAT ('%',#{paramCondition.keyWords},'%')
+            )
+        </if>
+        <if test="paramCondition.classId!=null">
+            and class.spu_classification_id = #{paramCondition.classId}
+        </if>
+        GROUP BY
+        sku.sku_id,
+        waring.inventory_floor,
+        waring.inventory_ceiling
+        ) waringTb
+        LEFT JOIN daoxin_erp_stock_details details ON waringTb.skuId = details.sku_id
+        WHERE
+        1 = 1
+        GROUP BY
+        waringTb.skuId
+        <choose>
+            <when test="paramCondition.forewarnStatus == 'max'">
+                HAVING sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) &gt;= waringTb.max
+            </when>
+            <when test="paramCondition.forewarnStatus == 'min'">
+                HAVING
+                if(sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) IS NULL,
+                0,
+                sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END )) &lt;= waringTb.min OR sum( details.number )IS NULL
+            </when>
+        <otherwise>
+            HAVING
+            (
+            sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) &lt;= waringTb.min OR sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) &gt;= waringTb.max
+            OR sum( details.number ) IS NULL
+            )
+        </otherwise>
+        </choose>
+        ) tb3 GROUP BY tb3.skuId
+    </select>
+    <select id="warningSkuPageList" resultType="cn.atsoft.dasheng.erp.model.result.StockForewarnResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.StockForewarnParam">
+        SELECT * from (
 
         SELECT
         waringTb.skuId AS "skuId",

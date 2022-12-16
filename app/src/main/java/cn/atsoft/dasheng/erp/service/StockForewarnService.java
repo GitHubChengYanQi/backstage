@@ -68,4 +68,6 @@ public interface StockForewarnService extends IService<StockForewarn> {
      PageInfo<StockForewarnResult> findPageBySpec(StockForewarnParam param);
 
     PageInfo showWaring(StockForewarnParam param);
+
+    List<StockForewarnResult> listBySkuIds(List<Long> skuIds);
 }

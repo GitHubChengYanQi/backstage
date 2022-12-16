@@ -66,23 +66,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
         } else {
             param.setFormId(param.getFormId());
         }
-        /**
-         * 强制的，和非强制的
-         * 是否已设置过呢？
-         */
-        if (ToolUtil.isEmpty(param.getUpdate())) {
-            /**
-             * 非强制的
-             */
-            Integer count = this.lambdaQuery().eq(StockForewarn::getType,param.getType()).eq(StockForewarn::getFormId, param.getFormId()).eq(StockForewarn::getDisplay,1).count();
-            if (count > 0) {
-                throw new ServiceException(1001, "此条件已设置，是否更新预警条件");
-            }
-        }
-        /**
-         * 如果强制更新，先进行删除再进行保存
-         * 那么怎么删除之前的数据呢？？？
-         */
+        //直接覆盖以前的数据
         List<StockForewarn> stockForewarn = this.query().eq("type", param.getType()).eq("form_id", param.getFormId()).list();
         List<Long> stockForewarnIds = new ArrayList<>();
         for (StockForewarn forewarn : stockForewarn) {
@@ -208,7 +192,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
     @Override
     public PageInfo showWaring(StockForewarnParam param) {
         Page<StockForewarnResult> pageContext = this.getPageContext();
-        Page<StockForewarnResult> stockForewarnResultPage = this.baseMapper.warningSkuList(pageContext, param);
+        Page<StockForewarnResult> stockForewarnResultPage = this.baseMapper.warningSkuPageList(pageContext, param);
 
         List<SkuSimpleResult> skuResult =stockForewarnResultPage.getRecords().size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(stockForewarnResultPage.getRecords().stream().map(StockForewarnResult::getSkuId).distinct().collect(Collectors.toList()));
         for (StockForewarnResult record : stockForewarnResultPage.getRecords()) {
@@ -223,6 +207,16 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
 
 
         return PageFactory.createPageInfo(stockForewarnResultPage);
+
+    }
+    @Override
+    public List<StockForewarnResult> listBySkuIds(List<Long> skuIds){
+        if (ToolUtil.isEmpty(skuIds) || skuIds.size()==0){
+            return new ArrayList<>();
+        }
+        return this.baseMapper.warningSkuList(new StockForewarnParam(){{
+            setSkuIds(skuIds);
+        }});
 
     }
 
