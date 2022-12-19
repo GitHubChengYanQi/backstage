@@ -146,6 +146,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Autowired
     private MaterialService materialService;
 
+    @Autowired
+    private StockForewarnService stockForewarnService;
+
 
     @Transactional(propagation= Propagation.REQUIRED,timeout=90)
 
@@ -1530,7 +1533,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         }
         List<MaintenanceCycle> maintenanceCycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
-
+        List<StockForewarn> stockForewarns = stockForewarnService.lambdaQuery().eq(StockForewarn::getType,"sku").in(StockForewarn::getFormId,skuIds).eq(StockForewarn::getDisplay,1).list();
         List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
         List<AttributeValues> attributeValues = attributeIds.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
                 .in(AttributeValues::getAttributeId, attributeIds)
@@ -1741,6 +1744,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     list.add(skuJson);
                 }
                 skuResult.setSkuJsons(list);
+            }
+            for (StockForewarn stockForewarn : stockForewarns) {
+                if(stockForewarn.getFormId().equals(skuResult.getSkuId())){
+                    skuResult.setStockForewarnResult(BeanUtil.copyProperties(stockForewarn,StockForewarnResult.class));
+                    break;
+                }
             }
         }
 
