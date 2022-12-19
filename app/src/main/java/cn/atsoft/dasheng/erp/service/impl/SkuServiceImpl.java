@@ -1533,7 +1533,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         }
         List<MaintenanceCycle> maintenanceCycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
-        List<StockForewarn> stockForewarns = stockForewarnService.lambdaQuery().eq(StockForewarn::getType,"sku").in(StockForewarn::getFormId,skuIds).eq(StockForewarn::getDisplay,1).list();
+        List<StockForewarn> stockForewarns = skuIds.size() == 0 ? new ArrayList<>() : stockForewarnService.lambdaQuery().eq(StockForewarn::getType,"sku").in(StockForewarn::getFormId,skuIds).eq(StockForewarn::getDisplay,1).list();
         List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
         List<AttributeValues> attributeValues = attributeIds.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
                 .in(AttributeValues::getAttributeId, attributeIds)
