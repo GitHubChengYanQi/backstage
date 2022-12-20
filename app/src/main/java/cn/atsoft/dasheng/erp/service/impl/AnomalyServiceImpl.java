@@ -810,7 +810,9 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
         StorehousePositions storehousePositions = ToolUtil.isEmpty(result.getPositionId()) ? new StorehousePositions() : positionsService.getById(result.getPositionId());
         StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
-        ToolUtil.copyProperties(storehousePositions, storehousePositionsResult);
+        if(ToolUtil.isNotEmpty(storehousePositions)){
+            ToolUtil.copyProperties(storehousePositions, storehousePositionsResult);
+        }
 
         if (ToolUtil.isNotEmpty(skuSimpleResults)) {
             result.setSkuResult(skuSimpleResults.get(0));
