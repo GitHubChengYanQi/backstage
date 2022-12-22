@@ -12,11 +12,13 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.uc.entity.UcMember;
 import cn.atsoft.dasheng.uc.model.params.UcMemberParam;
 import cn.atsoft.dasheng.uc.model.result.UcMemberResult;
 import cn.atsoft.dasheng.uc.service.UcMemberService;
+import cn.hutool.core.bean.BeanUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -178,7 +180,9 @@ public class UcMemberController extends BaseController {
                 e.printStackTrace();
             }
         }
-        return ResponseData.success(users);
+        List<UserResult> userResults = BeanUtil.copyToList(users, UserResult.class);
+        userService.format(userResults);
+        return ResponseData.success(userResults);
     }
 
 

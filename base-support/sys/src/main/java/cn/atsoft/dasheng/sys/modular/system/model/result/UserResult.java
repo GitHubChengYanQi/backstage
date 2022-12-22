@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.sys.modular.system.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.model.DeptDto;
+import cn.atsoft.dasheng.sys.modular.system.model.RoleDto;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.ToStringSerializer;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -28,6 +30,14 @@ public class UserResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 部门返回
+     */
+    private DeptDto deptResult;
+    /**
+     * 角色返回
+     */
+    private List<RoleDto> roleResults;
 
     /**
      * 主键id

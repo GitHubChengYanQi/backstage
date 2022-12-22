@@ -7,9 +7,14 @@ import cn.atsoft.dasheng.sys.core.constant.state.ManagerStatus;
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import cn.atsoft.dasheng.sys.core.util.DefaultImages;
 import cn.atsoft.dasheng.sys.core.util.SaltUtil;
+import cn.atsoft.dasheng.sys.modular.system.entity.Dept;
+import cn.atsoft.dasheng.sys.modular.system.entity.Role;
+import cn.atsoft.dasheng.sys.modular.system.model.DeptDto;
+import cn.atsoft.dasheng.sys.modular.system.model.RoleDto;
 import cn.atsoft.dasheng.sys.modular.system.model.params.UserParam;
 import cn.atsoft.dasheng.sys.modular.system.model.params.UserPosParam;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -35,10 +40,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.management.relation.RoleResult;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -56,6 +60,12 @@ public class UserService extends ServiceImpl<UserMapper, User> {
 
     @Autowired
     private UserPosService userPosService;
+
+    @Autowired
+    private RoleService roleService;
+
+    @Autowired
+    private DeptService deptService;
 
     /**
      * 添加用戶
@@ -349,33 +359,98 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     public IPage listUserAndRoleExpectAdmin(Page pageContext) {
         return baseMapper.listUserAndRoleExpectAdmin(pageContext);
     }
-    public List<Long> getAllUsersId()   {
+
+    public List<Long> getAllUsersId() {
         List<User> list = this.list();
-        List<Long>  userIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
         for (User user : list) {
             userIds.add(user.getUserId());
         }
         return userIds;
     }
-    public List<User> getUserByPositionAndDept(Long deptId,List<Long> positionIds){
-       return this.baseMapper.listUserByPositionAndDept(deptId,positionIds);
+
+    public List<User> getUserByPositionAndDept(Long deptId, List<Long> positionIds) {
+        return this.baseMapper.listUserByPositionAndDept(deptId, positionIds);
     }
 
-    public List<UserResult> getUserResultsByIds(List<Long> ids){
-        if(ToolUtil.isEmpty(ids) || ids.size() == 0){
+    public List<UserResult> getUserResultsByIds(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids) || ids.size() == 0) {
             return new ArrayList<>();
         }
         List<UserResult> results = this.baseMapper.listUserByIds(ids);
-
+         this.format(results);
         return results;
+    }
+    public void format(List<UserResult> dataList) {
+
+        List<Long> deptIds = dataList.stream().map(UserResult::getDeptId).distinct().collect(Collectors.toList());
+
+        List<String> roleStrs = dataList.stream().map(UserResult::getRoleId).distinct().collect(Collectors.toList());
+
+        List<Long> roleIds = new ArrayList<>();
+        for (String roleStr : roleStrs) {
+            try {
+                List<Long> roleIdList = Arrays.stream(roleStr.split(",")).map(i -> Long.valueOf(i.trim())).collect(Collectors.toList());
+                roleIds.addAll(roleIdList);
+            } catch (Exception ignored) {
+
+            }
+        }
+
+        roleIds = roleIds.stream().distinct().collect(Collectors.toList());
+
+        List<Dept> depts = deptIds.size() == 0 ? new ArrayList<>() : deptService.listByIds(deptIds);
+
+        List<Role> roles = roleIds.size() == 0 ? new ArrayList<>() : roleService.listByIds(roleIds);
+
+        List<DeptDto> deptDtos = BeanUtil.copyToList(depts, DeptDto.class);
+
+        List<RoleDto> roleDtos = BeanUtil.copyToList(roles, RoleDto.class);
+
+        for (UserResult userResult : dataList) {
+            for (DeptDto deptDto : deptDtos) {
+                if (userResult.getDeptId().equals(deptDto.getDeptId())) {
+                    userResult.setDeptResult(deptDto);
+                    break;
+                }
+            }
+            List<RoleDto> roleResultList = new ArrayList<>();
+            for (RoleDto role : roleDtos) {
+                if (ToolUtil.isNotEmpty(userResult.getRoleId())){
+                    List<Long> roleIdList = Arrays.stream(userResult.getRoleId().split(",")).map(i -> Long.valueOf(i.trim())).collect(Collectors.toList());
+                    for (Long roleId : roleIdList) {
+                        if (role.getRoleId().equals(roleId)) {
+                            roleResultList.add(role);
+                        }
+                    }
+                }
+            }
+            userResult.setRoleResults(roleResultList.stream().distinct().collect(Collectors.toList()));
+        }
+
+
     }
 
     /**
      * 用户分页
+     *
      * @param param
      * @return
      */
-    public Page<UserResult> userResultPageList(UserParam param){
-        return this.baseMapper.userResultPage(PageFactory.defaultPage(),param);
+    public Page<UserResult> userResultPageList(UserParam param) {
+        Page<UserResult> userResultPage = this.baseMapper.userResultPageList(PageFactory.defaultPage(), param);
+        this.format(userResultPage.getRecords());
+        return userResultPage;
+    }
+    /**
+     * 用户分页
+     *
+     * @param param
+     * @return
+     */
+    public List<UserResult> userResultList(UserParam param) {
+        List<UserResult> userResults = this.baseMapper.userResultList(param);
+        this.format(userResults);
+        return userResults;
     }
 }
