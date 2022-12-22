@@ -15,6 +15,8 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.enums.StockLogDetailSourceEnum;
+import cn.atsoft.dasheng.erp.enums.StockLogTypeEnum;
 import cn.atsoft.dasheng.erp.mapper.InstockOrderMapper;
 import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.request.InstockParams;
@@ -172,6 +174,18 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Autowired
     private SkuHandleRecordService skuHandleRecordService;
+
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
+    private OrderDetailService orderDetailService;
+
+    @Autowired
+    private StockLogService stockLogService;
+
+    @Autowired
+    private StockLogDetailService stockLogDetailService;
 
 
     @Override
@@ -736,7 +750,27 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     InstockLogDetail instockLogDetail = addLog(param, listParam, inKind, number);  //添加记录
                     instockLogDetails.add(instockLogDetail);
                     //添加物料的操作记录
-                    skuHandleRecordService.addRecord(listParam.getSkuId(),listParam.getBrandId(),listParam.getStorehousePositionsId(),listParam.getCustomerId(),"INSTOCK",task, listParam.getNumber(), Long.valueOf(number), listParam.getNumber()+number);
+                    skuHandleRecordService.addRecord(listParam.getSkuId(), listParam.getBrandId(), listParam.getStorehousePositionsId(), listParam.getCustomerId(), "INSTOCK", task, listParam.getNumber(), Long.valueOf(number), listParam.getNumber() + number);
+
+                    StockLog stockLog = new StockLog();
+                    stockLog.setType(StockLogTypeEnum.increase.getValue());
+                    stockLog.setSkuId(listParam.getSkuId());
+                    stockLog.setBeforeNumber(number);
+                    stockLog.setNumber(Math.toIntExact(listParam.getNumber()));
+                    stockLog.setAfterNumber((int) (number+number));
+                    stockLog.setStorehouseId(listParam.getStoreHouseId());
+                    stockLog.setStorehousePositionsId(listParam.getStorehousePositionsId());
+                    stockLogService.save(stockLog);
+
+                    stockLogDetailService.save(new StockLogDetail(){{
+                        setStockLogId(stockLog.getStockLogId());
+                        setSource(StockLogDetailSourceEnum.instock.getValue());
+                        setNumber(Math.toIntExact(listParam.getNumber()));
+                        setAfterNumber(Math.toIntExact(listParam.getNumber()));
+                        setBeforeNumber(0);
+                        setSkuId(listParam.getSkuId());
+                        setInkindId(inKind);
+                    }});
                 } else {
                     batchInStock(param, listParam, instockLogDetails);
                     //添加物料的操作记录
@@ -782,8 +816,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 //                setTimes(1);
 //                setActionId(param.getActionId());
 //            }});
-            InstockOrder order = this.getById(param.getInstockOrderId());
-            shopCartService.addDynamic(param.getInstockOrderId(), null, "单据:" + order.getCoding() + "完成了入库");
+            shopCartService.addDynamic(param.getInstockOrderId(), null, "完成任务");
 
         }
 
@@ -803,8 +836,21 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         Long number = listParam.getNumber();
         Integer numberByStock = stockDetailsService.getNumberByStock(listParam.getSkuId(), listParam.getBrandId(), null);  //入库之前库存数
 
+
+        StockLog stockLog = new StockLog();
+        stockLog.setType(StockLogTypeEnum.increase.getValue());
+        stockLog.setSkuId(listParam.getSkuId());
+        stockLog.setBeforeNumber(numberByStock);
+        stockLog.setNumber(Math.toIntExact(number));
+        stockLog.setAfterNumber((int) (numberByStock+number));
+        stockLog.setStorehouseId(listParam.getStoreHouseId());
+        stockLog.setStorehousePositionsId(listParam.getStorehousePositionsId());
+        stockLogService.save(stockLog);
+
+
         List<OrCode> orCodes = new ArrayList<>();
         List<Inkind> inkinds = new ArrayList<>();   //先创建实物
+        List<StockLogDetail> stockLogDetails = new ArrayList<>();
 
         for (int i = 0; i < number; i++) {
             Inkind inkind = new Inkind();
@@ -828,6 +874,20 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             throw new ServiceException(500, "库位不能为空");
         }
         inkindService.saveBatch(inkinds);
+        for (Inkind inkind : inkinds) {
+            StockLogDetail stockLogDetail = new StockLogDetail();
+            stockLogDetail.setNumber(1);
+            stockLogDetail.setBeforeNumber(0);
+            stockLogDetail.setAfterNumber(1);
+            stockLogDetail.setInkindId(inkind.getInkindId());
+            stockLogDetail.setSource(StockLogDetailSourceEnum.instock.getValue());
+            stockLogDetail.setStockLogId(stockLog.getStockLogId());
+            stockLogDetails.add(stockLogDetail);
+        }
+        stockLogDetailService.saveBatch(stockLogDetails);
+
+
+
         orCodeService.saveBatch(orCodes);
         StorehousePositions storehousePositions = positionsService.getById(listParam.getStorehousePositionsId());
 

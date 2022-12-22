@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.*;
 import cn.atsoft.dasheng.app.model.request.StockDetailView;
+import cn.atsoft.dasheng.app.model.request.StockView;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.pojo.FreeOutStockParam;
 import cn.atsoft.dasheng.app.pojo.Listing;
@@ -19,6 +20,7 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.enums.StockLogDetailSourceEnum;
 import cn.atsoft.dasheng.erp.model.params.InkindParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
@@ -62,6 +64,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -109,6 +112,9 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
     @Autowired
     private SkuHandleRecordService skuHandleRecordService;
+
+    @Autowired
+    private StockLogService stockLogService;
 
 
     @Override
@@ -424,11 +430,15 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         Map<Long, Long> updateInkind = new HashMap<>();
         List<Inkind> newInkinds = new ArrayList<>();
         List<Inkind> oldInkinds = new ArrayList<>();
+        // 去出skuId集合与操作的实物集合  去做库存操作记录
+        List<Long> skuIds = new ArrayList<>();
+        List<StockLogDetail> stockLogDetails = new ArrayList<>();
         for (StockDetails stockDetail : stockDetails) {
             for (OutstockListingParam listing : listings) {
                 if (stockDetail.getInkindId().equals(listing.getInkindId())) {
                     long number = stockDetail.getNumber() - listing.getNumber();
                     if (number > 0) {
+                        Long oldInkindId = stockDetail.getInkindId();
                         Inkind newInkind = new Inkind();
                         newInkind.setSkuId(stockDetail.getSkuId());
                         newInkind.setSource("inkind");
@@ -441,24 +451,93 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                         }
                         newInkind.setSkuId(stockDetail.getSkuId());
                         newInkind.setNumber(listing.getNumber());
+                        newInkind.setType("2");
                         newInkinds.add(newInkind);
+
+                        inkindService.save(newInkind);
+                        updateInkind.put(oldInkindId, newInkind.getInkindId());
+
+                        //库存操作记录详情保存
+                        StockLogDetail stockLogDetail = new StockLogDetail();
+                        stockLogDetail.setSource(StockLogDetailSourceEnum.outstock.getValue());
+                        stockLogDetail.setBeforeNumber(Math.toIntExact(stockDetail.getNumber()));
+                        stockLogDetail.setAfterNumber((int) number);
+                        stockLogDetail.setNumber(Math.toIntExact(listing.getNumber()));
+                        stockLogDetail.setStorehouseId(stockDetail.getStorehouseId());
+                        stockLogDetail.setStorehousePositionsId(stockDetail.getStorehousePositionsId());
+                        stockLogDetail.setSourceId(listing.getOutstockOrderId());
+                        stockLogDetail.setSkuId(stockDetail.getSkuId());
+                        stockLogDetails.add(stockLogDetail);
+                        skuIds.add(stockDetail.getSkuId());
+
                         Inkind oldInkind = new Inkind();
-                        oldInkind.setInkindId(stockDetail.getInkindId());
+                        oldInkind.setInkindId(oldInkindId);
                         stockDetail.setNumber(number);
                         oldInkind.setNumber(number);
                         oldInkinds.add(oldInkind);
-                        inkindService.save(newInkind);
-                        updateInkind.put(oldInkind.getInkindId(), newInkind.getInkindId());
                     } else if (number == 0) {
                         stockDetail.setNumber(0L);
                         stockDetail.setStage(2);
                         stockDetail.setDisplay(0);
+                        //库存全部用完 则更新实物状态为不在库中
+                        Inkind inkind = new Inkind();
+                        inkind.setInkindId(stockDetail.getInkindId());
+                        inkind.setType("2");
+                        oldInkinds.add(inkind);
                         updateInkind.put(stockDetail.getInkindId(), stockDetail.getInkindId());
+
+                        //库存操作记录详情保存
+                        StockLogDetail stockLogDetail = new StockLogDetail();
+                        stockLogDetail.setSource(StockLogDetailSourceEnum.outstock.getValue());
+                        stockLogDetail.setBeforeNumber(Math.toIntExact(stockDetail.getNumber()));
+                        stockLogDetail.setAfterNumber(0);
+                        stockLogDetail.setNumber(Math.toIntExact(number));
+                        stockLogDetail.setStorehouseId(stockDetail.getStorehouseId());
+                        stockLogDetail.setStorehousePositionsId(stockDetail.getStorehousePositionsId());
+                        stockLogDetail.setSourceId(listing.getOutstockOrderId());
+                        stockLogDetail.setSkuId(stockDetail.getSkuId());
+                        stockLogDetails.add(stockLogDetail);
+                        skuIds.add(stockDetail.getSkuId());
+
                     }
                 }
             }
         }
 
+        List<StockDetailView> stockDetailViews = stockDetailsService.stockDetailViews();
+        List<StockDetailView> totalList = new ArrayList<>();
+        stockDetailViews.parallelStream().collect(Collectors.groupingBy(StockDetailView::getSkuId, Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockDetailView() {{
+                        setNumber(a.getNumber() + b.getNumber());
+                        setSkuId(a.getSkuId());
+
+                    }}).ifPresent(totalList::add);
+                }
+        );
+        List<StockLog>  stockLogs = new ArrayList<>();
+        for (Long skuId : skuIds.stream().distinct().collect(Collectors.toList())) {
+            StockLog stockLog = new StockLog();
+            stockLog.setSkuId(skuId);
+            int num = 0;
+            for (StockLogDetail stockLogDetail : stockLogDetails) {
+                if (stockLogDetail.getSkuId().equals(skuId)){
+                    num+=stockLogDetail.getNumber();
+                }
+            }
+            for (StockDetailView stockDetailView : stockDetailViews) {
+                if (stockDetailView.getSkuId().equals(skuId)){
+                    stockLog.setBeforeNumber(stockDetailView.getNumber());
+                }
+            }
+            stockLog.setAfterNumber(stockLog.getAfterNumber()-num);
+            stockLog.setNumber(num);
+            stockLog.setType(StockLogDetailSourceEnum.instock.getValue());
+            stockLog.setType("1");
+            stockLogs.add(stockLog);
+
+        }
+        stockLogService.addByOutStock(stockLogs,stockLogDetails);
         stockDetailsService.updateBatchById(stockDetails);
         inkindService.updateBatchById(oldInkinds);
 
