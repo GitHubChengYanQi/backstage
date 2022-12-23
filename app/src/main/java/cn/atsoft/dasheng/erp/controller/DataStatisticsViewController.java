@@ -1012,6 +1012,21 @@ public class DataStatisticsViewController extends BaseController {
         activitiProcessTaskService.format(taskResults);
         return ResponseData.success(taskResults);
     }
-
+    @RequestMapping(value = "/outStockViewDetail", method = RequestMethod.POST)
+    @ApiOperation("出库汇总详情")
+    public PageInfo outStockViewDetail(@RequestBody DataStatisticsViewParam param) {
+        Page<StockView.SkuAndNumber> skuAndNumberPage = outstockListingMapper.outBySku(PageFactory.defaultPage(), param);
+        List<Long> skuId = skuAndNumberPage.getRecords().stream().map(StockView.SkuAndNumber::getSkuId).distinct().collect(Collectors.toList());
+        List<SkuSimpleResult> skuResult = skuId.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuId);
+        for (StockView.SkuAndNumber record : skuAndNumberPage.getRecords()) {
+            for (SkuSimpleResult skuSimpleResult : skuResult) {
+                if (record.getSkuId().equals(skuSimpleResult.getSkuId())){
+                    record.setSkuResult(skuSimpleResult);
+                    break;
+                }
+            }
+        }
+        return PageFactory.createPageInfo(skuAndNumberPage);
+    }
 
 }

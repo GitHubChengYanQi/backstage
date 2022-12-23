@@ -14,6 +14,8 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Supply;
+import cn.atsoft.dasheng.crm.service.OrderDetailService;
+import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.enums.StockLogDetailSourceEnum;
 import cn.atsoft.dasheng.erp.enums.StockLogTypeEnum;

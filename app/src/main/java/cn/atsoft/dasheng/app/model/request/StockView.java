@@ -16,6 +16,7 @@ public class StockView {
     private Long userId;
     private UserResult userResult;
     private Long skuId;
+    private Long spuClassId;
     private SkuSimpleResult skuResult;
     private List<SkuAndNumber> skuAndNumbers;
     private List<UserAndNumber> userAndNumbers;

@@ -193,8 +193,8 @@ delivery_id
             parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
         SELECT
         create_user AS "createUser",
-        count( DISTINCT sku_id ) AS "inSkuCount",
-        SUM(number) AS "inNumCount",
+        count( DISTINCT sku_id ) AS "outSkuCount",
+        SUM(number) AS "outNumCount",
         create_time AS "createTime"
 
         FROM
@@ -290,6 +290,7 @@ delivery_id
 
         SELECT
         class.`name` AS "spuClassName",
+        class.`spu_classification_id` AS "spuClassId",
         count( DISTINCT list.sku_id ) AS "outSkuCount",
         sum( list.number ) AS "outNumCount",
         list.create_time AS "createTime"
@@ -322,7 +323,6 @@ delivery_id
         daoxin_erp_outstock_listing list
         LEFT JOIN goods_sku sku ON list.sku_id = sku.sku_id
         LEFT JOIN goods_spu spu ON spu.spu_id = sku.spu_id
-        LEFT JOIN goods_spu_class class ON spu.spu_classification_id = class.spu_classification_id
         WHERE
         1 = 1
         <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
@@ -333,12 +333,14 @@ delivery_id
             str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
         <if test="paramCondition.spuClassIds!=null">
-            and class.spu_classification_id in
+            and spu.spu_classification_id in
             <foreach collection="paramCondition.spuClassIds" item="spuClassId" index="index" open="(" separator="," close=")">
                 #{spuClassId}
             </foreach>
         </if>
-
+        <if test="paramCondition.spuClassId != null">
+            and spu.spu_classification_id = #{paramCondition.spuClassId}
+        </if>
         GROUP BY
         class.spu_classification_id,list.sku_id
     </select>
@@ -469,6 +471,9 @@ delivery_id
         daoxin_erp_outstock_listing list
         LEFT JOIN daoxin_erp_outstock_order outstock on list.outstock_order_id = outstock.outstock_order_id
         LEFT JOIN daoxin_production_pick_lists lists on lists.pick_lists_id = outstock.source_id
+        LEFT JOIN goods_sku sku on list.sku_id = sku.sku_id
+        LEFT JOIN goods_spu spu on spu.spu_id = sku.spu_id
+
         WHERE
         1 = 1
         <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
@@ -478,9 +483,22 @@ delivery_id
             and date_format(list.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
             str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and lists.type = #{paramCondition.type}
+        </if>
+        <if test="paramCondition.spuClassIds != null and paramCondition.spuClassIds.size>0">
+            and spu.spu_classification_id in
+            <foreach collection="paramCondition.spuClassIds" item="classId" index="index" open="(" close=")" separator=",">
+                #{classId}
+            </foreach>
+        </if>
+        <if test="paramCondition.spuClassId != null">
+            and spu.spu_classification_id = #{paramCondition.spuClassId}
+        </if>
         GROUP BY
         list.sku_id
         ORDER BY sum( list.number ) DESC
     </select>
+
 
 </mapper>

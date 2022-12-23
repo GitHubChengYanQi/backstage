@@ -91,7 +91,6 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
         SELECT
             create_user AS "createUser",
-            create_time AS "create_time",
             COUNT(outstock_order_id) AS "orderCount",
             create_time AS "createTime"
         FROM
