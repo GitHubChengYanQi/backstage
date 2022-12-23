@@ -17,12 +17,13 @@
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
         <result column="note" property="note"/>
+        <result column="auto_outstock" property="autoOutstock"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         parts_detail_id
-        AS "partsDetailId", attribute AS "attribute",parts_id AS "partsId", spu_id AS "spuId",sku_id AS "skuId", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", note AS "note"
+        AS "partsDetailId", attribute AS "attribute",parts_id AS "partsId", spu_id AS "spuId",sku_id AS "skuId", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", note AS "note" , auto_outstock AS "autoOutstock"
     </sql>
 
 

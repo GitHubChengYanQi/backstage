@@ -43,7 +43,7 @@ public class PhoneResult implements Serializable {
      * 电话号码
      */
     @ApiModelProperty("电话号码")
-    private Long phoneNumber;
+    private String phoneNumber;
 
     /**
      * 创建者

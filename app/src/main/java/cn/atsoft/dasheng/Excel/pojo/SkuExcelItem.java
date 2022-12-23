@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.Excel.pojo;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import cn.afterturn.easypoi.excel.annotation.ExcelEntity;
+import cn.atsoft.dasheng.Excel.service.IExcelEntity;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import io.swagger.annotations.ApiModelProperty;
@@ -13,7 +15,7 @@ import java.util.List;
 
 @Data
 
-public class SkuExcelItem {
+public class SkuExcelItem implements IExcelEntity {
 
 
     private String standard;
@@ -47,7 +49,37 @@ public class SkuExcelItem {
 
     private String type;
 
+    private String partNo;
+
+    private String nationalStandard;
+
+    private String spuCoding;
+
+    private String materialId;
+
+    private String model;
+
+    private String level;
+
+    private String heatTreatment;
+
     private Long errorSkuId;
+
+    private String weight;
+
+    private String color;
+
+    private String packaging;
+
+    private String remarks;
+
+    private String attributeAndValue;
+
+    private String maintenancePeriod;
+
+    private String skuSize;
+
+    private String viewFrame;
 
     private SkuResult simpleResult;
 

@@ -1,10 +1,9 @@
 package cn.atsoft.dasheng.crm.model.result;
 
-import cn.atsoft.dasheng.app.entity.Adress;
-import cn.atsoft.dasheng.app.entity.Contacts;
-import cn.atsoft.dasheng.app.entity.Customer;
-import cn.atsoft.dasheng.app.entity.Phone;
+import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.result.ContractResult;
 import cn.atsoft.dasheng.crm.entity.Bank;
+import cn.atsoft.dasheng.crm.entity.OrderDetail;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
@@ -46,9 +45,9 @@ public class OrderResult implements Serializable {
 
     private Contacts deliverer;  //交货人
 
-    private Long AContactsPhone;
+    private String AContactsPhone;
 
-    private Long BContactsPhone;
+    private String BContactsPhone;
 
     private Integer allMoney;
 
@@ -75,8 +74,10 @@ public class OrderResult implements Serializable {
     private String coding;
     private UserResult user;
 
-    private Long ACompanyPhone;
-    private Long BCompanyPhone;
+    private String ACompanyPhone;
+    private String BCompanyPhone;
+
+    private Contract contract;
 
     /**
      * 货币种类
@@ -200,7 +201,7 @@ public class OrderResult implements Serializable {
      * 甲方电话
      */
     @ApiModelProperty("甲方电话")
-    private Long partyAPhone;
+    private String partyAPhone;
 
     /**
      * 甲方委托人id
@@ -224,7 +225,7 @@ public class OrderResult implements Serializable {
      * 乙方电话
      */
     @ApiModelProperty("乙方电话")
-    private Long partyBPhone;
+    private String partyBPhone;
 
     /**
      * 乙方委托人id

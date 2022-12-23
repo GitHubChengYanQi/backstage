@@ -29,6 +29,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessParam;
 import cn.atsoft.dasheng.form.model.params.StepsParam;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.RemarksService;
@@ -60,6 +61,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
@@ -144,8 +146,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Autowired
     private MaterialService materialService;
 
+    @Autowired
+    private StockForewarnService stockForewarnService;
 
-    @Transactional
+
+    @Transactional(propagation= Propagation.REQUIRED,timeout=90)
+
     @Override
     public Map<String, Sku> add(SkuParam param) {
 
@@ -246,8 +252,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             String md5 = SecureUtil.md5(entity.getSkuValue() + entity.getSpuId().toString() + entity.getSkuName() + spuClassificationId);
 
             entity.setSkuValueMd5(md5);
-            if(md5Flag){
-                Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1).ne(Sku::getSkuId,entity.getSkuId())).count();
+            if (md5Flag) {
+                Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1).ne(Sku::getSkuId, entity.getSkuId())).count();
                 if (skuCount > 0) {
                     throw new ServiceException(500, "该物料已经存在");
                 }
@@ -298,8 +304,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 entity.setSkuValueMd5(md5);
                 Dict md5FlagDict = dictService.query().eq("code", "skuMd5").one();
                 boolean md5Flag = ToolUtil.isNotEmpty(md5FlagDict) && md5FlagDict.getStatus().equals("ENABLE");
-                if(md5Flag){
-                    Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1).ne(Sku::getSkuId,entity.getSkuId())).count();
+                if (md5Flag) {
+                    Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1).ne(Sku::getSkuId, entity.getSkuId())).count();
                     if (skuCount > 0) {
                         throw new ServiceException(500, "该物料已经存在");
                     }
@@ -358,6 +364,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             ToolUtil.copyProperties(parts, newSkuParts);
             newSkuParts.setPartsId(null);
             newSkuParts.setSkuId(newSkuId);
+            newSkuParts.setCreateTime(null);
+            newSkuParts.setCreateUser(null);
+            newSkuParts.setUpdateTime(null);
+            newSkuParts.setUpdateUser(null);
             partsService.save(newSkuParts);
             List<ErpPartsDetail> newSkuPartsDetails = new ArrayList<>();
             for (ErpPartsDetail partsDetail : partsDetails) {
@@ -377,6 +387,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             ActivitiStepsResult activitiStepsResult = stepsService.detail(activitiProcess.getProcessId());
             StepsParam param = new StepsParam();
             ToolUtil.copyProperties(activitiStepsResult, param);
+            param.setCreateTime(null);
+            param.setCreateUser(null);
+            param.setUpdateTime(null);
+            param.setUpdateUser(null);
             System.out.println(param);
             param.setProcess(new ActivitiProcessParam() {{
                 setSkuId(newSkuId);
@@ -537,7 +551,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         Dict md5FlagDict = dictService.query().eq("code", "skuMd5").one();
         boolean md5Flag = ToolUtil.isNotEmpty(md5FlagDict) && md5FlagDict.getStatus().equals("ENABLE");
-        if(md5Flag){
+        if (md5Flag) {
             Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).count();
             if (skuCount > 0) {
                 throw new ServiceException(500, "该物料已经存在");
@@ -920,7 +934,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         String md5 = SecureUtil.md5(newEntity.getSkuValue() + newEntity.getSpuId().toString() + newEntity.getSkuName() + spuClassification.getSpuClassificationId());
         if ((
 //                !oldEntity.getSkuValueMd5().equals(md5)
-                !oldEntity.getSkuName().equals(param.getSkuName())//
+                (ToolUtil.isNotEmpty(oldEntity.getSkuName()) && ToolUtil.isNotEmpty(param.getSkuName()) &&
+                !oldEntity.getSkuName().equals(param.getSkuName()))//
                         || !param.getUnitId().equals(orSaveSpu.getUnitId())//
                         || !oldEntity.getBatch().equals(param.getBatch())
                         || !oldEntity.getSpuId().equals(param.getSpuId())
@@ -940,8 +955,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         newEntity.setSkuValueMd5(md5);
         Dict md5FlagDict = dictService.query().eq("code", "skuMd5").one();
         boolean md5Flag = ToolUtil.isNotEmpty(md5FlagDict) && md5FlagDict.getStatus().equals("ENABLE");
-        if(md5Flag){
-            Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1).ne(Sku::getSkuId,newEntity.getSkuId())).count();
+        if (md5Flag) {
+            Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1).ne(Sku::getSkuId, newEntity.getSkuId())).count();
             if (skuCount > 0) {
                 throw new ServiceException(500, "该物料已经存在");
             }
@@ -1518,7 +1533,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         }
         List<MaintenanceCycle> maintenanceCycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
-
+        List<StockForewarn> stockForewarns = skuIds.size() == 0 ? new ArrayList<>() : stockForewarnService.lambdaQuery().eq(StockForewarn::getType,"sku").in(StockForewarn::getFormId,skuIds).eq(StockForewarn::getDisplay,1).list();
         List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
         List<AttributeValues> attributeValues = attributeIds.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
                 .in(AttributeValues::getAttributeId, attributeIds)
@@ -1580,7 +1595,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
          * 查询清单
          */
         List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
-//        List<ActivitiProcess> processes = skuIds.size() == 0 ? new ArrayList<>() : processService.query().in("form_id", skuIds).eq("type", "ship").eq("display", 1).list();
+        List<ActivitiProcess> processes = skuIds.size() == 0 ? new ArrayList<>() : processService.query().in("form_id", skuIds).eq("type", "ship").eq("display", 1).list();
         /**
          * 库存数
          */
@@ -1662,13 +1677,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //            }
 
 
-//            for (ActivitiProcess process : processes) {
-//                if (process.getFormId().equals(skuResult.getSkuId())) {
-//                    ActivitiProcessResult processResult = new ActivitiProcessResult();
-//                    ToolUtil.copyProperties(process, processResult);
-//                    skuResult.setProcessResult(processResult);
-//                }
-//            }
+            for (ActivitiProcess process : processes) {
+                if (process.getFormId().equals(skuResult.getSkuId())) {
+                    ActivitiProcessResult processResult = new ActivitiProcessResult();
+                    ToolUtil.copyProperties(process, processResult);
+                    skuResult.setProcessResult(processResult);
+                }
+            }
             skuResult.setInBom(false);
 
             for (Parts part : parts) {
@@ -1729,6 +1744,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     list.add(skuJson);
                 }
                 skuResult.setSkuJsons(list);
+            }
+            for (StockForewarn stockForewarn : stockForewarns) {
+                if(stockForewarn.getFormId().equals(skuResult.getSkuId())){
+                    skuResult.setStockForewarnResult(BeanUtil.copyProperties(stockForewarn,StockForewarnResult.class));
+                    break;
+                }
             }
         }
 
@@ -1962,6 +1983,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             add("skuName");
             add("spuName");
             add("stockNumber");
+            add("standard");
             add("spuId");
         }};
         return PageFactory.defaultPage(fields);

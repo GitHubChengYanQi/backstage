@@ -78,6 +78,9 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private String startTime;
     private String endTime;
     private String enclosure;   //附件
+    private String model;//型号
+    private String packaging;//包装方式
+
 
     private List<Long> anomalySkuIds; //异常的物料
     private Boolean openBom = false;

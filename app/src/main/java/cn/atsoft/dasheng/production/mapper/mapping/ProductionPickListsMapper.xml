@@ -12,6 +12,7 @@
         <result column="enclosure" property="enclosure" />
         <result column="remarks" property="remarks" />
         <result column="note" property="note" />
+        <result column="type" property="type" />
         <result column="user_ids" property="userIds" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
@@ -26,7 +27,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        pick_lists_id AS "pickListsId",task_id AS "taskId",enclosure AS "enclosure",pick_lists_name AS "pickListsName",user_ids AS "userIds" ,remarks AS "remarks",note AS "note" , coding AS "coding" ,user_id AS "userId", source AS "source", source_id AS "sourceId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status"
+        pick_lists_id AS "pickListsId",type AS "type",task_id AS "taskId",enclosure AS "enclosure",pick_lists_name AS "pickListsName",user_ids AS "userIds" ,remarks AS "remarks",note AS "note" , coding AS "coding" ,user_id AS "userId", source AS "source", source_id AS "sourceId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status"
     </sql>
 
 

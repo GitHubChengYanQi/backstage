@@ -285,8 +285,9 @@ public class WxCpSendTemplate {
             Map<String, String> data = new HashMap<>();
             if (ToolUtil.isNotEmpty(markDownTemplate.getTaskId())) {
                 data = activitiProcessTaskService.getSendData(markDownTemplate.getTaskId());
-                ToolUtil.isNotEmpty(data.get("items"));
-                markDownTemplate.setItems(data.get("items"));
+                if (ToolUtil.isNotEmpty(data.get("items"))) {
+                    markDownTemplate.setItems(data.get("items"));
+                }
             }
             switch (markDownTemplate.getFunction()) {
                 case audit:
@@ -325,7 +326,6 @@ public class WxCpSendTemplate {
             if (ToolUtil.isNotEmpty(data.get("coding"))) {
                 markDownTemplate.setCoding(data.get("coding"));
             }
-
 
         }
         return markDownTemplate;

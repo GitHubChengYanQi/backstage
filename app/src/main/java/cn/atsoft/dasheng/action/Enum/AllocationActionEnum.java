@@ -2,7 +2,7 @@ package cn.atsoft.dasheng.action.Enum;
 
 import cn.atsoft.dasheng.action.service.FormActionInterface;
 
-public enum AllocationActionEnum implements FormActionInterface {
+public enum AllocationActionEnum   implements FormActionInterface {
     start ("开始"){
         public Long getStatus() {
             return 0L;
@@ -24,7 +24,11 @@ public enum AllocationActionEnum implements FormActionInterface {
         }
     },
     assign ("分派"),
+     resubmit("再次提交") {  //再次提交
+
+    },
     carryAllocation ("执行");
+
     public String getValue() {
         return value;
     }

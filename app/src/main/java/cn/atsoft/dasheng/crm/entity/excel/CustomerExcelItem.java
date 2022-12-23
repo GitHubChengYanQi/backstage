@@ -28,7 +28,7 @@ public class CustomerExcelItem implements Serializable {
     private String userName;
 
     @Excel(name = "联系人电话")
-    private Long phone;
+    private String  phone;
 
     @Excel(name = "职务")
     private String role;

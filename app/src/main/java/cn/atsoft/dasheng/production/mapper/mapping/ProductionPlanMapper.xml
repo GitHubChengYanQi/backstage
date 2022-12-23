@@ -15,6 +15,7 @@
         <result column="end_time" property="endTime" />
         <result column="deptId" property="deptId" />
         <result column="display" property="display" />
+        <result column="card_coding" property="cardCoding"/>
         <result column="update_time" property="updateTime" />
         <result column="create_time" property="createTime" />
         <result column="update_user" property="updateUser" />
@@ -22,7 +23,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        production_plan_id AS "productionPlanId",coding AS "coding",end_time AS "endTime", theme AS "theme", origin AS "origin", execution_time AS "executionTime", user_id AS "userId", remark AS "remark", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
+        production_plan_id AS "productionPlanId",coding AS "coding",end_time AS "endTime", theme AS "theme", origin AS "origin", execution_time AS "executionTime", user_id AS "userId", remark AS "remark", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser", card_coding AS "cardCoding"
     </sql>
 
 

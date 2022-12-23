@@ -1,40 +1,32 @@
 package cn.atsoft.dasheng.Excel;
 
+import cn.atsoft.dasheng.Excel.pojo.SkuIExcelExportPojo;
+import cn.atsoft.dasheng.Excel.service.IExcelEntity;
+import cn.atsoft.dasheng.Excel.service.impl.SkuExcelExport;
+import cn.atsoft.dasheng.app.model.result.MaterialResult;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.erp.service.SpuClassificationService;
-import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.orCode.entity.OrCode;
-import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
-import cn.atsoft.dasheng.production.model.params.ProductionStationClassParam;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.ss.util.CellRangeAddressList;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/skuExcel")
@@ -46,6 +38,8 @@ public class SkuExportExcel extends BaseController {
 
     @Autowired
     private SkuExcelService skuExcelService;
+    @Autowired
+    SkuExcelExport skuExcel;
 
     @RequestMapping(value = "/skuExport", method = RequestMethod.GET)
     @ApiOperation("导出")
@@ -175,14 +169,70 @@ public class SkuExportExcel extends BaseController {
         workbook.write(response.getOutputStream());
     }
 
-    @RequestMapping(value = "/exportTemplate", method = RequestMethod.GET)
+//    @RequestMapping(value = "/{v}/skuExport", method = RequestMethod.GET)
+//    @ApiOperation("导出")
+//    public File jarExcel(HttpServletResponse response) throws IOException {
+////        Resource res = new ClassPathResource("static/sku.xlsx");
+////        InputStream stream = res.getInputStream();
+////        int read = stream.read();
+//
+//
+//        return null;
+//    }
+    @RequestMapping(value = "/{v}/skuExport", method = RequestMethod.GET)
     @ApiOperation("导出")
-    public File jarExcel(HttpServletResponse response) throws IOException {
-//        Resource res = new ClassPathResource("static/sku.xlsx");
-//        InputStream stream = res.getInputStream();
-//        int read = stream.read();
+    @ApiVersion("1.1")
+    public void excelTest1(HttpServletResponse response, @RequestParam List<String > columNames) throws IOException {
+        if (ToolUtil.isEmpty(columNames)){
+            throw new ServiceException(500,"请选择导出列");
+        }
+
+        List<SkuResult> listBySpec = skuService.findListBySpec(new SkuParam());
+
+        List<IExcelEntity> list = new ArrayList<>();
 
 
-        return null;
+        for (SkuResult skuResult : listBySpec) {
+            SkuIExcelExportPojo skuExcelExportPojo = new SkuIExcelExportPojo();
+            ToolUtil.copyProperties(skuResult,skuExcelExportPojo);
+            if (ToolUtil.isNotEmpty(skuResult.getSpuResult())) {
+                if (ToolUtil.isNotEmpty(skuResult.getSpuResult().getCoding())) {
+                    skuExcelExportPojo.setSpuCoding(skuResult.getSpuResult().getCoding());
+                }
+                if (ToolUtil.isNotEmpty(skuResult.getSpuResult().getName())) {
+                    skuExcelExportPojo.setSpu(skuResult.getSpuResult().getName());
+                } if (ToolUtil.isNotEmpty(skuResult.getSpuResult().getUnitResult()) && ToolUtil.isNotEmpty(skuResult.getSpuResult().getUnitResult().getUnitName()) ) {
+                    skuExcelExportPojo.setUnitId(skuResult.getSpuResult().getUnitResult().getUnitName());
+                }
+            }
+            if (ToolUtil.isNotEmpty(skuResult.getMaterialResultList())){
+                StringBuffer materialNames = new StringBuffer();
+                for (MaterialResult materialResult : skuResult.getMaterialResultList()) {
+                    materialNames.append(materialResult.getName()!=null ? materialResult.getName():"").append(",");
+                }
+                if (materialNames.length()>0){
+                    skuExcelExportPojo.setMaterialId(materialNames.substring(0,materialNames.length()-1));
+                }
+            }
+
+            list.add(skuExcelExportPojo);
+        }
+
+        skuExcel.setData(list);
+
+        XSSFWorkbook workbook = skuExcel.exportExcel(columNames);
+        //准备将Excel的输出流通过response输出到页面下载
+        //八进制输出流
+        response.setContentType("application/octet-stream");
+
+        //这后面可以设置导出Excel的名称
+        response.setHeader("Content-disposition", "attachment;filename=skuExport.xlsx");
+
+        //刷新缓冲
+        response.flushBuffer();
+
+        //workbook将Excel写入到response的输出流中，供页面下载
+        workbook.write(response.getOutputStream());
+
     }
 }

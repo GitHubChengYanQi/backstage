@@ -24,6 +24,7 @@
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
         <result column="remark" property="remark"/>
+        <result column="arrival_number" property="arrivalNumber"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->

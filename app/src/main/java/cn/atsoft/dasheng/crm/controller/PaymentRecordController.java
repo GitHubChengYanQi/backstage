@@ -7,8 +7,10 @@ import cn.atsoft.dasheng.crm.model.result.PaymentRecordResult;
 import cn.atsoft.dasheng.crm.service.PaymentRecordService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import javafx.beans.binding.ObjectExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -43,23 +45,23 @@ public class PaymentRecordController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody @Valid PaymentRecordParam paymentRecordParam) {
-        this.paymentRecordService.add(paymentRecordParam);
-        return ResponseData.success();
+        Object add = this.paymentRecordService.add(paymentRecordParam);
+        return ResponseData.success(add);
     }
 
-//    /**
-//     * 编辑接口
-//     *
-//     * @author song
-//     * @Date 2022-03-01
-//     */
-//    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-//    @ApiOperation("编辑")
-//    public ResponseData update(@RequestBody PaymentRecordParam paymentRecordParam) {
-//
-//        this.paymentRecordService.update(paymentRecordParam);
-//        return ResponseData.success();
-//    }
+    /**
+     * 编辑接口
+     *
+     * @author song
+     * @Date 2022-03-01
+     */
+    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @ApiOperation("编辑")
+    public ResponseData update(@RequestBody PaymentRecordParam paymentRecordParam) {
+
+        this.paymentRecordService.update(paymentRecordParam);
+        return ResponseData.success();
+    }
 //
 //    /**
 //     * 删除接口
@@ -75,6 +77,16 @@ public class PaymentRecordController extends BaseController {
 //    }
 
     /**
+     * 状态作废接口
+     */
+    @RequestMapping(value = "/obsolete", method = RequestMethod.POST)
+    @ApiOperation("作废")
+    public ResponseData obsolete(@RequestBody PaymentRecordParam paymentRecordParam) {
+        this.paymentRecordService.obsolete(paymentRecordParam);
+        return ResponseData.success();
+    }
+
+    /**
      * 查看详情接口
      *
      * @author song
@@ -86,6 +98,9 @@ public class PaymentRecordController extends BaseController {
         PaymentRecord detail = this.paymentRecordService.getById(paymentRecordParam.getRecordId());
         PaymentRecordResult result = new PaymentRecordResult();
         ToolUtil.copyProperties(detail, result);
+        paymentRecordService.format(new ArrayList<PaymentRecordResult>() {{
+            add(result);
+        }});
 
         return ResponseData.success(result);
     }
@@ -101,6 +116,18 @@ public class PaymentRecordController extends BaseController {
     public PageInfo<PaymentRecordResult> list(@RequestBody(required = false) PaymentRecordParam paymentRecordParam) {
         if (ToolUtil.isEmpty(paymentRecordParam)) {
             paymentRecordParam = new PaymentRecordParam();
+        }
+        if (ToolUtil.isNotEmpty(paymentRecordParam.getMoney())) {
+            paymentRecordParam.setMoney(paymentRecordParam.getMoney());
+            if (ToolUtil.isNotEmpty((paymentRecordParam.getMoney().getMin()))) {
+                paymentRecordParam.getMoney().setMax(paymentRecordParam.getMoney().getMax());
+            }
+            if (ToolUtil.isNotEmpty(paymentRecordParam.getMoney().getMax())) {
+                paymentRecordParam.getMoney().setMin(paymentRecordParam.getMoney().getMin());
+            }
+            if (paymentRecordParam.getMoney().getMin() > paymentRecordParam.getMoney().getMax()) {
+                throw new ServiceException(500,"输入错误值，请重新输入");
+            }
         }
         return this.paymentRecordService.findPageBySpec(paymentRecordParam);
     }
