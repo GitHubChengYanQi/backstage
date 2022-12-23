@@ -107,4 +107,24 @@
         GROUP BY
             create_user
     </select>
+    <select id="groupByUserList" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+            create_user AS "createUser",
+            COUNT(outstock_order_id) AS "orderCount",
+            create_time AS "createTime"
+        FROM
+            daoxin_erp_outstock_order
+        WHERE
+            1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY
+            create_user
+    </select>
 </mapper>

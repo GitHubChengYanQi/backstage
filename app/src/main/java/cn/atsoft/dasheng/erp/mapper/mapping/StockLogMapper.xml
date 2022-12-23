@@ -209,6 +209,14 @@
                         and deptId like CONCAT('%',#{paramCondition.deptId},'%')
                 </if>
     </select>
+    <select id="viewByUserAndType" resultType="cn.atsoft.dasheng.erp.model.result.StockLogResult" parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        select
+        count(*) AS "number",
+        create_user AS "createUser",
+        source AS "source"
+        from daoxin_erp_stock_log where 1 = 1
+        group by source,create_user
+    </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.StockLogParam">
         select

@@ -15,6 +15,8 @@ public class DataStatisticsViewParam {
     private ViewTypeEnum searchType;
     private String type;
     private Long createUser;
+    private Long materialId;
+    private Long storehouseId;
     private List<Date> dateParams;
     private List<String> dates;
     private Long customerId;
@@ -24,6 +26,6 @@ public class DataStatisticsViewParam {
 
     private Long instockOrderId;
     private Long userId;
-
+    private String cycle;
     private String viewMode;
 }

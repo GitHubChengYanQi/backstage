@@ -33,6 +33,8 @@ public class MaintenanceLogResult implements Serializable {
 
     private Long inkindId;
 
+    private Integer number;
+
     private String noticeIds;
 
     private SkuResult skuResult;

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.mapper;
 
 import cn.atsoft.dasheng.erp.entity.StockLog;
+import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.params.StockLogParam;
 import cn.atsoft.dasheng.erp.model.result.StockLogResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -44,6 +45,8 @@ public interface StockLogMapper extends BaseMapper<StockLog> {
      * @Date 2022-12-22
      */
     Page<StockLogResult> customPageList(@Param("page") Page page, @Param("paramCondition") StockLogParam paramCondition);
+
+    List<StockLogResult> viewByUserAndType(@Param("paramCondition") DataStatisticsViewParam paramCondition);
 
     /**
      * 获取分页map列表

@@ -4,6 +4,8 @@ import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
+
 @Data
 public class UserParam implements Serializable, BaseValidatingParam {
 
@@ -11,4 +13,5 @@ public class UserParam implements Serializable, BaseValidatingParam {
 
     private Long userId;
 
+    private List<Long> userIds;
 }

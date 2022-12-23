@@ -2,6 +2,8 @@ package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.app.entity.OutstockOrder;
 import cn.atsoft.dasheng.app.mapper.OutstockOrderMapper;
+import cn.atsoft.dasheng.app.mapper.StockDetailsMapper;
+import cn.atsoft.dasheng.app.model.request.StockDetailView;
 import cn.atsoft.dasheng.app.model.request.StockView;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
@@ -16,7 +18,9 @@ import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.mapper.ProcessTaskMapper;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
+import cn.atsoft.dasheng.form.model.result.TaskViewResult;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
@@ -45,6 +49,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static cn.atsoft.dasheng.erp.enums.ViewTypeEnum.SKU_COUNT;
 import static cn.atsoft.dasheng.form.pojo.ProcessType.OUTSTOCK;
 
 @RestController
@@ -114,6 +119,18 @@ public class DataStatisticsViewController extends BaseController {
     private AnomalyMapper anomalyMapper;
     @Autowired
     private InstockLogDetailMapper instockLogDetailMapper;
+    @Autowired
+    private StockDetailsMapper stockDetailsMapper;
+    @Autowired
+    private ProcessTaskMapper processTaskMapper;
+    @Autowired
+    private MaintenanceLogMapper maintenanceLogMapper;
+
+    @Autowired
+    private StockLogMapper stockLogMapper;
+
+    @Autowired
+    private AllocationLogMapper allocationLogMapper;
 
 
     @RequestMapping(value = "/taskCountView", method = RequestMethod.GET)
@@ -336,8 +353,8 @@ public class DataStatisticsViewController extends BaseController {
 //        return ResponseData.success(stockViews);
 //        return ResponseData.success();
 
-        result.put("orderCountByType",pickListsMapper.orderCountByType(param));
-        result.put("orderCountByStatus",pickListsMapper.orderCountByStatus(param));
+        result.put("orderCountByType", pickListsMapper.orderCountByType(param));
+        result.put("orderCountByStatus", pickListsMapper.orderCountByStatus(param));
         return ResponseData.success(result);
     }
 
@@ -440,9 +457,9 @@ public class DataStatisticsViewController extends BaseController {
                     }
                     for (StockView record : stockViews.getRecords()) {
                         for (UserResult userResultsById : userResultsByIds) {
-                            if(record.getCreateUser().equals(userResultsById.getUserId())){
+                            if (record.getCreateUser().equals(userResultsById.getUserId())) {
                                 record.setUserResult(userResultsById);
-                                break; 
+                                break;
                             }
                         }
                         List<StockView.SkuAndNumber> skuAndNumbers = new ArrayList<>();
@@ -593,7 +610,6 @@ public class DataStatisticsViewController extends BaseController {
         }
         return null;
     }
-
 
 
     @RequestMapping(value = "/instockOrderCountViewByUser", method = RequestMethod.POST)
@@ -1012,6 +1028,7 @@ public class DataStatisticsViewController extends BaseController {
         activitiProcessTaskService.format(taskResults);
         return ResponseData.success(taskResults);
     }
+
     @RequestMapping(value = "/outStockViewDetail", method = RequestMethod.POST)
     @ApiOperation("出库汇总详情")
     public PageInfo outStockViewDetail(@RequestBody DataStatisticsViewParam param) {
@@ -1020,13 +1037,156 @@ public class DataStatisticsViewController extends BaseController {
         List<SkuSimpleResult> skuResult = skuId.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuId);
         for (StockView.SkuAndNumber record : skuAndNumberPage.getRecords()) {
             for (SkuSimpleResult skuSimpleResult : skuResult) {
-                if (record.getSkuId().equals(skuSimpleResult.getSkuId())){
+                if (record.getSkuId().equals(skuSimpleResult.getSkuId())) {
                     record.setSkuResult(skuSimpleResult);
                     break;
                 }
             }
         }
         return PageFactory.createPageInfo(skuAndNumberPage);
+    }
+
+    //============================================================================================================================================================================================================================================================================================
+    //综合统计
+
+
+    @RequestMapping(value = "/stockNumberView", method = RequestMethod.POST)
+    @ApiOperation("库存数量排行")
+    public PageInfo<StockDetailView> stockNumberView(@RequestBody DataStatisticsViewParam param) {
+        Page<Object> objectPage = PageFactory.defaultPage();
+        return PageFactory.createPageInfo(stockDetailsMapper.dataStatisticsView(objectPage, param));
+    }
+
+    @RequestMapping(value = "/dataStatisticsViewDetail", method = RequestMethod.POST)
+    @ApiOperation("库存数量排行")
+    public ResponseData dataStatisticsViewDetail(@RequestBody DataStatisticsViewParam param) {
+        List<StockDetailView> stockDetailViews = stockDetailsMapper.dataStatisticsViewDetail(param);
+        List<Long> skuIds = stockDetailViews.stream().map(StockDetailView::getSkuId).collect(Collectors.toList());
+        List<SkuSimpleResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
+        for (StockDetailView stockDetailView : stockDetailViews) {
+            for (SkuSimpleResult skuResult : skuResults) {
+                if (stockDetailView.getSkuId().equals(skuResult.getSkuId())) {
+                    stockDetailView.setSkuSimpleResult(skuResult);
+                    break;
+                }
+            }
+        }
+        return ResponseData.success(stockDetailViews);
+    }
+
+    @RequestMapping(value = "/stockNumberCycle", method = RequestMethod.POST)
+    @ApiOperation("库存周期占比")
+    public ResponseData stockNumberCycle(@RequestBody DataStatisticsViewParam param) {
+        Map<String, Object> result = new HashMap<>();
+        param.setCycle("1month");
+        result.put("1month", this.stockDetailsMapper.stockNumberCycle(param));
+        param.setCycle("1month-3month");
+        result.put("1month-3month", this.stockDetailsMapper.stockNumberCycle(param));
+        param.setCycle("3month-6month");
+        result.put("3month-6month", this.stockDetailsMapper.stockNumberCycle(param));
+        param.setCycle("after6month");
+        result.put("after6month", this.stockDetailsMapper.stockNumberCycle(param));
+        return ResponseData.success(result);
+    }
+
+    @RequestMapping(value = "/stockNumberCycleDetail", method = RequestMethod.POST)
+    @ApiOperation("库存周期占比详情")
+    public ResponseData stockNumberCycleDetail(@RequestBody DataStatisticsViewParam param) {
+        List<StockDetailView> stockDetailViews = this.stockDetailsMapper.stockNumberCycleDetail(param);
+        List<Long> skuIds = stockDetailViews.stream().map(StockDetailView::getSkuId).collect(Collectors.toList());
+        List<SkuSimpleResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
+        for (StockDetailView stockDetailView : stockDetailViews) {
+            for (SkuSimpleResult skuResult : skuResults) {
+                if (stockDetailView.getSkuId().equals(skuResult.getSkuId())) {
+                    stockDetailView.setSkuSimpleResult(skuResult);
+                    break;
+                }
+            }
+        }
+        return ResponseData.success(stockDetailViews);
+    }
+
+    @RequestMapping(value = "/taskNumberView", method = RequestMethod.POST)
+    @ApiOperation("任务统计")
+    public ResponseData taskNumberView(@RequestBody DataStatisticsViewParam param) {
+        Page<Object> objectPage = PageFactory.defaultPage();
+        Map<String, Object> result = new HashMap<>();
+        result.put("taskNumberView", PageFactory.createPageInfo(processTaskMapper.taskNumberView(objectPage, param)));
+        result.put("taskTypeView", PageFactory.createPageInfo(processTaskMapper.taskTypeView(objectPage, param)));
+        return ResponseData.success(result);
+    }
+
+    @RequestMapping(value = "/taskUserView", method = RequestMethod.POST)
+    @ApiOperation("任务统计")
+    public ResponseData taskUserView(@RequestBody DataStatisticsViewParam param) {
+        List<TaskViewResult> taskViewResults = processTaskMapper.taskUserView(param);
+        List<Long> userIds = taskViewResults.stream().map(TaskViewResult::getCreateUser).distinct().collect(Collectors.toList());
+        List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds);
+        for (TaskViewResult taskViewResult : taskViewResults) {
+            for (UserResult userResult : userResultsByIds) {
+                if (taskViewResult.getCreateUser().equals(userResult.getUserId())) {
+                    taskViewResult.setUserResult(userResult);
+                    break;
+                }
+            }
+        }
+        return ResponseData.success(taskViewResults);
+    }
+
+    @RequestMapping(value = "/taskLogUserView", method = RequestMethod.POST)
+    @ApiOperation("任务统计")
+    public ResponseData taskLogUserView(@RequestBody DataStatisticsViewParam param) {
+//        List<StockView> stockViews = outstockOrderMapper.groupByUserList(param);
+        List<MaintenanceLogResult> maintenanceLogResults = maintenanceLogMapper.groupByUserList(param);
+        List<StockLogResult> stockLogResults = stockLogMapper.viewByUserAndType(param);
+        List<Long> userIds = new ArrayList<>();
+        List<AllocationLogResult> allocationLogResults = allocationLogMapper.countByCreateUser(param);
+
+
+//        userIds.addAll(stockViews.stream().map(StockView::getCreateUser).distinct().collect(Collectors.toList()));
+        userIds.addAll(maintenanceLogResults.stream().map(MaintenanceLogResult::getCreateUser).distinct().collect(Collectors.toList()));
+        userIds.addAll(stockLogResults.stream().map(StockLogResult::getCreateUser).distinct().collect(Collectors.toList()));
+        if (userIds.size() > 0) {
+            Page<UserResult> userResultPage = userService.userResultPageList(new UserParam() {{
+                setUserIds(userIds.stream().distinct().collect(Collectors.toList()));
+            }});
+            List<Map<String, Object>> results = new ArrayList<>();
+            for (UserResult record : userResultPage.getRecords()) {
+                Map<String, Object> stringObjectMap = BeanUtil.beanToMap(record);
+
+                for (MaintenanceLogResult maintenanceLogResult : maintenanceLogResults) {
+                    if (record.getUserId().equals(maintenanceLogResult.getCreateUser())) {
+                        stringObjectMap.put("maintenanceCount", maintenanceLogResult.getNumber());
+                    }
+                }
+                for (AllocationLogResult allocationLogResult : allocationLogResults) {
+                    if (record.getUserId().equals(allocationLogResult.getCreateUser())) {
+                        stringObjectMap.put("allocationCount", allocationLogResult.getNumber());
+
+                    }
+                    for (StockLogResult stockLogResult : stockLogResults) {
+                        if (record.getUserId().equals(stockLogResult.getCreateUser())) {
+                            switch (stockLogResult.getSource()) {
+                                case "instock":
+                                    stringObjectMap.put("instockCount", stockLogResult.getNumber());
+                                    break;
+                                case "outstock":
+                                    stringObjectMap.put("outsockCount", stockLogResult.getNumber());
+                                    break;
+                                case "inventory":
+                                    stringObjectMap.put("inventoryCount", stockLogResult.getNumber());
+                                    break;
+                            }
+                        }
+                    }
+
+                }
+                results.add(stringObjectMap);
+
+            }
+            return ResponseData.success(results);
+        }
+        return ResponseData.success();
     }
 
 }
