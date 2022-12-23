@@ -187,6 +187,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Autowired
     private OrderDetailService orderDetailService;
+    @Autowired
+    private StockLogService stockLogService;
+    @Autowired
+    private StockLogDetailService stockLogDetailService;
 
 
     @Override
@@ -2254,7 +2258,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         List<AnomalyResult> instockErrors = instockOrders.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(anomalyService.lambdaQuery().eq(Anomaly::getType, "InstockError").in(Anomaly::getFormId, instockOrders.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), AnomalyResult.class);
         anomalyService.format(instockErrors);
-
+        List<Long> customerIds = instockOrders.stream().map(InstockOrder::getCustomerId).distinct().collect(Collectors.toList());
 
         int detailNumberCount = 0;
         int logNumberCount = 0;
