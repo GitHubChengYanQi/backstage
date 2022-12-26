@@ -289,9 +289,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
 
         if (!oldEntity.getName().equals(newEntity.getName())) {
-            Integer count = this.query().eq("name", newEntity.getName()).eq("pid", newEntity.getPid()).count();
+            Integer count = this.query().eq("name", newEntity.getName()).eq("pid", newEntity.getPid()).ne("storehouse_positions_id",newEntity.getStorehousePositionsId()).count();
             if (count > 0) {
-                throw new ServiceException(500, "名字以重复");
+                throw new ServiceException(500, "名字已重复");
             }
         }
 
