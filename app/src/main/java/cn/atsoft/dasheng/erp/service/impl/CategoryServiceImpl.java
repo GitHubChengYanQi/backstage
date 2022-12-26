@@ -180,7 +180,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         if (!category.getCategoryName().equals(param.getCategoryName())) {
             Integer count = this.query().in("display", 1).in("category_name", param.getCategoryName()).count();
             if (count > 0) {
-                throw new ServiceException(500, "名字以重复");
+                throw new ServiceException(500, "名字已重复");
             }
         }
 
