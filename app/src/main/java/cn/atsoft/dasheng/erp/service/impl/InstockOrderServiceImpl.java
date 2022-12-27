@@ -20,6 +20,8 @@ import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.service.OrderDetailService;
 import cn.atsoft.dasheng.crm.service.OrderService;
 import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.enums.StockLogDetailSourceEnum;
+import cn.atsoft.dasheng.erp.enums.StockLogTypeEnum;
 import cn.atsoft.dasheng.erp.mapper.InstockOrderMapper;
 import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.request.InstockParams;
@@ -70,6 +72,7 @@ import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapp
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -184,6 +187,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Autowired
     private OrderDetailService orderDetailService;
+    @Autowired
+    private StockLogService stockLogService;
+    @Autowired
+    private StockLogDetailService stockLogDetailService;
 
 
     @Override
@@ -533,6 +540,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
         qualityTaskParam.setDetails(qualityTaskDetailParams);
         qualityTaskParam.setMicroUserId(LoginContextHolder.getContext().getUserId());
+
         MicroServiceEntity serviceEntity = new MicroServiceEntity();
         serviceEntity.setType(MicroServiceType.QUALITY_TASK);
         serviceEntity.setOperationType(OperationType.ADD);
@@ -863,8 +871,21 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         Long number = listParam.getNumber();
         Integer numberByStock = stockDetailsService.getNumberByStock(listParam.getSkuId(), listParam.getBrandId(), null);  //入库之前库存数
 
+
+        StockLog stockLog = new StockLog();
+        stockLog.setType(StockLogTypeEnum.increase.getValue());
+        stockLog.setSkuId(listParam.getSkuId());
+        stockLog.setBeforeNumber(numberByStock);
+        stockLog.setNumber(Math.toIntExact(number));
+        stockLog.setAfterNumber((int) (numberByStock+number));
+        stockLog.setStorehouseId(listParam.getStoreHouseId());
+        stockLog.setStorehousePositionsId(listParam.getStorehousePositionsId());
+        stockLogService.save(stockLog);
+
+
         List<OrCode> orCodes = new ArrayList<>();
         List<Inkind> inkinds = new ArrayList<>();   //先创建实物
+        List<StockLogDetail> stockLogDetails = new ArrayList<>();
 
         for (int i = 0; i < number; i++) {
             Inkind inkind = new Inkind();
@@ -888,6 +909,20 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             throw new ServiceException(500, "库位不能为空");
         }
         inkindService.saveBatch(inkinds);
+        for (Inkind inkind : inkinds) {
+            StockLogDetail stockLogDetail = new StockLogDetail();
+            stockLogDetail.setNumber(1);
+            stockLogDetail.setBeforeNumber(0);
+            stockLogDetail.setAfterNumber(1);
+            stockLogDetail.setInkindId(inkind.getInkindId());
+            stockLogDetail.setSource(StockLogDetailSourceEnum.instock.getValue());
+            stockLogDetail.setStockLogId(stockLog.getStockLogId());
+            stockLogDetails.add(stockLogDetail);
+        }
+        stockLogDetailService.saveBatch(stockLogDetails);
+
+
+
         orCodeService.saveBatch(orCodes);
         StorehousePositions storehousePositions = positionsService.getById(listParam.getStorehousePositionsId());
 
@@ -2223,7 +2258,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         List<AnomalyResult> instockErrors = instockOrders.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(anomalyService.lambdaQuery().eq(Anomaly::getType, "InstockError").in(Anomaly::getFormId, instockOrders.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), AnomalyResult.class);
         anomalyService.format(instockErrors);
-
+        List<Long> customerIds = instockOrders.stream().map(InstockOrder::getCustomerId).distinct().collect(Collectors.toList());
 
         int detailNumberCount = 0;
         int logNumberCount = 0;
@@ -2250,7 +2285,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         result.setErrorNumberCount(errorNumberCount);
         result.setLogNumberCount(logNumberCount);
         result.setOrderCount(instockOrders.size());
-
+        result.setCustomerCount(customerIds.stream().distinct().collect(Collectors.toList()).size());
 
         return result;
     }

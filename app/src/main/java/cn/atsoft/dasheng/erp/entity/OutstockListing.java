@@ -33,13 +33,10 @@ public class OutstockListing implements Serializable {
 
     private String inkindIds;
 
-    public String getInkindIds() {
-        return inkindIds;
-    }
+    @TableField("inkind_id")
 
-    public void setInkindIds(String inkindIds) {
-        this.inkindIds = inkindIds;
-    }
+    private Long inkindId;
+
 
     /**
      * 供应商id
@@ -95,6 +92,17 @@ public class OutstockListing implements Serializable {
      */
     @TableField("brand_id")
     private Long brandId;
+
+    /**
+     * 仓库id
+     */
+    @TableField("storehouse_id")
+    private Long storehouseId;
+    /**
+     * 仓库id
+     */
+    @TableField("storehouse_positions_id")
+    private Long storehousePositionsId;
 
     /**
      * 部门编号
@@ -324,6 +332,38 @@ public class OutstockListing implements Serializable {
         this.afterNumber = afterNumber;
     }
 
+    public Long getStorehouseId() {
+        return storehouseId;
+    }
+
+    public void setStorehouseId(Long storehouseId) {
+        this.storehouseId = storehouseId;
+    }
+
+    public Long getStorehousePositionsId() {
+        return storehousePositionsId;
+    }
+
+    public void setStorehousePositionsId(Long storehousePositionsId) {
+        this.storehousePositionsId = storehousePositionsId;
+    }
+
+    public String getInkindIds() {
+        return inkindIds;
+    }
+
+    public void setInkindIds(String inkindIds) {
+        this.inkindIds = inkindIds;
+    }
+
+    public Long getInkind_id() {
+        return inkindId;
+    }
+
+    public void setInkind_id(Long inkindId) {
+        this.inkindId = inkindId;
+    }
+
     @Override
     public String toString() {
         return "OutstockListing{" +
@@ -339,6 +379,8 @@ public class OutstockListing implements Serializable {
                 ", number=" + number +
                 ", price=" + price +
                 ", brandId=" + brandId +
+                ", storehouseId=" + storehouseId +
+                ", storehousePositionsId=" + storehousePositionsId +
                 ", deptId=" + deptId +
                 ", createTime=" + createTime +
                 ", createUser=" + createUser +

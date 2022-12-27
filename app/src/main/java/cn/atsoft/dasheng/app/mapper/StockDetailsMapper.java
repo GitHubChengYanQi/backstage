@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.request.StockDetailView;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -69,4 +70,9 @@ public interface StockDetailsMapper extends BaseMapper<StockDetails> {
 
     List<StockDetailsResult> stockInKindList();
     List<StockDetailView> stockDetailView();
+    //综合统计
+    Page<StockDetailView> dataStatisticsView(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockDetailView> dataStatisticsViewDetail(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    StockDetailView stockNumberCycle(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockDetailView> stockNumberCycleDetail(@Param("paramCondition") DataStatisticsViewParam paramCondition);
 }

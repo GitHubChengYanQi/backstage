@@ -1,10 +1,11 @@
 package cn.atsoft.dasheng.erp.mapper;
 
+import cn.atsoft.dasheng.app.model.request.StockView;
 import cn.atsoft.dasheng.erp.entity.OutstockListing;
+import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 
@@ -52,5 +53,17 @@ public interface OutstockListingMapper extends BaseMapper<OutstockListing> {
      * @Date 2021-09-15
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") OutstockListingParam paramCondition);
+    Page<StockView> groupByUser(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView> groupByUserAndSku(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView> groupByMonth(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView> count(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> outBySpuClassCount(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> outByType(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> outByStoreHouse(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> outByUser(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView.SkuAndNumber> outBySpuClass(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView.SkuAndNumber> outBySku(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> outByCustomerSkuCount(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> outByCustomerNumCount(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
 
 }

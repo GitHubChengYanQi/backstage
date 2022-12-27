@@ -670,20 +670,6 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         return null;
     }
 
-    @Override
-    public List<UserList> userLists(String userName) {
-        List<UserList> userLists = new ArrayList<>();
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        if (ToolUtil.isNotEmpty(userName)) {
-            queryWrapper.like("name", userName);
-        }
-        List<User> users = userService.list(queryWrapper);
-        for (User user : users) {
-            String imgUrl = this.imgUrl(user.getUserId().toString());
-            userLists.add(new UserList(user.getUserId(), user.getName(), imgUrl));
-        }
-        return userLists;
-    }
 }
 
 

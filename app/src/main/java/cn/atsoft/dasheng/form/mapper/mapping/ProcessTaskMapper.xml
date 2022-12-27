@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.form.mapper.ProcessTaskMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.form.entity.ActivitiProcessTask">
+        <id column="process_task_id" property="processTaskId"/>
+        <result column="process_id" property="processId"/>
+        <result column="display" property="display"/>
+        <result column="task_name" property="taskName"/>
+        <result column="user_id" property="userId"/>
+        <result column="main_task_id" property="mainTaskId"/>
+        <result column="pid" property="pid"/>
+        <result column="theme" property="theme"/>
+        <result column="origin" property="origin"/>
+        <result column="deptIds" property="deptIds"/>
+        <result column="user_ids" property="userIds"/>
+        <result column="form_id" property="formId"/>
+        <result column="type" property="type"/>
+        <result column="remark" property="remark"/>
+        <result column="source" property="source"/>
+        <result column="source_id" property="sourceId"/>
+        <result column="cause" property="cause"/>
+        <result column="status" property="status"/>
+        <result column="deptId" property="deptId"/>
+        <result column="version" property="version"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="notice_id" property="noticeId"/>
+    </resultMap>
+
+
+    <select id="taskNumberView" resultType="cn.atsoft.dasheng.form.model.result.TaskViewResult"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam">
+        SELECT
+            count(*) as "number",`status` AS "status",create_time AS "createTime"
+        FROM activiti_process_task
+        GROUP BY `status`
+        ORDER BY count(*) DESC
+    </select>
+    <select id="taskTypeView" resultType="cn.atsoft.dasheng.form.model.result.TaskViewResult"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam">
+        SELECT
+            count(*) as "number",`type` AS "type",create_time AS "createTime"
+        FROM activiti_process_task
+        GROUP BY `type`
+        ORDER BY count(*) DESC
+    </select>
+    <select id="taskUserView" resultType="cn.atsoft.dasheng.form.model.result.TaskViewResult"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam">
+        SELECT
+            count(*) as "number",`type` AS "type",create_user AS "createUser"
+        FROM activiti_process_task
+        GROUP BY `type`,create_user
+        ORDER BY count(*) DESC
+    </select>
+</mapper>

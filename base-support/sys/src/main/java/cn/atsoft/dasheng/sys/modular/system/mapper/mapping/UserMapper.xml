@@ -303,9 +303,25 @@
     </select>
     <select id="listUserByIds" resultType="cn.atsoft.dasheng.sys.modular.system.model.result.UserResult">
         SELECT
-        users.user_id,
-        userInfo.avatar,
-        users.`name`
+        users.user_id AS "userId",
+        userInfo.avatar AS "avatar",
+        users.`name` AS "name",
+        users.`role_id` AS "roleId",
+        users.`dept_id` AS "deptId",
+        users.`job_no` AS "jobNo",
+        users.`email` AS "email",
+        users.`phone` AS "phone",
+        users.`account` AS "account",
+        users.`password` AS "password",
+        users.`salt` AS "salt",
+        users.`birthday` AS "birthday",
+        users.`sex` AS "sex",
+        users.`status` AS "status",
+        users.`create_time` AS "createTime",
+        users.`create_user` AS "createUser",
+        users.`update_time` AS "updateTime",
+        users.`update_user` AS "updateUser",
+        users.`version` AS "version"
         FROM
         sys_user users
         LEFT JOIN (
@@ -344,17 +360,123 @@
     </select>
 
 
-    <select id="userResultPage"  resultType="cn.atsoft.dasheng.sys.modular.system.model.result.UserResult"
+    <select id="userResultPageList"  resultType="cn.atsoft.dasheng.sys.modular.system.model.result.UserResult"
             parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.UserParam">
-        select
-        <include refid="Base_Column_List"/>
-        from sys_user
-        where status != 'DELETED'
+        SELECT
+        users.user_id AS "userId",
+        userInfo.avatar AS "avatar",
+        users.`name` AS "name",
+        users.`role_id` AS "roleId",
+        users.`dept_id` AS "deptId",
+        users.`job_no` AS "jobNo",
+        users.`email` AS "email",
+        users.`phone` AS "phone",
+        users.`account` AS "account",
+        users.`password` AS "password",
+        users.`salt` AS "salt",
+        users.`birthday` AS "birthday",
+        users.`sex` AS "sex",
+        users.`status` AS "status",
+        users.`create_time` AS "createTime",
+        users.`create_user` AS "createUser",
+        users.`update_time` AS "updateTime",
+        users.`update_user` AS "updateUser",
+        users.`version` AS "version"
+        FROM
+        sys_user users
+        LEFT JOIN (
+        SELECT
+        a.*
+        FROM
+        daoxin_portal_wxuser_info a,(
+        SELECT
+        user_id,
+        max( create_time ) AS create_time
+        FROM
+        daoxin_portal_wxuser_info
+        GROUP BY
+        user_id
+        ) AS b
+        WHERE
+        a.user_id = b.user_id
+        AND a.create_time = b.create_time
+        AND a.source = 'wxCp'
+        GROUP BY
+        a.user_id
+        ) AS wxuserInfo ON users.user_id = wxuserInfo.user_id
+        LEFT JOIN uc_open_user_info userInfo ON userInfo.member_id = wxuserInfo.member_id
+        AND userInfo.source = "WxCp"
+        WHERE
+        1 = 1
+        and users.status = 'ENABLE'
         <if test="paramCondition.userName!=null and paramCondition.userName!= ''">
-            and name like CONCAT('%',#{paramCondition.userName},'%')
+            and users.name like CONCAT('%',#{paramCondition.userName},'%')
         </if>
         <if test="paramCondition.userId!=null and paramCondition.userId!= ''">
-            and user_id = #{paramCondition.userName}
+            and users.user_id = #{paramCondition.userName}
+        </if>
+    </select>
+    <select id="userResultList"  resultType="cn.atsoft.dasheng.sys.modular.system.model.result.UserResult"
+            parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.UserParam">
+        SELECT
+        users.user_id AS "userId",
+        userInfo.avatar AS "avatar",
+        users.`name` AS "name",
+        users.`role_id` AS "roleId",
+        users.`dept_id` AS "deptId",
+        users.`job_no` AS "jobNo",
+        users.`email` AS "email",
+        users.`phone` AS "phone",
+        users.`account` AS "account",
+        users.`password` AS "password",
+        users.`salt` AS "salt",
+        users.`birthday` AS "birthday",
+        users.`sex` AS "sex",
+        users.`status` AS "status",
+        users.`create_time` AS "createTime",
+        users.`create_user` AS "createUser",
+        users.`update_time` AS "updateTime",
+        users.`update_user` AS "updateUser",
+        users.`version` AS "version"
+        FROM
+        sys_user users
+        LEFT JOIN (
+        SELECT
+        a.*
+        FROM
+        daoxin_portal_wxuser_info a,(
+        SELECT
+        user_id,
+        max( create_time ) AS create_time
+        FROM
+        daoxin_portal_wxuser_info
+        GROUP BY
+        user_id
+        ) AS b
+        WHERE
+        a.user_id = b.user_id
+        AND a.create_time = b.create_time
+        AND a.source = 'wxCp'
+        GROUP BY
+        a.user_id
+        ) AS wxuserInfo ON users.user_id = wxuserInfo.user_id
+        LEFT JOIN uc_open_user_info userInfo ON userInfo.member_id = wxuserInfo.member_id
+        AND userInfo.source = "WxCp"
+        WHERE
+        1 = 1
+        and users.status = 'ENABLE'
+
+        <if test="paramCondition.userName!=null and paramCondition.userName!= ''">
+            and users.name like CONCAT('%',#{paramCondition.userName},'%')
+        </if>
+        <if test="paramCondition.userId!=null and paramCondition.userId!= ''">
+            and users.user_id = #{paramCondition.userName}
+        </if>
+        <if test="paramCondition.userIds!=null and paramCondition.userId.size >0">
+            and user_id in
+            <foreach collection="paramCondition.userIds" index="index" item="userId" separator="," open="(" close=")" >
+                #{userId}
+            </foreach>
         </if>
     </select>
 

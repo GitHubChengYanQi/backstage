@@ -217,4 +217,14 @@
         group by log.maintenance_log_id
     </select>
 
+    <select id="groupByUserList" resultType="cn.atsoft.dasheng.erp.model.result.MaintenanceLogResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        select
+            count(*) AS "number",create_user AS "createUser"
+        from daoxin_erp_maintenance_log where 1 = 1
+
+        GROUP BY create_user
+
+    </select>
+
 </mapper>

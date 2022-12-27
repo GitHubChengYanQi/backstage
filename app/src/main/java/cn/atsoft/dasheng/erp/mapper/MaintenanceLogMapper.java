@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.mapper;
 
 import cn.atsoft.dasheng.erp.entity.MaintenanceLog;
+import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.params.MaintenanceLogParam;
 import cn.atsoft.dasheng.erp.model.result.MaintenanceLogResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -53,5 +54,8 @@ public interface MaintenanceLogMapper extends BaseMapper<MaintenanceLog> {
      * @Date 2022-08-11
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") MaintenanceLogParam paramCondition);
+
+    List<MaintenanceLogResult> groupByUserList(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+
 
 }

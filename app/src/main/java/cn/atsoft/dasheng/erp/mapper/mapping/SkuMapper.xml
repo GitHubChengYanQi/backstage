@@ -230,7 +230,8 @@ type
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
             and (goods_spu.name like CONCAT ('%',#{paramCondition.skuName},'%')
             or sku_name like CONCAT ('%',#{paramCondition.skuName},'%')
-            or standard like CONCAT ('%',#{paramCondition.skuName},'%'))
+            or standard like CONCAT ('%',#{paramCondition.skuName},'%')
+            or goods_sku.model like CONCAT ('%',#{paramCondition.skuName},'%'))
 
             <if test="paramCondition.skuId != null">
                 AND goods_sku.sku_id = #{paramCondition.skuId}
@@ -424,7 +425,8 @@ type
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
             and (goods_spu.name like CONCAT ('%',#{paramCondition.skuName},'%')
             or sku_name like CONCAT ('%',#{paramCondition.skuName},'%')
-            or standard like CONCAT ('%',#{paramCondition.skuName},'%'))
+            or standard like CONCAT ('%',#{paramCondition.skuName},'%')
+            or goods_sku.model like CONCAT ('%',#{paramCondition.skuName},'%'))
 
             <if test="paramCondition.skuId != null">
                 AND goods_sku.sku_id = #{paramCondition.skuId}

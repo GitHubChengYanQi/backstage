@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.mapper;
 
+import cn.atsoft.dasheng.app.model.request.StockView;
 import cn.atsoft.dasheng.erp.entity.InstockList;
+import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.result.InstockListResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -29,6 +31,7 @@ public interface InstockListMapper extends BaseMapper<InstockList> {
      */
     List<InstockListResult> customList(@Param("paramCondition") InstockListParam paramCondition);
 
+
     /**
      * 获取map列表
      *
@@ -52,5 +55,11 @@ public interface InstockListMapper extends BaseMapper<InstockList> {
      * @Date 2021-10-06
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") InstockListParam paramCondition);
+
+    Page<StockView> groupBySpuClass(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> groupByInstockType(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> groupByStorehouse(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> groupByCustomerSku(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> groupByCustomerNum(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
 
 }

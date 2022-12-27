@@ -22,6 +22,7 @@ public class InstockView {
     private Integer logNumberCount;
     private Integer detailSkuCount;
     private Integer detailNumberCount;
+    private Integer customerCount;
     private Integer errorSkuCount;
     private Integer errorNumberCount;
     private List<InstockLogDetailResult> instockLogDetails;

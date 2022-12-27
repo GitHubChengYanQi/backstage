@@ -49,7 +49,7 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
     public void add(ActivitiProcessParam param) {
         ActivitiProcess process = this.query().eq("process_name", param.getProcessName()).eq("display", 1).one();
         if (ToolUtil.isNotEmpty(process)) {
-            throw new ServiceException(500, "名字以重复");
+            throw new ServiceException(500, "名字已重复");
         }
         ActivitiProcess entity = getEntity(param);
 

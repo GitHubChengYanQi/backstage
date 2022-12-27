@@ -298,16 +298,221 @@ stage
 
     </select>
     <select id="stockDetailView" resultType="cn.atsoft.dasheng.app.model.request.StockDetailView">
-        SELECT
-            sku_id AS "skuId",
-            brand_id AS "brandId",
-            sum(number) AS "number"
-        from  daoxin_erp_stock_details
-        WHERE
-            display = 1 and stage = 1
-        GROUP BY
-            sku_id,brand_id
+        SELECT sku_id      AS "skuId",
+               brand_id    AS "brandId",
+               sum(number) AS "number"
+        from daoxin_erp_stock_details
+
+        WHERE display = 1
+          and stage = 1
+        GROUP BY sku_id, brand_id
     </select>
 
+    <select id="dataStatisticsView" resultType="cn.atsoft.dasheng.app.model.request.StockDetailView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        sum( detail.number ) AS "number",
+        class.`name` AS "className",
+        material.`name` AS "materialName",
+        storehouse.`name` AS "storehouseName",
+        class.spu_classification_id AS "spuClassId",
+        material.material_id AS "materialId",
+        storehouse.storehouse_id AS "storehouseId",
+        customer.customer_id AS "customerId",
+        customer.customer_name AS "customerName",
+        count( DISTINCT detail.sku_id ) AS "skuCount",
+        detail.create_time AS "createTime"
+        FROM
+        daoxin_erp_stock_details detail
+        LEFT JOIN goods_inkind inkind ON detail.inkind_id = inkind.inkind_id
+        LEFT JOIN goods_sku sku on detail.sku_id = sku.sku_id
+        LEFT JOIN goods_spu spu on sku.spu_id = spu.spu_id
+        LEFT JOIN goods_spu_class class on class.spu_classification_id = spu.spu_classification_id
+        LEFT JOIN daoxin_erp_material material on sku.material_id = material.material_id
+        LEFT JOIN daoxin_erp_storehouse storehouse on storehouse.storehouse_id = detail.storehouse_id
+        LEFT JOIN daoxin_crm_customer customer on inkind.customer_id = customer.customer_id
+        WHERE
+        detail.display = 1 and detail.stage = 1
+        <if test="paramCondition.spuClassId != null">
+            and spu.spu_classification_id = #{paramCondition.spuClassId}
+        </if>
+        <if test="paramCondition.materialId != null">
+            and material.material_id = #{paramCondition.materialId}
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer.customer_id = #{paramCondition.customerId}
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse.storehouse_id = #{paramCondition.storehouseId}
+        </if>
+        <if test="paramCondition.searchType != null">
+            <choose>
+                <when test="paramCondition.searchType.name == 'SPU_CLASS'">
+                    GROUP BY
+                    spu.spu_classification_id
+                </when>
+                <when test="paramCondition.searchType.name == 'STOREHOUSE'">
+                    GROUP BY
+                    storehouse.storehouse_id
+                </when>
+                <when test="paramCondition.searchType.name == 'MATERIAL'">
+                    GROUP BY
+                    material.material_id
+                </when>
+                <when test="paramCondition.searchType.name == 'CUSTOMER'">
+                    GROUP BY
+                    customer.customer_id
+                </when>
+            </choose>
+        </if>
+
+        ORDER BY
+        sum( detail.number ) DESC
+    </select>
+    <select id="dataStatisticsViewDetail" resultType="cn.atsoft.dasheng.app.model.request.StockDetailView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        sum( detail.number ) AS "number",
+        detail.sku_id AS "skuId",
+        class.spu_classification_id AS "spuClassId",
+        material.material_id AS "materialId",
+        storehouse.storehouse_id AS "storehouseId",
+        customer.customer_id AS "customerId",
+        detail.create_time AS "createTime"
+        FROM
+        daoxin_erp_stock_details detail
+        LEFT JOIN goods_inkind inkind ON detail.inkind_id = inkind.inkind_id
+        LEFT JOIN goods_sku sku on detail.sku_id = sku.sku_id
+        LEFT JOIN goods_spu spu on sku.spu_id = spu.spu_id
+        LEFT JOIN goods_spu_class class on class.spu_classification_id = spu.spu_classification_id
+        LEFT JOIN daoxin_erp_material material on sku.material_id = material.material_id
+        LEFT JOIN daoxin_erp_storehouse storehouse on storehouse.storehouse_id = detail.storehouse_id
+        LEFT JOIN daoxin_crm_customer customer on inkind.customer_id = customer.customer_id
+        WHERE
+        detail.display = 1 and detail.stage = 1
+        <if test="paramCondition.spuClassId != null">
+            and spu.spu_classification_id = #{paramCondition.spuClassId}
+        </if>
+        <if test="paramCondition.materialId != null">
+            and material.material_id = #{paramCondition.materialId}
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer.customer_id = #{paramCondition.customerId}
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse.storehouse_id = #{paramCondition.storehouseId}
+        </if>
+        GROUP BY detail.sku_id
+        ORDER BY
+        sum( detail.number ) DESC
+    </select>
+    <select id="stockNumberCycle" resultType="cn.atsoft.dasheng.app.model.request.StockDetailView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        sum( detail.number ) AS "number",
+        class.`name` AS "className",
+        class.spu_classification_id AS "spuClassId",
+        material.material_id AS "materialId",
+        storehouse.storehouse_id AS "storehouseId",
+        customer.customer_id AS "customerId",
+        material.`name` AS "materialName",
+        storehouse.`name` AS "storehouseName",
+        customer.customer_name AS "customerName",
+        count( DISTINCT detail.sku_id ) AS "skuCount",
+        detail.create_time AS "createTime"
+        FROM
+        daoxin_erp_stock_details detail
+        LEFT JOIN goods_inkind inkind ON detail.inkind_id = inkind.inkind_id
+        LEFT JOIN goods_sku sku on detail.sku_id = sku.sku_id
+        LEFT JOIN goods_spu spu on sku.spu_id = spu.spu_id
+        LEFT JOIN goods_spu_class class on class.spu_classification_id = spu.spu_classification_id
+        LEFT JOIN daoxin_erp_material material on sku.material_id = material.material_id
+        LEFT JOIN daoxin_erp_storehouse storehouse on storehouse.storehouse_id = detail.storehouse_id
+        LEFT JOIN daoxin_crm_customer customer on inkind.customer_id = customer.customer_id
+        WHERE
+        detail.display = 1 and detail.stage = 1
+        <if test="paramCondition.cycle!=null">
+            <choose>
+                <when test="paramCondition.cycle == '1month'">
+                    AND detail.create_time &gt;= DATE_SUB( CURDATE(), INTERVAL 1 MONTH )
+                </when>
+                <when test="paramCondition.cycle == '1month-3month'">
+                    AND detail.create_time &lt;= DATE_SUB( CURDATE(), INTERVAL 1 MONTH )
+                    AND detail.create_time &gt;= DATE_SUB( CURDATE(), INTERVAL 3 MONTH )
+                </when>
+                <when test="paramCondition.cycle == '3month-6month'">
+                    AND detail.create_time &lt;= DATE_SUB( CURDATE(), INTERVAL 3 MONTH )
+                    AND detail.create_time &gt;= DATE_SUB( CURDATE(), INTERVAL 6 MONTH )
+                </when>
+                <when test="paramCondition.cycle == 'after6month'">
+                    AND detail.create_time &lt;= DATE_SUB( CURDATE(), INTERVAL 6 MONTH )
+                </when>
+            </choose>
+
+        </if>
+        <if test="paramCondition.spuClassId != null">
+            and spu.spu_classification_id = #{paramCondition.spuClassId}
+        </if>
+        <if test="paramCondition.materialId != null">
+            and material.material_id = #{paramCondition.materialId}
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer.customer_id = #{paramCondition.customerId}
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse.storehouse_id = #{paramCondition.storehouseId}
+        </if>
+    </select>
+    <select id="stockNumberCycleDetail" resultType="cn.atsoft.dasheng.app.model.request.StockDetailView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        sum( detail.number ) AS "number",
+        detail.sku_id AS "skuId",
+        detail.create_time AS "createTime"
+        FROM
+        daoxin_erp_stock_details detail
+        LEFT JOIN goods_inkind inkind ON detail.inkind_id = inkind.inkind_id
+        LEFT JOIN goods_sku sku on detail.sku_id = sku.sku_id
+        LEFT JOIN goods_spu spu on sku.spu_id = spu.spu_id
+        LEFT JOIN goods_spu_class class on class.spu_classification_id = spu.spu_classification_id
+        LEFT JOIN daoxin_erp_material material on sku.material_id = material.material_id
+        LEFT JOIN daoxin_erp_storehouse storehouse on storehouse.storehouse_id = detail.storehouse_id
+        LEFT JOIN daoxin_crm_customer customer on inkind.customer_id = customer.customer_id
+        WHERE
+        detail.display = 1 and detail.stage = 1
+        <if test="paramCondition.cycle!=null">
+            <choose>
+                <when test="paramCondition.cycle == '1month'">
+                    AND detail.create_time &gt;= DATE_SUB( CURDATE(), INTERVAL 1 MONTH )
+                </when>
+                <when test="paramCondition.cycle == '1month-3month'">
+                    AND detail.create_time &lt;= DATE_SUB( CURDATE(), INTERVAL 1 MONTH )
+                    AND detail.create_time &gt;= DATE_SUB( CURDATE(), INTERVAL 3 MONTH )
+                </when>
+                <when test="paramCondition.cycle == '3month-6month'">
+                    AND detail.create_time &lt;= DATE_SUB( CURDATE(), INTERVAL 3 MONTH )
+                    AND detail.create_time &gt;= DATE_SUB( CURDATE(), INTERVAL 6 MONTH )
+                </when>
+                <when test="paramCondition.cycle == 'after6month'">
+                    AND detail.create_time &lt;= DATE_SUB( CURDATE(), INTERVAL 6 MONTH )
+                </when>
+            </choose>
+
+        </if>
+        <if test="paramCondition.spuClassId != null">
+            and spu.spu_classification_id = #{paramCondition.spuClassId}
+        </if>
+        <if test="paramCondition.materialId != null">
+            and material.material_id = #{paramCondition.materialId}
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer.customer_id = #{paramCondition.customerId}
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse.storehouse_id = #{paramCondition.storehouseId}
+        </if>
+        GROUP BY detail.sku_id
+        ORDER BY sum( detail.number )
+    </select>
 
 </mapper>

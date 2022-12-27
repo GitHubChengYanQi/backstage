@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.mapper;
 
+import cn.atsoft.dasheng.app.model.request.StockView;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
+import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -28,6 +30,14 @@ public interface InstockOrderMapper extends BaseMapper<InstockOrder> {
      * @Date 2021-10-06
      */
     List<InstockOrderResult> customList(@Param("paramCondition") InstockOrderParam paramCondition);
+
+
+    List<StockView> countOrderByType(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView> countOrderByStatus(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> countOrderByUser(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> sumOrderByUser(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView.SkuAndNumber> instockDetails(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView> instockCustomer(@Param("paramCondition") DataStatisticsViewParam paramCondition);
 
     /**
      * 获取map列表
