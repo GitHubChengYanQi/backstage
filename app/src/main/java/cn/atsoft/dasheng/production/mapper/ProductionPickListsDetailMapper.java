@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.production.mapper;
 
+import cn.atsoft.dasheng.app.model.request.StockView;
+import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
@@ -39,6 +41,8 @@ public interface ProductionPickListsDetailMapper extends BaseMapper<ProductionPi
      * @Date 2022-03-25
      */
     List<Map<String, Object>> customMapList(@Param("paramCondition") ProductionPickListsDetailParam paramCondition);
+
+    List<StockView> userSkuAndNumbers(@Param("paramCondition")DataStatisticsViewParam paramCondition);
 
     /**
      * 获取分页实体列表

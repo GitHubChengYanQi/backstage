@@ -134,6 +134,7 @@
         </if>
     </select>
 
+
     <select id="customMapList" resultType="map"
             parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam">
         select
@@ -244,5 +245,26 @@
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
         </if>
     </select>
+    <select id="userSkuAndNumbers" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+            detail.create_user AS "createUser",
+        detail.sku_id AS "skuId",
+        sum( detail.number ) AS "outNumCount"
+        FROM
+        daoxin_production_pick_lists_detail detail
 
+        LEFT JOIN  `daoxin_production_pick_lists` lists ON lists.pick_lists_id = detail.pick_lists_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY
+        detail.create_user,detail.sku_id
+    </select>
 </mapper>

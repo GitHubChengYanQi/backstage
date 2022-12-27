@@ -648,10 +648,6 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
             updateStatus(param.getAnomalyId()); //更新异常状态
         }
 
-        if (ToolUtil.isNotEmpty(param.getCheckNumber()) && !LoginContextHolder.getContext().getUserId().equals(oldEntity.getCreateUser())) {
-            detailService.pushPeople(oldEntity.getCreateUser(), oldEntity.getAnomalyId());
-        }
-
         String skuMessage = skuService.skuMessage(oldEntity.getSkuId());
         if (ToolUtil.isNotEmpty(param.getCheckNumber())) {
             shopCartService.addDynamic(oldEntity.getOrderId(), oldEntity.getSkuId(), "对" + skuMessage + "数量进行复核");
@@ -814,7 +810,9 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
 
         StorehousePositions storehousePositions = ToolUtil.isEmpty(result.getPositionId()) ? new StorehousePositions() : positionsService.getById(result.getPositionId());
         StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
-        ToolUtil.copyProperties(storehousePositions, storehousePositionsResult);
+        if(ToolUtil.isNotEmpty(storehousePositions)){
+            ToolUtil.copyProperties(storehousePositions, storehousePositionsResult);
+        }
 
         if (ToolUtil.isNotEmpty(skuSimpleResults)) {
             result.setSkuResult(skuSimpleResults.get(0));
@@ -856,6 +854,7 @@ public class AnomalyServiceImpl extends ServiceImpl<AnomalyMapper, Anomaly> impl
         List<Long> customerIds = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
         List<Long> positionIds = new ArrayList<>();
+
         for (AnomalyResult datum : data) {
             skuIds.add(datum.getSkuId());
             brandIds.add(datum.getBrandId());

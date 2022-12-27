@@ -428,9 +428,9 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         }
         this.updateBatchById(inventoryStocks);
 
-        for (Long inventoryId : inventoryIds) {    //添加动态
-            shopCartService.addDynamic(inventoryId, null,"提交了异常描述");
-        }
+//        for (Long inventoryId : inventoryIds) {    //添加动态
+//            shopCartService.addDynamic(inventoryId, null,"提交了异常描述");
+//        }
     }
 
     @Override
@@ -490,20 +490,20 @@ public class InventoryStockServiceImpl extends ServiceImpl<InventoryStockMapper,
         this.saveBatch(stockList);
 
         //添加动态
-        String skuMessage = skuService.skuMessage(param.getSkuId());
-        String content = "";
-        if (status == 2) {
-            content = "暂存了" + skuMessage + "的盘点结果";
-        } else {
-            content = "对" + skuMessage + "进行了盘点";
-        }
-
-        Set<Long> inventoryIdsSet = new HashSet<>(inventoryIds);
-        Set<Long> filterInventoryIds = filter(inventoryIdsSet, param);
-
-        for (Long inventoryId : filterInventoryIds) {
-            shopCartService.addDynamic(inventoryId,null, content);
-        }
+//        String skuMessage = skuService.skuMessage(param.getSkuId());
+//        String content = "";
+//        if (status == 2) {
+//            content = "暂存了" + skuMessage + "的盘点结果";
+//        } else {
+//            content = "对" + skuMessage + "进行了盘点";
+//        }
+//
+//        Set<Long> inventoryIdsSet = new HashSet<>(inventoryIds);
+//        Set<Long> filterInventoryIds = filter(inventoryIdsSet, param);
+//
+//        for (Long inventoryId : filterInventoryIds) {
+//            shopCartService.addDynamic(inventoryId,null, content);
+//        }
 
     }
 

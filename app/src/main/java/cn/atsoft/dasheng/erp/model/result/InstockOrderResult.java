@@ -187,7 +187,9 @@ public class InstockOrderResult implements Serializable {
      */
     @ApiModelProperty("入库类型")
     private String instockType;
-    
+
+
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

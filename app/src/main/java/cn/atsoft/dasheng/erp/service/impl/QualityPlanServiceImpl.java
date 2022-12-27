@@ -61,12 +61,12 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
 
         Integer count = this.query().in("plan_name", param.getPlanName()).count();
         if (count > 0) {
-            throw new ServiceException(500, "名称以重复");
+            throw new ServiceException(500, "名称已重复");
         }
 
         Integer planCoding = this.query().in("plan_coding", param.getPlanCoding()).count();
         if (planCoding > 0) {
-            throw new ServiceException(500, "编码以重复");
+            throw new ServiceException(500, "编码已重复");
         }
 
         List<QualityPlanDetailParam> planDetailParams = param.getQualityPlanDetailParams();

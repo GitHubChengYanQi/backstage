@@ -9,6 +9,8 @@ import cn.atsoft.dasheng.form.pojo.UserList;
 import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.params.UserParam;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,26 +31,14 @@ public class UserController extends BaseController {
     private WxuserInfoService wxuserInfoService;
     @Autowired
     private UcOpenUserInfoService openUserInfoService;
+    @Autowired
+    private UserService userService;
 
     @RequestMapping(value = "/userList", method = RequestMethod.POST)
-    public ResponseData userList(@RequestBody(required = false) User user) {
-        if (ToolUtil.isEmpty(user)) {
-            user = new User();
+    public ResponseData userList(@RequestBody(required = false) UserParam userParam) {
+        if (ToolUtil.isEmpty(userParam)) {
+            userParam = new UserParam();
         }
-        List<UserList> userLists = stepsService.userLists(user.getName());
-        return ResponseData.success(userLists);
-    }
-    private void format(List<UserList> users){
-        List<Long> userIds = new ArrayList<>();
-        for (UserList user : users) {
-            WxuserInfo infoList = wxuserInfoService.query().eq("user_id", user.getUserId()).eq("source", "wxCp").last("limit 1").one();
-            if (ToolUtil.isNotEmpty(infoList)) {
-                UcOpenUserInfo userInfo = openUserInfoService.query().eq("member_id", infoList.getMemberId()).eq("source", "wxCp").one();
-                if (ToolUtil.isNotEmpty(userInfo)) {
-                  user.setAvatar(userInfo.getAvatar());
-                }
-            }
-        }
-
+        return ResponseData.success(userService.userResultList(userParam));
     }
 }

@@ -40,7 +40,7 @@ public class ProductionPickListsResult implements Serializable {
 
     @ApiModelProperty("是否可领料")
     private Boolean canPick;
-
+    private String type;
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("任务")

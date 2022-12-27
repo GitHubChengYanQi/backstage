@@ -346,5 +346,45 @@ position_id AS "positionId",customer_json AS "customerJson",
             </foreach>
         </if>
     </select>
+    <select id="countErrorByOrderType" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+            count( DISTINCT anomaly.sku_id ) AS "errorSkuCount",
+            sum( anomaly.real_number - anomaly.need_number ) AS "errorNumCount",
+            instock.instock_type AS "type"
+        FROM
+            daoxin_anomaly anomaly
+                LEFT JOIN daoxin_erp_instock_order instock ON anomaly.form_id = instock.instock_order_id
+        WHERE
+            1 = 1
+          and	anomaly.type = "InstockError"
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(anomaly.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(anomaly.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY instock.instock_type
+        ORDER BY sum( anomaly.real_number - anomaly.need_number ) DESC
+    </select>
+    <select id="count" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+            count( DISTINCT sku_id ) AS "errorSkuCount",
+            sum( real_number - need_number ) AS "errorNumCount"
+        FROM
+            daoxin_anomaly
+        WHERE
+            1 = 1
+          AND type = "InstockError"
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
 
+    </select>
 </mapper>

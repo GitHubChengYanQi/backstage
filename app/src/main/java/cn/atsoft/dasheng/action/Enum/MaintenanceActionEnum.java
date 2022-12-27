@@ -23,7 +23,9 @@ public enum MaintenanceActionEnum implements FormActionInterface {
             return 49L;
         }
     },
+    resubmit("再次提交") {  //再次提交
 
+    },
     maintenanceing ("开始养护");
     public String getValue() {
         return value;

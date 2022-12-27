@@ -4,7 +4,7 @@ package cn.atsoft.dasheng.production.service.impl;
 import cn.atsoft.dasheng.action.Enum.OutStockActionEnum;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
-import cn.atsoft.dasheng.app.model.request.OutStockView;
+import cn.atsoft.dasheng.app.model.request.StockView;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
@@ -1032,7 +1032,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                         listingParam.setNumber(Long.valueOf(listsCart.getNumber()));
                         listingParam.setSkuId(listsCart.getSkuId());
                         listingParam.setInkindId(listsCart.getInkindId());
-                        listingParam.setPositionsId(listsCart.getStorehousePositionsId());
+                        listingParam.setStorehousePositionsId(listsCart.getStorehousePositionsId());
                         if (ToolUtil.isNotEmpty(listsCart.getBrandId()) || listsCart.getBrandId().equals(0L)) {
                             listingParam.setBrandId(listsCart.getBrandId());
                         }
@@ -1065,7 +1065,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                         OutstockListingParam listingParam = new OutstockListingParam();
                         listingParam.setNumber(Long.valueOf(listsCart.getNumber()));
                         listingParam.setSkuId(listsCart.getSkuId());
-                        listingParam.setPositionsId(listsCart.getStorehousePositionsId());
+                        listingParam.setStorehousePositionsId(listsCart.getStorehousePositionsId());
+                        listingParam.setStorehouseId(listsCart.getStorehouseId());
                         listingParam.setInkindId(listsCart.getInkindId());
                         if (ToolUtil.isNotEmpty(listsCart.getBrandId())) {
                             listingParam.setBrandId(listsCart.getBrandId());
@@ -1202,7 +1203,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     listingParam.setNumber(Long.valueOf(listsCart.getNumber()));
                     listingParam.setSkuId(listsCart.getSkuId());
                     listingParam.setInkindId(listsCart.getInkindId());
-                    listingParam.setPositionsId(listsCart.getStorehousePositionsId());
+                    listingParam.setStorehousePositionsId(listsCart.getStorehousePositionsId());
                     if (ToolUtil.isNotEmpty(listsCart.getBrandId()) || listsCart.getBrandId().equals(0L)) {
                         listingParam.setBrandId(listsCart.getBrandId());
                     }
@@ -1220,7 +1221,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     OutstockListingParam listingParam = new OutstockListingParam();
                     listingParam.setNumber(Long.valueOf(listsCart.getNumber()));
                     listingParam.setSkuId(listsCart.getSkuId());
-                    listingParam.setPositionsId(listsCart.getStorehousePositionsId());
+                    listingParam.setStorehousePositionsId(listsCart.getStorehousePositionsId());
                     listingParam.setInkindId(listsCart.getInkindId());
                     if (ToolUtil.isNotEmpty(listsCart.getBrandId())) {
                         listingParam.setBrandId(listsCart.getBrandId());
@@ -1632,12 +1633,12 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         this.updateById(lists);
     }
     @Override
-    public Page<OutStockView> outStockUserView(DataStatisticsViewParam param) {
+    public Page<StockView> outStockUserView(DataStatisticsViewParam param) {
        return this.baseMapper.outstockUserView(PageFactory.defaultPage(),param);
 
     }
     @Override
-    public List<OutStockView> outStockView(DataStatisticsViewParam param) {
+    public List<StockView> outStockView(DataStatisticsViewParam param) {
        return this.baseMapper.outstockView(param);
 
     }

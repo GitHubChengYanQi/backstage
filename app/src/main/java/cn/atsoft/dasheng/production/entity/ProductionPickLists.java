@@ -40,6 +40,12 @@ public class ProductionPickLists implements Serializable {
     @TableField("coding")
     private String coding;
 
+    /**
+     * 领取物料码
+     */
+    @TableField("type")
+    private String type;
+
     @TableField("user_id")
     private Long userId;
 
@@ -291,6 +297,14 @@ public class ProductionPickLists implements Serializable {
 
     public void setTaskId(Long taskId) {
         this.taskId = taskId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

@@ -41,7 +41,7 @@ public class InvoiceBillParam implements Serializable, BaseValidatingParam {
      * 附件
      */
     @ApiModelProperty("附件")
-    private String enclosureId;
+    private Long enclosureId;
 
     /**
      * 发票名称
@@ -75,6 +75,13 @@ public class InvoiceBillParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("部门编号")
     private Long deptId;
+
+    /**
+     * 关联订单
+     */
+    @ApiModelProperty("关联订单")
+    private Long orderId;
+
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

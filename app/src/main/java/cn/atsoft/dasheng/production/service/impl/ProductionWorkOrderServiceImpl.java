@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.QualityCheckResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.service.QualityCheckService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -311,7 +313,6 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
             skuNumber.put(stockDetail.getSkuId(), stockDetail.getNum());
         }
 
-
         List<Long> stepsIds = new ArrayList<>();
         List<Long> workOrderIds = new ArrayList<>();
         List<Long> productionPlanId = new ArrayList<>();
@@ -339,7 +340,9 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
             qualityCheckIds.add(shipSetDetail.getQualityId());
             qualityCheckIds.add(shipSetDetail.getMyQualityId());
         }
-        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        skuIds.addAll(param.stream().map(ProductionWorkOrderResult::getSkuId).distinct().collect(Collectors.toList()));
+        skuIds =  skuIds.stream().distinct().collect(Collectors.toList());
+        List<SkuSimpleResult> skuResults = skuService.simpleFormatSkuResult(skuIds);
         /**
          * 查询生产计划  获取卡片数量
          */
@@ -367,7 +370,7 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
             List<ActivitiSetpSetDetailResult> shipSetDetailResult = new ArrayList<>();
             for (ActivitiSetpSetDetailResult shipSetDetail : shipSetDetails) {
                 if (setpSetResult.getSetpsId().equals(shipSetDetail.getSetpsId())) {
-                    for (SkuResult skuResult : skuResults) {
+                    for (SkuSimpleResult skuResult : skuResults) {
                         if (skuResult.getSkuId().equals(shipSetDetail.getSkuId())) {
                             shipSetDetail.setSkuResult(skuResult);
                         }
@@ -381,7 +384,12 @@ public class ProductionWorkOrderServiceImpl extends ServiceImpl<ProductionWorkOr
 
 
         for (ProductionWorkOrderResult result : param) {
-
+            for (SkuSimpleResult skuResult : skuResults) {
+                if(ToolUtil.isNotEmpty(result.getSkuId()) && result.getSkuId().equals(skuResult.getSkuId())){
+                    result.setSkuResult(skuResult);
+                    break;
+                }
+            }
             Long number = skuNumber.get(result.getSkuId());
             if (ToolUtil.isNotEmpty(number)) {
                 result.setStockNumber(number);

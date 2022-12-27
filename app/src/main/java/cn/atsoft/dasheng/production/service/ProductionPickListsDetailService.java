@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.production.service;
 
+import cn.atsoft.dasheng.app.model.request.StockView;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
@@ -78,4 +80,5 @@ public interface ProductionPickListsDetailService extends IService<ProductionPic
      */
      PageInfo<ProductionPickListsDetailResult> findPageBySpec(ProductionPickListsDetailParam param);
 
+    List<StockView> getUserSkuAndNumbers(DataStatisticsViewParam param);
 }

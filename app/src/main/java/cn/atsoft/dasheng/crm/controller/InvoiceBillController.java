@@ -41,8 +41,8 @@ public class InvoiceBillController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody InvoiceBillParam invoiceBillParam) {
-        this.invoiceBillService.add(invoiceBillParam);
-        return ResponseData.success();
+        Object add = this.invoiceBillService.add(invoiceBillParam);
+        return ResponseData.success(add);
     }
 
     /**
@@ -84,6 +84,9 @@ public class InvoiceBillController extends BaseController {
         InvoiceBill detail = this.invoiceBillService.getById(invoiceBillParam.getInvoiceBillId());
         InvoiceBillResult result = new InvoiceBillResult();
         ToolUtil.copyProperties(detail, result);
+        invoiceBillService.format(new ArrayList<InvoiceBillResult>(){{
+            add(result);
+        }});
 
 
         return ResponseData.success(result);

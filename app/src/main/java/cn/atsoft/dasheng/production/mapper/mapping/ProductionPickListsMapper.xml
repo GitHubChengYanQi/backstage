@@ -12,6 +12,7 @@
         <result column="enclosure" property="enclosure" />
         <result column="remarks" property="remarks" />
         <result column="note" property="note" />
+        <result column="type" property="type" />
         <result column="user_ids" property="userIds" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
@@ -26,7 +27,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        pick_lists_id AS "pickListsId",task_id AS "taskId",enclosure AS "enclosure",pick_lists_name AS "pickListsName",user_ids AS "userIds" ,remarks AS "remarks",note AS "note" , coding AS "coding" ,user_id AS "userId", source AS "source", source_id AS "sourceId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status"
+        pick_lists_id AS "pickListsId",type AS "type",task_id AS "taskId",enclosure AS "enclosure",pick_lists_name AS "pickListsName",user_ids AS "userIds" ,remarks AS "remarks",note AS "note" , coding AS "coding" ,user_id AS "userId", source AS "source", source_id AS "sourceId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status"
     </sql>
 
 
@@ -74,7 +75,7 @@
                 </foreach>
             </if>
     </select>
-     <select id="outstockUserView" resultType="cn.atsoft.dasheng.app.model.request.OutStockView" parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+     <select id="outstockUserView" resultType="cn.atsoft.dasheng.app.model.request.StockView" parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
          select
          user_id AS "userId",
          create_time AS "createTime"
@@ -87,7 +88,7 @@
      </select>
 
 
-    <select id="outstockView" resultType="cn.atsoft.dasheng.app.model.request.OutStockView" parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+    <select id="outstockView" resultType="cn.atsoft.dasheng.app.model.request.StockView" parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
         SELECT
             lists.pick_lists_id AS "pickListsId",
             lists.user_id AS "userId",
@@ -103,7 +104,7 @@
             and (create_time between CONCAT(#{paramCondition.beginTime},' 00:00:00') and CONCAT(#{paramCondition.endTime},' 23:59:59'))
         </if>
     </select>
-    <select id="pickView" resultType="cn.atsoft.dasheng.app.model.request.OutStockView" parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+    <select id="pickView" resultType="cn.atsoft.dasheng.app.model.request.StockView" parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
             select
                 lists.pick_lists_id AS "pickListsId",
                 lists.user_id AS "userId",
@@ -115,7 +116,98 @@
             LEFT JOIN daoxin_production_pick_lists_detail detail on lists.pick_lists_id = detail.pick_lists_id
             GROUP BY lists.user_id
 
-        </select>
+    </select>
+    <select id="orderCountByType" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        select
+         
+        lists.type AS "type",
+        count(*) AS "orderCount",
+        lists.create_time AS "createTime",
+        lists.create_user AS "createUser"
+        from
+        `daoxin_production_pick_lists` lists
+        LEFT JOIN daoxin_production_pick_lists_detail detail on lists.pick_lists_id = detail.pick_lists_id
+        where 1=1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(lists.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(lists.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY lists.type
+
+    </select>
+    <select id="orderCountByStatus" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        select
+         
+        count(pick_lists_id) AS "orderCount",
+        create_time AS "createTime",
+        create_user AS "createUser",
+        status AS "status"
+        from
+        `daoxin_production_pick_lists`
+        where  1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(lists.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(lists.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+
+        GROUP BY status
+
+    </select>
+    <select id="orderCountByCreateUser" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        select
+         
+        count(*) AS "orderCount",
+        lists.create_time AS "createTime",
+        lists.create_user AS "createUser",
+        lists.status AS "status"
+        from
+        `daoxin_production_pick_lists` lists
+        LEFT JOIN daoxin_production_pick_lists_detail detail on lists.pick_lists_id = detail.pick_lists_id
+
+        where  1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!= null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY lists.create_user
+        ORDER BY count(*) DESC
+    </select>
+    <select id="orderDetailCountByCreateUser" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        lists.pick_lists_id AS "pickListsId",
+        lists.create_time AS "createTime",
+        lists.create_user AS "createUser",
+        count( DISTINCT detail.sku_id ) AS "outSkuCount",
+        sum( detail.number ) AS "outNumCount"
+        FROM
+        `daoxin_production_pick_lists` lists
+        LEFT JOIN daoxin_production_pick_lists_detail detail ON lists.pick_lists_id = detail.pick_lists_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY
+        lists.create_user
+        ORDER BY sum( detail.number ) DESC
+    </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsParam">
         select
