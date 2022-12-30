@@ -172,10 +172,10 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
         Page<ProductionPlanResult> pageContext = getPageContext();
         IPage<ProductionPlanResult> page = this.baseMapper.customPageList(pageContext, param);
         this.format(page.getRecords());
-        for (ProductionPlanResult record : page.getRecords()) {
-            record.setWorkOrderResults(null);
-            record.setPlanDetailResults(null);
-        }
+//        for (ProductionPlanResult record : page.getRecords()) {
+//            record.setWorkOrderResults(null);
+//            record.setPlanDetailResults(null);
+//        }
         return PageFactory.createPageInfo(page);
     }
     @Override

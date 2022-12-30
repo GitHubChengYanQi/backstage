@@ -1517,6 +1517,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> userIds = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
         List<Long> materialIds = new ArrayList<>();
+
         for (SkuResult skuResult : param) {
             skuIds.add(skuResult.getSkuId());
             spuIds.add(skuResult.getSpuId());
@@ -1690,6 +1691,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 if (part.getSkuId().equals(skuResult.getSkuId())) {
                     skuResult.setInBom(true);
                     skuResult.setPartsId(part.getPartsId());
+                    skuResult.setPartsResult(BeanUtil.copyProperties(part, PartsResult.class));
                     break;
                 }
             }

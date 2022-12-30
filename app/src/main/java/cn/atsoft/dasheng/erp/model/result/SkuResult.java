@@ -1,8 +1,10 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.MaterialResult;
+import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.appBase.aop.FieldPermission;
 import cn.atsoft.dasheng.appBase.model.result.MediaResult;
@@ -45,6 +47,7 @@ public class SkuResult implements Serializable {
     List<AttributeValuesResult> list;   //规格型号
     private List<SkuJson> skuJsons;
     private SpuResult spuResult;
+    private PartsResult partsResult;
     private String spuName;
     private Long partsId;
     private String createUserName;
