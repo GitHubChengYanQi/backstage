@@ -27,7 +27,13 @@ public class ProductionPlanParam implements Serializable, BaseValidatingParam {
     List<ProductionPlanDetailParam> productionPlanDetailParams;
     List<OrderDetailParam> orderDetailParams;
 
+    private Long customerId;
 
+
+
+    private Long skuId;
+
+    private Integer status;
 
     /**
      * 生产计划id

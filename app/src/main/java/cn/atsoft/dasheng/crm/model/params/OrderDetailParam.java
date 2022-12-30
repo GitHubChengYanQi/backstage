@@ -30,12 +30,15 @@ public class OrderDetailParam implements Serializable, BaseValidatingParam {
 
     private String remark;
     private Integer type;
+    private Long orderDetailId;
 
     /**
      * 详情id
      */
     @ApiModelProperty("详情id")
     private Long detailId;
+
+
 
     /**
      * 订单id

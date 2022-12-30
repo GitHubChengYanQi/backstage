@@ -36,6 +36,11 @@ public class ProductionPlan implements Serializable {
      */
     @TableField("coding")
     private String coding;
+    /**
+     * 状态
+     */
+    @TableField("status")
+    private Integer status;
 
     /**
      * 主题
@@ -264,21 +269,35 @@ public class ProductionPlan implements Serializable {
         this.updateUser = updateUser;
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
-        return "Plan{" +
+        return "ProductionPlan{" +
                 "productionPlanId=" + productionPlanId +
-                ", theme=" + theme +
-                ", origin=" + origin +
+                ", coding='" + coding + '\'' +
+                ", status=" + status +
+                ", theme='" + theme + '\'' +
+                ", origin='" + origin + '\'' +
                 ", executionTime=" + executionTime +
+                ", endTime=" + endTime +
                 ", userId=" + userId +
-                ", remark=" + remark +
+                ", remark='" + remark + '\'' +
                 ", createUser=" + createUser +
                 ", deptId=" + deptId +
                 ", display=" + display +
+                ", cardCoding='" + cardCoding + '\'' +
+                ", type='" + type + '\'' +
+                ", files='" + files + '\'' +
                 ", updateTime=" + updateTime +
                 ", createTime=" + createTime +
                 ", updateUser=" + updateUser +
-                "}";
+                '}';
     }
 }
