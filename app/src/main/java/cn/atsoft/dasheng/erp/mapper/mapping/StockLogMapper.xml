@@ -277,5 +277,46 @@
                         and deptId like CONCAT('%',#{paramCondition.deptId},'%')
                 </if>
     </select>
+    <select id="groupView" resultType="cn.atsoft.dasheng.app.model.request.StockView" parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        log.sku_id AS "skuId",
+        log.customer_id AS "customerId",
+        log.brand_id AS "brandId",
+        sum( log.number ) AS "number",
+        log.create_time AS "createTime"
+        FROM
+        daoxin_erp_stock_log log
+        LEFT JOIN goods_sku sku ON log.sku_id = sku.sku_id
+        LEFT JOIN goods_spu spu ON spu.spu_id = sku.spu_id
+        LEFT JOIN goods_spu_class class ON spu.spu_classification_id = class.spu_classification_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(log.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(log.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        <if test="paramCondition.spuClassId != null">
+            and class.spu_classification_id = #{paramCondition.spuClassId}
+        </if>
+        <if test="paramCondition.skuId != null">
+            and log.sku_id = #{paramCondition.skuId}
+        </if>
+        <if test="paramCondition.customerId != null">
+            and log.customer_id = #{paramCondition.customerId}
+        </if>
+        <if test="paramCondition.brandId != null">
+            and log.brand_id = #{paramCondition.brandId}
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''">
+            and log.source like CONCAT('%',#{paramCondition.source},'%')
+        </if>
+        GROUP BY
+        log.brand_id,
+        log.sku_id,
+        log.customer_id
+    </select>
 
 </mapper>
