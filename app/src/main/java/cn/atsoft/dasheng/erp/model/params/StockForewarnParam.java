@@ -25,6 +25,7 @@ public class StockForewarnParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private List<StockForewarnParam> params;
 
     private List<Long> skuIds;
     private String update;

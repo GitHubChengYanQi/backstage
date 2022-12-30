@@ -78,7 +78,34 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
         StockForewarn entity = getEntity(param);
         this.save(entity);
     }
+    @Override
+    public void saveOrUpdateByat(List<StockForewarnParam> params){
+        List<StockForewarn> paramEntity = BeanUtil.copyToList(params, StockForewarn.class);
 
+        params.removeIf(i->ToolUtil.isEmpty(i.getInventoryFloor()) && ToolUtil.isEmpty(i.getInventoryCeiling()));
+
+
+
+        List<Long> skuId = paramEntity.stream().map(StockForewarn::getFormId).collect(Collectors.toList());
+
+
+        List<StockForewarn> stockForewarns =skuId.size() == 0? new ArrayList<>() : this.lambdaQuery().in(StockForewarn::getFormId, skuId).eq(StockForewarn::getDisplay, 1).list();
+
+        for (StockForewarn stockForewarn : stockForewarns) {
+            stockForewarn.setDisplay(0);
+        }
+        if (stockForewarns.size()>0) {
+            this.updateBatchById(stockForewarns);
+        }
+        if (paramEntity.size()>0) {
+            this.saveBatch(paramEntity);
+
+        }
+
+
+
+
+    }
     @Override
     public void delete(StockForewarnParam param) {
         if (ToolUtil.isEmpty(param.getForewarnId())) {

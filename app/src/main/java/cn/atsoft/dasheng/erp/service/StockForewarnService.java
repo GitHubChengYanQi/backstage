@@ -27,6 +27,8 @@ public interface StockForewarnService extends IService<StockForewarn> {
      */
     void add(StockForewarnParam param);
 
+    void saveOrUpdateByat(List<StockForewarnParam> params);
+
     /**
      * 删除
      *

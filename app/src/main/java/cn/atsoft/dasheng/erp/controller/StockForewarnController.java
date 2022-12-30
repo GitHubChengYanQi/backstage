@@ -45,6 +45,18 @@ public class StockForewarnController extends BaseController {
         this.stockForewarnService.add(stockForewarnParam);
         return ResponseData.success();
     }
+    /**
+     * 新增接口
+     *
+     * @author sjl
+     * @Date 2022-12-05
+     */
+    @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData saveOrUpdate(@RequestBody StockForewarnParam stockForewarnParam) {
+        this.stockForewarnService.saveOrUpdateByat(stockForewarnParam.getParams());
+        return ResponseData.success();
+    }
 
     /**
      * 编辑接口
