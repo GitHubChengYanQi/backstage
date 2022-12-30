@@ -93,7 +93,7 @@ public class SopDetailServiceImpl extends ServiceImpl<SopDetailMapper, SopDetail
     }
     @Override
     public List<SopDetail> getSopdetailIdbyResult(Long sopId){
-        List<SopDetail> sopDetails = this.query().eq("sop_id", sopId).list();
+        List<SopDetail> sopDetails = this.query().eq("sop_id", sopId).eq("display",1).list();
         if (ToolUtil.isEmpty(sopId)) {
             throw new ServiceException(500,"所删除数据不存在");
         }else {
