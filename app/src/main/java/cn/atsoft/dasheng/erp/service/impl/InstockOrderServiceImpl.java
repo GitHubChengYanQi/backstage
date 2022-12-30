@@ -2161,9 +2161,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Override
     public List<InstockViewDetail> viewDetail(DataStatisticsViewParam param) {
-        LambdaQueryChainWrapper<InstockOrder> instockOrderLambdaQueryChainWrapper = this.lambdaQuery().eq(InstockOrder::getCustomerId, param.getCustomerId()).eq(InstockOrder::getDisplay, 1);
+        LambdaQueryChainWrapper<InstockOrder> instockOrderLambdaQueryChainWrapper = this.lambdaQuery().eq(InstockOrder::getDisplay, 1);
         if (param.getBeginTime() != null && param.getEndTime() != null) {
             instockOrderLambdaQueryChainWrapper.between(InstockOrder::getCreateTime, DateUtil.format(param.getBeginTime(), "yyyy-MM-dd"), DateUtil.format(param.getEndTime(), "yyyy-MM-dd"));
+        }
+        if (ToolUtil.isNotEmpty(param.getCustomerId())){
+            instockOrderLambdaQueryChainWrapper.eq(InstockOrder::getCustomerId, param.getCustomerId());
         }
         List<InstockOrder> instockOrders = instockOrderLambdaQueryChainWrapper.list();
 
@@ -2242,51 +2245,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Override
     public InstockView viewTotail(DataStatisticsViewParam param) {
-        LambdaQueryChainWrapper<InstockOrder> instockOrderLambdaQueryChainWrapper = this.lambdaQuery();
-        if (param.getInstockOrderId() == null) {
-            instockOrderLambdaQueryChainWrapper.eq(InstockOrder::getDisplay, 1).isNotNull(InstockOrder::getCustomerId);
-            if (param.getBeginTime() != null && param.getEndTime() != null) {
-                instockOrderLambdaQueryChainWrapper.between(InstockOrder::getCreateTime, DateUtil.format(param.getBeginTime(), "yyyy-MM-dd"), DateUtil.format(param.getEndTime(), "yyyy-MM-dd"));
-            }
-        } else {
-            instockOrderLambdaQueryChainWrapper.eq(InstockOrder::getInstockOrderId, param.getInstockOrderId());
-        }
-        List<InstockOrder> instockOrders = instockOrderLambdaQueryChainWrapper.list();
-
-        List<InstockListResult> instockLists = instockOrders.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(instockListService.lambdaQuery().in(InstockList::getInstockOrderId, instockOrders.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), InstockListResult.class);
-        instockListService.format(instockLists);
-
-        List<AnomalyResult> instockErrors = instockOrders.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(anomalyService.lambdaQuery().eq(Anomaly::getType, "InstockError").in(Anomaly::getFormId, instockOrders.stream().map(InstockOrder::getInstockOrderId).collect(Collectors.toList())).list(), AnomalyResult.class);
-        anomalyService.format(instockErrors);
-        List<Long> customerIds = instockOrders.stream().map(InstockOrder::getCustomerId).distinct().collect(Collectors.toList());
-
-        int detailNumberCount = 0;
-        int logNumberCount = 0;
-        int errorNumberCount = 0;
-        List<Long> detail = new ArrayList<>();
-        List<Long> log = new ArrayList<>();
-        List<Long> error = new ArrayList<>();
-        for (InstockListResult instockList : instockLists) {
-            detailNumberCount += instockList.getNumber();
-            detail.add(instockList.getSkuId());
-            log.add(instockList.getSkuId());
-            logNumberCount += instockList.getInstockNumber();
-        }
-        instockErrors.removeIf(i -> i.getErrorNumber() == 0);
-        for (AnomalyResult instockError : instockErrors) {
-            errorNumberCount += instockError.getErrorNumber();
-            error.add(instockError.getSkuId());
-        }
-        InstockView result = new InstockView();
-        result.setDetailSkuCount(detail.stream().distinct().collect(Collectors.toList()).size());
-        result.setErrorSkuCount(error.stream().distinct().collect(Collectors.toList()).size());
-        result.setLogSkuCount(log.stream().distinct().collect(Collectors.toList()).size());
-        result.setDetailNumberCount(detailNumberCount);
-        result.setErrorNumberCount(errorNumberCount);
-        result.setLogNumberCount(logNumberCount);
-        result.setOrderCount(instockOrders.size());
-        result.setCustomerCount(customerIds.stream().distinct().collect(Collectors.toList()).size());
-
-        return result;
+//        this.baseMapper.customPageList()
+        return null;
     }
+
 }

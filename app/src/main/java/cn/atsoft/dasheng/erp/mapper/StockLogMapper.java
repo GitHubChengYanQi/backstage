@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.mapper;
 
+import cn.atsoft.dasheng.app.model.request.StockView;
 import cn.atsoft.dasheng.erp.entity.StockLog;
 import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.params.StockLogParam;
@@ -47,6 +48,7 @@ public interface StockLogMapper extends BaseMapper<StockLog> {
     Page<StockLogResult> customPageList(@Param("page") Page page, @Param("paramCondition") StockLogParam paramCondition);
 
     List<StockLogResult> viewByUserAndType(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockView> groupView(@Param("page") Page page, @Param("paramCondition") DataStatisticsViewParam paramCondition);
 
     /**
      * 获取分页map列表

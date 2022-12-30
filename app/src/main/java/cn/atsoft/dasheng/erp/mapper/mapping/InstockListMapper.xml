@@ -320,6 +320,55 @@ storehouse_id
         ORDER BY
         sum( list.number ) DESC
     </select>
+    <select id="listView" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        list.instock_list_id AS instockListId,
+        list.brand_id AS "brandId",
+        list.sku_id AS "skuId",
+        sum( list.number ) AS "number",
+        sum( list.instock_number ) AS "instockNumber",
+        sum( list.number - list.instock_number ) AS "noInstockNumber",
+        instock.create_time AS "createTime"
+        FROM
+        daoxin_erp_instock_list list
+        LEFT JOIN goods_sku sku ON list.sku_id = sku.sku_id
+        LEFT JOIN goods_spu spu ON spu.spu_id = sku.spu_id
+        LEFT JOIN goods_spu_class class ON spu.spu_classification_id = class.spu_classification_id
+        LEFT JOIN daoxin_erp_instock_order instock ON list.instock_order_id = instock.instock_order_id
+        LEFT JOIN daoxin_crm_customer customer ON customer.customer_id = instock.customer_id
+        WHERE
+            1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and list.create_time BETWEEN #{paramCondition.beginTime} and #{paramCondition.endTime}
+
+        </if>
+        <if test="paramCondition.spuClassId != null">
+            and class.spu_classification_id = #{paramCondition.spuClassId}
+        </if>
+        <if test="paramCondition.customerId != null">
+            and list.customer_id = #{paramCondition.customerId}
+        </if>
+        <if test="paramCondition.name != null">
+            and (spu.name like CONCAT ('%',#{paramCondition.name},'%')
+            or sku.sku_name like CONCAT ('%',#{paramCondition.name},'%')
+            or sku.standard like CONCAT ('%',#{paramCondition.name},'%'))
+        </if>
+
+        <if test="paramCondition.searchType != null">
+            <choose>
+                <when test="paramCondition.searchType.name == 'NO_INSTOCK_NUMBER'">
+                    and  list.number - list.instock_number > 0
+                </when>
+                <when test="paramCondition.searchType.name == 'INSTOCK_NUMBER'">
+                    and  list.instock_number  > 0
+                </when>
+            </choose>
+        </if>
+        GROUP BY list.sku_id,list.brand_id,list.brand_id
+        ORDER BY
+        sum( list.number ) DESC
+    </select>
 
 
 </mapper>

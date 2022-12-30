@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -20,7 +22,11 @@ public class StockLogResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private BrandResult brandResult;
+    private SkuSimpleResult skuResult;
 
+
+    private CustomerResult customerResult;
     /**
      * 库存操作记录
      */
