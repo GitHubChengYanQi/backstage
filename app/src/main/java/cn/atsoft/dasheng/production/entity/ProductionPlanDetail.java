@@ -48,6 +48,12 @@ public class ProductionPlanDetail implements Serializable {
      */
     @TableField("plan_number")
     private Integer planNumber;
+
+    /**
+     * 状态
+     */
+    @TableField("status")
+    private Integer status;
     /**
      * 生产中的数量
      */
@@ -249,13 +255,23 @@ public class ProductionPlanDetail implements Serializable {
         this.makingNumber = makingNumber;
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
-        return "PlanDetail{" +
+        return "ProductionPlanDetail{" +
                 "productionPlanDetailId=" + productionPlanDetailId +
                 ", productionPlanId=" + productionPlanId +
                 ", skuId=" + skuId +
-                ", number=" + planNumber +
+                ", planNumber=" + planNumber +
+                ", status=" + status +
+                ", makingNumber=" + makingNumber +
                 ", deliveryDate=" + deliveryDate +
                 ", createUser=" + createUser +
                 ", deptId=" + deptId +
@@ -263,6 +279,10 @@ public class ProductionPlanDetail implements Serializable {
                 ", updateTime=" + updateTime +
                 ", createTime=" + createTime +
                 ", updateUser=" + updateUser +
-                "}";
+                ", orderDetailId=" + orderDetailId +
+                ", contractCoding='" + contractCoding + '\'' +
+                ", customerName='" + customerName + '\'' +
+                ", partsId=" + partsId +
+                '}';
     }
 }

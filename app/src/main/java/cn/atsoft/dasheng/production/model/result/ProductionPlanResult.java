@@ -25,6 +25,9 @@ public class ProductionPlanResult implements Serializable {
 
     private UserResult userResult;
 
+    private UserResult createUserResult;
+
+
     private List<ProductionWorkOrderResult> workOrderResults;
 
 
@@ -39,6 +42,11 @@ public class ProductionPlanResult implements Serializable {
      */
     @ApiModelProperty("编码")
     private String coding;
+    /**
+     * 状态
+     */
+    @ApiModelProperty("状态")
+    private Integer status;
 
     /**
      * 主题
