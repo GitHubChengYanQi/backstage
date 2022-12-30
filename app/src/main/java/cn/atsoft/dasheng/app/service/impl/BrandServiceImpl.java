@@ -88,7 +88,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
     public void update(BrandParam param) {
         Integer brandName = this.query().eq("brand_name", param.getBrandName()).count();
         if (brandName > 1) {
-            throw new ServiceException(500, "名字以重复");
+            throw new ServiceException(500, "名字已重复");
         }
         if (ToolUtil.isNotEmpty(param.getSkuIds())){
             List<SkuBrandBind> brandBinds = skuBrandBindService.query().eq("brand_id", param.getBrandId()).list();

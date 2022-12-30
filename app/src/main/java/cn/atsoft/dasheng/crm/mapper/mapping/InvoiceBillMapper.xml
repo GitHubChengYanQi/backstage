@@ -15,18 +15,24 @@
         <result column="update_user" property="updateUser" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="order_id" property="orderId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        invoice_bill_id AS "invoiceBillId", money AS "money", enclosure_id AS "enclosureId", name AS "name", Invoice_date AS "invoiceDate", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        invoice_bill_id AS "invoiceBillId", money AS "money", enclosure_id AS "enclosureId", name AS "name", Invoice_date AS "invoiceDate", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId", order_id AS "orderId"
     </sql>
+
+    <sql id="List">
+       o.coding AS "coding" ,b.invoice_bill_id AS "invoiceBillId", b.money AS "money", b.enclosure_id AS "enclosureId", b.name AS "name", b.Invoice_date AS "invoiceDate", b.create_time AS "createTime", b.create_user AS "createUser", b.update_time AS "updateTime", b.update_user AS "updateUser", b.display AS "display", b.deptId AS "deptId", b.order_id AS "orderId"
+    </sql>
+
 
 
     <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.InvoiceBillResult" parameterType="cn.atsoft.dasheng.crm.model.params.InvoiceBillParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_invoice_bill where 1 = 1
+        from daoxin_invoice_bill where 1 = 1 and display = 1
             <if test="paramCondition.invoiceBillId != null">
                 and invoice_bill_id like CONCAT('%',#{paramCondition.invoiceBillId},'%')
             </if>
@@ -65,7 +71,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.InvoiceBillParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_invoice_bill where 1 = 1
+        from daoxin_invoice_bill where 1 = 1 and display = 1
                 <if test="paramCondition.invoiceBillId != null">
                         and invoice_bill_id like CONCAT('%',#{paramCondition.invoiceBillId},'%')
                 </if>
@@ -103,40 +109,40 @@
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.InvoiceBillResult" parameterType="cn.atsoft.dasheng.crm.model.params.InvoiceBillParam">
         select
-        <include refid="Base_Column_List"/>
-        from daoxin_invoice_bill where 1 = 1
+        <include refid="List"/>
+        from daoxin_invoice_bill b LEFT JOIN daoxin_crm_order o ON b.order_id = o.order_id where 1 = 1 and b.display = 1
                 <if test="paramCondition.invoiceBillId != null">
-                        and invoice_bill_id like CONCAT('%',#{paramCondition.invoiceBillId},'%')
+                        and b.invoice_bill_id like CONCAT('%',#{paramCondition.invoiceBillId},'%')
                 </if>
                 <if test="paramCondition.money != null">
-                        and money like CONCAT('%',#{paramCondition.money},'%')
+                        and b.money like CONCAT('%',#{paramCondition.money},'%')
                 </if>
                 <if test="paramCondition.enclosureId != null">
-                        and enclosure_id like CONCAT('%',#{paramCondition.enclosureId},'%')
+                        and b.enclosure_id like CONCAT('%',#{paramCondition.enclosureId},'%')
                 </if>
                 <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
+                        and b.name like CONCAT('%',#{paramCondition.name},'%')
                 </if>
                 <if test="paramCondition.invoiceDate != null and paramCondition.invoiceDate != ''">
-                        and Invoice_date like CONCAT('%',#{paramCondition.invoiceDate},'%')
+                        and b.Invoice_date like CONCAT('%',#{paramCondition.invoiceDate},'%')
                 </if>
                 <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                        and b.create_time like CONCAT('%',#{paramCondition.createTime},'%')
                 </if>
                 <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                        and b.create_user like CONCAT('%',#{paramCondition.createUser},'%')
                 </if>
                 <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                        and b.update_time like CONCAT('%',#{paramCondition.updateTime},'%')
                 </if>
                 <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                        and b.update_user like CONCAT('%',#{paramCondition.updateUser},'%')
                 </if>
                 <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
+                        and b.display like CONCAT('%',#{paramCondition.display},'%')
                 </if>
                 <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                        and b.deptId like CONCAT('%',#{paramCondition.deptId},'%')
                 </if>
     </select>
 

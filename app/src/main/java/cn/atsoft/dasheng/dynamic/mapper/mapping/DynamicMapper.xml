@@ -4,156 +4,159 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.dynamic.entity.Dynamic">
-        <id column="dynamic_id" property="dynamicId" />
-        <result column="content" property="content" />
-        <result column="user_id" property="userId" />
-        <result column="after" property="after" />
-        <result column="type" property="type" />
-        <result column="before" property="before" />
-        <result column="source" property="source" />
-        <result column="source_id" property="sourceId" />
-        <result column="sku_id" property="skuId" />
-        <result column="spu_id" property="spuId" />
-        <result column="inkind_id" property="inkindId" />
-        <result column="task_id" property="taskId" />
-        <result column="storehouse_id" property="storehouseId" />
-        <result column="storehouse_positions_id" property="storehousePositionsId" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="display" property="display" />
-        <result column="deptId" property="deptId" />
+        <id column="dynamic_id" property="dynamicId"/>
+        <result column="content" property="content"/>
+        <result column="user_id" property="userId"/>
+        <result column="after" property="after"/>
+        <result column="type" property="type"/>
+        <result column="before" property="before"/>
+        <result column="source" property="source"/>
+        <result column="source_id" property="sourceId"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="spu_id" property="spuId"/>
+        <result column="inkind_id" property="inkindId"/>
+        <result column="task_id" property="taskId"/>
+        <result column="storehouse_id" property="storehouseId"/>
+        <result column="storehouse_positions_id" property="storehousePositionsId"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
     </resultMap>
-<!--    , after AS "after"-->
-<!--    before AS "before",-->
+    <!--    , after AS "after"-->
+    <!--    before AS "before",-->
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        dynamic_id AS "dynamicId",user_id AS "userId", content AS "content", type AS "type", source AS "source", source_id AS "sourceId", sku_id AS "skuId", spu_id AS "spuId", task_id AS "taskId", storehouse_id AS "storehouseId", storehouse_positions_id AS "storehousePositionsId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+    <sql id="Base_Column_List">create_time AS "createTime",
+        dynamic_id
+        AS "dynamicId",user_id AS "userId", content AS "content", type AS "type", source AS "source", source_id AS "sourceId", sku_id AS "skuId", spu_id AS "spuId", task_id AS "taskId", storehouse_id AS "storehouseId", storehouse_positions_id AS "storehousePositionsId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.dynamic.model.result.DynamicResult" parameterType="cn.atsoft.dasheng.dynamic.model.params.DynamicParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.dynamic.model.result.DynamicResult"
+            parameterType="cn.atsoft.dasheng.dynamic.model.params.DynamicParam">
         select
         <include refid="Base_Column_List"/>
         from dynamic where 1 = 1
-            <if test="paramCondition.dynamicId != null">
-                and dynamic_id like CONCAT('%',#{paramCondition.dynamicId},'%')
-            </if>
-            <if test="paramCondition.content != null and paramCondition.content != ''">
-                and content like CONCAT('%',#{paramCondition.content},'%')
-            </if>
-            <if test="paramCondition.after != null and paramCondition.after != ''">
-                and after like CONCAT('%',#{paramCondition.after},'%')
-            </if>
-            <if test="paramCondition.type != null and paramCondition.type != ''">
-                and type like CONCAT('%',#{paramCondition.type},'%')
-            </if>
-            <if test="paramCondition.before != null and paramCondition.before != ''">
-                and before like CONCAT('%',#{paramCondition.before},'%')
-            </if>
-            <if test="paramCondition.source != null and paramCondition.source != ''">
-                and source like CONCAT('%',#{paramCondition.source},'%')
-            </if>
-            <if test="paramCondition.sourceId != null">
-                and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
-            </if>
-            <if test="paramCondition.skuId != null">
-                and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-            </if>
-            <if test="paramCondition.spuId != null">
-                and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
-            </if>
-            <if test="paramCondition.taskId != null">
-                and task_id like CONCAT('%',#{paramCondition.taskId},'%')
-            </if>
-            <if test="paramCondition.storehouseId != null">
-                and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
-            </if>
-            <if test="paramCondition.storehousePositionsId != null">
-                and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
-            </if>
-            <if test="paramCondition.createUser != null">
-                and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-            </if>
-            <if test="paramCondition.updateUser != null">
-                and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-            </if>
-            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-            </if>
-            <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-            </if>
-            <if test="paramCondition.display != null">
-                and display like CONCAT('%',#{paramCondition.display},'%')
-            </if>
-            <if test="paramCondition.deptId != null">
-                and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-            </if>
+        <if test="paramCondition.dynamicId != null">
+            and dynamic_id like CONCAT('%',#{paramCondition.dynamicId},'%')
+        </if>
+        <if test="paramCondition.content != null and paramCondition.content != ''">
+            and content like CONCAT('%',#{paramCondition.content},'%')
+        </if>
+        <if test="paramCondition.after != null and paramCondition.after != ''">
+            and after like CONCAT('%',#{paramCondition.after},'%')
+        </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type like CONCAT('%',#{paramCondition.type},'%')
+        </if>
+        <if test="paramCondition.before != null and paramCondition.before != ''">
+            and before like CONCAT('%',#{paramCondition.before},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''">
+            and source like CONCAT('%',#{paramCondition.source},'%')
+        </if>
+        <if test="paramCondition.sourceId != null">
+            and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.spuId != null">
+            and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
+        </if>
+        <if test="paramCondition.taskId != null">
+            and task_id like CONCAT('%',#{paramCondition.taskId},'%')
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
+        </if>
+        <if test="paramCondition.storehousePositionsId != null">
+            and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.dynamic.model.params.DynamicParam">
         select
         <include refid="Base_Column_List"/>
         from dynamic where 1 = 1
-                <if test="paramCondition.dynamicId != null">
-                        and dynamic_id like CONCAT('%',#{paramCondition.dynamicId},'%')
-                </if>
-                <if test="paramCondition.content != null and paramCondition.content != ''">
-                        and content like CONCAT('%',#{paramCondition.content},'%')
-                </if>
-                <if test="paramCondition.after != null and paramCondition.after != ''">
-                        and after like CONCAT('%',#{paramCondition.after},'%')
-                </if>
-                <if test="paramCondition.type != null and paramCondition.type != ''">
-                        and type like CONCAT('%',#{paramCondition.type},'%')
-                </if>
-                <if test="paramCondition.before != null and paramCondition.before != ''">
-                        and before like CONCAT('%',#{paramCondition.before},'%')
-                </if>
-                <if test="paramCondition.source != null and paramCondition.source != ''">
-                        and source like CONCAT('%',#{paramCondition.source},'%')
-                </if>
-                <if test="paramCondition.sourceId != null">
-                        and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
-                </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
-                </if>
-                <if test="paramCondition.spuId != null">
-                        and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
-                </if>
-                <if test="paramCondition.taskId != null">
-                        and task_id like CONCAT('%',#{paramCondition.taskId},'%')
-                </if>
-                <if test="paramCondition.storehouseId != null">
-                        and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
-                </if>
-                <if test="paramCondition.storehousePositionsId != null">
-                        and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
+        <if test="paramCondition.dynamicId != null">
+            and dynamic_id like CONCAT('%',#{paramCondition.dynamicId},'%')
+        </if>
+        <if test="paramCondition.content != null and paramCondition.content != ''">
+            and content like CONCAT('%',#{paramCondition.content},'%')
+        </if>
+        <if test="paramCondition.after != null and paramCondition.after != ''">
+            and after like CONCAT('%',#{paramCondition.after},'%')
+        </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type like CONCAT('%',#{paramCondition.type},'%')
+        </if>
+        <if test="paramCondition.before != null and paramCondition.before != ''">
+            and before like CONCAT('%',#{paramCondition.before},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''">
+            and source like CONCAT('%',#{paramCondition.source},'%')
+        </if>
+        <if test="paramCondition.sourceId != null">
+            and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.spuId != null">
+            and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
+        </if>
+        <if test="paramCondition.taskId != null">
+            and task_id like CONCAT('%',#{paramCondition.taskId},'%')
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
+        </if>
+        <if test="paramCondition.storehousePositionsId != null">
+            and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.dynamic.model.result.DynamicResult" parameterType="cn.atsoft.dasheng.dynamic.model.params.DynamicParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.dynamic.model.result.DynamicResult"
+            parameterType="cn.atsoft.dasheng.dynamic.model.params.DynamicParam">
         select
         <include refid="Base_Column_List"/>
         from dynamic where 1 = 1

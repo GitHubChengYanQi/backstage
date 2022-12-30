@@ -1,7 +1,9 @@
 package cn.atsoft.dasheng.erp.mapper;
 
+import cn.atsoft.dasheng.app.model.request.StockView;
 import cn.atsoft.dasheng.erp.entity.Anomaly;
 import cn.atsoft.dasheng.erp.model.params.AnomalyParam;
+import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -55,4 +57,8 @@ public interface AnomalyMapper extends BaseMapper<Anomaly> {
 
 
     List<AnomalyResult> anomalyComplete(@Param("paramCondition") AnomalyParam paramCondition);
+
+    List<StockView> countErrorByOrderType(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    StockView count(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+
 }

@@ -48,6 +48,22 @@
             </foreach>
         </if>
     </select>
+    <select id="countByCreateUser" resultType="cn.atsoft.dasheng.erp.model.result.AllocationLogResult" parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        select
+        count(*) as "number",
+        create_user AS "createUser"
+        from daoxin_erp_allocation_log where 1 = 1
+        <if test="paramCondition.createUser != null">
+            and create_user =  #{paramCondition.userId}
+        </if>
+        <if test="paramCondition.times != null and paramCondition.times.size == 2">
+            and create_time between
+            <foreach collection="paramCondition.times" index="index" item="state" separator=" and ">
+                #{state}
+            </foreach>
+        </if>
+        GROUP BY create_user
+    </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.AllocationLogParam">
         select

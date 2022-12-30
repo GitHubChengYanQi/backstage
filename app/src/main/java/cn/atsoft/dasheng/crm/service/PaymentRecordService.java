@@ -24,7 +24,7 @@ public interface PaymentRecordService extends IService<PaymentRecord> {
      * @author song
      * @Date 2022-03-01
      */
-    void add(PaymentRecordParam param);
+    PaymentRecord add(PaymentRecordParam param);
 
     /**
      * 删除
@@ -33,6 +33,11 @@ public interface PaymentRecordService extends IService<PaymentRecord> {
      * @Date 2022-03-01
      */
     void delete(PaymentRecordParam param);
+
+    /**
+     * 状态作废
+     */
+    void obsolete(PaymentRecordParam param);
 
     /**
      * 更新
@@ -66,4 +71,5 @@ public interface PaymentRecordService extends IService<PaymentRecord> {
      */
      PageInfo<PaymentRecordResult> findPageBySpec(PaymentRecordParam param);
 
+    void format(List<PaymentRecordResult> results);
 }

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.model.params;
 
+import cn.hutool.core.math.Money;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -25,7 +26,7 @@ import java.util.List;
 public class PaymentRecordParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private Money money;
 
     /**
      * 付款记录id
@@ -37,7 +38,6 @@ public class PaymentRecordParam implements Serializable, BaseValidatingParam {
      * 付款详情id
      */
     @ApiModelProperty("付款详情id")
-    @NotNull
     private Long detailId;
 
     /**
@@ -50,7 +50,6 @@ public class PaymentRecordParam implements Serializable, BaseValidatingParam {
      * 付款金额
      */
     @ApiModelProperty("付款金额")
-    @NotNull
     private Integer paymentAmount;
 
     /**
@@ -95,12 +94,29 @@ public class PaymentRecordParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("部门编号")
     private Long deptId;
 
+    /**
+     * 订单id
+     */
+    @ApiModelProperty("订单id")
+    private Long orderId;
+
+    /**
+     * 状态
+     */
+    @ApiModelProperty("状态")
+    private Integer status;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 
     @Override
     public String checkParam() {
         return null;
+    }
+    @Data
+    public static class Money{
+        private int max;
+        private int min;
     }
 
 }

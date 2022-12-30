@@ -36,6 +36,4 @@ public interface StepsService extends IService<ActivitiSteps> {
     void headPortrait(ActivitiStepsResult stepResult);
 
     String imgUrl(String userId);
-
-    List<UserList> userLists(String userName);
 }

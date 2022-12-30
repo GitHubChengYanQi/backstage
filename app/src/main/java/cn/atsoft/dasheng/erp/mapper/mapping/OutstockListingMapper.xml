@@ -16,6 +16,8 @@
         <result column="update_user" property="updateUser"/>
         <result column="after_number" property="afterNumber"/>
         <result column="before_number" property="beforeNumber"/>
+        <result column="storehouse_positions_id" property="storehousePositionsId"/>
+        <result column="storehouse_id" property="storehouseId"/>
         <result column="display" property="display"/>
         <result column="item_id" property="itemId"/>
         <result column="state" property="state"/>
@@ -28,7 +30,9 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">delivery_id
+    <sql id="Base_Column_List">storehouse_positions_id
+    AS "storehousePositionsId", storehouse_id AS "storehouseId",
+delivery_id
     AS "deliveryId",sku_id AS "skuId",delivery AS "delivery", customer_id AS "customerId",after_number AS "afterNumber",before_number AS "beforeNumber",
         outstock_listing_id
         AS "outstockListingId", time AS "time", number AS "number", price AS "price", brand_id AS "brandId", deptId AS "deptId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", item_id AS "itemId", state AS "state", outstock_order_id AS "outstockOrderId", outstock_apply_id AS "outstockApplyId"
@@ -185,5 +189,316 @@
             and outstock_apply_id like CONCAT('%',#{paramCondition.outstockApplyId},'%')
         </if>
     </select>
+    <select id="groupByUser" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        create_user AS "createUser",
+        count( DISTINCT sku_id ) AS "outSkuCount",
+        SUM(number) AS "outNumCount",
+        create_time AS "createTime"
+
+        FROM
+        daoxin_erp_outstock_listing
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY
+        create_user
+    </select>
+    <select id="groupByUserAndSku" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        create_user AS "createUser",
+        create_time AS "create_time",
+        COUNT(outstock_order_id) AS "orderCount",
+        sum(number) AS "outNumCount"
+        FROM
+        daoxin_erp_outstock_listing
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY
+        create_user,sku_id
+    </select>
+    <select id="groupByMonth" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+
+        SELECT
+        table2.time AS "monthOfYear",
+        sum(table2.orderCount) AS "orderCount"
+        FROM
+        (
+        SELECT
+        DATE_FORMAT( concat( DATE (create_time), ' ', floor( HOUR (create_time) /
+        <choose>
+            <when test="paramCondition.frame != null">
+                #{paramCondition.frame} ) * #{paramCondition.frame}
+            </when>
+            <otherwise>
+                1 ) * 1
+            </otherwise>
+        </choose>
+
+        ), '%Y-%m-%d %H' ) AS
+        `time`,
+        COUNT(outstock_order_id) AS "orderCount"
+        FROM
+        daoxin_erp_outstock_listing
+        WHERE
+        1 = 1
+
+        GROUP BY
+        create_time
+        ) table2
+        WHERE 1= 1
+
+        GROUP BY  table2.time
+        ORDER BY  table2.time
+    </select>
+    <select id="count" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+
+        SELECT
+        count( DISTINCT sku_id ) AS "outSkuCount",
+        sum(number) AS "outNumCount"
+        FROM
+        daoxin_erp_outstock_listing
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+    </select>
+    <select id="outBySpuClassCount" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+
+        SELECT
+        class.`name` AS "spuClassName",
+        class.`spu_classification_id` AS "spuClassId",
+        count( DISTINCT list.sku_id ) AS "outSkuCount",
+        sum( list.number ) AS "outNumCount",
+        list.create_time AS "createTime"
+        FROM
+        daoxin_erp_outstock_listing list
+        LEFT JOIN goods_sku sku ON list.sku_id = sku.sku_id
+        LEFT JOIN goods_spu spu ON spu.spu_id = sku.spu_id
+        LEFT JOIN goods_spu_class class ON spu.spu_classification_id = class.spu_classification_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+
+        GROUP BY
+        class.spu_classification_id
+    </select>
+    <select id="outBySpuClass" resultType="cn.atsoft.dasheng.app.model.request.StockView$SkuAndNumber"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+
+        SELECT
+        class.`spu_classification_id` AS "classId",
+        list.`sku_id` AS "skuId",
+        sum( list.number ) AS "outNumCount"
+        FROM
+        daoxin_erp_outstock_listing list
+        LEFT JOIN goods_sku sku ON list.sku_id = sku.sku_id
+        LEFT JOIN goods_spu spu ON spu.spu_id = sku.spu_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(list.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(list.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        <if test="paramCondition.spuClassIds!=null">
+            and spu.spu_classification_id in
+            <foreach collection="paramCondition.spuClassIds" item="spuClassId" index="index" open="(" separator="," close=")">
+                #{spuClassId}
+            </foreach>
+        </if>
+        <if test="paramCondition.spuClassId != null">
+            and spu.spu_classification_id = #{paramCondition.spuClassId}
+        </if>
+        GROUP BY
+        class.spu_classification_id,list.sku_id
+    </select>
+    <select id="outByType" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+
+        SELECT
+        lists.type,
+        count( DISTINCT list.sku_id ) AS "outSkuCount",
+        sum( list.number ) AS "outNumCount",
+        list.create_time AS "createTime"
+        FROM
+        daoxin_erp_outstock_listing list
+        LEFT JOIN daoxin_erp_outstock_order outstock on list.outstock_order_id = outstock.outstock_order_id
+        LEFT JOIN daoxin_production_pick_lists lists on lists.pick_lists_id = outstock.source_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+
+        GROUP BY lists.type
+    </select>
+    <select id="outByStoreHouse" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        storehouse.`name`,
+        count( DISTINCT list.sku_id ) AS "outSkuCount",
+        sum( list.number ) AS "outNumCount",
+        list.create_time AS "createTime"
+        FROM
+        daoxin_erp_outstock_listing list
+
+        LEFT JOIN daoxin_erp_storehouse storehouse on list.storehouse_id = storehouse.storehouse_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY
+        storehouse.storehouse_id
+    </select>
+    <select id="outByUser" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        user.user_id AS "userId",
+        count( DISTINCT list.sku_id ) AS "outSkuCount",
+        sum( list.number ) AS "outNumCount",
+        list.create_time AS "createTime"
+        FROM
+        daoxin_erp_outstock_listing list
+        LEFT JOIN sys_user user ON list.create_user = user.user_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY user.user_id
+    </select>
+    <select id="outByCustomerSkuCount" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        customer.`customer_name` AS "customerName",
+        count( DISTINCT list.sku_id ) AS "outSkuCount",
+        sum( list.number ) AS "outNumCount",
+        customer.create_time AS "createTime"
+        FROM
+        daoxin_erp_outstock_listing list
+        LEFT JOIN goods_inkind inkind ON list.inkind_id = inkind.inkind_id
+        LEFT JOIN daoxin_crm_customer customer ON customer.customer_id = inkind.inkind_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY
+        customer.customer_id
+        ORDER BY count( DISTINCT list.sku_id ) DESC
+    </select>
+    <select id="outByCustomerNumCount" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        customer.`customer_name` AS "customerName",
+        count( DISTINCT list.sku_id ) AS "outSkuCount",
+        sum( list.number ) AS "outNumCount",
+        customer.create_time AS "createTime"
+        FROM
+        daoxin_erp_outstock_listing list
+        LEFT JOIN goods_inkind inkind ON list.inkind_id = inkind.inkind_id
+        LEFT JOIN daoxin_crm_customer customer ON customer.customer_id = inkind.inkind_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY
+        customer.customer_id
+        ORDER BY sum( list.number ) DESC
+
+    </select>
+    <select id="outBySku" resultType="cn.atsoft.dasheng.app.model.request.StockView$SkuAndNumber"
+            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
+        SELECT
+        list.sku_id AS "skuId",
+        sum( list.number ) AS "number",
+        list.create_time AS "createTime"
+        FROM
+        daoxin_erp_outstock_listing list
+        LEFT JOIN daoxin_erp_outstock_order outstock on list.outstock_order_id = outstock.outstock_order_id
+        LEFT JOIN daoxin_production_pick_lists lists on lists.pick_lists_id = outstock.source_id
+        LEFT JOIN goods_sku sku on list.sku_id = sku.sku_id
+        LEFT JOIN goods_spu spu on spu.spu_id = sku.spu_id
+
+        WHERE
+        1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(list.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(list.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and lists.type = #{paramCondition.type}
+        </if>
+        <if test="paramCondition.spuClassIds != null and paramCondition.spuClassIds.size>0">
+            and spu.spu_classification_id in
+            <foreach collection="paramCondition.spuClassIds" item="classId" index="index" open="(" close=")" separator=",">
+                #{classId}
+            </foreach>
+        </if>
+        <if test="paramCondition.spuClassId != null">
+            and spu.spu_classification_id = #{paramCondition.spuClassId}
+        </if>
+        GROUP BY
+        list.sku_id
+        ORDER BY sum( list.number ) DESC
+    </select>
+
 
 </mapper>

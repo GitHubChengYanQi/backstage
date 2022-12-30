@@ -21,6 +21,7 @@ public class AllocationLogResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String coding;
+    private Integer number;
     /**
      * 调拨logid
      */

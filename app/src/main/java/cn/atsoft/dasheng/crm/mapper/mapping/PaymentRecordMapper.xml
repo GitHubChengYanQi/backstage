@@ -15,11 +15,16 @@
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="order_id" property="orderId" />
+        <result column="status" property="status" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        record_id AS "recordId", detail_id AS "detailId", payment_id AS "paymentId", payment_amount AS "paymentAmount", remark AS "remark", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        record_id AS "recordId", detail_id AS "detailId", payment_id AS "paymentId", payment_amount AS "paymentAmount", remark AS "remark", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", order_id AS "orderId", status AS "status"
+    </sql>
+    <sql id="List">
+     o.coding AS "Coding", p.record_id AS "recordId", p.detail_id AS "detailId", p.payment_id AS "paymentId", p.payment_amount AS "paymentAmount", p.remark AS "remark", p.create_user AS "createUser", p.update_user AS "updateUser", p.create_time AS "createTime", p.update_time AS "updateTime", p.display AS "display", p.deptId AS "deptId", p.order_id AS "orderId", p.status AS "status"
     </sql>
 
 
@@ -103,8 +108,8 @@
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.PaymentRecordResult" parameterType="cn.atsoft.dasheng.crm.model.params.PaymentRecordParam">
         select
-        <include refid="Base_Column_List"/>
-        from daoxin_crm_payment_record where 1 = 1
+        <include refid="List"/>
+        from daoxin_crm_payment_record p LEFT JOIN daoxin_crm_order o ON p.order_id = o.order_id where 1 = 1
                 <if test="paramCondition.recordId != null">
                         and record_id like CONCAT('%',#{paramCondition.recordId},'%')
                 </if>
@@ -114,8 +119,8 @@
                 <if test="paramCondition.paymentId != null">
                         and payment_id like CONCAT('%',#{paramCondition.paymentId},'%')
                 </if>
-                <if test="paramCondition.paymentAmount != null">
-                        and payment_amount like CONCAT('%',#{paramCondition.paymentAmount},'%')
+                <if test="paramCondition.money != null and paramCondition.money.min != null and paramCondition.money.max !=null">
+                        and p.payment_Amount  between  #{paramCondition.money.min} AND #{paramCondition.money.max}
                 </if>
                 <if test="paramCondition.remark != null and paramCondition.remark != ''">
                         and remark like CONCAT('%',#{paramCondition.remark},'%')
@@ -137,6 +142,9 @@
                 </if>
                 <if test="paramCondition.deptId != null">
                         and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+                <if test="paramCondition.status != null">
+                        and p.status = #{paramCondition.status}
                 </if>
     </select>
 

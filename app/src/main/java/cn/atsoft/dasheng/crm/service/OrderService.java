@@ -79,4 +79,6 @@ public interface OrderService extends IService<Order> {
     List<OrderResult> pendingProductionPlanByContracts(OrderParam orderParam);
 
     Set<ContractDetailSetRequest> pendingProductionPlan(OrderParam orderParam);
+
+    void format(List<OrderResult> data);
 }

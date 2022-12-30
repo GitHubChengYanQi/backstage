@@ -140,6 +140,12 @@ public class OrderDetailParam implements Serializable, BaseValidatingParam {
     private Long deptId;
 
     /**
+     * 到货数量
+     */
+    @ApiModelProperty("到货数量")
+    private Integer arrivalNumber;
+
+    /**
      * 合同编码
      */
     @ApiModelProperty

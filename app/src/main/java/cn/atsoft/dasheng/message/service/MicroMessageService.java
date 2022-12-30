@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.message.service;
 
+import cn.atsoft.dasheng.Excel.service.InstockViewExcel;
+import cn.atsoft.dasheng.Excel.service.OutStockViewExcel;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.service.OutstockOrderService;
@@ -8,6 +10,7 @@ import cn.atsoft.dasheng.dynamic.entity.Dynamic;
 import cn.atsoft.dasheng.dynamic.model.params.DynamicParam;
 import cn.atsoft.dasheng.dynamic.service.DynamicService;
 import cn.atsoft.dasheng.erp.entity.Maintenance;
+import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.service.AnnouncementsService;
@@ -26,6 +29,7 @@ import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -62,8 +66,14 @@ public class MicroMessageService {
     @Autowired
     private DynamicService dynamicService;
 
+    @Autowired
+    private InstockViewExcel instockViewExcel;
 
-    public void microServiceDo(MicroServiceEntity microServiceEntity) {
+    @Autowired
+    private OutStockViewExcel outStockViewExcel;
+
+
+    public void microServiceDo(MicroServiceEntity microServiceEntity) throws IOException {
         switch (microServiceEntity.getType()) {
             case CONTRACT:
 
@@ -146,19 +156,35 @@ public class MicroMessageService {
                         break;
                 }
             case MAINTENANCE:
-                switch (microServiceEntity.getOperationType()){
+                switch (microServiceEntity.getOperationType()) {
                     case SAVEDETAILS:
-                       Maintenance maintenance = (Maintenance) microServiceEntity.getObject();
+                        Maintenance maintenance = (Maintenance) microServiceEntity.getObject();
                         maintenanceService.saveDetails(maintenance);
                         break;
                 }
             case DYNAMIC:
-                switch (microServiceEntity.getOperationType()){
+                switch (microServiceEntity.getOperationType()) {
                     case SAVE:
-                        DynamicParam dynamic = JSON.parseObject(microServiceEntity.getObject().toString(),DynamicParam.class) ;
+                        DynamicParam dynamic = JSON.parseObject(microServiceEntity.getObject().toString(), DynamicParam.class);
                         dynamicService.add(dynamic);
                         break;
                 }
+            case INSTOCK_VIEW_EXCEL:
+                switch (microServiceEntity.getOperationType()) {
+                    case PRINT:
+                        DataStatisticsViewParam dataStatisticsViewParam = JSON.parseObject(microServiceEntity.getObject().toString(), DataStatisticsViewParam.class);
+                        instockViewExcel.excel(dataStatisticsViewParam);
+                        break;
+                }
+                break;
+            case OUTSTOCK_VIEW_EXCEL:
+                switch (microServiceEntity.getOperationType()) {
+                    case PRINT:
+                        DataStatisticsViewParam dataStatisticsViewParam = JSON.parseObject(microServiceEntity.getObject().toString(), DataStatisticsViewParam.class);
+                        outStockViewExcel.excel(dataStatisticsViewParam);
+                        break;
+                }
+                break;
             default:
         }
     }

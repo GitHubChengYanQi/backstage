@@ -37,6 +37,7 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
     private String customerName;
 
     private Long actionId;
+
     private Long customerId;
 
     private List<Long> mediaIds;
@@ -80,6 +81,7 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
 
 
     private Date time;
+
     private String coding;
 
     /**
@@ -177,6 +179,19 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
      */
     @ApiModelProperty("入库类型")
     private String instockType;
+
+    /**
+     * 订单id
+     */
+    @ApiModelProperty("订单id")
+    private String orderId;
+
+    /**
+     * 到货数量
+     */
+    @ApiModelProperty("到货数量")
+    private Integer arrivalNumber;
+
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

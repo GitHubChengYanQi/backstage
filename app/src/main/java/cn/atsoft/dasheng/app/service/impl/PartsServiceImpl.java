@@ -947,6 +947,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     }
 
 
+    @Override
     public void format(List<PartsResult> data) {
 
         List<Long> pids = new ArrayList<>();

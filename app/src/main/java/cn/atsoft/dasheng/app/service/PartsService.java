@@ -107,4 +107,6 @@ public interface PartsService extends IService<Parts> {
     List<PartsResult> getTreeParts(Long partId);
 
     List<PartsResult> getdetails(List<Long> partIds);
+
+    void format(List<PartsResult> data);
 }

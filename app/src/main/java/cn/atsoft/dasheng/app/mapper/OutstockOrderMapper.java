@@ -2,8 +2,10 @@ package cn.atsoft.dasheng.app.mapper;
 
 import cn.atsoft.dasheng.app.entity.OutstockOrder;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
+import cn.atsoft.dasheng.app.model.request.StockView;
 import cn.atsoft.dasheng.app.model.result.OutstockOrderResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -52,5 +54,9 @@ public interface OutstockOrderMapper extends BaseMapper<OutstockOrder> {
      * @Date 2021-08-16
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") OutstockOrderParam paramCondition);
+
+    Page<StockView> groupByUser(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    List<StockView> groupByUserList(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+
 
 }

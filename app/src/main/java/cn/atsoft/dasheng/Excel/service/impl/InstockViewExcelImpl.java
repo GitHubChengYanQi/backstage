@@ -24,7 +24,9 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class InstockViewExcelImpl implements InstockViewExcel {
@@ -38,7 +40,7 @@ public class InstockViewExcelImpl implements InstockViewExcel {
     private UserService userService;
 
     @Override
-    public void excel(HttpServletResponse response, DataStatisticsViewParam param) throws IOException {
+    public void excel(DataStatisticsViewParam param) throws IOException {
         List<InstockView> instockViews = instockOrderService.instockViewExcel(param);
         XSSFWorkbook workbook = new XSSFWorkbook();
 
@@ -49,16 +51,7 @@ public class InstockViewExcelImpl implements InstockViewExcel {
         sheet5(workbook, instockViews);
 
 
-        OutputStream os = response.getOutputStream();
-        workbook.write(os);
-
-
-
-
-
-        String uploadPath = ConstantsContext.getFileUploadPath();  //读取系统文件路径位置
-        uploadPath = uploadPath.replace("\\", "");
-        String filePath =uploadPath+"入库统计" + DateUtil.today() + ".xlsx";
+        String filePath = "入库统计" + DateUtil.today() + ".xlsx";
         ByteArrayOutputStream bao = new ByteArrayOutputStream();
         workbook.write(bao);
 //        InputStream inputStream =  new ByteArrayInputStream(bao.toByteArray());
@@ -66,7 +59,7 @@ public class InstockViewExcelImpl implements InstockViewExcel {
         fileOutputStream.write(bao.toByteArray());
         File file = new File(filePath);
 //        orderUpload.upload(WxConsts.KefuMsgType.FILE,"xlsx",inputStream);
-        orderUpload.upload(file);
+        orderUpload.upload(file,param.getSendUser());
         file.deleteOnExit();
         fileOutputStream.close();
         bao.close();
@@ -124,11 +117,15 @@ public class InstockViewExcelImpl implements InstockViewExcel {
         int rowNum = 1;
         for (InstockView instockView : instockViews) {
             for (InstockOrder instockOrder : instockView.getInstockOrders()) {
+                int sum = 0 ;
+                List<Long> skuIds =new ArrayList<>();
                 if (instockView.getCustomerId().equals(instockOrder.getCustomerId())) {
                     for (InstockLogDetailResult instockLogDetail : instockView.getInstockLogDetails()) {
                         if (instockLogDetail.getInstockOrderId().equals(instockOrder.getInstockOrderId())) {
+                            skuIds.add(instockLogDetail.getSkuId());
                             XSSFRow row = sheet.createRow(rowNum);
                             rowNum += 1;
+                            sum+=instockLogDetail.getNumber();
                             row.createCell(0).setCellValue(instockLogDetail.getSkuResult().getStandard());
                             row.createCell(1).setCellValue(instockLogDetail.getSkuResult().getSpuResult().getSpuClassificationResult().getName());
                             row.createCell(2).setCellValue(skuMessage(instockLogDetail.getSkuResult()));
@@ -136,7 +133,7 @@ public class InstockViewExcelImpl implements InstockViewExcel {
                             row.createCell(4).setCellValue(instockView.getCustomerName());
                             row.createCell(5).setCellValue(instockLogDetail.getBrandId() == null ? "无品牌" : instockLogDetail.getBrandId().equals(0L) ? "无品牌" : instockLogDetail.getBrandResult().getBrandName());
                             row.createCell(6).setCellValue("已入库");
-                            row.createCell(7).setCellValue(instockLogDetail.getCreateTime());
+                            row.createCell(7).setCellValue(DateUtil.format(instockLogDetail.getCreateTime(),"yyyy-MM-dd"));
                             row.createCell(8).setCellValue(instockLogDetail.getUser().getName());
                             row.createCell(9).setCellValue(instockOrder.getTheme() == null ? "" : instockOrder.getTheme());
                             row.createCell(10).setCellValue(instockOrder.getCoding());
@@ -154,12 +151,15 @@ public class InstockViewExcelImpl implements InstockViewExcel {
                             row.createCell(5).setCellValue(anomalyResult.getBrandId() == null ? "无品牌" : anomalyResult.getBrandId().equals(0L) ? "无品牌" : anomalyResult.getBrand().getBrandName());
 
                             row.createCell(6).setCellValue("终止入库");
-                            row.createCell(7).setCellValue(anomalyResult.getCreateTime());
+                            row.createCell(7).setCellValue(DateUtil.format(anomalyResult.getCreateTime(),"yyyy-MM-dd"));
                             row.createCell(8).setCellValue(anomalyResult.getUser().getName());
                             row.createCell(9).setCellValue(instockOrder.getTheme() == null ? "" : instockOrder.getTheme());
                             row.createCell(10).setCellValue(instockOrder.getCoding());
                         }
                     }
+                    XSSFRow row = sheet.createRow(rowNum);
+                    row.createCell(0).setCellValue("合计到货："+skuIds.stream().distinct().collect(Collectors.toList()).size()+"类"+sum+"件");
+                    rowNum += 2;
                 }
             }
         }
@@ -222,7 +222,8 @@ public class InstockViewExcelImpl implements InstockViewExcel {
         }
 
         int rowNum2 = 1;
-
+        int sum = 0;
+        List<Long> skuIds = new ArrayList<>();
         for (InstockView instockView : instockViews) {
             for (InstockOrder instockOrder : instockView.getInstockOrders()) {
                 if (instockView.getCustomerId().equals(instockOrder.getCustomerId())) {
@@ -230,6 +231,8 @@ public class InstockViewExcelImpl implements InstockViewExcel {
                         if (instockList.getInstockOrderId().equals(instockOrder.getInstockOrderId())) {
                             XSSFRow row = sheet2.createRow(rowNum2);
                             rowNum2 += 1;
+                            sum +=instockList.getNumber();
+                            skuIds.add(instockList.getSkuId());
                             row.createCell(0).setCellValue(instockList.getSkuResult().getCoding());
                             row.createCell(1).setCellValue(instockList.getSkuResult().getSpuResult().getSpuClassificationResult().getName());
                             row.createCell(2).setCellValue(skuMessage(BeanUtil.copyProperties(instockList.getSkuResult(), SkuSimpleResult.class)));
@@ -252,7 +255,7 @@ public class InstockViewExcelImpl implements InstockViewExcel {
             }
         }
         XSSFRow row = sheet2.createRow(rowNum2);
-        row.createCell(1).setCellValue("合计");
+        row.createCell(0).setCellValue("合计:"+skuIds.stream().distinct().collect(Collectors.toList()).size()+"类"+sum+"件");
 
     }
 
@@ -274,6 +277,8 @@ public class InstockViewExcelImpl implements InstockViewExcel {
         }
 
         int rowNum2 = 1;
+        int sum = 0;
+        List<Long> skuIds = new ArrayList<>();
         for (InstockView instockView : instockViews) {
             for (InstockOrder instockOrder : instockView.getInstockOrders()) {
                 if (instockView.getCustomerId().equals(instockOrder.getCustomerId())) {
@@ -281,6 +286,8 @@ public class InstockViewExcelImpl implements InstockViewExcel {
                         if (instockList.getInstockOrderId().equals(instockOrder.getInstockOrderId())) {
                             XSSFRow row = sheet2.createRow(rowNum2);
                             rowNum2 += 1;
+                            sum +=instockList.getNumber();
+                            skuIds.add(instockList.getSkuId());
                             row.createCell(0).setCellValue(instockList.getSkuResult().getStandard());
                             row.createCell(1).setCellValue(instockList.getSkuResult().getSpuResult().getSpuClassificationResult().getName());
                             row.createCell(2).setCellValue(skuMessage(BeanUtil.copyProperties(instockList.getSkuResult(), SkuSimpleResult.class)));
@@ -297,7 +304,8 @@ public class InstockViewExcelImpl implements InstockViewExcel {
             }
         }
         XSSFRow row = sheet2.createRow(rowNum2);
-        row.createCell(1).setCellValue("合计");
+        row.createCell(0).setCellValue("合计:"+skuIds.stream().distinct().collect(Collectors.toList()).size()+"类"+sum+"件");
+
     }
 
     private void sheet5(XSSFWorkbook workbook, List<InstockView> instockViews) {
@@ -317,11 +325,13 @@ public class InstockViewExcelImpl implements InstockViewExcel {
             cell.setCellValue(text);
             cell.setCellStyle(headerStyle(workbook));
         }
-
+        int sum = 0;
         int rowNum2 = 1;
         int cell2Sum = 0;
         int cell3Sum = 0;
         int cell4Sum = 0;
+        List<Long> skuIds = new ArrayList<>();
+
         for (InstockView instockView : instockViews) {
             for (InstockOrder instockOrder : instockView.getInstockOrders()) {
                 if (instockView.getCustomerId().equals(instockOrder.getCustomerId())) {
@@ -329,6 +339,10 @@ public class InstockViewExcelImpl implements InstockViewExcel {
                         if (instockList.getFormId().equals(instockOrder.getInstockOrderId())) {
                             XSSFRow row = sheet2.createRow(rowNum2);
                             rowNum2 += 1;
+                            sum +=instockList.getErrorNumber();
+                            skuIds.add(instockList.getSkuId());
+
+
                             row.createCell(0).setCellValue(instockList.getSkuResult().getStandard());
                             row.createCell(1).setCellValue(instockList.getSkuResult().getSpuResult().getSpuClassificationResult().getName());
                             row.createCell(2).setCellValue(skuMessage(BeanUtil.copyProperties(instockList.getSkuResult(), SkuSimpleResult.class)));
@@ -351,6 +365,8 @@ public class InstockViewExcelImpl implements InstockViewExcel {
             }
         }
         XSSFRow row = sheet2.createRow(rowNum2);
+        row.createCell(0).setCellValue("合计:"+skuIds.stream().distinct().collect(Collectors.toList()).size()+"类"+sum+"件");
+
     }
 
     private String skuMessage(SkuSimpleResult sku) {

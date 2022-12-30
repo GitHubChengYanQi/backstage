@@ -8,7 +8,6 @@ import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ContractResult;
 import cn.atsoft.dasheng.app.service.*;
-import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.*;
@@ -78,6 +77,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private BrandService brandService;
     @Autowired
     private InvoiceService invoiceService;
+    @Autowired
+    private OrderService orderService;
 
     @Override
     @Transactional
@@ -107,35 +108,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         param.getPaymentParam().setOrderId(entity.getOrderId());
         supplyService.OrdersBackFill(param.getSellerId(), param.getDetailParams());  //回填
-        detailService.addList(entity.getOrderId(), param.getSellerId(), param.getDetailParams());
+        Integer totalAmount = detailService.addList(entity.getOrderId(), param.getSellerId(), param.getDetailParams());    //返回添加所有物料总价
         paymentService.add(param.getPaymentParam(), orderType);
+        if (ToolUtil.isNotEmpty(param.getPaymentParam()) && ToolUtil.isNotEmpty(param.getPaymentParam().getFloatingAmount())) {
+            totalAmount = totalAmount + param.getPaymentParam().getFloatingAmount();
+        }
+        entity.setTotalAmount(totalAmount);  //订单总金额
         this.updateById(entity);
         return entity;
 
-
-        //发起审批流程
-//        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", param.getProcessType()).eq("status", 99).eq("module", "purchaseAsk").one();
-//        if (ToolUtil.isNotEmpty(activitiProcess)) {
-//            qualityTaskSers);//检查创建权限
-////            LoginUser user = LoginContextHolder.getCvice.power(activitiProcesontext().getUser();
-//            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-//            activitiProcessTaskParam.setTaskName(user.getName() + "提交的" + source + "申请");
-////            activitiProcessTaskParam.setQTaskId(entity.getOrderId());
-//            activitiProcessTaskParam.setUserId(param.getCreateUser());
-//            activitiProcessTaskParam.setFormId(entity.getOrderId());
-//            activitiProcessTaskParam.setType(type);
-//            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
-//            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
-//            //添加小铃铛
-//            wxCpSendTemplate.setSource("processTask");
-//            wxCpSendTemplate.setSourceId(taskId);
-//            //添加log
-//            activitiProcessLogService.addLogJudgeBranch(activitiProcess.getProcessId(), taskId, entity.getOrderId(), type);
-//            activitiProcessLogService.autoAudit(taskId, 1);
-//        } else {
-////            entity.setStatus(99);
-////            this.updateById(entity);
-//        }
     }
 
     @Override
@@ -410,9 +391,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                         QueryWrapper<Phone> queryWrapper = new QueryWrapper<>();
                         queryWrapper.lambda().eq(Phone::getContactsId, orderResult.getDeliverer().getContactsId());
                         List<Phone> list = phoneService.list(queryWrapper);
-                        if (ToolUtil.isEmpty(list.get(0)) || ToolUtil.isEmpty(list.get(0).getPhoneNumber())){
+                        if (ToolUtil.isEmpty(list.get(0)) || ToolUtil.isEmpty(list.get(0).getPhoneNumber())) {
                             map.put(ContractEnum.pickUpManPhone.getDetail(), "");
-                        }else {
+                        } else {
                             map.put(ContractEnum.pickUpManPhone.getDetail(), list.get(0).getPhoneNumber());
                         }
                     } else {
@@ -514,10 +495,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
         int allMoney = 0;
         int totalNumber = 0;
-        for (OrderDetailResult detail : details) {
-            totalNumber = totalNumber + detail.getPurchaseNumber();
-            int money = detail.getOnePrice() * detail.getPurchaseNumber();
-            allMoney = allMoney + money;
+        if (ToolUtil.isNotEmpty(order.getTotalAmount())) {  //兼容之前老订单  没有总价格 
+            allMoney = order.getTotalAmount();
         }
         orderResult.setTotalNumber(totalNumber);
         orderResult.setAllMoney(allMoney);
@@ -598,6 +577,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Adress adress = ToolUtil.isEmpty(result.getAdressId()) ? new Adress() : adressService.getById(result.getAdressId());  //交货地址
         result.setAdress(adress);
 
+        Contract contract = ToolUtil.isEmpty(result.getContractId()) ? new Contract() : contractService.getById(result.getContractId());
+        result.setContract(contract);
+
         Contacts contacts = contactsService.getById(result.getUserId());//交货人
         result.setDeliverer(contacts);
 
@@ -646,16 +628,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public Set<ContractDetailSetRequest> pendingProductionPlan(OrderParam orderParam) {
-        List<Long> orderIds = new ArrayList<>();
         /**
          * 取出orderDetail 循环取出 orderId
          */
         OrderDetailParam orderDetailParam = new OrderDetailParam();
         orderDetailParam.setType(2);
         List<OrderDetailResult> orderDetailResults = detailService.getOrderDettailProductionIsNull(orderDetailParam);
-        for (OrderDetailResult orderDetailResult : orderDetailResults) {
-            orderIds.add(orderDetailResult.getOrderId());
-        }
+
 
         /*
          * 返回合并后的数据
@@ -692,8 +671,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 
         this.detailService.format(orderDetailResults);
-
-
+        List<OrderResult> orderResultList = BeanUtil.copyToList(this.listByIds(orderDetailResults.stream().map(OrderDetailResult::getOrderId).distinct().collect(Collectors.toList())), OrderResult.class);
+        //序列化 order表
+        formatOrders(orderResultList);
+        for (OrderDetailResult orderDetailResult : orderDetailResults) {
+            for (OrderResult orderResult : orderResultList) {
+                if (orderDetailResult.getOrderId().equals(orderResult.getOrderId())) {
+                    orderDetailResult.setOrderResult(orderResult);
+                    break;
+                }
+            }
+        }
         for (ContractDetailSetRequest request : contractDetailSet) {
             Long quantity = 0L;
             List<OrderDetailResult> results = new ArrayList<>();
@@ -725,24 +713,24 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         return contractDetailSet;
     }
-
-    private void format(List<OrderResult> data) {
+    private void formatOrders(List<OrderResult> data){
         List<Long> customerIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         List<Long> orderIds = new ArrayList<>();
+        List<Long> contractIds = new ArrayList<>();
         for (OrderResult datum : data) {
             customerIds.add(datum.getBuyerId());
             customerIds.add(datum.getSellerId());
             userIds.add(datum.getCreateUser());
             orderIds.add(datum.getOrderId());
+            contractIds.add(datum.getContractId());
         }
 
         List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
 
-        List<OrderDetail> orderDetails = orderIds.size() == 0 ? new ArrayList<>() : detailService.query().in("order_id", orderIds).eq("display", 1).list();
-        List<OrderDetailResult> detailResults = BeanUtil.copyToList(orderDetails, OrderDetailResult.class, new CopyOptions());
-        detailService.format(detailResults);
+        List<Contract> contractList = contractIds.size() == 0 ? new ArrayList<>() : contractService.listByIds(contractIds);
+
 
 
         for (OrderResult datum : data) {
@@ -755,14 +743,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 }
             }
 
-            List<OrderDetailResult> orderDetailResults = new ArrayList<>();
-            for (OrderDetailResult detailResult : detailResults) {
-                if (detailResult.getOrderId().equals(datum.getOrderId())) {
-                    orderDetailResults.add(detailResult);
-                }
-            }
-            datum.setDetailResults(orderDetailResults);
-
 
             for (User user : userList) {
                 if (user.getUserId().equals(datum.getCreateUser())) {
@@ -772,8 +752,34 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     break;
                 }
             }
+            if (ToolUtil.isNotEmpty(datum.getContractId())) {
+                for (Contract contract : contractList) {
+                    if (datum.getContractId().equals(contract.getContractId())) {
+                        datum.setContract(contract);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    @Override
+    public void format(List<OrderResult> data) {
+        this.formatOrders(data);
+        List<OrderDetail> orderDetails = data.size() == 0 ? new ArrayList<>() : detailService.query().in("order_id", data.stream().map(OrderResult::getOrderId).distinct().collect(Collectors.toList())).eq("display", 1).list();
+        List<OrderDetailResult> detailResults = BeanUtil.copyToList(orderDetails, OrderDetailResult.class, new CopyOptions());
+        detailService.format(detailResults);
+        for (OrderResult datum : data) {
+                        List<OrderDetailResult> orderDetailResults = new ArrayList<>();
+            for (OrderDetailResult detailResult : detailResults) {
+                if (detailResult.getOrderId().equals(datum.getOrderId())) {
+                    orderDetailResults.add(detailResult);
+                }
+            }
+            datum.setDetailResults(orderDetailResults);
         }
 
 
     }
+
+
 }

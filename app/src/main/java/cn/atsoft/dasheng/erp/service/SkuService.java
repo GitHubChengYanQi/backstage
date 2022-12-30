@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.pojo.SkuBind;
 import cn.atsoft.dasheng.erp.pojo.SkuBindParam;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -108,6 +109,8 @@ public interface SkuService extends IService<Sku> {
      * @return
      */
     Map<Long, List<BackSku>> sendSku(List<Long> skuiIds);
+
+    Page skuPage(SkuParam param);
 
     PageInfo<SkuResult> changePageBySpec(SkuParam param);
 

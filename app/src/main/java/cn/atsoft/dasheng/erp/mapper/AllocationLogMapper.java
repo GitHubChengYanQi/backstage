@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.mapper;
 
 import cn.atsoft.dasheng.erp.entity.AllocationLog;
 import cn.atsoft.dasheng.erp.model.params.AllocationLogParam;
+import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.result.AllocationLogResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -44,6 +45,7 @@ public interface AllocationLogMapper extends BaseMapper<AllocationLog> {
      * @Date 2022-08-11
      */
     Page<AllocationLogResult> customPageList(@Param("page") Page page, @Param("paramCondition") AllocationLogParam paramCondition);
+    List<AllocationLogResult> countByCreateUser( @Param("paramCondition") DataStatisticsViewParam paramCondition);
 
     /**
      * 获取分页map列表

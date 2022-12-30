@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
 import com.baomidou.mybatisplus.core.conditions.interfaces.Compare;
 import lombok.Data;
 
@@ -32,6 +33,7 @@ import java.util.List;
 public class PartsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long skuId;
     private List<BackSku> backSkus;
     private SkuResult skuResult;
@@ -64,6 +66,7 @@ public class PartsResult implements Serializable {
      * 清单id
      */
     @ApiModelProperty("清单id")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long partsId;
 
     private String partsAttributes;
@@ -72,6 +75,7 @@ public class PartsResult implements Serializable {
      * 物料名称
      */
     @ApiModelProperty("物料名称")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long spuId;
 
     /**
@@ -84,6 +88,7 @@ public class PartsResult implements Serializable {
      * 组成物品id
      */
     @ApiModelProperty("组成物品id")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long pid;
 
     /**
@@ -96,24 +101,28 @@ public class PartsResult implements Serializable {
      * 创建时间
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     /**
      * 创建者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long createUser;
 
     /**
      * 修改者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long updateUser;
 
     /**
@@ -126,6 +135,7 @@ public class PartsResult implements Serializable {
      * 部门编号
      */
     @ApiModelProperty("部门编号")
+    @JSONField(serializeUsing= ToStringSerializer.class)
     private Long deptId;
 
 

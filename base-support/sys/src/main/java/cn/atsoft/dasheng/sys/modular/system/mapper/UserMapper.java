@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.sys.modular.system.mapper;
 
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.sys.modular.system.model.params.UserParam;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -67,5 +68,7 @@ public interface UserMapper extends BaseMapper<User> {
      */
     List<User> listUserByPositionAndDept(@Param("deptId")Long deptId, @Param("positionIds")List<Long> positionIds);
     List<UserResult> listUserByIds(@Param("userIds")List<Long> userIds);
+    Page<UserResult> userResultPageList (@Param("page") Page page,@Param("paramCondition")UserParam param);
+    List<UserResult> userResultList (@Param("paramCondition")UserParam param);
 
 }
