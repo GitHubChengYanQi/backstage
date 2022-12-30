@@ -1,12 +1,10 @@
 package cn.atsoft.dasheng.production.service.impl;
 
 
-import cn.atsoft.dasheng.appBase.entity.Media;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.production.entity.ShipSetp;
 import cn.atsoft.dasheng.production.entity.Sop;
 import cn.atsoft.dasheng.production.entity.SopDetail;
 import cn.atsoft.dasheng.production.mapper.SopMapper;
@@ -20,7 +18,6 @@ import cn.atsoft.dasheng.production.service.SopBindService;
 import cn.atsoft.dasheng.production.service.SopDetailService;
 import cn.atsoft.dasheng.production.service.SopService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
@@ -64,6 +61,9 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
     @Autowired
     private SopBindService sopBindService;
 
+    @Autowired
+    private SopService sopService;
+
     @Override
     public Long add(SopParam param) {
         Sop entity = getEntity(param);
@@ -80,12 +80,30 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
 
     @Override
     public void delete(SopParam param) {
+        Sop oldEntity = getOldEntity(param);
+        Sop newEntity = getEntity(param);
         if (ToolUtil.isEmpty(param.getSopId())) {
-            throw new ServiceException(500,"删除数据不存在");
-        }else {
+            throw new ServiceException(500, "删除数据不存在");
+        } else {
             param.setDisplay(0);
-            this.update(param);
         }
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
+    }
+    @Override
+    public void sopdeatilIdsBysopId(SopParam param) {
+        Sop oldEntity = getOldEntity(param);
+        if (ToolUtil.isEmpty(param.getSopId())) {
+            throw new ServiceException(500, "删除数据不存在");
+        } else {
+            param.setDisplay(0);
+        }
+        Sop newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
+
+        Long sopIds = param.getSopId();
+        sopDetailService.getSopdetailIdbyResult(sopIds);
     }
 
     @Override
@@ -227,7 +245,7 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
         for (SopResult sopResult : sopResults) {
             userIds.add(sopResult.getCreateUser());
         }
-        List<UserResult> users =userIds.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(userIds);
+        List<UserResult> users = userIds.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(userIds);
 
         for (SopResult sopResult : sopResults) {
             for (UserResult user : users) {

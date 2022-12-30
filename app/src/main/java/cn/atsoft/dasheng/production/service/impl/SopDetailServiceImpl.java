@@ -91,6 +91,19 @@ public class SopDetailServiceImpl extends ServiceImpl<SopDetailMapper, SopDetail
         }
         return details;
     }
+    @Override
+    public List<SopDetail> getSopdetailIdbyResult(Long sopId){
+        List<SopDetail> sopDetails = this.query().eq("sop_id", sopId).list();
+        if (ToolUtil.isEmpty(sopId)) {
+            throw new ServiceException(500,"所删除数据不存在");
+        }else {
+            for (SopDetail detail : sopDetails) {
+                detail.setDisplay(0);
+            }
+        }
+        this.updateBatchById(sopDetails);
+        return sopDetails;
+    }
 
     @Override
     public PageInfo<SopDetailResult> findPageBySpec(SopDetailParam param) {

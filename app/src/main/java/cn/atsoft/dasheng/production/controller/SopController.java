@@ -101,6 +101,16 @@ public class SopController extends BaseController {
     }
 
     /**
+     * 删除接口
+     */
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData delete(@RequestBody SopParam sopParam) {
+        sopService.sopdeatilIdsBysopId(sopParam);
+        return ResponseData.success();
+    }
+
+    /**
      * 查询列表
      *
      * @author song
