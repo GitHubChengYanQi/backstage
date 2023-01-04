@@ -1047,6 +1047,21 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         return PageFactory.createPageInfo(page);
     }
+    public void formatPartDetailData(Long partSkuId,List<SkuResult> skuResults){
+        Parts parts = partsService.lambdaQuery().eq(Parts::getSkuId, partSkuId).eq(Parts::getStatus, 99).one();
+        if(ToolUtil.isEmpty(parts)){
+            return;
+        }
+        List<ErpPartsDetail> list = partsDetailService.lambdaQuery().eq(ErpPartsDetail::getPartsId, parts.getPartsId()).eq(ErpPartsDetail::getDisplay, 1).list();
+        for (SkuResult skuResult : skuResults) {
+            for (ErpPartsDetail erpPartsDetail : list) {
+                if (skuResult.getSkuId().equals(erpPartsDetail.getSkuId())){
+                    Double number = erpPartsDetail.getNumber();
+                    skuResult.setNumber(number);
+                }
+            }
+        }
+    }
     @Override
     public Page skuPage(SkuParam param) {
 
@@ -1253,7 +1268,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
          * 是否查询仓库和库位
          */
         positionsService.skuFormat(page.getRecords());
-
+        if(ToolUtil.isNotEmpty(param.getPartsSkuId())){
+            formatPartDetailData(param.getPartsSkuId(),page.getRecords());
+        }
         return pageInfo;
     }
 

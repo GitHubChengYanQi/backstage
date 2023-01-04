@@ -1,6 +1,13 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
+import cn.atsoft.dasheng.app.entity.Parts;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
+import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
+import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -25,6 +32,7 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,12 +61,19 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
 
     @Autowired
     private UserService userService;
+
     @Autowired
     private StockDetailsService stockDetailsService;
     @Autowired
     private InstockListService instockListService;
     @Autowired
     private InstockOrderService instockOrderService;
+
+    @Autowired
+    private PartsService partsService;
+
+    @Autowired
+    private ErpPartsDetailService erpPartsDetailService;
 
     @Override
     public void add(StockForewarnParam param) {
@@ -79,7 +94,34 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
         StockForewarn entity = getEntity(param);
         this.save(entity);
     }
+    @Override
+    public void saveOrUpdateByat(List<StockForewarnParam> params){
+        List<StockForewarn> paramEntity = BeanUtil.copyToList(params, StockForewarn.class);
 
+        params.removeIf(i->ToolUtil.isEmpty(i.getInventoryFloor()) && ToolUtil.isEmpty(i.getInventoryCeiling()));
+
+
+
+        List<Long> skuId = paramEntity.stream().map(StockForewarn::getFormId).collect(Collectors.toList());
+
+
+        List<StockForewarn> stockForewarns =skuId.size() == 0? new ArrayList<>() : this.lambdaQuery().in(StockForewarn::getFormId, skuId).eq(StockForewarn::getDisplay, 1).list();
+
+        for (StockForewarn stockForewarn : stockForewarns) {
+            stockForewarn.setDisplay(0);
+        }
+        if (stockForewarns.size()>0) {
+            this.updateBatchById(stockForewarns);
+        }
+        if (paramEntity.size()>0) {
+            this.saveBatch(paramEntity);
+
+        }
+
+
+
+
+    }
     @Override
     public void delete(StockForewarnParam param) {
         if (ToolUtil.isEmpty(param.getForewarnId())) {
@@ -87,6 +129,49 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
         } else {
             param.setDisplay(0);
             this.update(param);
+        }
+    }
+
+    @Override
+    public void saveBatchByBomId(Long bomId, StockForewarnParam param) {
+        //通过传过来的bomId找到子表的bomId 在通过找到的bomId 连接库存预警表 找到所有的 skuId =  formId 的数据
+        List<StockForewarnResult> stockForewarnResults = this.baseMapper.findSkuIdsByPartsId(bomId);
+        //定义一个保存的集合和更新的集合
+        List<StockForewarn> saveList = new ArrayList<>();
+        List<StockForewarn> updateList = new ArrayList<>();
+        //循环遍历stockForewarnList
+        //主键没有就新增 ， 主键有的话在考虑最小值或最大值没有的时候
+        for (StockForewarnResult stockForewarn : stockForewarnResults) {
+            //如果主键id为空 则新增
+            if (ToolUtil.isEmpty(stockForewarn.getForewarnId())) {
+                StockForewarn stockForewarnTmp = new StockForewarn();
+                stockForewarnTmp.setType("sku");
+                stockForewarnTmp.setFormId(stockForewarn.getSkuId());
+                stockForewarnTmp.setInventoryFloor(param.getInventoryFloor() * stockForewarn.getNumber());
+                stockForewarnTmp.setInventoryCeiling(param.getInventoryCeiling() * stockForewarn.getNumber());
+                //保存这条数据并且把这条数据放到saveList里面
+                saveList.add(stockForewarnTmp);
+            } else {
+                // 如果 InventoryFloor 或者 InventoryCeiling 有一个为空 则 修改这条数据
+                if (((ToolUtil.isEmpty(stockForewarn.getInventoryFloor())) || ToolUtil.isEmpty(stockForewarn.getInventoryCeiling()))) {
+                    StockForewarn stockForewarnTmp = new StockForewarn();
+                    stockForewarnTmp.setForewarnId(stockForewarn.getForewarnId());
+                    stockForewarnTmp.setInventoryFloor(param.getInventoryFloor() * stockForewarn.getNumber());
+                    stockForewarnTmp.setInventoryCeiling(param.getInventoryCeiling() * stockForewarn.getNumber());
+                    //更新这条数据并且放到updateList里面
+                    updateList.add(stockForewarnTmp);
+                }
+            }
+        }
+        // 判断 saveList的长度是否大于0
+        if (saveList.size() > 0) {
+            //大于0 就批量保存
+            this.saveBatch(saveList);
+        }
+        // 判断 updateList 的长度是否大于0
+        if (updateList.size() > 0) {
+            //大于0 就批量更新
+            this.updateBatchById(updateList);
         }
     }
 
@@ -214,7 +299,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
         List<SkuSimpleResult> skuResult =stockForewarnResultPage.getRecords().size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(stockForewarnResultPage.getRecords().stream().map(StockForewarnResult::getSkuId).distinct().collect(Collectors.toList()));
         for (StockForewarnResult record : stockForewarnResultPage.getRecords()) {
             for (SkuSimpleResult skuSimpleResult : skuResult) {
-                if (record.getSkuId().equals(skuSimpleResult.getSkuId())){
+                if (record.getSkuId().equals(skuSimpleResult.getSkuId())) {
                     record.setSkuResult(skuSimpleResult);
                     break;
                 }
@@ -229,22 +314,20 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
         }
 
 
-
         return PageFactory.createPageInfo(stockForewarnResultPage);
 
     }
 
     @Override
-    public List<StockForewarnResult> listBySkuIds(List<Long> skuIds){
-        if (ToolUtil.isEmpty(skuIds) || skuIds.size()==0){
+    public List<StockForewarnResult> listBySkuIds(List<Long> skuIds) {
+        if (ToolUtil.isEmpty(skuIds) || skuIds.size() == 0) {
             return new ArrayList<>();
         }
-        return this.baseMapper.warningSkuList(new StockForewarnParam(){{
+        return this.baseMapper.warningSkuList(new StockForewarnParam() {{
             setSkuIds(skuIds);
         }});
 
         
     }
-
 
 }

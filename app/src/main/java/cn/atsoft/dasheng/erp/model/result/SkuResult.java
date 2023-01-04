@@ -50,6 +50,7 @@ public class SkuResult implements Serializable {
     private PartsResult partsResult;
     private String spuName;
     private Long partsId;
+    private Double number;
     private String createUserName;
     private String skuTextValue;
     private Long spuClass;
