@@ -27,6 +27,7 @@ public class StockForewarnResult implements Serializable {
     private Long classificationId;
 
     private Long positionId;
+    private List<Long> classIds;
 
     private SkuSimpleResult skuResult;
     private Integer number;
