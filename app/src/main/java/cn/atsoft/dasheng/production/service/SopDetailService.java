@@ -60,6 +60,8 @@ public interface SopDetailService extends IService<SopDetail> {
 
     List<SopDetailResult> getResultBySopId(Long sopId);
 
+    List<SopDetail> getSopdetailIdbyResult(Long sopId);
+
     /**
      * 查询分页数据，Specification模式
      *

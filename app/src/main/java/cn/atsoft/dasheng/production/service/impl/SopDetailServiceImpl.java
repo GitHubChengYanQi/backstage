@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.production.service.impl;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.SopDetail;
 import cn.atsoft.dasheng.production.mapper.SopDetailMapper;
 import cn.atsoft.dasheng.production.model.params.SopDetailParam;
@@ -44,7 +45,12 @@ public class SopDetailServiceImpl extends ServiceImpl<SopDetailMapper, SopDetail
 
     @Override
     public void delete(SopDetailParam param) {
-        this.removeById(getKey(param));
+        if(ToolUtil.isEmpty(param.getSopDetailId())) {
+            throw new ServiceException(500,"删除数据不存在");
+        }else {
+            param.setDisplay(0);
+            this.update(param);
+        }
     }
 
     @Override
@@ -84,6 +90,19 @@ public class SopDetailServiceImpl extends ServiceImpl<SopDetailMapper, SopDetail
             }
         }
         return details;
+    }
+    @Override
+    public List<SopDetail> getSopdetailIdbyResult(Long sopId){
+        List<SopDetail> sopDetails = this.query().eq("sop_id", sopId).eq("display",1).list();
+        if (ToolUtil.isEmpty(sopId)) {
+            throw new ServiceException(500,"所删除数据不存在");
+        }else {
+            for (SopDetail detail : sopDetails) {
+                detail.setDisplay(0);
+            }
+        }
+        this.updateBatchById(sopDetails);
+        return sopDetails;
     }
 
     @Override

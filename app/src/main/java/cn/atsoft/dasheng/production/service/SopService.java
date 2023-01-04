@@ -34,6 +34,8 @@ public interface SopService extends IService<Sop> {
      */
     void delete(SopParam param);
 
+    void sopdeatilIdsBysopId(SopParam param);
+
     /**
      * 更新
      *

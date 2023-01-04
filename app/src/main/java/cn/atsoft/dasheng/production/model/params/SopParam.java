@@ -79,6 +79,12 @@ public class SopParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("注意事项")
     private String note;
 
+    /**
+     * 状态
+     */
+    @ApiModelProperty("状态")
+    private Integer display;
+
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

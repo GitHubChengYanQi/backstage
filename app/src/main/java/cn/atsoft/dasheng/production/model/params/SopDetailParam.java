@@ -55,6 +55,12 @@ public class SopDetailParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("操作说明")
     private String instructions;
 
+    /**
+     * 状态
+     */
+    @ApiModelProperty("状态")
+    private Integer display;
+
 
 
     /**
