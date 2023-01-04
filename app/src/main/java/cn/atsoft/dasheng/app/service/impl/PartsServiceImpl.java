@@ -20,6 +20,7 @@ import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.SpuService;
@@ -548,6 +549,30 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         return PageFactory.createPageInfo(page);
     }
 
+    public PageInfo findPageBySkuId(Long skuId) {
+        Page<PartsResult> pageContext = getPageContext();
+        Page<PartsResult> page = this.baseMapper.findPageBySkuId(pageContext,skuId);
+        formatSkuFormat(page.getRecords());
+        return PageFactory.createPageInfo(page);
+    }
+    public void formatSkuFormat(List<PartsResult> data){
+        List<Long> skuIds = new ArrayList<>();
+        for (PartsResult datum : data) {
+            skuIds.add(datum.getSkuId());
+        }
+        List<SkuSimpleResult> skuSimpleResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
+
+        for (PartsResult datum : data) {
+            for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
+                if (datum.getSkuId().equals(skuSimpleResult.getSkuId())) {
+                    SkuResult skuResult = new SkuResult();
+                    ToolUtil.copyProperties(skuSimpleResult,skuResult);
+                    datum.setSkuResult(skuResult);
+                    break;
+                }
+            }
+        }
+    }
     /**
      * 取配套数量
      *
@@ -559,7 +584,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         for (PartsResult datum : data) {
             partIds.add(datum.getPartsId());
         }
-        
+
         //查询子表取配套数量
         List<ErpPartsDetail> erpPartsDetails = partIds.size() == 0 ? new ArrayList<>() : erpPartsDetailService.query().in("parts_id", partIds).eq("sku_id", skuId).list();
         for (PartsResult datum : data) {

@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -207,9 +208,20 @@ public class ProductionPlanDetailServiceImpl extends ServiceImpl<ProductionPlanD
     public List<ProductionPlanDetailResult> resultsByPlanIds(List<Long> planIds){
         List<ProductionPlanDetail> details = planIds.size() == 0 ? new ArrayList<>() : this.query().in("production_plan_id", planIds).eq("display", 1).list();
         List<ProductionPlanDetailResult> productionPlanDetailResults = new ArrayList<>();
+        List<Long> partList = details.stream().map(ProductionPlanDetail::getPartsId).collect(Collectors.toList());
+        List<Parts> parts =partList.size() == 0 ? new ArrayList<>() : partsService.listByIds(partList);
+
+
         for (ProductionPlanDetail detail : details) {
             ProductionPlanDetailResult productionPlanDetailResult = new ProductionPlanDetailResult();
             ToolUtil.copyProperties(detail,productionPlanDetailResult);
+            for (Parts part : parts) {
+                if (ToolUtil.isNotEmpty(detail.getPartsId())){
+                    PartsResult partsResult = BeanUtil.copyProperties(part, PartsResult.class);
+                    productionPlanDetailResult.setPartsResult(partsResult);
+                    break;
+                }
+            }
             productionPlanDetailResults.add(productionPlanDetailResult);
         }
         return productionPlanDetailResults;

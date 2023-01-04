@@ -121,11 +121,16 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
         for (OrderDetailParam orderDetailParam : param.getOrderDetailParams()) {
             ProductionPlanDetail detail = new ProductionPlanDetail();
             detail.setProductionPlanId(entity.getProductionPlanId());
-            detail.setOrderDetailId(orderDetailParam.getDetailId());
+            if (ToolUtil.isNotEmpty(orderDetailParam.getDetailId())){
+                detail.setOrderDetailId(orderDetailParam.getDetailId());
+
+            }
             detail.setPlanNumber(Math.toIntExact(orderDetailParam.getPurchaseNumber()));
             detail.setDeliveryDate(orderDetailParam.getDeliveryDate());
             detail.setSkuId(orderDetailParam.getSkuId());
             detail.setContractCoding(orderDetailParam.getContractCoding());
+            detail.setCustomerName(orderDetailParam.getCustomerName());
+            detail.setPartsId(orderDetailParam.getPartsId());
             details.add(detail);
         }
         productionPlanDetailService.saveBatch(details);
@@ -170,10 +175,10 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
         Page<ProductionPlanResult> pageContext = getPageContext();
         IPage<ProductionPlanResult> page = this.baseMapper.customPageList(pageContext, param);
         this.format(page.getRecords());
-        for (ProductionPlanResult record : page.getRecords()) {
-            record.setWorkOrderResults(null);
-            record.setPlanDetailResults(null);
-        }
+//        for (ProductionPlanResult record : page.getRecords()) {
+//            record.setWorkOrderResults(null);
+//            record.setPlanDetailResults(null);
+//        }
         return PageFactory.createPageInfo(page);
     }
     @Override
@@ -181,7 +186,7 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
         List<Long> planIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
 
-
+        userIds.addAll(param.stream().map(ProductionPlanResult::getCreateUser).distinct().collect(Collectors.toList()));
         for (ProductionPlanResult productionPlanResult : param) {
             planIds.add(productionPlanResult.getProductionPlanId());
             userIds.add(productionPlanResult.getUserId());
@@ -231,6 +236,9 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
             for (UserResult userResultsById : userResultsByIds) {
                 if (userResultsById.getUserId().equals(productionPlanResult.getUserId())){
                     productionPlanResult.setUserResult(userResultsById);
+                }
+                if (userResultsById.getUserId().equals(productionPlanResult.getCreateUser())){
+                    productionPlanResult.setCreateUserResult(userResultsById);
                 }
             }
             for (ProductionPlanDetailResult detailResult : detailResults) {

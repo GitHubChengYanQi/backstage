@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.model.request;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -16,6 +18,10 @@ public class StockView {
     private Long userId;
     private UserResult userResult;
     private Long skuId;
+    private Long brandId;
+    private BrandResult brandResult;
+    private CustomerResult customerResult;
+    private Long customerId;
     private Long spuClassId;
     private SkuSimpleResult skuResult;
     private List<SkuAndNumber> skuAndNumbers;
@@ -27,6 +33,9 @@ public class StockView {
     private Map<String,Integer> errorNumberByMonth;
     private String type;
     private Integer pickSkuCount;
+    private Integer instockNumber;
+    private Integer noInstockNumber;
+    private Integer number;
     private Integer pickNumCount;
     private Integer outSkuCount;
     private Integer outNumCount;

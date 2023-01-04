@@ -36,6 +36,11 @@ public class ProductionPlan implements Serializable {
      */
     @TableField("coding")
     private String coding;
+    /**
+     * 状态
+     */
+    @TableField("status")
+    private Integer status;
 
     /**
      * 主题
@@ -96,6 +101,34 @@ public class ProductionPlan implements Serializable {
      */
     @TableField("card_coding")
     private String cardCoding;
+
+    /**
+     * 类型
+     */
+    @TableField("type")
+    private String type;
+
+    /**
+     * 文件
+     */
+    @TableField("files")
+    private String files;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getFiles() {
+        return files;
+    }
+
+    public void setFiles(String files) {
+        this.files = files;
+    }
 
     public String getCardCoding() {
         return cardCoding;
@@ -236,21 +269,35 @@ public class ProductionPlan implements Serializable {
         this.updateUser = updateUser;
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
-        return "Plan{" +
+        return "ProductionPlan{" +
                 "productionPlanId=" + productionPlanId +
-                ", theme=" + theme +
-                ", origin=" + origin +
+                ", coding='" + coding + '\'' +
+                ", status=" + status +
+                ", theme='" + theme + '\'' +
+                ", origin='" + origin + '\'' +
                 ", executionTime=" + executionTime +
+                ", endTime=" + endTime +
                 ", userId=" + userId +
-                ", remark=" + remark +
+                ", remark='" + remark + '\'' +
                 ", createUser=" + createUser +
                 ", deptId=" + deptId +
                 ", display=" + display +
+                ", cardCoding='" + cardCoding + '\'' +
+                ", type='" + type + '\'' +
+                ", files='" + files + '\'' +
                 ", updateTime=" + updateTime +
                 ", createTime=" + createTime +
                 ", updateUser=" + updateUser +
-                "}";
+                '}';
     }
 }

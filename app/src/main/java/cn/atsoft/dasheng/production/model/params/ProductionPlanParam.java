@@ -27,7 +27,13 @@ public class ProductionPlanParam implements Serializable, BaseValidatingParam {
     List<ProductionPlanDetailParam> productionPlanDetailParams;
     List<OrderDetailParam> orderDetailParams;
 
+    private Long customerId;
 
+
+
+    private Long skuId;
+
+    private Integer status;
 
     /**
      * 生产计划id
@@ -100,6 +106,18 @@ public class ProductionPlanParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("卡片编码")
     private String cardCoding;
+
+    /**
+     * 类型
+     */
+    @ApiModelProperty("类型")
+    private String type;
+
+    /**
+     * 文件
+     */
+    @ApiModelProperty("文件")
+    private String files;
 
     /**
      * 修改时间

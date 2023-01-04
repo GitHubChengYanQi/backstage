@@ -5,6 +5,8 @@ import cn.atsoft.dasheng.app.mapper.OutstockOrderMapper;
 import cn.atsoft.dasheng.app.mapper.StockDetailsMapper;
 import cn.atsoft.dasheng.app.model.request.StockDetailView;
 import cn.atsoft.dasheng.app.model.request.StockView;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.OutstockOrderService;
@@ -205,6 +207,45 @@ public class DataStatisticsViewController extends BaseController {
     @ApiOperation("新增")
     public ResponseData viewTotail(@RequestBody DataStatisticsViewParam param) {
         return ResponseData.success(instockOrderService.viewTotail(param));
+    }
+
+    @RequestMapping(value = "/instockDetailTotal", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public PageInfo instockLogTotal(@RequestBody DataStatisticsViewParam param) {
+        if(ToolUtil.isEmpty(param.getSearchType())){
+            return new PageInfo();
+        }
+        Page<StockView> stockLogResultPage   = instockListMapper.listView(PageFactory.defaultPage(), param);
+
+        List<StockView> records = stockLogResultPage.getRecords();
+        List<BrandResult> brandResults = records.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(records.stream().map(StockView::getBrandId).collect(Collectors.toList()));
+        List<CustomerResult> customerResults = records.size() == 0 ? new ArrayList<>() : customerService.getResults(records.stream().map(StockView::getCustomerId).collect(Collectors.toList()));
+        List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(records.stream().map(StockView::getSkuId).distinct().collect(Collectors.toList()));
+        for (StockView record : records) {
+            for (BrandResult brandResult : brandResults) {
+                if(ToolUtil.isNotEmpty(record.getBrandId()) && brandResult.getBrandId().equals(record.getBrandId())){
+                    record.setBrandResult(brandResult);
+                    break;
+                }
+            }
+            for (CustomerResult customerResult : customerResults) {
+                if (ToolUtil.isNotEmpty(record.getCustomerId()) && customerResult.getCustomerId().equals(record.getCustomerId())) {
+                    record.setCustomerResult(customerResult);
+                    break;
+                }
+            }
+            for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
+                if (record.getSkuId().equals(skuSimpleResult.getSkuId())){
+                    record.setSkuResult(skuSimpleResult);
+                    break;
+                }
+            }
+        }
+
+
+
+
+        return PageFactory.createPageInfo(stockLogResultPage);
     }
 
     @RequestMapping(value = "/outstockViewTotail", method = RequestMethod.POST)

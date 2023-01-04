@@ -271,12 +271,18 @@
     </select>
 
 
-    <select id="getTopSkuId" resultType="Long">
+    <select id="getTopSkuId" resultType="Long" >
         SELECT sku_id
         FROM daoxin_erp_parts
         WHERE sku_id NOT IN (SELECT sku_id FROM daoxin_erp_parts_detail)
           AND type = 1
           AND STATUS = 99
           and display = 1
+    </select>
+    <select id="findPageBySkuId" resultType="cn.atsoft.dasheng.app.model.result.PartsResult">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM daoxin_erp_parts
+        WHERE sku_id = #{skuId} AND display = 1
     </select>
 </mapper>

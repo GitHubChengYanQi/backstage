@@ -25,6 +25,9 @@ public class ProductionPlanResult implements Serializable {
 
     private UserResult userResult;
 
+    private UserResult createUserResult;
+
+
     private List<ProductionWorkOrderResult> workOrderResults;
 
 
@@ -39,6 +42,11 @@ public class ProductionPlanResult implements Serializable {
      */
     @ApiModelProperty("编码")
     private String coding;
+    /**
+     * 状态
+     */
+    @ApiModelProperty("状态")
+    private Integer status;
 
     /**
      * 主题
@@ -99,6 +107,18 @@ public class ProductionPlanResult implements Serializable {
      */
     @ApiModelProperty("卡片编码")
     private String cardCoding;
+
+    /**
+     * 类型
+     */
+    @ApiModelProperty("类型")
+    private String type;
+
+    /**
+     * 文件
+     */
+    @ApiModelProperty("文件")
+    private String files;
 
     /**
      * 修改时间

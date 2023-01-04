@@ -15,6 +15,9 @@
         <result column="end_time" property="endTime" />
         <result column="deptId" property="deptId" />
         <result column="display" property="display" />
+        <result column="type" property="type" />
+        <result column="status" property="status" />
+        <result column="files" property="files" />
         <result column="card_coding" property="cardCoding"/>
         <result column="update_time" property="updateTime" />
         <result column="create_time" property="createTime" />
@@ -23,7 +26,27 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        production_plan_id AS "productionPlanId",coding AS "coding",end_time AS "endTime", theme AS "theme", origin AS "origin", execution_time AS "executionTime", user_id AS "userId", remark AS "remark", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser", card_coding AS "cardCoding"
+        production_plan_id AS "productionPlanId",status AS "status",coding AS "coding",end_time AS "endTime", theme AS "theme", origin AS "origin", execution_time AS "executionTime", user_id AS "userId", remark AS "remark", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser", card_coding AS "cardCoding", type AS "type", files AS "files"
+    </sql>
+    <sql id="Left_Column_List">
+        plan.production_plan_id AS "productionPlanId",
+        plan.coding AS "coding",
+        plan.end_time AS "endTime",
+        plan.theme AS "theme",
+        plan.origin AS "origin",
+        plan.execution_time AS "executionTime",
+        plan.user_id AS "userId",
+        plan.remark AS "remark",
+        plan.create_user AS "createUser",
+        plan.deptId AS "deptId",
+        plan.display AS "display",
+        plan.update_time AS "updateTime",
+        plan.create_time AS "createTime",
+        plan.update_user AS "updateUser",
+        plan.card_coding AS "cardCoding",
+        plan.type AS "type",
+        plan.files AS "files",
+        plan.status AS "status"
     </sql>
 
 
@@ -113,43 +136,59 @@
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.production.model.result.ProductionPlanResult" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPlanParam">
         select
-        <include refid="Base_Column_List"/>
-        from daoxin_production_plan where 1 = 1
+        <include refid="Left_Column_List"/>
+        from daoxin_production_plan plan
+        LEFT JOIN daoxin_production_plan_detail detail on plan.production_plan_id = detail.production_plan_id
+        LEFT JOIN daoxin_crm_order_detail orderDetail on detail.order_detail_id = orderDetail.detail_id
+        LEFT JOIN daoxin_crm_order `order` on `order`.order_id = orderDetail.order_id
+        where 1 = 1
                 <if test="paramCondition.productionPlanId != null">
-                        and production_plan_id like CONCAT('%',#{paramCondition.productionPlanId},'%')
+                        and plan.production_plan_id like CONCAT('%',#{paramCondition.productionPlanId},'%')
+                </if>
+                <if test="paramCondition.status != null">
+                        and plan.status  = #{paramCondition.status}
                 </if>
                 <if test="paramCondition.theme != null and paramCondition.theme != ''">
-                        and theme like CONCAT('%',#{paramCondition.theme},'%')
+                        and plan.theme like CONCAT('%',#{paramCondition.theme},'%')
                 </if>
                 <if test="paramCondition.origin != null and paramCondition.origin != ''">
-                        and origin like CONCAT('%',#{paramCondition.origin},'%')
+                        and plan.origin like CONCAT('%',#{paramCondition.origin},'%')
                 </if>
                 <if test="paramCondition.executionTime != null and paramCondition.executionTime != ''">
-                        and execution_time like CONCAT('%',#{paramCondition.executionTime},'%')
+                        and plan.execution_time like CONCAT('%',#{paramCondition.executionTime},'%')
                 </if>
                 <if test="paramCondition.userId != null">
-                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
+                        and plan.user_id like CONCAT('%',#{paramCondition.userId},'%')
                 </if>
                 <if test="paramCondition.remark != null">
-                        and remark like CONCAT('%',#{paramCondition.remark},'%')
+                        and plan.remark like CONCAT('%',#{paramCondition.remark},'%')
+                </if>
+                <if test="paramCondition.userId != null">
+                        and plan.user_id  = #{paramCondition.userId}
                 </if>
                 <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                        and plan.create_user like CONCAT('%',#{paramCondition.createUser},'%')
                 </if>
                 <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                        and plan.deptId like CONCAT('%',#{paramCondition.deptId},'%')
                 </if>
                 <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
+                        and plan.display like CONCAT('%',#{paramCondition.display},'%')
                 </if>
                 <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                        and plan.update_time like CONCAT('%',#{paramCondition.updateTime},'%')
                 </if>
                 <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                        and plan.create_time like CONCAT('%',#{paramCondition.createTime},'%')
                 </if>
                 <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                        and plan.update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.customerId != null">
+                        and  order.buyer_id = #{paramCondition.customerId}
+                </if>
+                <if test="paramCondition.skuId != null">
+                        and  detail.sku_id = #{paramCondition.skuId}
                 </if>
     </select>
 

@@ -45,6 +45,11 @@ public interface PartsMapper extends BaseMapper<Parts> {
      */
     Page<PartsResult> customPageList(@Param("page") Page page, @Param("paramCondition") PartsParam paramCondition);
 
+    /**
+     * 获取boms列表
+     */
+    Page<PartsResult> findPageBySkuId(@Param("page") Page page, @Param("skuId") Long skuId);
+
 
     /**
      * 获取旧分页实体列表

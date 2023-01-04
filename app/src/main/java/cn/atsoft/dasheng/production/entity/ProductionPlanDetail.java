@@ -48,6 +48,12 @@ public class ProductionPlanDetail implements Serializable {
      */
     @TableField("plan_number")
     private Integer planNumber;
+
+    /**
+     * 状态
+     */
+    @TableField("status")
+    private Integer status;
     /**
      * 生产中的数量
      */
@@ -114,7 +120,35 @@ public class ProductionPlanDetail implements Serializable {
      * 合同编码
      */
     @TableField("contract_coding")
-    private  String contractCoding;
+    private String contractCoding;
+
+    /**
+     * 客户名称
+     */
+    @TableField("customer_name")
+    private String customerName;
+
+    /**
+     * bom清单id
+     */
+    @TableField("parts_id")
+    private Long partsId;
+
+    public Long getPartsId() {
+        return partsId;
+    }
+
+    public void setPartsId(Long partsId) {
+        this.partsId = partsId;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
 
     public String getContractCoding() {
         return contractCoding;
@@ -221,13 +255,23 @@ public class ProductionPlanDetail implements Serializable {
         this.makingNumber = makingNumber;
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
-        return "PlanDetail{" +
+        return "ProductionPlanDetail{" +
                 "productionPlanDetailId=" + productionPlanDetailId +
                 ", productionPlanId=" + productionPlanId +
                 ", skuId=" + skuId +
-                ", number=" + planNumber +
+                ", planNumber=" + planNumber +
+                ", status=" + status +
+                ", makingNumber=" + makingNumber +
                 ", deliveryDate=" + deliveryDate +
                 ", createUser=" + createUser +
                 ", deptId=" + deptId +
@@ -235,6 +279,10 @@ public class ProductionPlanDetail implements Serializable {
                 ", updateTime=" + updateTime +
                 ", createTime=" + createTime +
                 ", updateUser=" + updateUser +
-                "}";
+                ", orderDetailId=" + orderDetailId +
+                ", contractCoding='" + contractCoding + '\'' +
+                ", customerName='" + customerName + '\'' +
+                ", partsId=" + partsId +
+                '}';
     }
 }
