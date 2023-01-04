@@ -83,7 +83,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.BankResult" parameterType="cn.atsoft.dasheng.crm.model.params.BankParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_bank where 1 = 1
+        from daoxin_bank where 1 = 1 AND display = 1
                 <if test="paramCondition.bankId != null">
                         and bank_id like CONCAT('%',#{paramCondition.bankId},'%')
                 </if>
