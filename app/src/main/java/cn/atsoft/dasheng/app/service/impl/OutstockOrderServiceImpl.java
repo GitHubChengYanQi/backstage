@@ -530,7 +530,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                     stockLog.setBeforeNumber(stockDetailView.getNumber());
                 }
             }
-            stockLog.setAfterNumber(stockLog.getAfterNumber()-num);
+            stockLog.setAfterNumber(stockLog.getBeforeNumber()-num);
             stockLog.setNumber(num);
             stockLog.setType(StockLogDetailSourceEnum.instock.getValue());
             stockLog.setType("1");
