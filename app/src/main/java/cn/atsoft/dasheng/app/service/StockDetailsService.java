@@ -68,6 +68,8 @@ public interface StockDetailsService extends IService<StockDetails> {
      */
     List<StockDetailsResult> findListBySpec(StockDetailsParam param);
 
+    PageInfo<StockDetailsResult> skuDetailView(StockDetailsParam param, DataScope dataScope);
+
     List<StockDetails> getStock();
 
     List<StockDetailsResult> getDetailsBySkuId(Long id);

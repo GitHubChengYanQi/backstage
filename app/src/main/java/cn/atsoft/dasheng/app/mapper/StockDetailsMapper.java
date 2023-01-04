@@ -72,6 +72,7 @@ public interface StockDetailsMapper extends BaseMapper<StockDetails> {
     List<StockDetailView> stockDetailView();
     //综合统计
     Page<StockDetailView> dataStatisticsView(@Param("page") Page page,@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<StockDetailsResult> skuDetailView(@Param("page") Page page,@Param("dataScope") DataScope dataScope,@Param("paramCondition") StockDetailsParam paramCondition);
     List<StockDetailView> dataStatisticsViewDetail(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     StockDetailView stockNumberCycle(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     List<StockDetailView> stockNumberCycleDetail(@Param("paramCondition") DataStatisticsViewParam paramCondition);

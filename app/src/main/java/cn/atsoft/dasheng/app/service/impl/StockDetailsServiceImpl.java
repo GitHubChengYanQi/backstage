@@ -121,6 +121,14 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     }
 
     @Override
+    public PageInfo<StockDetailsResult> skuDetailView(StockDetailsParam param, DataScope dataScope) {
+        Page<StockDetailsResult> pageContext = getPageContext();
+        Page<StockDetailsResult> stockDetailsResultPage = this.baseMapper.skuDetailView(pageContext,dataScope,param);
+        this.format(stockDetailsResultPage.getRecords());
+        return PageFactory.createPageInfo(stockDetailsResultPage);
+    }
+
+    @Override
     public List<StockDetails> getStock() {
         return this.query().eq("display", 1).gt("number", 0).list();
     }
