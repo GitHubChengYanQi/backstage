@@ -160,6 +160,26 @@ public class StockDetailsController extends BaseController {
 //            return this.stockDetailsService.findPageBySpec(stockDetailsParam, dataScope);
 //        }
     }
+    /**
+     * 查询列表
+     *
+     * @author
+     * @Date 2021-07-15
+     */
+    @RequestMapping(value = "/skuDetailView", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<StockDetailsResult> skuDetailView(@RequestBody(required = false) StockDetailsParam stockDetailsParam) {
+        if (ToolUtil.isEmpty(stockDetailsParam)) {
+            stockDetailsParam = new StockDetailsParam();
+        }
+//        return this.stockDetailsService.findPageBySpec(stockDetailsParam);
+//        if (LoginContextHolder.getContext().isAdmin()) {
+        return this.stockDetailsService.skuDetailView(stockDetailsParam, null);
+//        } else {
+//            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+//            return this.stockDetailsService.findPageBySpec(stockDetailsParam, dataScope);
+//        }
+    }
 
 
     @RequestMapping(value = "/getInkind", method = RequestMethod.POST)

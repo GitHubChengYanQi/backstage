@@ -307,6 +307,21 @@ stage
           and stage = 1
         GROUP BY sku_id, brand_id
     </select>
+    <select id="skuDetailView" parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam" resultType="cn.atsoft.dasheng.app.model.result.StockDetailsResult">
+        SELECT
+            sku_id AS "skuId",
+            storehouse_positions_id AS "storehousePositionsId",
+            sum(number) AS "number",
+            create_time AS "createTime"
+        from daoxin_erp_stock_details
+
+        WHERE 1=1 and display = 1
+          and stage = 1
+        <if test="paramCondition.skuId!=null">
+            and sku_id = #{paramCondition.skuId}
+        </if>
+        GROUP BY sku_id, storehouse_positions_id
+    </select>
 
     <select id="dataStatisticsView" resultType="cn.atsoft.dasheng.app.model.request.StockDetailView"
             parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">
