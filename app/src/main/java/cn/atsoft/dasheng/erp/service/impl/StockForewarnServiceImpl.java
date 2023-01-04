@@ -1,20 +1,16 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.SpuClassification;
-import cn.atsoft.dasheng.erp.entity.StockForewarn;
-import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.StockForewarnMapper;
 import cn.atsoft.dasheng.erp.model.params.StockForewarnParam;
 import cn.atsoft.dasheng.erp.model.result.*;
-import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.erp.service.SpuClassificationService;
-import cn.atsoft.dasheng.erp.service.StockForewarnService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -28,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,6 +55,10 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
     private UserService userService;
     @Autowired
     private StockDetailsService stockDetailsService;
+    @Autowired
+    private InstockListService instockListService;
+    @Autowired
+    private InstockOrderService instockOrderService;
 
     @Override
     public void add(StockForewarnParam param) {
@@ -145,7 +146,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
             userIds.add(stockForewarnResult.getCreateUser());
         }
         List<SkuSimpleResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
-
+       
         List<SpuClassification> spuClassificationList = classificationIds.size() == 0 ? new ArrayList<>() : spuClassificationService.listByIds(classificationIds);
         List<SpuClassificationResult> classificationResults = BeanUtil.copyToList(spuClassificationList, SpuClassificationResult.class, new CopyOptions());
 
@@ -164,6 +165,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
                     }
                 }
             }
+
             if (ToolUtil.isNotEmpty(classificationIds)) {
                 for (SpuClassificationResult spuClassificationResult : classificationResults) {
                     if (forewarnResult.getFormId().equals(spuClassificationResult.getSpuClassificationId())) {
@@ -193,12 +195,34 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
     public PageInfo showWaring(StockForewarnParam param) {
         Page<StockForewarnResult> pageContext = this.getPageContext();
         Page<StockForewarnResult> stockForewarnResultPage = this.baseMapper.warningSkuPageList(pageContext, param);
-
+        List<Long> skuIds = stockForewarnResultPage.getRecords().stream().map(StockForewarnResult::getSkuId).distinct().collect(Collectors.toList());
+        List<InstockList> instockLists = skuIds.size() == 0 ? new ArrayList<>() : instockListService.lambdaQuery().eq(InstockList::getStatus, 0).eq(InstockList::getDisplay, 1).in(InstockList::getSkuId, skuIds).list();
+        /**
+         * 数据组合
+         */
+        List<InstockList> totalList = new ArrayList<>();
+        instockLists.parallelStream().collect(Collectors.groupingBy(InstockList::getSkuId, Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new InstockList() {{
+                        ToolUtil.copyProperties(a,this);
+                        setNumber(a.getNumber()+b.getNumber());
+                        setInstockNumber(a.getInstockNumber()+b.getInstockNumber());
+                    }}).ifPresent(totalList::add);
+                }
+        );
+       
         List<SkuSimpleResult> skuResult =stockForewarnResultPage.getRecords().size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(stockForewarnResultPage.getRecords().stream().map(StockForewarnResult::getSkuId).distinct().collect(Collectors.toList()));
         for (StockForewarnResult record : stockForewarnResultPage.getRecords()) {
             for (SkuSimpleResult skuSimpleResult : skuResult) {
                 if (record.getSkuId().equals(skuSimpleResult.getSkuId())){
                     record.setSkuResult(skuSimpleResult);
+                    break;
+                }
+            }
+            record.setFloatingCargoNumber(0L);
+            for (InstockList instockList : totalList) {
+                if(instockList.getSkuId().equals(record.getSkuId())){
+                    record.setFloatingCargoNumber(instockList.getNumber()-instockList.getInstockNumber());
                     break;
                 }
             }
@@ -209,6 +233,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
         return PageFactory.createPageInfo(stockForewarnResultPage);
 
     }
+
     @Override
     public List<StockForewarnResult> listBySkuIds(List<Long> skuIds){
         if (ToolUtil.isEmpty(skuIds) || skuIds.size()==0){
@@ -218,6 +243,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
             setSkuIds(skuIds);
         }});
 
+        
     }
 
 

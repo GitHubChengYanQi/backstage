@@ -240,6 +240,8 @@
         SELECT
         waringTb.skuId AS "skuId",
         waringTb.spuclassId AS "spuClassId",
+        waringTb.className AS "className",
+        waringTb.standard AS "standard",
         waringTb.max AS "max",
         waringTb.min AS "min",
         waringTb.createTime AS "createTime",
@@ -257,6 +259,8 @@
         spu.spu_classification_id AS "spuClassId",
         waring.inventory_floor AS "min",
         waring.inventory_ceiling AS "max",
+        class.name as "className",
+        sku.standard AS "standard",
         waring.create_user AS "createUser",
         waring.create_time AS "createTime"
         FROM
