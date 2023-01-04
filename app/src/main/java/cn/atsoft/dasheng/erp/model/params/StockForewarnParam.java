@@ -39,6 +39,7 @@ public class StockForewarnParam implements Serializable, BaseValidatingParam {
     private List<Long> classIds;
     //预警状态
     private String forewarnStatus;
+    private Long bomId;
 
     /**
      * 预警序号

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.service;
 
+import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.StockForewarn;
 import cn.atsoft.dasheng.erp.model.params.StockForewarnParam;
@@ -34,6 +35,11 @@ public interface StockForewarnService extends IService<StockForewarn> {
      * @Date 2022-12-05
      */
     void delete(StockForewarnParam param);
+
+    /**
+     * 批量保存
+     */
+    void saveBatchByBomId(Long bomId, StockForewarnParam param);
 
     /**
      * 更新

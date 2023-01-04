@@ -319,6 +319,29 @@
         </choose>
         ) tb3 GROUP BY tb3.skuId
     </select>
+    <select id="findSkuIdsByPartsId" resultType="cn.atsoft.dasheng.erp.model.result.StockForewarnResult"
+            parameterType="long">
+        SELECT
+            tmp.sku_id AS "skuId",
+            tmp.number AS "number",
+            forewarning.forewarn_id AS "forewarnId",
+            forewarning.inventory_floor AS "inventoryFloor",
+            forewarning.inventory_ceiling AS "inventoryCeiling"
+        FROM
+            (
+                SELECT
+                    sku_id,
+                    number
+                FROM
+                    daoxin_erp_parts_detail partsDetail
+                WHERE
+                        partsDetail.parts_id IN ( SELECT parts_id FROM daoxin_erp_parts parts WHERE
+        <if test="bomId != null">
+            parts.parts_id = #{bomId}
+        </if> )
+            ) AS tmp
+                LEFT JOIN `daoxin_erp_stock_forewarn` forewarning ON tmp.sku_id = forewarning.form_id
+    </select>
 
     <select id="customPageMapList" resultType="map"
             parameterType="cn.atsoft.dasheng.erp.model.params.StockForewarnParam">

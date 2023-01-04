@@ -7,12 +7,14 @@ import cn.atsoft.dasheng.erp.model.result.StockForewarnResult;
 import cn.atsoft.dasheng.erp.service.StockForewarnService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +63,20 @@ public class StockForewarnController extends BaseController {
     }
 
     /**
+     * 批量保存接口
+     */
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    @ApiOperation("批量保存")
+    public ResponseData saveBatch(@RequestBody StockForewarnParam stockForewarnParam) {
+        if (ToolUtil.isEmpty(stockForewarnParam.getBomId())) {
+            throw new ServiceException(500, "请传入bomId");
+        } else {
+            this.stockForewarnService.saveBatchByBomId(stockForewarnParam.getBomId(), stockForewarnParam);
+        }
+        return ResponseData.success();
+    }
+
+    /**
      * 删除接口
      *
      * @author sjl
@@ -68,7 +84,7 @@ public class StockForewarnController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody StockForewarnParam stockForewarnParam)  {
+    public ResponseData delete(@RequestBody StockForewarnParam stockForewarnParam) {
         this.stockForewarnService.delete(stockForewarnParam);
         return ResponseData.success();
     }
@@ -98,12 +114,13 @@ public class StockForewarnController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<StockForewarnResult> list(@RequestBody(required = false) StockForewarnParam stockForewarnParam) {
-        if(ToolUtil.isEmpty(stockForewarnParam)){
+        if (ToolUtil.isEmpty(stockForewarnParam)) {
             stockForewarnParam = new StockForewarnParam();
         }
 
         return this.stockForewarnService.findPageBySpec(stockForewarnParam);
     }
+
     /**
      * 查询列表
      *
@@ -113,14 +130,12 @@ public class StockForewarnController extends BaseController {
     @RequestMapping(value = "/warningSku", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo warningSku(@RequestBody(required = false) StockForewarnParam stockForewarnParam) {
-        if(ToolUtil.isEmpty(stockForewarnParam)){
+        if (ToolUtil.isEmpty(stockForewarnParam)) {
             stockForewarnParam = new StockForewarnParam();
         }
 
         return this.stockForewarnService.showWaring(stockForewarnParam);
     }
-
-
 
 
 }
