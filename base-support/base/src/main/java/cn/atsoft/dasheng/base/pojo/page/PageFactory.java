@@ -62,20 +62,22 @@ public class PageFactory {
         List<OrderItem> orderItemList = new ArrayList<>();
         if (ToolUtil.isNotEmpty(sorter.getOrder()) && ToolUtil.isNotEmpty(sorter.getField())) {
             for (String item : fields) {
-                if (sorter.getOrder().equals("descend")) {
-                    orderItemList = OrderItem.descs(sorter.getField());
+                if (sorter.getField().equals(item)) {
+                    if (sorter.getOrder().equals("descend")) {
+                        orderItemList = OrderItem.descs(sorter.getField());
+                    }
+                    if (sorter.getOrder().equals("ascend")) {
+                        orderItemList = OrderItem.ascs(sorter.getField());
+                    }
                 }
-                if (sorter.getOrder().equals("ascend")) {
-                    orderItemList = OrderItem.ascs(sorter.getField());
-                }
-            }
-        } else {
-            try {
-                sorter.setField("createTime");
-                orderItemList = OrderItem.descs(sorter.getField());
-            } catch (Exception e) {
             }
         }
+        if (orderItemList.stream().noneMatch(i->i.getColumn().equals("createTime"))){
+            sorter.setField("createTime");
+            orderItemList = OrderItem.descs(sorter.getField());
+        }
+
+
         pageObj.setOrders(orderItemList);
         return pageObj;
     }
