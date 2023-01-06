@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.general.mapper.GeneralMapper">
+    <select id="customList" resultType="cn.atsoft.dasheng.general.model.result.ClassListResult" parameterType="String">
+        SELECT
+            spuClass.spu_classification_id AS "spuclassificationid",
+            spuClass.`name` AS "name",
+            spuClass.create_time AS "createtime",
+            spuClass.update_time AS "updatetime",
+            spuClass.create_user AS "createuser",
+            spuClass.update_user AS "updateuser",
+            spuClass.display AS "display",
+            spuClass.deptId AS "deptId",
+            spuClass.pid AS "pid",
+            spuClass.sort AS "sort",
+            spuClass.coding_class AS "codingclass",
+            spuClass.children AS "children" ,
+            spuClass.childrens AS "childrens",
+            spuClass.type AS "type",
+            spuClass.form_style_id AS "formstyleid"
+        FROM
+            goods_spu_class spuClass
+        WHERE
+            spuClass.`name` like CONCAT('%',#{keyWord},'%')
+    </select>
+    <select id="customListBySkuName" resultType="cn.atsoft.dasheng.general.model.result.BomListResult" parameterType="String">
+        SELECT
+            tmp.skuId,
+            tmp.standard,
+            tmp.model,
+            tmp.partsName,
+            tmp.spuName,
+            tmp.partsId,
+            tmp.skuName
+        FROM
+            (
+                SELECT
+                    sku.sku_id AS "skuId",
+                    sku.sku_name AS "skuName",
+                    sku.standard AS "standard",
+                    sku.model AS "model",
+                    spu.`name`AS "spuName",
+                    parts.parts_id AS "partsId",
+                    parts.part_name AS "partsName"
+                FROM
+                    daoxin_erp_parts parts
+                        LEFT JOIN goods_sku sku ON parts.sku_id = sku.sku_id
+                        LEFT JOIN goods_spu spu ON spu.spu_id = sku.spu_id
+            ) AS tmp
+        WHERE
+            tmp.skuName LIKE CONCAT('%',#{keyWord},'%')
+           OR tmp.spuName LIKE CONCAT('%',#{keyWord},'%')
+           OR tmp.standard LIKE CONCAT('%',#{keyWord},'%')
+           OR tmp.model LIKE CONCAT('%',#{keyWord},'%')
+    </select>
+</mapper>
