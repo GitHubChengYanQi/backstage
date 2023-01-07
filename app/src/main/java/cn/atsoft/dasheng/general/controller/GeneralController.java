@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.general.controller;
 
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.general.model.params.GeneralParam;
 import cn.atsoft.dasheng.general.model.result.BomListResult;
@@ -29,6 +30,26 @@ public class GeneralController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("查询")
     public ResponseData spuClassListbyspuClassName(@RequestBody GeneralParam generalParam){
+        GeneralResult generalResult = new GeneralResult();
+        if (ToolUtil.isEmpty(generalParam.getKeyWord())){
+            return ResponseData.success(generalResult);
+        }
+
+        List<ClassListResult> classList = this.generalService.listByspuClassName(generalParam.getKeyWord());
+        generalResult.setClassListResults(classList);
+
+        List<BomListResult> bomList = this.generalService.listBySkuName(generalParam.getKeyWord());
+        generalResult.setBomListResults(bomList);
+
+        return ResponseData.success(generalResult);
+    }
+    /**
+     * 查询通过模糊查询spuClassName 找到对应的数据
+     */
+    @ApiVersion("1.1")
+    @RequestMapping(value = "{v}/list", method = RequestMethod.POST)
+    @ApiOperation("查询")
+    public ResponseData v1(@RequestBody GeneralParam generalParam){
         GeneralResult generalResult = new GeneralResult();
         if (ToolUtil.isEmpty(generalParam.getKeyWord())){
             return ResponseData.success(generalResult);
