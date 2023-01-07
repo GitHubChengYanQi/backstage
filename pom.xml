@@ -349,6 +349,12 @@
                 <spring.active>daoxin</spring.active>
             </properties>
         </profile>
+        <profile>
+            <id>oldSQLVersion</id>
+            <properties>
+                <spring.active>oldSQLVersion</spring.active>
+            </properties>
+        </profile>
     </profiles>
 
 </project>
