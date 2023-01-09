@@ -94,34 +94,33 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
         StockForewarn entity = getEntity(param);
         this.save(entity);
     }
+
     @Override
-    public void saveOrUpdateByat(List<StockForewarnParam> params){
+    public void saveOrUpdateByat(List<StockForewarnParam> params) {
         List<StockForewarn> paramEntity = BeanUtil.copyToList(params, StockForewarn.class);
 
-        params.removeIf(i->ToolUtil.isEmpty(i.getInventoryFloor()) && ToolUtil.isEmpty(i.getInventoryCeiling()));
-
+        params.removeIf(i -> ToolUtil.isEmpty(i.getInventoryFloor()) && ToolUtil.isEmpty(i.getInventoryCeiling()));
 
 
         List<Long> skuId = paramEntity.stream().map(StockForewarn::getFormId).collect(Collectors.toList());
 
 
-        List<StockForewarn> stockForewarns =skuId.size() == 0? new ArrayList<>() : this.lambdaQuery().in(StockForewarn::getFormId, skuId).eq(StockForewarn::getDisplay, 1).list();
+        List<StockForewarn> stockForewarns = skuId.size() == 0 ? new ArrayList<>() : this.lambdaQuery().in(StockForewarn::getFormId, skuId).eq(StockForewarn::getDisplay, 1).list();
 
         for (StockForewarn stockForewarn : stockForewarns) {
             stockForewarn.setDisplay(0);
         }
-        if (stockForewarns.size()>0) {
+        if (stockForewarns.size() > 0) {
             this.updateBatchById(stockForewarns);
         }
-        if (paramEntity.size()>0) {
+        if (paramEntity.size() > 0) {
             this.saveBatch(paramEntity);
 
         }
 
 
-
-
     }
+
     @Override
     public void delete(StockForewarnParam param) {
         if (ToolUtil.isEmpty(param.getForewarnId())) {
@@ -140,7 +139,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
         List<StockForewarn> saveList = new ArrayList<>();
         List<StockForewarn> updateList = new ArrayList<>();
         //循环遍历stockForewarnList
-        //主键没有就新增 ， 主键有的话在考虑最小值或最大值没有的时候
+        //主键没有就新增 ， 传什么改什么
         for (StockForewarnResult stockForewarn : stockForewarnResults) {
             //如果主键id为空 则新增
             if (ToolUtil.isEmpty(stockForewarn.getForewarnId())) {
@@ -152,15 +151,27 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
                 //保存这条数据并且把这条数据放到saveList里面
                 saveList.add(stockForewarnTmp);
             } else {
-                // 如果 InventoryFloor 或者 InventoryCeiling 有一个为空 则 修改这条数据
-                if (((ToolUtil.isEmpty(stockForewarn.getInventoryFloor())) || ToolUtil.isEmpty(stockForewarn.getInventoryCeiling()))) {
-                    StockForewarn stockForewarnTmp = new StockForewarn();
-                    stockForewarnTmp.setForewarnId(stockForewarn.getForewarnId());
+                StockForewarn stockForewarnTmp = new StockForewarn();
+                stockForewarnTmp.setForewarnId(stockForewarn.getForewarnId());
+                //当 最大值 和 最小值 都为空的时候 则 set 最大值和最小值为空
+                //当 最大值 为空 和 最小值不为空时 则 set 最大值为空
+                //当 最小值 为空 和 最大值不为空时 则 set 最小值为空
+                //否则 set 得到的最小值 和 最大值
+                if (ToolUtil.isEmpty(param.getInventoryFloor()) && ToolUtil.isEmpty(param.getInventoryCeiling())) {
+                    stockForewarnTmp.setInventoryFloor(null);
+                    stockForewarnTmp.setInventoryCeiling(null);
+                } else if (ToolUtil.isEmpty(param.getInventoryFloor()) && ToolUtil.isNotEmpty(param.getInventoryCeiling())) {
+                    stockForewarnTmp.setInventoryFloor(null);
+                    stockForewarnTmp.setInventoryCeiling(param.getInventoryCeiling());
+                } else if (ToolUtil.isNotEmpty(param.getInventoryFloor()) && ToolUtil.isEmpty(param.getInventoryCeiling())) {
+                    stockForewarnTmp.setInventoryFloor(param.getInventoryFloor());
+                    stockForewarnTmp.setInventoryCeiling(null);
+                } else {
                     stockForewarnTmp.setInventoryFloor(param.getInventoryFloor() * stockForewarn.getNumber());
                     stockForewarnTmp.setInventoryCeiling(param.getInventoryCeiling() * stockForewarn.getNumber());
-                    //更新这条数据并且放到updateList里面
-                    updateList.add(stockForewarnTmp);
                 }
+                //更新这条数据并且放到updateList里面
+                updateList.add(stockForewarnTmp);
             }
         }
         // 判断 saveList的长度是否大于0
@@ -231,7 +242,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
             userIds.add(stockForewarnResult.getCreateUser());
         }
         List<SkuSimpleResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
-       
+
         List<SpuClassification> spuClassificationList = classificationIds.size() == 0 ? new ArrayList<>() : spuClassificationService.listByIds(classificationIds);
         List<SpuClassificationResult> classificationResults = BeanUtil.copyToList(spuClassificationList, SpuClassificationResult.class, new CopyOptions());
 
@@ -289,14 +300,14 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
         instockLists.parallelStream().collect(Collectors.groupingBy(InstockList::getSkuId, Collectors.toList())).forEach(
                 (id, transfer) -> {
                     transfer.stream().reduce((a, b) -> new InstockList() {{
-                        ToolUtil.copyProperties(a,this);
-                        setNumber(a.getNumber()+b.getNumber());
-                        setInstockNumber(a.getInstockNumber()+b.getInstockNumber());
+                        ToolUtil.copyProperties(a, this);
+                        setNumber(a.getNumber() + b.getNumber());
+                        setInstockNumber(a.getInstockNumber() + b.getInstockNumber());
                     }}).ifPresent(totalList::add);
                 }
         );
-       
-        List<SkuSimpleResult> skuResult =stockForewarnResultPage.getRecords().size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(stockForewarnResultPage.getRecords().stream().map(StockForewarnResult::getSkuId).distinct().collect(Collectors.toList()));
+
+        List<SkuSimpleResult> skuResult = stockForewarnResultPage.getRecords().size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(stockForewarnResultPage.getRecords().stream().map(StockForewarnResult::getSkuId).distinct().collect(Collectors.toList()));
         for (StockForewarnResult record : stockForewarnResultPage.getRecords()) {
             for (SkuSimpleResult skuSimpleResult : skuResult) {
                 if (record.getSkuId().equals(skuSimpleResult.getSkuId())) {
@@ -306,8 +317,8 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
             }
             record.setFloatingCargoNumber(0L);
             for (InstockList instockList : totalList) {
-                if(instockList.getSkuId().equals(record.getSkuId())){
-                    record.setFloatingCargoNumber(instockList.getNumber()-instockList.getInstockNumber());
+                if (instockList.getSkuId().equals(record.getSkuId())) {
+                    record.setFloatingCargoNumber(instockList.getNumber() - instockList.getInstockNumber());
                     break;
                 }
             }
@@ -327,7 +338,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
             setSkuIds(skuIds);
         }});
 
-        
+
     }
 
 }
