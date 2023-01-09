@@ -153,192 +153,182 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
             } else {
                 StockForewarn stockForewarnTmp = new StockForewarn();
                 stockForewarnTmp.setForewarnId(stockForewarn.getForewarnId());
-                //当 最大值 和 最小值 都为空的时候 则 set 最大值和最小值为空
-                //当 最大值 为空 和 最小值不为空时 则 set 最大值为空
-                //当 最小值 为空 和 最大值不为空时 则 set 最小值为空
-                //否则 set 得到的最小值 和 最大值
-                if (ToolUtil.isEmpty(param.getInventoryFloor()) && ToolUtil.isEmpty(param.getInventoryCeiling())) {
+                if (ToolUtil.isEmpty(param.getInventoryFloor())) {
                     stockForewarnTmp.setInventoryFloor(null);
-                    stockForewarnTmp.setInventoryCeiling(null);
-                } else if (ToolUtil.isEmpty(param.getInventoryFloor()) && ToolUtil.isNotEmpty(param.getInventoryCeiling())) {
-                    stockForewarnTmp.setInventoryFloor(null);
-                    stockForewarnTmp.setInventoryCeiling(param.getInventoryCeiling());
-                } else if (ToolUtil.isNotEmpty(param.getInventoryFloor()) && ToolUtil.isEmpty(param.getInventoryCeiling())) {
-                    stockForewarnTmp.setInventoryFloor(param.getInventoryFloor());
-                    stockForewarnTmp.setInventoryCeiling(null);
-                } else {
-                    stockForewarnTmp.setInventoryFloor(param.getInventoryFloor() * stockForewarn.getNumber());
-                    stockForewarnTmp.setInventoryCeiling(param.getInventoryCeiling() * stockForewarn.getNumber());
                 }
+                if (ToolUtil.isEmpty(param.getInventoryCeiling())) {
+                    stockForewarnTmp.setInventoryCeiling(null);
+                }
+                stockForewarnTmp.setInventoryFloor(param.getInventoryFloor() * stockForewarn.getNumber());
+                stockForewarnTmp.setInventoryCeiling(param.getInventoryCeiling() * stockForewarn.getNumber());
                 //更新这条数据并且放到updateList里面
                 updateList.add(stockForewarnTmp);
             }
+            // 判断 saveList的长度是否大于0
+            if (saveList.size() > 0) {
+                //大于0 就批量保存
+                this.saveBatch(saveList);
+            }
+            // 判断 updateList 的长度是否大于0
+            if (updateList.size() > 0) {
+                //大于0 就批量更新
+                this.updateBatchById(updateList);
+            }
         }
-        // 判断 saveList的长度是否大于0
-        if (saveList.size() > 0) {
-            //大于0 就批量保存
-            this.saveBatch(saveList);
+
+        @Override
+        public void update (StockForewarnParam param){
+            StockForewarn oldEntity = getOldEntity(param);
+            StockForewarn newEntity = getEntity(param);
+            ToolUtil.copyProperties(newEntity, oldEntity);
+            this.updateById(newEntity);
         }
-        // 判断 updateList 的长度是否大于0
-        if (updateList.size() > 0) {
-            //大于0 就批量更新
-            this.updateBatchById(updateList);
+
+        @Override
+        public StockForewarnResult findBySpec (StockForewarnParam param){
+            return null;
         }
-    }
 
-    @Override
-    public void update(StockForewarnParam param) {
-        StockForewarn oldEntity = getOldEntity(param);
-        StockForewarn newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
-    }
-
-    @Override
-    public StockForewarnResult findBySpec(StockForewarnParam param) {
-        return null;
-    }
-
-    @Override
-    public List<StockForewarnResult> findListBySpec(StockForewarnParam param) {
-        return null;
-    }
-
-    @Override
-    public PageInfo<StockForewarnResult> findPageBySpec(StockForewarnParam param) {
-        Page<StockForewarnResult> pageContext = getPageContext();
-        IPage<StockForewarnResult> page = this.baseMapper.customPageList(pageContext, param);
-        this.format(page.getRecords());
-        return PageFactory.createPageInfo(page);
-    }
-
-    private Serializable getKey(StockForewarnParam param) {
-        return param.getForewarnId();
-    }
-
-    private Page<StockForewarnResult> getPageContext() {
-        return PageFactory.defaultPage();
-    }
-
-    private StockForewarn getOldEntity(StockForewarnParam param) {
-        return this.getById(getKey(param));
-    }
-
-    private StockForewarn getEntity(StockForewarnParam param) {
-        StockForewarn entity = new StockForewarn();
-        ToolUtil.copyProperties(param, entity);
-        return entity;
-    }
-
-    public void format(List<StockForewarnResult> data) {
-        List<Long> skuIds = new ArrayList<>();
-        List<Long> classificationIds = new ArrayList<>();
-        List<Long> positionIds = new ArrayList<>();
-        List<Long> userIds = new ArrayList<>();
-        for (StockForewarnResult stockForewarnResult : data) {
-            skuIds.add(stockForewarnResult.getFormId());
-            classificationIds.add(stockForewarnResult.getFormId());
-            positionIds.add(stockForewarnResult.getFormId());
-            userIds.add(stockForewarnResult.getCreateUser());
+        @Override
+        public List<StockForewarnResult> findListBySpec (StockForewarnParam param){
+            return null;
         }
-        List<SkuSimpleResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
 
-        List<SpuClassification> spuClassificationList = classificationIds.size() == 0 ? new ArrayList<>() : spuClassificationService.listByIds(classificationIds);
-        List<SpuClassificationResult> classificationResults = BeanUtil.copyToList(spuClassificationList, SpuClassificationResult.class, new CopyOptions());
+        @Override
+        public PageInfo<StockForewarnResult> findPageBySpec (StockForewarnParam param){
+            Page<StockForewarnResult> pageContext = getPageContext();
+            IPage<StockForewarnResult> page = this.baseMapper.customPageList(pageContext, param);
+            this.format(page.getRecords());
+            return PageFactory.createPageInfo(page);
+        }
 
-        List<StorehousePositions> storehousePositionsList = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.listByIds(positionIds);
-        List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(storehousePositionsList, StorehousePositionsResult.class, new CopyOptions());
+        private Serializable getKey (StockForewarnParam param){
+            return param.getForewarnId();
+        }
 
-        List<UserResult> userList = userIds.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(userIds);
+        private Page<StockForewarnResult> getPageContext () {
+            return PageFactory.defaultPage();
+        }
+
+        private StockForewarn getOldEntity (StockForewarnParam param){
+            return this.getById(getKey(param));
+        }
+
+        private StockForewarn getEntity (StockForewarnParam param){
+            StockForewarn entity = new StockForewarn();
+            ToolUtil.copyProperties(param, entity);
+            return entity;
+        }
+
+        public void format (List < StockForewarnResult > data) {
+            List<Long> skuIds = new ArrayList<>();
+            List<Long> classificationIds = new ArrayList<>();
+            List<Long> positionIds = new ArrayList<>();
+            List<Long> userIds = new ArrayList<>();
+            for (StockForewarnResult stockForewarnResult : data) {
+                skuIds.add(stockForewarnResult.getFormId());
+                classificationIds.add(stockForewarnResult.getFormId());
+                positionIds.add(stockForewarnResult.getFormId());
+                userIds.add(stockForewarnResult.getCreateUser());
+            }
+            List<SkuSimpleResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
+
+            List<SpuClassification> spuClassificationList = classificationIds.size() == 0 ? new ArrayList<>() : spuClassificationService.listByIds(classificationIds);
+            List<SpuClassificationResult> classificationResults = BeanUtil.copyToList(spuClassificationList, SpuClassificationResult.class, new CopyOptions());
+
+            List<StorehousePositions> storehousePositionsList = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsService.listByIds(positionIds);
+            List<StorehousePositionsResult> positionsResults = BeanUtil.copyToList(storehousePositionsList, StorehousePositionsResult.class, new CopyOptions());
+
+            List<UserResult> userList = userIds.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(userIds);
 
 
-        for (StockForewarnResult forewarnResult : data) {
-            if (ToolUtil.isNotEmpty(skuIds)) {
-                for (SkuSimpleResult skuResult : skuResults) {
-                    if (forewarnResult.getFormId().equals(skuResult.getSkuId())) {
-                        forewarnResult.setSkuResult(skuResult);
+            for (StockForewarnResult forewarnResult : data) {
+                if (ToolUtil.isNotEmpty(skuIds)) {
+                    for (SkuSimpleResult skuResult : skuResults) {
+                        if (forewarnResult.getFormId().equals(skuResult.getSkuId())) {
+                            forewarnResult.setSkuResult(skuResult);
+                            break;
+                        }
+                    }
+                }
+
+                if (ToolUtil.isNotEmpty(classificationIds)) {
+                    for (SpuClassificationResult spuClassificationResult : classificationResults) {
+                        if (forewarnResult.getFormId().equals(spuClassificationResult.getSpuClassificationId())) {
+                            forewarnResult.setSpuClassificationResult(spuClassificationResult);
+                            break;
+                        }
+                    }
+                }
+                if (ToolUtil.isNotEmpty(positionIds)) {
+                    for (StorehousePositionsResult storehousePositionsResult : positionsResults) {
+                        if (forewarnResult.getFormId().equals(storehousePositionsResult.getStorehousePositionsId())) {
+                            forewarnResult.setStorehousePositionsResult(storehousePositionsResult);
+                            break;
+                        }
+                    }
+                }
+                if (ToolUtil.isNotEmpty(userIds)) {
+                    for (UserResult userResult : userList) {
+                        forewarnResult.setCreateUserResult(userResult);
+                        break;
+                    }
+                }
+            }
+        }
+
+        @Override
+        public PageInfo showWaring (StockForewarnParam param){
+            Page<StockForewarnResult> pageContext = this.getPageContext();
+            Page<StockForewarnResult> stockForewarnResultPage = this.baseMapper.warningSkuPageList(pageContext, param);
+            List<Long> skuIds = stockForewarnResultPage.getRecords().stream().map(StockForewarnResult::getSkuId).distinct().collect(Collectors.toList());
+            List<InstockList> instockLists = skuIds.size() == 0 ? new ArrayList<>() : instockListService.lambdaQuery().eq(InstockList::getStatus, 0).eq(InstockList::getDisplay, 1).in(InstockList::getSkuId, skuIds).list();
+            /**
+             * 数据组合
+             */
+            List<InstockList> totalList = new ArrayList<>();
+            instockLists.parallelStream().collect(Collectors.groupingBy(InstockList::getSkuId, Collectors.toList())).forEach(
+                    (id, transfer) -> {
+                        transfer.stream().reduce((a, b) -> new InstockList() {{
+                            ToolUtil.copyProperties(a, this);
+                            setNumber(a.getNumber() + b.getNumber());
+                            setInstockNumber(a.getInstockNumber() + b.getInstockNumber());
+                        }}).ifPresent(totalList::add);
+                    }
+            );
+
+            List<SkuSimpleResult> skuResult = stockForewarnResultPage.getRecords().size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(stockForewarnResultPage.getRecords().stream().map(StockForewarnResult::getSkuId).distinct().collect(Collectors.toList()));
+            for (StockForewarnResult record : stockForewarnResultPage.getRecords()) {
+                for (SkuSimpleResult skuSimpleResult : skuResult) {
+                    if (record.getSkuId().equals(skuSimpleResult.getSkuId())) {
+                        record.setSkuResult(skuSimpleResult);
+                        break;
+                    }
+                }
+                record.setFloatingCargoNumber(0L);
+                for (InstockList instockList : totalList) {
+                    if (instockList.getSkuId().equals(record.getSkuId())) {
+                        record.setFloatingCargoNumber(instockList.getNumber() - instockList.getInstockNumber());
                         break;
                     }
                 }
             }
 
-            if (ToolUtil.isNotEmpty(classificationIds)) {
-                for (SpuClassificationResult spuClassificationResult : classificationResults) {
-                    if (forewarnResult.getFormId().equals(spuClassificationResult.getSpuClassificationId())) {
-                        forewarnResult.setSpuClassificationResult(spuClassificationResult);
-                        break;
-                    }
-                }
-            }
-            if (ToolUtil.isNotEmpty(positionIds)) {
-                for (StorehousePositionsResult storehousePositionsResult : positionsResults) {
-                    if (forewarnResult.getFormId().equals(storehousePositionsResult.getStorehousePositionsId())) {
-                        forewarnResult.setStorehousePositionsResult(storehousePositionsResult);
-                        break;
-                    }
-                }
-            }
-            if (ToolUtil.isNotEmpty(userIds)) {
-                for (UserResult userResult : userList) {
-                    forewarnResult.setCreateUserResult(userResult);
-                    break;
-                }
-            }
-        }
-    }
 
-    @Override
-    public PageInfo showWaring(StockForewarnParam param) {
-        Page<StockForewarnResult> pageContext = this.getPageContext();
-        Page<StockForewarnResult> stockForewarnResultPage = this.baseMapper.warningSkuPageList(pageContext, param);
-        List<Long> skuIds = stockForewarnResultPage.getRecords().stream().map(StockForewarnResult::getSkuId).distinct().collect(Collectors.toList());
-        List<InstockList> instockLists = skuIds.size() == 0 ? new ArrayList<>() : instockListService.lambdaQuery().eq(InstockList::getStatus, 0).eq(InstockList::getDisplay, 1).in(InstockList::getSkuId, skuIds).list();
-        /**
-         * 数据组合
-         */
-        List<InstockList> totalList = new ArrayList<>();
-        instockLists.parallelStream().collect(Collectors.groupingBy(InstockList::getSkuId, Collectors.toList())).forEach(
-                (id, transfer) -> {
-                    transfer.stream().reduce((a, b) -> new InstockList() {{
-                        ToolUtil.copyProperties(a, this);
-                        setNumber(a.getNumber() + b.getNumber());
-                        setInstockNumber(a.getInstockNumber() + b.getInstockNumber());
-                    }}).ifPresent(totalList::add);
-                }
-        );
+            return PageFactory.createPageInfo(stockForewarnResultPage);
 
-        List<SkuSimpleResult> skuResult = stockForewarnResultPage.getRecords().size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(stockForewarnResultPage.getRecords().stream().map(StockForewarnResult::getSkuId).distinct().collect(Collectors.toList()));
-        for (StockForewarnResult record : stockForewarnResultPage.getRecords()) {
-            for (SkuSimpleResult skuSimpleResult : skuResult) {
-                if (record.getSkuId().equals(skuSimpleResult.getSkuId())) {
-                    record.setSkuResult(skuSimpleResult);
-                    break;
-                }
-            }
-            record.setFloatingCargoNumber(0L);
-            for (InstockList instockList : totalList) {
-                if (instockList.getSkuId().equals(record.getSkuId())) {
-                    record.setFloatingCargoNumber(instockList.getNumber() - instockList.getInstockNumber());
-                    break;
-                }
-            }
         }
 
+        @Override
+        public List<StockForewarnResult> listBySkuIds (List < Long > skuIds) {
+            if (ToolUtil.isEmpty(skuIds) || skuIds.size() == 0) {
+                return new ArrayList<>();
+            }
+            return this.baseMapper.warningSkuList(new StockForewarnParam() {{
+                setSkuIds(skuIds);
+            }});
 
-        return PageFactory.createPageInfo(stockForewarnResultPage);
 
-    }
-
-    @Override
-    public List<StockForewarnResult> listBySkuIds(List<Long> skuIds) {
-        if (ToolUtil.isEmpty(skuIds) || skuIds.size() == 0) {
-            return new ArrayList<>();
         }
-        return this.baseMapper.warningSkuList(new StockForewarnParam() {{
-            setSkuIds(skuIds);
-        }});
-
 
     }
-
-}
