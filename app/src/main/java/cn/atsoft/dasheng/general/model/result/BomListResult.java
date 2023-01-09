@@ -9,6 +9,7 @@ import java.io.Serializable;
 @ApiModel
 public class BomListResult implements Serializable {
     private Long skuId;
+    private String version;
     private String skuName;
     private String standard;
     private String model;

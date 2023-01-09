@@ -25,32 +25,14 @@
     </select>
     <select id="customListBySkuName" resultType="cn.atsoft.dasheng.general.model.result.BomListResult" parameterType="String">
         SELECT
-            tmp.skuId,
-            tmp.standard,
-            tmp.model,
-            tmp.partsName,
-            tmp.spuName,
-            tmp.partsId,
-            tmp.skuName
+            *
         FROM
-            (
-                SELECT
-                    sku.sku_id AS "skuId",
-                    sku.sku_name AS "skuName",
-                    sku.standard AS "standard",
-                    sku.model AS "model",
-                    spu.`name`AS "spuName",
-                    parts.parts_id AS "partsId",
-                    parts.part_name AS "partsName"
-                FROM
-                    daoxin_erp_parts parts
-                        LEFT JOIN goods_sku sku ON parts.sku_id = sku.sku_id
-                        LEFT JOIN goods_spu spu ON spu.spu_id = sku.spu_id
-            ) AS tmp
+            view_bom
         WHERE
-            tmp.skuName LIKE CONCAT('%',#{keyWord},'%')
-           OR tmp.spuName LIKE CONCAT('%',#{keyWord},'%')
-           OR tmp.standard LIKE CONCAT('%',#{keyWord},'%')
-           OR tmp.model LIKE CONCAT('%',#{keyWord},'%')
+            skuName LIKE CONCAT('%',#{keyWord},'%')
+           OR spuName LIKE CONCAT('%',#{keyWord},'%')
+           OR standard LIKE CONCAT('%',#{keyWord},'%')
+           OR model LIKE CONCAT('%',#{keyWord},'%')
+           OR version LIKE CONCAT('%',#{keyWord},'%')
     </select>
 </mapper>
