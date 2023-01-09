@@ -141,26 +141,25 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
         //循环遍历stockForewarnList
         //主键没有就新增 ， 传什么改什么
         for (StockForewarnResult stockForewarn : stockForewarnResults) {
+            StockForewarn stockForewarnTmp = new StockForewarn();
+            if (ToolUtil.isNotEmpty(param.getInventoryFloor())) {
+                stockForewarnTmp.setInventoryFloor(param.getInventoryFloor() * stockForewarn.getNumber());
+            }else{
+                stockForewarnTmp.setInventoryFloor(null);
+            }
+            if (ToolUtil.isNotEmpty(param.getInventoryCeiling())) {
+                stockForewarnTmp.setInventoryCeiling(param.getInventoryCeiling() * stockForewarn.getNumber());
+            }else {
+                stockForewarnTmp.setInventoryCeiling(null);
+            }
             //如果主键id为空 则新增
             if (ToolUtil.isEmpty(stockForewarn.getForewarnId())) {
-                StockForewarn stockForewarnTmp = new StockForewarn();
                 stockForewarnTmp.setType("sku");
                 stockForewarnTmp.setFormId(stockForewarn.getSkuId());
-                stockForewarnTmp.setInventoryFloor(param.getInventoryFloor() * stockForewarn.getNumber());
-                stockForewarnTmp.setInventoryCeiling(param.getInventoryCeiling() * stockForewarn.getNumber());
                 //保存这条数据并且把这条数据放到saveList里面
                 saveList.add(stockForewarnTmp);
             } else {
-                StockForewarn stockForewarnTmp = new StockForewarn();
                 stockForewarnTmp.setForewarnId(stockForewarn.getForewarnId());
-                if (ToolUtil.isEmpty(param.getInventoryFloor())) {
-                    stockForewarnTmp.setInventoryFloor(null);
-                }
-                if (ToolUtil.isEmpty(param.getInventoryCeiling())) {
-                    stockForewarnTmp.setInventoryCeiling(null);
-                }
-                stockForewarnTmp.setInventoryFloor(param.getInventoryFloor() * stockForewarn.getNumber());
-                stockForewarnTmp.setInventoryCeiling(param.getInventoryCeiling() * stockForewarn.getNumber());
                 //更新这条数据并且放到updateList里面
                 updateList.add(stockForewarnTmp);
             }
@@ -175,6 +174,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
                 this.updateBatchById(updateList);
             }
         }
+    }
 
         @Override
         public void update (StockForewarnParam param){
