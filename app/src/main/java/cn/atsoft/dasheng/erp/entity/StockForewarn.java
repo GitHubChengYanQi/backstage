@@ -1,11 +1,8 @@
 package cn.atsoft.dasheng.erp.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.util.Date;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 
 /**
@@ -24,7 +21,7 @@ public class StockForewarn implements Serializable {
     /**
      * 预警序号
      */
-      @TableId(value = "forewarn_id", type = IdType.ID_WORKER)
+    @TableId(value = "forewarn_id", type = IdType.ID_WORKER)
     private Long forewarnId;
 
     /**
@@ -42,13 +39,13 @@ public class StockForewarn implements Serializable {
     /**
      * 库存下限
      */
-    @TableField("inventory_floor")
+    @TableField(value = "inventory_floor", updateStrategy = FieldStrategy.IGNORED)
     private Integer inventoryFloor;
 
     /**
      * 库存上限
      */
-    @TableField("inventory_ceiling")
+    @TableField(value = "inventory_ceiling", updateStrategy = FieldStrategy.IGNORED)
     private Integer inventoryCeiling;
 
     /**
@@ -57,16 +54,16 @@ public class StockForewarn implements Serializable {
     @TableField("display")
     private Integer display;
 
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
 
