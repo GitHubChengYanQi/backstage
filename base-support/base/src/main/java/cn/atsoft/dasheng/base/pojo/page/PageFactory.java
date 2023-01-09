@@ -64,19 +64,19 @@ public class PageFactory {
             for (String item : fields) {
                 if (sorter.getField().equals(item)) {
                     if (sorter.getOrder().equals("descend")) {
-                        orderItemList = OrderItem.descs(sorter.getField());
+                        orderItemList .addAll(OrderItem.descs(sorter.getField()));
                     }
                     if (sorter.getOrder().equals("ascend")) {
-                        orderItemList = OrderItem.ascs(sorter.getField());
+                        orderItemList .addAll( OrderItem.ascs(sorter.getField()));
                     }
                 }
             }
         }
         if (orderItemList.stream().noneMatch(i->i.getColumn().equals("createTime"))){
             sorter.setField("createTime");
-            orderItemList = OrderItem.descs(sorter.getField());
-        }
 
+            orderItemList .addAll(OrderItem.descs(sorter.getField()));
+        }
 
         pageObj.setOrders(orderItemList);
         return pageObj;
