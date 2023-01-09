@@ -192,7 +192,7 @@ public class SkuHandleRecordServiceImpl extends ServiceImpl<SkuHandleRecordMappe
 
         for (SkuHandleRecordResult datum : data) {
             for (SkuResult skuResult : skuResults) {
-                if (datum.getSkuId().equals(skuResult.getSkuId())) {
+                if (ToolUtil.isNotEmpty(datum.getSkuId()) && datum.getSkuId().equals(skuResult.getSkuId())) {
                     datum.setSkuResult(skuResult);
                     break;
                 }
@@ -204,21 +204,21 @@ public class SkuHandleRecordServiceImpl extends ServiceImpl<SkuHandleRecordMappe
                 }
             }
             for (StorehousePositionsResult positionsServiceDetail : positionsServiceDetails) {
-                if (positionsServiceDetail.getStorehousePositionsId().equals(datum.getPositionId())) {
+                if (ToolUtil.isNotEmpty(datum.getPositionId()) && positionsServiceDetail.getStorehousePositionsId().equals(datum.getPositionId())) {
                     datum.setPositionsResult(positionsServiceDetail);
                     break;
                 }
             }
 
             for (InstockOrderResult instockOrderResult : instockOrderResults) {
-                if (datum.getReceiptId().equals(instockOrderResult.getInstockOrderId())) {
+                if (ToolUtil.isNotEmpty(datum.getReceiptId()) && datum.getReceiptId().equals(instockOrderResult.getInstockOrderId())) {
                     datum.setInstockOrderResult(instockOrderResult);
                     break;
                 }
             }
 
             for (ActivitiProcessTask task : tasks) {
-                if (task.getProcessTaskId().equals(datum.getTaskId())) {
+                if ( ToolUtil.isNotEmpty(datum.getTaskId()) && task.getProcessTaskId().equals(datum.getTaskId())) {
                     datum.setTask(task);
                     break;
                 }
@@ -230,7 +230,7 @@ public class SkuHandleRecordServiceImpl extends ServiceImpl<SkuHandleRecordMappe
                 }
             }
             for (User user : users) {
-                if (datum.getOperationUserId().equals(user.getUserId())) {
+                if (ToolUtil.isNotEmpty(datum.getOperationUserId()) && datum.getOperationUserId().equals(user.getUserId())) {
                     datum.setUser(user);
                     break;
                 }

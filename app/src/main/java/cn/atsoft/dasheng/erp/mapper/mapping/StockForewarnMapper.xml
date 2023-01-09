@@ -157,8 +157,8 @@
         SELECT * from (
         SELECT
         waringTb.skuId AS "skuId",
-        waringTb.max AS "max",
-        waringTb.min AS "min",
+        waringTb.max AS "inventoryCeiling",
+        waringTb.min AS "inventoryFloor",
         waringTb.createTime AS "createTime",
         waringTb.createUser AS "createUser",
         IF
@@ -236,14 +236,24 @@
     </select>
     <select id="warningSkuPageList" resultType="cn.atsoft.dasheng.erp.model.result.StockForewarnResult"
             parameterType="cn.atsoft.dasheng.erp.model.params.StockForewarnParam">
-        SELECT * from (
+        SELECT
+        skuId AS skuId,
+        spuClassId AS "spuClassId",
+        className AS "className",
+        standard AS "standard",
+        inventoryCeiling AS "inventoryCeiling",
+        inventoryFloor AS "inventoryFloor",
+        createTime AS "createTime",
+        createUser AS "createUser"
+
+        from (
         SELECT
         waringTb.skuId AS "skuId",
         waringTb.spuclassId AS "spuClassId",
         waringTb.className AS "className",
         waringTb.standard AS "standard",
-        waringTb.max AS "max",
-        waringTb.min AS "min",
+        waringTb.inventoryCeiling  AS "inventoryCeiling",
+        waringTb.inventoryFloor AS "inventoryFloor",
         waringTb.createTime AS "createTime",
         waringTb.createUser AS "createUser",
         IF
@@ -257,8 +267,8 @@
         SELECT
         sku.sku_id AS "skuId",
         spu.spu_classification_id AS "spuClassId",
-        waring.inventory_floor AS "min",
-        waring.inventory_ceiling AS "max",
+        waring.inventory_floor AS "inventoryFloor",
+        waring.inventory_ceiling AS "inventoryCeiling",
         class.name as "className",
         sku.standard AS "standard",
         waring.create_user AS "createUser",
@@ -302,21 +312,21 @@
         <choose>
             <when test="paramCondition.forewarnStatus == 'max'">
                 HAVING sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) &gt;=
-                waringTb.max
+                waringTb.inventoryCeiling
             </when>
             <when test="paramCondition.forewarnStatus == 'min'">
                 HAVING
                 if(sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) IS NULL,
                 0,
                 sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END )) &lt;=
-                waringTb.min OR sum( details.number )IS NULL
+                waringTb.inventoryFloor OR sum( details.number )IS NULL
             </when>
             <otherwise>
                 HAVING
                 (
                 sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END ) &lt;=
-                waringTb.min OR sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END
-                ) &gt;= waringTb.max
+                waringTb.inventoryFloor OR sum( CASE WHEN details.display = 1 AND details.stage = 1 THEN details.number ELSE 0 END
+                ) &gt;= waringTb.inventoryCeiling
                 OR sum( details.number ) IS NULL
                 )
             </otherwise>
