@@ -40,7 +40,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.0.239/daoxin?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
     username: daoxin
-    password: 4SG3xMhet4DyKeRn
+    password: 123qweasd
     filters: wall,mergeStat
 
     # 连接池大小根据实际情况调整
