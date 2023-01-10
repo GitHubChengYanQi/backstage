@@ -206,7 +206,19 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
     }
 
     private Page<StockForewarnResult> getPageContext() {
-        return PageFactory.defaultPage();
+        return PageFactory.defaultPage(new ArrayList<String>(){{
+            add("inventoryCeiling");
+            add("inventoryFloor");
+            add("floatingCargoNumber");
+
+            add("className");
+            add("skuName");
+            add("spuName");
+            add("standard");
+            add("number");
+            add("createTime");
+            add("createUser");
+        }});
     }
 
     private StockForewarn getOldEntity(StockForewarnParam param) {
@@ -281,33 +293,12 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
         Page<StockForewarnResult> pageContext = this.getPageContext();
         Page<StockForewarnResult> stockForewarnResultPage = this.baseMapper.warningSkuPageList(pageContext, param);
         List<Long> skuIds = stockForewarnResultPage.getRecords().stream().map(StockForewarnResult::getSkuId).distinct().collect(Collectors.toList());
-        List<InstockList> instockLists = skuIds.size() == 0 ? new ArrayList<>() : instockListService.lambdaQuery().eq(InstockList::getStatus, 0).eq(InstockList::getDisplay, 1).in(InstockList::getSkuId, skuIds).list();
-        /**
-         * 数据组合
-         */
-        List<InstockList> totalList = new ArrayList<>();
-        instockLists.parallelStream().collect(Collectors.groupingBy(InstockList::getSkuId, Collectors.toList())).forEach(
-                (id, transfer) -> {
-                    transfer.stream().reduce((a, b) -> new InstockList() {{
-                        ToolUtil.copyProperties(a,this);
-                        setNumber(a.getNumber()+b.getNumber());
-                        setInstockNumber(a.getInstockNumber()+b.getInstockNumber());
-                    }}).ifPresent(totalList::add);
-                }
-        );
-       
+
         List<SkuSimpleResult> skuResult =stockForewarnResultPage.getRecords().size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(stockForewarnResultPage.getRecords().stream().map(StockForewarnResult::getSkuId).distinct().collect(Collectors.toList()));
         for (StockForewarnResult record : stockForewarnResultPage.getRecords()) {
             for (SkuSimpleResult skuSimpleResult : skuResult) {
                 if (record.getSkuId().equals(skuSimpleResult.getSkuId())) {
                     record.setSkuResult(skuSimpleResult);
-                    break;
-                }
-            }
-            record.setFloatingCargoNumber(0L);
-            for (InstockList instockList : totalList) {
-                if(instockList.getSkuId().equals(record.getSkuId())){
-                    record.setFloatingCargoNumber(instockList.getNumber()-instockList.getInstockNumber());
                     break;
                 }
             }
