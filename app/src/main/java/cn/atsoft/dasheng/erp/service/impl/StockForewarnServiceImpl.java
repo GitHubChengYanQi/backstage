@@ -155,23 +155,12 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
             //如果主键id为空 则新增
             if (ToolUtil.isEmpty(stockForewarn.getForewarnId())) {
                 stockForewarnTmp.setType("sku");
-                stockForewarnTmp.setFormId(stockForewarn.getSkuId());
                 //保存这条数据并且把这条数据放到saveList里面
-                saveList.add(stockForewarnTmp);
+                this.save(stockForewarnTmp);
             } else {
                 stockForewarnTmp.setForewarnId(stockForewarn.getForewarnId());
                 //更新这条数据并且放到updateList里面
-                updateList.add(stockForewarnTmp);
-            }
-            // 判断 saveList的长度是否大于0
-            if (saveList.size() > 0) {
-                //大于0 就批量保存
-                this.saveBatch(saveList);
-            }
-            // 判断 updateList 的长度是否大于0
-            if (updateList.size() > 0) {
-                //大于0 就批量更新
-                this.updateBatchById(updateList);
+                this.updateById(stockForewarnTmp);
             }
         }
     }
