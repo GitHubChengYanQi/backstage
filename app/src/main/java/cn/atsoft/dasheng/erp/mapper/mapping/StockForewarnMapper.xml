@@ -261,13 +261,12 @@
 
         <choose>
             <when test="paramCondition.forewarnStatus == 'max'">
-                HAVING number &gt;=
-                inventoryCeiling and inventoryCeiling IS NOT NULL
+                and inventoryCeiling IS NOT NULL
+                and number &gt;= inventoryCeiling
             </when>
             <when test="paramCondition.forewarnStatus == 'min'">
-                HAVING
-                    number &lt;= waringTb.inventoryFloor
-                    and inventoryFloor IS NOT NULL
+                and inventoryFloor IS NOT NULL
+                and  number &lt;= inventoryFloor
             </when>
         </choose>
 
