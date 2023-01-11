@@ -1,10 +1,10 @@
 package cn.atsoft.dasheng.erp.mapper;
 
 import cn.atsoft.dasheng.erp.entity.SkuPrice;
+import cn.atsoft.dasheng.erp.model.params.SkuPriceBatchParam;
 import cn.atsoft.dasheng.erp.model.params.SkuPriceParam;
 import cn.atsoft.dasheng.erp.model.result.SkuPriceResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 
@@ -27,7 +27,8 @@ public interface SkuPriceMapper extends BaseMapper<SkuPrice> {
      * @author sjl
      * @Date 2023-01-09
      */
-    List<SkuPriceResult> customList(@Param("paramCondition") SkuPriceParam paramCondition);
+    List<SkuPriceResult> customList(@Param("paramCondition") SkuPriceBatchParam paramCondition);
+
 
     /**
      * 获取map列表

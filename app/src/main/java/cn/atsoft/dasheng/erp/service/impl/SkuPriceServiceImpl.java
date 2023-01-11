@@ -6,15 +6,19 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.SkuPrice;
 import cn.atsoft.dasheng.erp.mapper.SkuPriceMapper;
 import cn.atsoft.dasheng.erp.model.params.SkuPriceParam;
+import cn.atsoft.dasheng.erp.model.result.SkuPriceListResult;
 import cn.atsoft.dasheng.erp.model.result.SkuPriceResult;
-import  cn.atsoft.dasheng.erp.service.SkuPriceService;
+import cn.atsoft.dasheng.erp.service.SkuPriceService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,17 +33,16 @@ import java.util.List;
 public class SkuPriceServiceImpl extends ServiceImpl<SkuPriceMapper, SkuPrice> implements SkuPriceService {
 
 
-
     @Override
-    public void add(SkuPriceParam param){
-        this.update(new SkuPrice(){{
+    public void add(SkuPriceParam param) {
+        this.update(new SkuPrice() {{
             setDisplay(0);
-        }},new QueryWrapper<SkuPrice>(){{
-            eq("sku_id",param.getSkuId());
+        }}, new QueryWrapper<SkuPrice>() {{
+            eq("sku_id", param.getSkuId());
         }});
-        if(ToolUtil.isNotEmpty(param.getPrice()) && ToolUtil.isNotEmpty(param.getSkuId())){
+        if (ToolUtil.isNotEmpty(param.getPrice()) && ToolUtil.isNotEmpty(param.getSkuId())) {
             SkuPrice entity = getEntity(param);
-            entity.setPrice((int)(param.getPrice() * 100));
+            entity.setPrice((int)Math.round(param.getPrice() * 100));
             this.save(entity);
         }
 
@@ -47,39 +50,40 @@ public class SkuPriceServiceImpl extends ServiceImpl<SkuPriceMapper, SkuPrice> i
 
     @Override
     public void addBatch(List<SkuPriceParam> params) {
+    }
 
-
-
+    @Override
+    public void delete(SkuPriceParam param) {
 
     }
 
     @Override
-    public void delete(SkuPriceParam param){
+    public void update(SkuPriceParam param) {
 
     }
 
     @Override
-    public void update(SkuPriceParam param){
-
+    public List<SkuPriceListResult> skuPriceResultBySkuIds(List<Long> skuIds) {
+        List<SkuPrice> skuPriceList = skuIds.size() == 0 ? new ArrayList<>() : this.query().in("sku_id", skuIds).eq("display", 1).list();
+        return  BeanUtil.copyToList(skuPriceList, SkuPriceListResult.class);
     }
 
     @Override
-    public SkuPriceResult findBySpec(SkuPriceParam param){
+    public SkuPriceResult findBySpec(SkuPriceParam param) {
         return null;
     }
 
     @Override
-    public List<SkuPriceResult> findListBySpec(SkuPriceParam param){
+    public List<SkuPriceResult> findListBySpec(SkuPriceParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<SkuPriceResult> findPageBySpec(SkuPriceParam param){
+    public PageInfo<SkuPriceResult> findPageBySpec(SkuPriceParam param) {
         Page<SkuPriceResult> pageContext = getPageContext();
         IPage<SkuPriceResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
-
 
 
     private Page<SkuPriceResult> getPageContext() {

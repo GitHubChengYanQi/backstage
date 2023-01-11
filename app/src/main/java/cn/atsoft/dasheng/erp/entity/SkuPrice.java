@@ -24,7 +24,7 @@ public class SkuPrice implements Serializable {
     /**
      * 商品价格
      */
-      @TableId(value = "sku_price_id", type = IdType.ID_WORKER)
+    @TableId(value = "sku_price_id", type = IdType.ID_WORKER)
     private Long skuPriceId;
 
     /**

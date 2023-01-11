@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.service;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.SkuPrice;
 import cn.atsoft.dasheng.erp.model.params.SkuPriceParam;
+import cn.atsoft.dasheng.erp.model.result.SkuPriceListResult;
 import cn.atsoft.dasheng.erp.model.result.SkuPriceResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -36,6 +37,11 @@ public interface SkuPriceService extends IService<SkuPrice> {
     void update(SkuPriceParam param);
 
     /**
+     * 返回值
+     */
+    List<SkuPriceListResult> skuPriceResultBySkuIds(List<Long> skuIds);
+
+    /**
      * 查询单条数据，Specification模式
      *
      * @author sjl
@@ -57,6 +63,6 @@ public interface SkuPriceService extends IService<SkuPrice> {
      * @author sjl
      * @Date 2023-01-09
      */
-     PageInfo<SkuPriceResult> findPageBySpec(SkuPriceParam param);
+    PageInfo<SkuPriceResult> findPageBySpec(SkuPriceParam param);
 
 }
