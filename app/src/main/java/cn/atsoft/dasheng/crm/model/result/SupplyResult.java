@@ -59,6 +59,12 @@ public class SupplyResult implements Serializable {
     private Long customerId;
 
     /**
+     * 物料品牌绑定主表
+     */
+    @ApiModelProperty("物料品牌绑定主表")
+    private Long skuBrandBind;
+
+    /**
      * 删除状态
      */
     @ApiModelProperty("删除状态")

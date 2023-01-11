@@ -40,6 +40,11 @@ public class Supply implements Serializable {
     @TableField("sku_id")
     private Long skuId;
 
+    /**
+     * 物料品牌绑定主表
+     */
+    @TableField("sku_brand_bind")
+    private Long skuBrandBind;
 
 
     /**
@@ -97,7 +102,7 @@ public class Supply implements Serializable {
     public void setCustomerId(Long customerId) {
         this.customerId = customerId;
     }
-    
+
     public Long getBrandId() {
         return brandId;
     }
@@ -146,17 +151,28 @@ public class Supply implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public Long getSkuBrandBind() {
+        return skuBrandBind;
+    }
+
+    public void setSkuBrandBind(Long skuBrandBind) {
+        this.skuBrandBind = skuBrandBind;
+    }
+
     @Override
     public String toString() {
         return "Supply{" +
-                "supplyId=" + supplyId +
+                "supplierModel='" + supplierModel + '\'' +
+                ", supplyId=" + supplyId +
+                ", brandId=" + brandId +
                 ", skuId=" + skuId +
+                ", skuBrandBind=" + skuBrandBind +
                 ", customerId=" + customerId +
                 ", display=" + display +
                 ", createUser=" + createUser +
                 ", updateUser=" + updateUser +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
-                "}";
+                '}';
     }
 }

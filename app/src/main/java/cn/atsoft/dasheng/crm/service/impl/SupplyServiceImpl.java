@@ -12,8 +12,10 @@ import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.crm.mapper.SupplyMapper;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.params.SupplyParam;
+import cn.atsoft.dasheng.erp.entity.SkuBrandBind;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.crm.model.result.SupplyResult;
+import cn.atsoft.dasheng.erp.service.SkuBrandBindService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.crm.service.SupplyService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -57,28 +59,58 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     @Autowired
     private PurchaseListingService listingService;
 
+    @Autowired
+    private SkuBrandBindService skuBrandBindService;
+
     @Override
     @Transactional
     public void add(SupplyParam param) {
-
-        List<Supply> supplies = this.query().eq("sku_id", param.getSkuId()).eq("customer_id", param.getCustomerId()).eq("display", 1).list();
-        List<Supply> supplyList = new ArrayList<>();
-
+        // 通过 传过来的 brandIds 和 skuId 找到对应的集合
+        List<SkuBrandBind> brandBindList = param.getBrandIds().size() == 0 ? new ArrayList<>() : skuBrandBindService.query().in("brand_id", param.getBrandIds()).eq("sku_id", param.getSkuId()).eq("display", 1).list();
+        List<SkuBrandBind> skuBrandBindList = new ArrayList<>();
+        //循环遍历 传过来的BrandIds
         for (Long brandId : param.getBrandIds()) {
-            if (supplies.stream().noneMatch(i -> i.getBrandId().equals(brandId) && i.getSkuId().equals(param.getSkuId()) && i.getCustomerId().equals(param.getCustomerId()))) {
-                Supply supply = new Supply();
-                supply.setSkuId(param.getSkuId());
-                supply.setBrandId(brandId);
-                supply.setSupplierModel(param.getSupplierModel());
-                supply.setCustomerId(param.getCustomerId());
-                if (supplyList.stream().noneMatch(i -> i.getBrandId().equals(brandId) && i.getSkuId().equals(param.getSkuId()) && i.getCustomerId().equals(param.getCustomerId()))) {
-                    supplyList.add(supply);
-                }
-            } else {
-                throw new ServiceException(500, "存在重复绑定");
+            //如果 brandBindList 不包含 循环 传过来的BrandIds 那就新增
+            if (brandBindList.stream().noneMatch(i -> i.getBrandId().equals(brandId))) {
+                // 定义 skuBrandBindEntity 实体
+                SkuBrandBind skuBrandBindEntity = new SkuBrandBind();
+                skuBrandBindEntity.setBrandId(brandId);
+                skuBrandBindEntity.setSkuId(param.getSkuId());
+                //把实体加入到 skuBrandBindList 集合里面
+                skuBrandBindList.add(skuBrandBindEntity);
             }
         }
-        this.saveBatch(supplyList);
+        //把 skuBrandBindList 保存
+        skuBrandBindService.saveBatch(skuBrandBindList);
+        //把 skuBrandBind 添加到 brandBindList
+        brandBindList.addAll(skuBrandBindList);
+
+        //定义一个 skuBrandBindIds
+        List<Long> skuBrandBindIds = new ArrayList<>();
+        // 循环遍历 brandBindList
+        for (SkuBrandBind skuBrandBind : brandBindList) {
+            //把 brandBindList得到的 skuBrandBind 集合加入到定义的 skuBrandBindIds
+            skuBrandBindIds.add(skuBrandBind.getSkuBrandBind());
+        }
+
+        List<Supply> supplyList = skuBrandBindIds.size() == 0 ? new ArrayList<>() : this.query().in("sku_brand_bind", skuBrandBindIds).eq("customer_id", param.getCustomerId()).eq("display", 1).list();
+        List<Supply> supply = new ArrayList<>();
+
+        // 循环遍历 brandBindList
+        for (SkuBrandBind skuBrandBind : brandBindList) {
+            //如果 supplyList 不包含 skuBrandBind  则新增
+            if (supplyList.stream().noneMatch(i -> i.getSkuBrandBind().equals(skuBrandBind.getSkuBrandBind()))) {
+                //定义一个 supplyEntity
+                Supply supplyEntity = new Supply();
+                supplyEntity.setSkuBrandBind(skuBrandBind.getSkuBrandBind());
+                supplyEntity.setSkuId(skuBrandBind.getSkuId());
+                supplyEntity.setCustomerId(param.getCustomerId());
+                supplyEntity.setBrandId(skuBrandBind.getBrandId());
+                //把 supplyEntity 加入到 supply
+                supply.add(supplyEntity);
+            }
+        }
+        this.saveBatch(supply);
     }
 
 

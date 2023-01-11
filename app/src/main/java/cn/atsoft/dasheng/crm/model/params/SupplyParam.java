@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.crm.model.params;
 
 import cn.atsoft.dasheng.app.model.params.BrandParam;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -68,6 +69,12 @@ public class SupplyParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("供应商id")
     @NotNull
     private Long customerId;
+
+    /**
+     * 物料品牌绑定主表
+     */
+    @TableField("物料品牌绑定主表")
+    private Long skuBrandBind;
 
     /**
      * 删除状态
