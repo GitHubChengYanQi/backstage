@@ -155,6 +155,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
             //如果主键id为空 则新增
             if (ToolUtil.isEmpty(stockForewarn.getForewarnId())) {
                 stockForewarnTmp.setType("sku");
+                stockForewarnTmp.setFormId(stockForewarn.getSkuId());
                 //保存这条数据并且把这条数据放到saveList里面
                 this.save(stockForewarnTmp);
             } else {
