@@ -2004,6 +2004,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             add("stockNumber");
             add("standard");
             add("spuId");
+            add("className");
         }};
         return PageFactory.defaultPage(fields);
     }
