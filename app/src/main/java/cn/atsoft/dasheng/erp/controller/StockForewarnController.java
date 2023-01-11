@@ -80,6 +80,9 @@ public class StockForewarnController extends BaseController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ApiOperation("批量保存")
     public ResponseData saveBatch(@RequestBody StockForewarnParam stockForewarnParam) {
+        if (ToolUtil.isNotEmpty(stockForewarnParam.getInventoryFloor()) && ToolUtil.isNotEmpty(stockForewarnParam.getInventoryCeiling()) && stockForewarnParam.getInventoryFloor() >= stockForewarnParam.getInventoryCeiling()){
+            throw new ServiceException(500, "预警上限值应大于下限值");
+        }
         if (ToolUtil.isEmpty(stockForewarnParam.getBomId())) {
             throw new ServiceException(500, "请传入bomId");
         } else {
