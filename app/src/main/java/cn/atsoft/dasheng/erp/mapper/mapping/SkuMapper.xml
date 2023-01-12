@@ -63,10 +63,7 @@ type
     </sql>
     <!-- sku,spu,spu_class查询结果列 -->
     <sql id="Left_Join_List">
-        goods_spu
-        .
-        name
-        AS "spuName",
+        goods_spu.name AS "spuName",
         goods_sku.add_method AS "addMethod",
         goods_sku.images AS "images",
         goods_sku.standard AS "standard",
@@ -99,7 +96,8 @@ type
         goods_sku.view_frame AS "viewFrame",
         goods_sku.model AS "model",
         goods_sku.heat_treatment AS "heatTreatment",
-        goods_sku.maintenance_period AS "maintenancePeriod"
+        goods_sku.maintenance_period AS "maintenancePeriod",
+        goods_spu_class.name AS "className"
     </sql>
 
 
