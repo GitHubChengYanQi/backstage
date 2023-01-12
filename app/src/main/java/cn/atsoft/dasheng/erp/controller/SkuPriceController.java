@@ -70,9 +70,6 @@ public class SkuPriceController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public ResponseData list(@RequestBody SkuPriceListParam skuPriceListParam) {
-        if (ToolUtil.isEmpty(skuPriceListParam.getSkuIds())) {
-            throw new ServiceException(500,"系统错误，请联系管理员");
-        }
         List<SkuPriceListResult> skuPriceListResults = this.skuPriceService.skuPriceResultBySkuIds(skuPriceListParam.getSkuIds());
         return ResponseData.success(skuPriceListResults);
     }
