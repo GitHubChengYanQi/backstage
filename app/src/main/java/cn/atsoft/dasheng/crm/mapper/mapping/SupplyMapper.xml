@@ -6,6 +6,7 @@
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.crm.entity.Supply">
         <id column="supply_id" property="supplyId"/>
         <result column="sku_id" property="skuId"/>
+        <result column="sku_brand_bind" property="skuBrandBind"/>
         <result column="customer_id" property="customerId"/>
         <result column="display" property="display"/>
         <result column="create_user" property="createUser"/>
@@ -17,10 +18,18 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">brand_id
-    AS "brandId",supplier_model AS "supplierModel",
-        supply_id
-        AS "supplyId", sku_id AS "skuId", customer_id AS "customerId", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+    <sql id="Base_Column_List">
+brand_id AS "brandId",
+        supplier_model AS "supplierModel",
+        supply_id AS "supplyId",
+    sku_id AS "skuId",
+    customer_id AS "customerId",
+    display AS "display",
+    create_user AS "createUser",
+    update_user AS "updateUser",
+    create_time AS "createTime",
+    update_time AS "updateTime",
+    sku_brand_bind AS "skuBrandBind"
     </sql>
 
 
@@ -28,9 +37,12 @@
             parameterType="cn.atsoft.dasheng.crm.model.params.SupplyParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_supply where 1 = 1
+        from daoxin_supply where 1 = 1 AND display = 1
         <if test="paramCondition.supplyId != null">
             and supply_id like CONCAT('%',#{paramCondition.supplyId},'%')
+        </if>
+        <if test="paramCondition.skuBrandBind != null">
+            and sku_brand_bind like CONCAT('%',#{paramCondition.skuBrandBind},'%')
         </if>
         <if test="paramCondition.skuId != null">
             and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
@@ -82,6 +94,7 @@
             parameterType="cn.atsoft.dasheng.crm.model.params.SupplyParam">
         SELECT
         daoxin_supply.brand_id AS "brandId",
+        daoxin_supply.sku_brand_bind AS "skuBrandBind",
         daoxin_supply.supplier_model AS "supplierModel",
         daoxin_supply.supply_id AS "supplyId",
         daoxin_supply.sku_id AS "skuId",
