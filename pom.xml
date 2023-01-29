@@ -24,6 +24,7 @@
         <module>main</module>
         <module>dasheng-core</module>
         <module>app</module>
+        <module>mes</module>
     </modules>
 
     <properties>

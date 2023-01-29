@@ -1,20 +1,6 @@
-/**
- * Copyright 2018-2020 stylefeng & fengshuonan (sn93@qq.com)
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package cn.atsoft.dasheng.config.web;
 
+import cn.atsoft.dasheng.core.config.api.version.ApiVersionRequestMappingHandlerMapping;
 import cn.atsoft.dasheng.core.util.HttpContext;
 import cn.atsoft.dasheng.sys.core.exception.page.GunsErrorView;
 import cn.atsoft.dasheng.sys.core.listener.ConfigListener;
@@ -29,6 +15,7 @@ import com.google.code.kaptcha.util.Config;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.aop.support.JdkRegexpMethodPointcut;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -42,21 +29,20 @@ import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
 /**
  * web 配置类
- *
- * @author fengshuonan
- * @date 2016年11月12日 下午5:03:32
  */
 @Configuration
 @Order(2)
-public class WebConfig implements WebMvcConfigurer {
+public class WebConfig implements WebMvcConfigurer, WebMvcRegistrations {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -219,10 +205,25 @@ public class WebConfig implements WebMvcConfigurer {
         return defaultKaptcha;
     }
 
+    /**
+     * 防止双“/"请求错误
+     * @return
+     */
     @Bean
     public HttpFirewall httpFirewall (){
         StrictHttpFirewall firewall = new StrictHttpFirewall();
         firewall.setAllowUrlEncodedDoubleSlash(true);
         return firewall;
+    }
+
+    /**
+     * 接口版本支持
+     * support v1.1.1, v1.1, v1; three levels
+     * @return
+     */
+    @Override
+    @NotNull
+    public RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
+        return new ApiVersionRequestMappingHandlerMapping();
     }
 }
