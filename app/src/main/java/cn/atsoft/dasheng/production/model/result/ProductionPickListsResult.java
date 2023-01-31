@@ -169,7 +169,6 @@ public class ProductionPickListsResult implements Serializable {
     /**
      * 创建时间
      */
-    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date createTime;
 

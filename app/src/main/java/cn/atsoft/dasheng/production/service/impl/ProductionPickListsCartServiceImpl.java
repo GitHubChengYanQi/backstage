@@ -45,6 +45,7 @@ import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -229,7 +230,165 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         }
 
     }
+    @Override
+    public List<ProductionPickListsDetailResult> autoAdd(ProductionPickListsCartParam param){
+        Long pickListsId = param.getPickListsId();
+        //查出全部申请的物料以及数量信息
+        List<ProductionPickListsDetail> listsDetails = pickListsDetailService.lambdaQuery().eq(ProductionPickListsDetail::getPickListsId, pickListsId).eq(ProductionPickListsDetail::getDisplay, 1).ne(ProductionPickListsDetail::getStatus,99).list();
+        List<ProductionPickListsCart> inCarts =listsDetails.size() == 0 ? new ArrayList<>() : this.lambdaQuery().in(ProductionPickListsCart::getPickListsDetailId, listsDetails.stream().map(ProductionPickListsDetail::getPickListsDetailId).distinct().collect(Collectors.toList())).eq(ProductionPickListsCart::getDisplay, 1).eq(ProductionPickListsCart::getStatus, 0).list();
+        for (ProductionPickListsDetail listsDetail : listsDetails) {
+            for (ProductionPickListsCart inCart : inCarts) {
+                if (listsDetail.getPickListsDetailId().equals(inCart.getPickListsDetailId())){
+                    listsDetail.setNumber(listsDetail.getNumber()-inCart.getNumber());
+                }
+            }
+        }
+        List<Long> skuIds = listsDetails.stream().map(ProductionPickListsDetail::getSkuId).collect(Collectors.toList());
+        List<Long> brandIds = listsDetails.stream().map(ProductionPickListsDetail::getBrandId).distinct().collect(Collectors.toList());
+        for (ProductionPickListsDetail listsDetail : listsDetails) {
+            listsDetail.setNumber(listsDetail.getNumber()-listsDetail.getReceivedNumber());
+        }
+        /**
+         * 首先抛去已备料实物  查询出 sku的库存
+         *
+         */
+        /**
+         * 获取购物车中实物
+         */
+        List<Long> cartInkindIds = this.getCartInkindIds(skuIds);
+        //查询库存
+        LambdaQueryChainWrapper<StockDetails> stockDetailWrapper = stockDetailsService.lambdaQuery();
+        stockDetailWrapper.in(StockDetails::getSkuId, skuIds);
+        stockDetailWrapper.eq(StockDetails::getDisplay,1);
+        stockDetailWrapper.eq(StockDetails::getStage,1);
+        if (brandIds.size()>0 && brandIds.stream().noneMatch(i->i.equals(0L))) {
+            stockDetailWrapper.in(StockDetails::getBrandId,brandIds);
+        }
+        stockDetailWrapper.orderByAsc(StockDetails::getCreateTime);
+        if (cartInkindIds.size() > 0) {
+            stockDetailWrapper.ne(StockDetails::getInkindId,cartInkindIds);
+        }
+        List<StockDetails> stockDetails = stockDetailWrapper.list();
+        List<Inkind> inkinds =stockDetails.size() == 0 ? new ArrayList<>() : inkindService.listByIds(stockDetails.stream().map(StockDetails::getInkindId).distinct().collect(Collectors.toList()));
+        List<ProductionPickListsDetailResult> results = new ArrayList<>();
+        //计算出库
+        List<ProductionPickListsCart> entitys = new ArrayList<>();
+        List<StockDetails> newStockDetails = new ArrayList<>();
+        for (ProductionPickListsDetail listsDetail : listsDetails) {
+            if (ToolUtil.isEmpty(listsDetail.getBrandId())) {
+                listsDetail.setBrandId(0L);
+            }
+//            if (stockDetails.size() == 0) {
+//                throw new ServiceException(500, "该库位库存不足");
+//            } else {
+//                int count = 0;
+//                for (StockDetails stockDetail : stockDetails) {
+//                    count += stockDetail.getNumber();
+//                }
+//                if (listsDetail.getNumber() > count) {
+//                    throw new ServiceException(500, "该库位库存不足");
+//                }
+//            }
+            int number = listsDetail.getNumber();
 
+//            if (ToolUtil.isNotEmpty(listsDetail.getInkindId())) {
+//                Inkind inkind = inkindService.getById(productionPickListsCartParam.getInkindId());
+//                ProductionPickListsCart entity = new ProductionPickListsCart();
+//                entity.setPickListsId(productionPickListsCartParam.getPickListsId());
+//                entity.setCustomerId(inkind.getCustomerId());
+//                entity.setPickListsDetailId(productionPickListsCartParam.getPickListsDetailId());
+//                entity.setStorehousePositionsId(productionPickListsCartParam.getStorehousePositionsId());
+//                entity.setStorehouseId(productionPickListsCartParam.getStorehouseId());
+//                entity.setSkuId(productionPickListsCartParam.getSkuId());
+//                entity.setBrandId(productionPickListsCartParam.getBrandId());
+//                entity.setCustomerId(productionPickListsCartParam.getCustomerId());
+//                entity.setNumber(productionPickListsCartParam.getNumber());
+//                entity.setType(productionPickListsCartParam.getType());
+//                entity.setInkindId(productionPickListsCartParam.getInkindId());
+//                entitys.add(entity);
+//                stockDetails.removeIf(i -> i.getInkindId().equals(productionPickListsCartParam.getInkindId()));
+//            } else {
+                for (StockDetails stockDetail : stockDetails) {
+                    if (number > 0) {
+//                        if ((ToolUtil.isNotEmpty(stockDetail.getBrandId()) && stockDetail.getBrandId().equals(listsDetail.getBrandId()) && stockDetail.getSkuId().equals(listsDetail.getSkuId()) && stockDetail.getStorehousePositionsId().equals(productionPickListsCartParam.getStorehousePositionsId())) || ((ToolUtil.isEmpty(stockDetail.getBrandId()) || stockDetail.getBrandId().equals(0L)) && stockDetail.getSkuId().equals(productionPickListsCartParam.getSkuId()) && stockDetail.getStorehousePositionsId().equals(productionPickListsCartParam.getStorehousePositionsId()))) {
+                        if ((ToolUtil.isNotEmpty(stockDetail.getBrandId()) && stockDetail.getBrandId().equals(listsDetail.getBrandId()) && stockDetail.getSkuId().equals(listsDetail.getSkuId())) || ((ToolUtil.isEmpty(stockDetail.getBrandId()) || stockDetail.getBrandId().equals(0L)) && stockDetail.getSkuId().equals(listsDetail.getSkuId()))) {
+                            int lastNumber = number;
+                            number -= stockDetail.getNumber();
+                            if (number >= 0) {  //如果库存实物被全部备料 则不拆分实物  反之 需要拆分实物
+                                ProductionPickListsCart entity = new ProductionPickListsCart();
+                                entity.setNumber(Math.toIntExact(stockDetail.getNumber()));
+                                entity.setSkuId(stockDetail.getSkuId());
+                                if (ToolUtil.isNotEmpty(stockDetail.getBrandId())) {
+                                    entity.setBrandId(stockDetail.getBrandId());
+                                }
+
+                                entity.setPickListsId(listsDetail.getPickListsId());
+                                entity.setPickListsDetailId(listsDetail.getPickListsDetailId());
+                                entity.setStorehousePositionsId(stockDetail.getStorehousePositionsId());
+                                entity.setStorehouseId(stockDetail.getStorehouseId());
+                                entity.setType("outStock");
+                                entity.setInkindId(stockDetail.getInkindId());
+                                entity.setCustomerId(stockDetail.getCustomerId());
+                                entitys.add(entity);
+                            } else {
+                                ProductionPickListsCart entity = new ProductionPickListsCart();
+                                entity.setNumber(lastNumber);
+                                entity.setSkuId(stockDetail.getSkuId());
+                                if (ToolUtil.isNotEmpty(stockDetail.getBrandId())) {
+                                    entity.setBrandId(stockDetail.getBrandId());
+                                }
+                                for (Inkind inkind : inkinds) {
+                                    if (stockDetail.getInkindId().equals(inkind.getInkindId())) {
+                                        Inkind newInkind = BeanUtil.copyProperties(inkind, Inkind.class);
+                                        newInkind.setInkindId(null);
+                                        newInkind.setSource("Inkind");
+                                        newInkind.setSourceId(inkind.getInkindId());
+                                        inkindService.save(newInkind);
+                                        StockDetails newStockDetail = BeanUtil.copyProperties(stockDetail, StockDetails.class);
+                                        newStockDetail.setStockItemId(null);
+                                        newStockDetail.setNumber((long) lastNumber);
+                                        newStockDetail.setInkindId(newInkind.getInkindId());
+                                        newStockDetails.add(newStockDetail);
+                                        entity.setStorehousePositionsId(stockDetail.getStorehousePositionsId());
+                                        entity.setStorehouseId(stockDetail.getStorehouseId());
+                                        entity.setPickListsId(listsDetail.getPickListsId());
+                                        entity.setPickListsDetailId(listsDetail.getPickListsDetailId());
+                                        entity.setType("outStock");
+                                        entity.setInkindId(newInkind.getInkindId());
+                                        entity.setNumber(Math.toIntExact(newStockDetail.getNumber()));
+                                        entity.setCustomerId(newInkind.getCustomerId());
+                                        entitys.add(entity);
+                                        stockDetail.setNumber(stockDetail.getNumber()- lastNumber);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+//            }
+            if (number>0){
+                ProductionPickListsDetailResult productionPickListsDetailResult = BeanUtil.copyProperties(listsDetail, ProductionPickListsDetailResult.class);
+                productionPickListsDetailResult.setNumber(number);
+                results.add(productionPickListsDetailResult);
+            }
+        }
+        stockDetailsService.saveBatch(newStockDetails);
+        stockDetailsService.updateBatchById(stockDetails);
+        if (entitys.size() > 0) {
+            this.saveBatch(entitys);
+            String skuName = skuService.skuMessage(entitys.get(0).getSkuId());
+            shopCartService.addDynamic(entitys.get(0).getPickListsId(), entitys.get(0).getSkuId(),skuName + "进行了备料");
+        } else {
+            throw new ServiceException(500, "未匹配到所需物料,备料失败");
+        }
+        pickListsDetailService.format(results);
+        return results;
+
+
+
+
+    }
 
     /**
      * 库存预警
@@ -795,13 +954,13 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         for (ProductionPickListsCartParam cartParam : cartParams) {
             pickListsIds.add(cartParam.getPickListsId());
         }
-        List<ProductionPickListsCart> list = pickListsIds.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id", pickListsIds).eq("display", 1).isNull("type").list();
+        List<ProductionPickListsCart> list = pickListsIds.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id", pickListsIds).eq("display", 1).eq("type","outStock").list();
         List<Long> inkindIds = new ArrayList<>();
         for (ProductionPickListsCart pickListsCart : list) {
             inkindIds.add(pickListsCart.getInkindId());
         }
 
-        List<Inkind> inkinds = inkindService.listByIds(inkindIds);
+        List<Inkind> inkinds = inkindIds.size() == 0 ? new ArrayList<>() :inkindService.listByIds(inkindIds);
         List<Long> parentInkindIds = new ArrayList<>();
         for (Inkind inkind : inkinds) {
             if (inkind.getSource().equals("Inkind")) {
@@ -845,7 +1004,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         }
         stockDetailsService.updateBatchById(stockDetails);
         stockDetailsService.updateBatchById(parentStockDetails);
-        shopCartService.addDynamic(pickListsIds.get(0), inkinds.get(0).getSkuId(),"领取了物料 "+skuService.skuMessage(inkinds.get(0).getSkuId()));
+//        shopCartService.addDynamic(pickListsIds.get(0), inkinds.get(0).getSkuId(),"领取了物料 "+skuService.skuMessage(inkinds.get(0).getSkuId()));
         this.updateBatchById(updateEntity);
     }
 
@@ -888,12 +1047,9 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
     }
 
     @Override
-    public List<Long> getCartInkindIds(ProductionPickListsCartParam productionPickListsCartParam) {
-        List<Long> skuIds = new ArrayList<>();
+    public List<Long> getCartInkindIds(List<Long> skuIds) {
         List<Long> inkindIds = new ArrayList<>();
-        for (ProductionPickListsCartParam pickListsCartParam : productionPickListsCartParam.getProductionPickListsCartParams()) {
-            skuIds.add(pickListsCartParam.getSkuId());
-        }
+
         List<ProductionPickListsCart> listsCarts = skuIds.size() == 0 ? new ArrayList<>() : this.query().in("sku_id", skuIds).eq("display", 1).list();
         for (ProductionPickListsCart listsCart : listsCarts) {
             inkindIds.add(listsCart.getInkindId());
