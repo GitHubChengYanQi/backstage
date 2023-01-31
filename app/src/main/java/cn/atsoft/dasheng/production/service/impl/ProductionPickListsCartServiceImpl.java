@@ -266,7 +266,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         }
         stockDetailWrapper.orderByAsc(StockDetails::getCreateTime);
         if (cartInkindIds.size() > 0) {
-            stockDetailWrapper.ne(StockDetails::getInkindId,cartInkindIds);
+            stockDetailWrapper.notIn(StockDetails::getInkindId,cartInkindIds);
         }
         List<StockDetails> stockDetails = stockDetailWrapper.list();
         List<Inkind> inkinds =stockDetails.size() == 0 ? new ArrayList<>() : inkindService.listByIds(stockDetails.stream().map(StockDetails::getInkindId).distinct().collect(Collectors.toList()));
@@ -326,7 +326,6 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                                 entity.setPickListsDetailId(listsDetail.getPickListsDetailId());
                                 entity.setStorehousePositionsId(stockDetail.getStorehousePositionsId());
                                 entity.setStorehouseId(stockDetail.getStorehouseId());
-                                entity.setType("outStock");
                                 entity.setInkindId(stockDetail.getInkindId());
                                 entity.setCustomerId(stockDetail.getCustomerId());
                                 entitys.add(entity);
@@ -353,7 +352,6 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                                         entity.setStorehouseId(stockDetail.getStorehouseId());
                                         entity.setPickListsId(listsDetail.getPickListsId());
                                         entity.setPickListsDetailId(listsDetail.getPickListsDetailId());
-                                        entity.setType("outStock");
                                         entity.setInkindId(newInkind.getInkindId());
                                         entity.setNumber(Math.toIntExact(newStockDetail.getNumber()));
                                         entity.setCustomerId(newInkind.getCustomerId());
@@ -954,7 +952,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         for (ProductionPickListsCartParam cartParam : cartParams) {
             pickListsIds.add(cartParam.getPickListsId());
         }
-        List<ProductionPickListsCart> list = pickListsIds.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id", pickListsIds).eq("display", 1).eq("type","outStock").list();
+        List<ProductionPickListsCart> list = pickListsIds.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id", pickListsIds).eq("display", 1).isNull("type").list();
         List<Long> inkindIds = new ArrayList<>();
         for (ProductionPickListsCart pickListsCart : list) {
             inkindIds.add(pickListsCart.getInkindId());
