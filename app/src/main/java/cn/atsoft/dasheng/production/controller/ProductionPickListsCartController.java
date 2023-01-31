@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.model.request.CartGroupByUserListRequest;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
+import cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -71,6 +72,32 @@ public class ProductionPickListsCartController extends BaseController {
         this.productionPickListsCartService.add(productionPickListsCartParam,stockDetails);
 
         return ResponseData.success();
+    }
+    /**
+     * 新增接口
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/autoAdd", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    @Permission
+    public ResponseData autoAdd(@RequestBody ProductionPickListsCartParam productionPickListsCartParam) {
+        if (ToolUtil.isEmpty(productionPickListsCartParam.getTaskId())) {
+            throw new ServiceException(500, "缺少任务id");
+        }
+        //检查是否正在静态盘点
+        inventoryService.staticState();
+//        if (!productionPickListsCartParam.getWarning()) {
+//            if (productionPickListsCartService.warning(productionPickListsCartParam)) {
+//                return ResponseData.error(BizExceptionEnum.USER_CHECK.getCode(), BizExceptionEnum.USER_CHECK.getMessage(), "");   //需要人员确定
+//            }
+//        }
+//        productionPickListsCartService.addCheck(productionPickListsCartParam);
+        //一键备料
+        List<ProductionPickListsDetailResult> results = this.productionPickListsCartService.autoAdd(productionPickListsCartParam);
+
+        return ResponseData.success(results);
     }
 
     /**

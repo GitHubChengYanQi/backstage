@@ -36,6 +36,8 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
      */
     void add(ProductionPickListsCartParam param,List<StockDetails> stockDetails);
 
+    List<ProductionPickListsDetailResult> autoAdd(ProductionPickListsCartParam param);
+
     boolean warning(ProductionPickListsCartParam param);
 
     void addCheck(ProductionPickListsCartParam param);
@@ -102,7 +104,8 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
 
     Integer getLockNumber(QuerryLockedParam param);
 
-    List<Long> getCartInkindIds(ProductionPickListsCartParam productionPickListsCartParam);
+
+    List<Long> getCartInkindIds(List<Long> skuIds);
 
     List<PickListsStorehouseResult> listPickListsStorehouse(ProductionPickListsParam param);
 

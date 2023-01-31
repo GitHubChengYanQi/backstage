@@ -807,7 +807,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         /**
          * 获取购物车中实物
          */
-        List<Long> cartInkindIds = pickListsCartService.getCartInkindIds(param);
+        List<Long> skuIds = ToolUtil.isEmpty(param.getProductionPickListsCartParams())?new ArrayList<>() : param.getProductionPickListsCartParams().stream().map(ProductionPickListsCartParam::getSkuId).distinct().collect(Collectors.toList());
+        List<Long> cartInkindIds = pickListsCartService.getCartInkindIds(skuIds);
         List<Long> inkindIds = new ArrayList<>();
         for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
             if (ToolUtil.isNotEmpty(productionPickListsCartParam.getInkindId())) {
