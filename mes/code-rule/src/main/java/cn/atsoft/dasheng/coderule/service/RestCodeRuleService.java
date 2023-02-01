@@ -1,9 +1,9 @@
 package cn.atsoft.dasheng.coderule.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.coderule.entity.RestCodingRules;
-import cn.atsoft.dasheng.coderule.model.params.RestCodingRulesParam;
-import cn.atsoft.dasheng.coderule.model.result.RestCodingRulesResult;
+import cn.atsoft.dasheng.coderule.entity.RestCodeRule;
+import cn.atsoft.dasheng.coderule.model.params.RestCodeRuleParam;
+import cn.atsoft.dasheng.coderule.model.result.RestCodeRuleResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * @author song
  * @since 2021-10-22
  */
-public interface RestCodingRulesService extends IService<RestCodingRules> {
+public interface RestCodeRuleService extends IService<RestCodeRule> {
 
     /**
      * 新增
@@ -24,7 +24,7 @@ public interface RestCodingRulesService extends IService<RestCodingRules> {
      * @author song
      * @Date 2021-10-22
      */
-    void add(RestCodingRulesParam param);
+    void add(RestCodeRuleParam param);
 
     /**
      * 删除
@@ -32,7 +32,7 @@ public interface RestCodingRulesService extends IService<RestCodingRules> {
      * @author song
      * @Date 2021-10-22
      */
-    void delete(RestCodingRulesParam param);
+    void delete(RestCodeRuleParam param);
 
     /**
      * 更新
@@ -40,7 +40,7 @@ public interface RestCodingRulesService extends IService<RestCodingRules> {
      * @author song
      * @Date 2021-10-22
      */
-    void update(RestCodingRulesParam param);
+    void update(RestCodeRuleParam param);
 
     /**
      * 查询单条数据，Specification模式
@@ -48,7 +48,7 @@ public interface RestCodingRulesService extends IService<RestCodingRules> {
      * @author song
      * @Date 2021-10-22
      */
-    RestCodingRulesResult findBySpec(RestCodingRulesParam param);
+    RestCodeRuleResult findBySpec(RestCodeRuleParam param);
 
     /**
      * 查询列表，Specification模式
@@ -56,7 +56,7 @@ public interface RestCodingRulesService extends IService<RestCodingRules> {
      * @author song
      * @Date 2021-10-22
      */
-    List<RestCodingRulesResult> findListBySpec(RestCodingRulesParam param);
+    List<RestCodeRuleResult> findListBySpec(RestCodeRuleParam param);
 
     /**
      * 查询分页数据，Specification模式
@@ -64,7 +64,7 @@ public interface RestCodingRulesService extends IService<RestCodingRules> {
      * @author song
      * @Date 2021-10-22
      */
-    PageInfo<RestCodingRulesResult> findPageBySpec(RestCodingRulesParam param);
+    PageInfo<RestCodeRuleResult> findPageBySpec(RestCodeRuleParam param);
 
     /**
      * 自动生成编码

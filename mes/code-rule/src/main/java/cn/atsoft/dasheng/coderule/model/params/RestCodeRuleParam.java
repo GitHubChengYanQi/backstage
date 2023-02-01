@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.coderule.model.params;
 
 import cn.atsoft.dasheng.base.dict.AbstractDictMap;
+import cn.atsoft.dasheng.coderule.model.RestCodingSerial;
+import cn.atsoft.dasheng.coderule.model.RestCodings;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -12,7 +14,7 @@ import java.util.List;
 
 /**
  * <p>
- * 编码规则分类
+ * 编码规则
  * </p>
  *
  * @author song
@@ -20,10 +22,35 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class RestCodingRulesCategoryParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
+public class RestCodeRuleParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 流水号
+     */
+    private String serial;
+
+    private List<RestCodingSerial> codingSerials;
+
+    /**
+     * 状态
+     */
+    private Integer state;
+    /**
+     * 排序
+     */
+    private Long sort;
+
+    private Integer module;
+
+    private List<RestCodings> codings;
+
+    /**
+     * 编码规则id
+     */
+    @ApiModelProperty("编码规则id")
+    private Long codingRulesId;
 
     /**
      * 编码规则分类id
@@ -32,16 +59,19 @@ public class RestCodingRulesCategoryParam extends AbstractDictMap implements Ser
     private Long codingRulesClassificationId;
 
     /**
-     * 分类名称
+     * 编码规则名称
      */
-    @ApiModelProperty("分类名称")
+    @ApiModelProperty("编码规则名称")
     private String name;
 
+    @ApiModelProperty("描述")
+    private String note;
+
     /**
-     * 排序
+     * 编码规则
      */
-    @ApiModelProperty("排序")
-    private Long sort;
+    @ApiModelProperty("编码规则")
+    private String codingRules;
 
     /**
      * 创建者

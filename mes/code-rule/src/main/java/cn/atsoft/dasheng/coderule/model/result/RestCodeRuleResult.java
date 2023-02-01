@@ -1,9 +1,7 @@
-package cn.atsoft.dasheng.coderule.model.params;
+package cn.atsoft.dasheng.coderule.model.result;
 
-import cn.atsoft.dasheng.base.dict.AbstractDictMap;
-import cn.atsoft.dasheng.coderule.model.RestCodingSerial;
+
 import cn.atsoft.dasheng.coderule.model.RestCodings;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -22,29 +20,33 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class RestCodingRulesParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
+public class RestCodeRuleResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private RestCodeRuleCategoryResult codingRulesClassificationResult;
+
+
+    private List<RestCodings> codings;
+
+    @ApiModelProperty("描述")
+    private String note;
+
 
     /**
      * 流水号
      */
     private String serial;
 
-    private List<RestCodingSerial> codingSerials;
-
     /**
      * 状态
      */
     private Integer state;
+    private Integer module;
     /**
      * 排序
      */
     private Long sort;
-
-    private Integer module;
-
-    private List<RestCodings> codings;
 
     /**
      * 编码规则id
@@ -63,9 +65,6 @@ public class RestCodingRulesParam extends AbstractDictMap implements Serializabl
      */
     @ApiModelProperty("编码规则名称")
     private String name;
-
-    @ApiModelProperty("描述")
-    private String note;
 
     /**
      * 编码规则
@@ -108,22 +107,6 @@ public class RestCodingRulesParam extends AbstractDictMap implements Serializabl
      */
     @ApiModelProperty("部门id")
     private Long deptId;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-
-    @Override
-    public String checkParam() {
-        return null;
-    }
-
-    @Override
-    public void init() {
-
-    }
-
-    @Override
-    protected void initBeWrapped() {
-
-    }
 }

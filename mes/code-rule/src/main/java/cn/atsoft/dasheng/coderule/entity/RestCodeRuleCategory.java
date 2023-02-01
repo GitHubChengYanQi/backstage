@@ -14,7 +14,7 @@ import java.util.Date;
  * @since 2021-10-22
  */
 @TableName("daoxin_erp_coding_rules_classification")
-public class RestCodingRulesCategory implements Serializable {
+public class RestCodeRuleCategory implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

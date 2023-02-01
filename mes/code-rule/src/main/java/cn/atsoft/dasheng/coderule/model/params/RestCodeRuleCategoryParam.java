@@ -1,7 +1,7 @@
-package cn.atsoft.dasheng.coderule.model.result;
+package cn.atsoft.dasheng.coderule.model.params;
 
-
-import cn.atsoft.dasheng.coderule.model.RestCodings;
+import cn.atsoft.dasheng.base.dict.AbstractDictMap;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * <p>
- * 编码规则
+ * 编码规则分类
  * </p>
  *
  * @author song
@@ -20,39 +20,10 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class RestCodingRulesResult implements Serializable {
+public class RestCodeRuleCategoryParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private RestCodingRulesCategoryResult codingRulesClassificationResult;
-
-
-    private List<RestCodings> codings;
-
-    @ApiModelProperty("描述")
-    private String note;
-
-
-    /**
-     * 流水号
-     */
-    private String serial;
-
-    /**
-     * 状态
-     */
-    private Integer state;
-    private Integer module;
-    /**
-     * 排序
-     */
-    private Long sort;
-
-    /**
-     * 编码规则id
-     */
-    @ApiModelProperty("编码规则id")
-    private Long codingRulesId;
 
     /**
      * 编码规则分类id
@@ -61,16 +32,16 @@ public class RestCodingRulesResult implements Serializable {
     private Long codingRulesClassificationId;
 
     /**
-     * 编码规则名称
+     * 分类名称
      */
-    @ApiModelProperty("编码规则名称")
+    @ApiModelProperty("分类名称")
     private String name;
 
     /**
-     * 编码规则
+     * 排序
      */
-    @ApiModelProperty("编码规则")
-    private String codingRules;
+    @ApiModelProperty("排序")
+    private Long sort;
 
     /**
      * 创建者
@@ -107,6 +78,22 @@ public class RestCodingRulesResult implements Serializable {
      */
     @ApiModelProperty("部门id")
     private Long deptId;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    @Override
+    public String checkParam() {
+        return null;
+    }
+
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    protected void initBeWrapped() {
+
+    }
 }

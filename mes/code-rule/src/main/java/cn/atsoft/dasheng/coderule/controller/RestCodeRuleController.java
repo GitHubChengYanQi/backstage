@@ -2,12 +2,12 @@ package cn.atsoft.dasheng.coderule.controller;
 
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.coderule.entity.RestCodingRules;
+import cn.atsoft.dasheng.coderule.entity.RestCodeRule;
 import cn.atsoft.dasheng.coderule.model.RestCodings;
-import cn.atsoft.dasheng.coderule.model.params.RestCodingRulesParam;
-import cn.atsoft.dasheng.coderule.model.result.RestCodingRulesResult;
-import cn.atsoft.dasheng.coderule.service.RestCodingRulesService;
-import cn.atsoft.dasheng.coderule.wrapper.RestCodingRulesSelectWrapper;
+import cn.atsoft.dasheng.coderule.model.params.RestCodeRuleParam;
+import cn.atsoft.dasheng.coderule.model.result.RestCodeRuleResult;
+import cn.atsoft.dasheng.coderule.service.RestCodeRuleService;
+import cn.atsoft.dasheng.coderule.wrapper.RestCodeRuleSelectWrapper;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -41,7 +41,7 @@ import java.util.Map;
 public class RestCodeRuleController extends BaseController {
 
     @Autowired
-    private RestCodingRulesService codingRulesService;
+    private RestCodeRuleService codingRulesService;
 
     /**
      * 新增接口
@@ -51,7 +51,7 @@ public class RestCodeRuleController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody RestCodingRulesParam codingRulesParam) {
+    public ResponseData addItem(@RequestBody RestCodeRuleParam codingRulesParam) {
         this.codingRulesService.add(codingRulesParam);
         return ResponseData.success();
     }
@@ -63,9 +63,9 @@ public class RestCodeRuleController extends BaseController {
      * @Date 2021-10-22
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @BussinessLog(value = "修改编码规则", key = "name", dict = RestCodingRulesParam.class)
+    @BussinessLog(value = "修改编码规则", key = "name", dict = RestCodeRuleParam.class)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody RestCodingRulesParam codingRulesParam) {
+    public ResponseData update(@RequestBody RestCodeRuleParam codingRulesParam) {
 
         this.codingRulesService.update(codingRulesParam);
         return ResponseData.success();
@@ -78,9 +78,9 @@ public class RestCodeRuleController extends BaseController {
      * @Date 2021-10-22
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @BussinessLog(value = "删除编码规则", key = "name", dict = RestCodingRulesParam.class)
+    @BussinessLog(value = "删除编码规则", key = "name", dict = RestCodeRuleParam.class)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody RestCodingRulesParam codingRulesParam) {
+    public ResponseData delete(@RequestBody RestCodeRuleParam codingRulesParam) {
         this.codingRulesService.delete(codingRulesParam);
         return ResponseData.success();
     }
@@ -93,9 +93,9 @@ public class RestCodeRuleController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData detail(@RequestBody RestCodingRulesParam codingRulesParam) {
-        RestCodingRules detail = this.codingRulesService.getById(codingRulesParam.getCodingRulesId());
-        RestCodingRulesResult result = new RestCodingRulesResult();
+    public ResponseData detail(@RequestBody RestCodeRuleParam codingRulesParam) {
+        RestCodeRule detail = this.codingRulesService.getById(codingRulesParam.getCodingRulesId());
+        RestCodeRuleResult result = new RestCodeRuleResult();
         ToolUtil.copyProperties(detail, result);
 
         if (ToolUtil.isNotEmpty(detail.getCodingRules())) {
@@ -120,9 +120,9 @@ public class RestCodeRuleController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<RestCodingRulesResult> list(@RequestBody(required = false) RestCodingRulesParam codingRulesParam) {
+    public PageInfo<RestCodeRuleResult> list(@RequestBody(required = false) RestCodeRuleParam codingRulesParam) {
         if (ToolUtil.isEmpty(codingRulesParam)) {
-            codingRulesParam = new RestCodingRulesParam();
+            codingRulesParam = new RestCodeRuleParam();
         }
         return this.codingRulesService.findPageBySpec(codingRulesParam);
     }
@@ -152,9 +152,9 @@ public class RestCodeRuleController extends BaseController {
      */
     @RequestMapping(value = "/backCoding", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData backCoding(@RequestBody RestCodingRulesParam codingRulesParam) {
+    public ResponseData backCoding(@RequestBody RestCodeRuleParam codingRulesParam) {
         if (ToolUtil.isEmpty(codingRulesParam)) {
-            codingRulesParam = new RestCodingRulesParam();
+            codingRulesParam = new RestCodeRuleParam();
         }
         String backCoding = this.codingRulesService.backCoding(codingRulesParam.getCodingRulesId());
         return ResponseData.success(backCoding);
@@ -166,13 +166,13 @@ public class RestCodeRuleController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
-    public ResponseData listSelect(@RequestBody(required = false) RestCodingRulesParam codingRulesParam) {
-        QueryWrapper<RestCodingRules> codingRulesQueryWrapper = new QueryWrapper<>();
+    public ResponseData listSelect(@RequestBody(required = false) RestCodeRuleParam codingRulesParam) {
+        QueryWrapper<RestCodeRule> codingRulesQueryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(codingRulesParam))
             if (ToolUtil.isNotEmpty(codingRulesParam.getModule()))
                 codingRulesQueryWrapper.eq("module", codingRulesParam.getModule());
         List<Map<String, Object>> list = this.codingRulesService.listMaps(codingRulesQueryWrapper);
-        RestCodingRulesSelectWrapper codingRulesSelectWrapper = new RestCodingRulesSelectWrapper(list);
+        RestCodeRuleSelectWrapper codingRulesSelectWrapper = new RestCodeRuleSelectWrapper(list);
         List<Map<String, Object>> result = codingRulesSelectWrapper.wrap();
         return ResponseData.success(result);
     }

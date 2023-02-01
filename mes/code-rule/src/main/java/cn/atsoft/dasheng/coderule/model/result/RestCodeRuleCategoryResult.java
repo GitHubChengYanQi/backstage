@@ -18,7 +18,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class RestCodingRulesCategoryResult implements Serializable {
+public class RestCodeRuleCategoryResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

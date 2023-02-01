@@ -3,16 +3,16 @@ package cn.atsoft.dasheng.coderule.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.coderule.entity.RestCodingRules;
-import cn.atsoft.dasheng.coderule.entity.RestCodingRulesCategory;
-import cn.atsoft.dasheng.coderule.mapper.RestCodingRulesMapper;
+import cn.atsoft.dasheng.coderule.entity.RestCodeRule;
+import cn.atsoft.dasheng.coderule.entity.RestCodeRuleCategory;
+import cn.atsoft.dasheng.coderule.mapper.RestCodeRuleMapper;
 import cn.atsoft.dasheng.coderule.model.RestCodings;
-import cn.atsoft.dasheng.coderule.model.params.RestCodingRulesParam;
+import cn.atsoft.dasheng.coderule.model.params.RestCodeRuleParam;
 import cn.atsoft.dasheng.coderule.model.params.RestSerialNumberParam;
-import cn.atsoft.dasheng.coderule.model.result.RestCodingRulesCategoryResult;
-import cn.atsoft.dasheng.coderule.model.result.RestCodingRulesResult;
-import cn.atsoft.dasheng.coderule.service.RestCodingRulesCategoryService;
-import cn.atsoft.dasheng.coderule.service.RestCodingRulesService;
+import cn.atsoft.dasheng.coderule.model.result.RestCodeRuleCategoryResult;
+import cn.atsoft.dasheng.coderule.model.result.RestCodeRuleResult;
+import cn.atsoft.dasheng.coderule.service.RestCodeRuleCategoryService;
+import cn.atsoft.dasheng.coderule.service.RestCodeRuleService;
 import cn.atsoft.dasheng.coderule.service.RestSerialNumberService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -44,9 +44,9 @@ import java.util.regex.Pattern;
  * @since 2021-10-22
  */
 @Service
-public class RestCodingRulesServiceImpl extends ServiceImpl<RestCodingRulesMapper, RestCodingRules> implements RestCodingRulesService {
+public class RestCodeRuleServiceImpl extends ServiceImpl<RestCodeRuleMapper, RestCodeRule> implements RestCodeRuleService {
     @Autowired
-    private RestCodingRulesCategoryService codingRulesClassificationService;
+    private RestCodeRuleCategoryService codingRulesClassificationService;
 
     @Autowired
     private RestSerialNumberService serialNumberService;
@@ -56,7 +56,7 @@ public class RestCodingRulesServiceImpl extends ServiceImpl<RestCodingRulesMappe
     @Override
     @Transactional
 
-    public void add(RestCodingRulesParam param) {
+    public void add(RestCodeRuleParam param) {
 
         String codingRules = "";
         if (param.getCodings().size() == 0) {
@@ -78,20 +78,20 @@ public class RestCodingRulesServiceImpl extends ServiceImpl<RestCodingRulesMappe
         if (name > 0) {
             throw new ServiceException(500, "不要输入重复规则名称");
         }
-        RestCodingRules entity = getEntity(param);
+        RestCodeRule entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
 
-    public void delete(RestCodingRulesParam param) {
+    public void delete(RestCodeRuleParam param) {
         this.removeById(this.getEntity(param));
     }
 
     @Override
     @Transactional
 
-    public void update(RestCodingRulesParam param) {
+    public void update(RestCodeRuleParam param) {
         updateDefault(param.getCodingRulesId());
         if (ToolUtil.isNotEmpty(param.getCodings())) {
             String codingRules = "";
@@ -118,8 +118,8 @@ public class RestCodingRulesServiceImpl extends ServiceImpl<RestCodingRulesMappe
 //        codingRulesQueryWrapper.in("state", param.getState());
 //        this.update(codingRules, codingRulesQueryWrapper);
 
-        RestCodingRules oldEntity = getOldEntity(param);
-        RestCodingRules newEntity = getEntity(param);
+        RestCodeRule oldEntity = getOldEntity(param);
+        RestCodeRule newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
     }
@@ -130,11 +130,11 @@ public class RestCodingRulesServiceImpl extends ServiceImpl<RestCodingRulesMappe
      * @param id
      */
     private void updateDefault(Long id) {
-        RestCodingRules rules = ToolUtil.isEmpty(id) ? new RestCodingRules() : this.getById(id);
+        RestCodeRule rules = ToolUtil.isEmpty(id) ? new RestCodeRule() : this.getById(id);
         if (ToolUtil.isNotEmpty(rules)) {
-            QueryWrapper<RestCodingRules> queryWrapper = new QueryWrapper<>();
+            QueryWrapper<RestCodeRule> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("module", rules.getModule());
-            this.update(new RestCodingRules() {{
+            this.update(new RestCodeRule() {{
                 setState(0);
             }}, queryWrapper);
             rules.setState(1);
@@ -144,40 +144,40 @@ public class RestCodingRulesServiceImpl extends ServiceImpl<RestCodingRulesMappe
     }
 
     @Override
-    public RestCodingRulesResult findBySpec(RestCodingRulesParam param) {
+    public RestCodeRuleResult findBySpec(RestCodeRuleParam param) {
         return null;
     }
 
     @Override
-    public List<RestCodingRulesResult> findListBySpec(RestCodingRulesParam param) {
+    public List<RestCodeRuleResult> findListBySpec(RestCodeRuleParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<RestCodingRulesResult> findPageBySpec(RestCodingRulesParam param) {
-        Page<RestCodingRulesResult> pageContext = getPageContext();
-        IPage<RestCodingRulesResult> page = this.baseMapper.customPageList(pageContext, param);
+    public PageInfo<RestCodeRuleResult> findPageBySpec(RestCodeRuleParam param) {
+        Page<RestCodeRuleResult> pageContext = getPageContext();
+        IPage<RestCodeRuleResult> page = this.baseMapper.customPageList(pageContext, param);
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
-    private void format(List<RestCodingRulesResult> param) {
+    private void format(List<RestCodeRuleResult> param) {
         List<Long> classIds = new ArrayList<>();
         List<Long> rulesIds = new ArrayList<>();
-        for (RestCodingRulesResult codingRulesResult : param) {
+        for (RestCodeRuleResult codingRulesResult : param) {
             classIds.add(codingRulesResult.getCodingRulesClassificationId());
             rulesIds.add(codingRulesResult.getCodingRulesId());
         }
-        List<RestCodingRulesCategory> list = classIds.size() == 0 ? new ArrayList<>() : codingRulesClassificationService.lambdaQuery().in(RestCodingRulesCategory::getCodingRulesClassificationId, classIds).list();
+        List<RestCodeRuleCategory> list = classIds.size() == 0 ? new ArrayList<>() : codingRulesClassificationService.lambdaQuery().in(RestCodeRuleCategory::getCodingRulesClassificationId, classIds).list();
 
 
 
-        for (RestCodingRulesResult codingRulesResult : param) {
-            for (RestCodingRulesCategory codingRulesClassification : list) {
+        for (RestCodeRuleResult codingRulesResult : param) {
+            for (RestCodeRuleCategory codingRulesClassification : list) {
                 if (codingRulesResult.getCodingRulesClassificationId() != null &&
                         codingRulesClassification.getCodingRulesClassificationId() != null &&
                         codingRulesResult.getCodingRulesClassificationId().equals(codingRulesClassification.getCodingRulesClassificationId())) {
-                    RestCodingRulesCategoryResult result = new RestCodingRulesCategoryResult();
+                    RestCodeRuleCategoryResult result = new RestCodeRuleCategoryResult();
                     ToolUtil.copyProperties(codingRulesClassification, result);
                     codingRulesResult.setCodingRulesClassificationResult(result);
                 }
@@ -200,7 +200,7 @@ public class RestCodingRulesServiceImpl extends ServiceImpl<RestCodingRulesMappe
     @Override
     public String backCoding(Long ids, Long spuId) {
         String rules = "";
-        RestCodingRules codingRules = this.getById(ids);
+        RestCodeRule codingRules = this.getById(ids);
         if (ToolUtil.isEmpty(codingRules.getCodingRules())) {
             throw new ServiceException(500, "没有制定规则");
         }
@@ -292,7 +292,7 @@ public class RestCodingRulesServiceImpl extends ServiceImpl<RestCodingRulesMappe
      */
     @Override
     public String getCodingByModule(Long module) {
-        RestCodingRules rules = this.query().eq("module", module).eq("state", 1).one();
+        RestCodeRule rules = this.query().eq("module", module).eq("state", 1).one();
         if (ToolUtil.isEmpty(rules)) {
             return "${type}";
         }
@@ -300,20 +300,20 @@ public class RestCodingRulesServiceImpl extends ServiceImpl<RestCodingRulesMappe
 
     }
 
-    private Serializable getKey(RestCodingRulesParam param) {
+    private Serializable getKey(RestCodeRuleParam param) {
         return param.getCodingRulesId();
     }
 
-    private Page<RestCodingRulesResult> getPageContext() {
+    private Page<RestCodeRuleResult> getPageContext() {
         return PageFactory.defaultPage();
     }
 
-    private RestCodingRules getOldEntity(RestCodingRulesParam param) {
+    private RestCodeRule getOldEntity(RestCodeRuleParam param) {
         return this.getById(getKey(param));
     }
 
-    private RestCodingRules getEntity(RestCodingRulesParam param) {
-        RestCodingRules entity = new RestCodingRules();
+    private RestCodeRule getEntity(RestCodeRuleParam param) {
+        RestCodeRule entity = new RestCodeRule();
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
@@ -347,7 +347,7 @@ public class RestCodingRulesServiceImpl extends ServiceImpl<RestCodingRulesMappe
 
     @Override
     public String encoding(int module) {
-        RestCodingRules rules = this.query().eq("module", module).eq("state", 1).one();
+        RestCodeRule rules = this.query().eq("module", module).eq("state", 1).one();
 
         if (ToolUtil.isEmpty(rules)) {
             return this.defaultEncoding();

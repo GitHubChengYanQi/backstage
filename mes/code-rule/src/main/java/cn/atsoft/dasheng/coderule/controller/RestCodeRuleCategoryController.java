@@ -2,12 +2,12 @@ package cn.atsoft.dasheng.coderule.controller;
 
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.coderule.entity.RestCodingRulesCategory;
-import cn.atsoft.dasheng.coderule.model.params.RestCodingRulesCategoryParam;
-import cn.atsoft.dasheng.coderule.model.params.RestCodingRulesParam;
-import cn.atsoft.dasheng.coderule.model.result.RestCodingRulesCategoryResult;
-import cn.atsoft.dasheng.coderule.service.RestCodingRulesCategoryService;
-import cn.atsoft.dasheng.coderule.wrapper.RestCodingRulesCategorySelectWrapper;
+import cn.atsoft.dasheng.coderule.entity.RestCodeRuleCategory;
+import cn.atsoft.dasheng.coderule.model.params.RestCodeRuleCategoryParam;
+import cn.atsoft.dasheng.coderule.model.params.RestCodeRuleParam;
+import cn.atsoft.dasheng.coderule.model.result.RestCodeRuleCategoryResult;
+import cn.atsoft.dasheng.coderule.service.RestCodeRuleCategoryService;
+import cn.atsoft.dasheng.coderule.wrapper.RestCodeRuleCategorySelectWrapper;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -36,7 +36,7 @@ import java.util.Map;
 public class RestCodeRuleCategoryController extends BaseController {
 
     @Autowired
-    private RestCodingRulesCategoryService codingRulesClassificationService;
+    private RestCodeRuleCategoryService codingRulesClassificationService;
 
     /**
      * 新增接口
@@ -46,7 +46,7 @@ public class RestCodeRuleCategoryController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody RestCodingRulesCategoryParam codingRulesClassificationParam) {
+    public ResponseData addItem(@RequestBody RestCodeRuleCategoryParam codingRulesClassificationParam) {
         this.codingRulesClassificationService.add(codingRulesClassificationParam);
         return ResponseData.success();
     }
@@ -58,9 +58,9 @@ public class RestCodeRuleCategoryController extends BaseController {
      * @Date 2021-10-22
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @BussinessLog(value = "修改编码规则分类", key = "name", dict = RestCodingRulesCategoryParam.class)
+    @BussinessLog(value = "修改编码规则分类", key = "name", dict = RestCodeRuleCategoryParam.class)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody RestCodingRulesCategoryParam codingRulesClassificationParam) {
+    public ResponseData update(@RequestBody RestCodeRuleCategoryParam codingRulesClassificationParam) {
 
         this.codingRulesClassificationService.update(codingRulesClassificationParam);
         return ResponseData.success();
@@ -73,9 +73,9 @@ public class RestCodeRuleCategoryController extends BaseController {
      * @Date 2021-10-22
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @BussinessLog(value = "删除编码规则分类", key = "name", dict = RestCodingRulesParam.class)
+    @BussinessLog(value = "删除编码规则分类", key = "name", dict = RestCodeRuleParam.class)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody RestCodingRulesCategoryParam codingRulesClassificationParam) {
+    public ResponseData delete(@RequestBody RestCodeRuleCategoryParam codingRulesClassificationParam) {
         this.codingRulesClassificationService.delete(codingRulesClassificationParam);
         return ResponseData.success();
     }
@@ -88,9 +88,9 @@ public class RestCodeRuleCategoryController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData detail(@RequestBody RestCodingRulesCategoryParam codingRulesClassificationParam) {
-        RestCodingRulesCategory detail = this.codingRulesClassificationService.getById(codingRulesClassificationParam.getCodingRulesClassificationId());
-        RestCodingRulesCategoryResult result = new RestCodingRulesCategoryResult();
+    public ResponseData detail(@RequestBody RestCodeRuleCategoryParam codingRulesClassificationParam) {
+        RestCodeRuleCategory detail = this.codingRulesClassificationService.getById(codingRulesClassificationParam.getCodingRulesClassificationId());
+        RestCodeRuleCategoryResult result = new RestCodeRuleCategoryResult();
         ToolUtil.copyProperties(detail, result);
 
 
@@ -105,9 +105,9 @@ public class RestCodeRuleCategoryController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<RestCodingRulesCategoryResult> list(@RequestBody(required = false) RestCodingRulesCategoryParam codingRulesClassificationParam) {
+    public PageInfo<RestCodeRuleCategoryResult> list(@RequestBody(required = false) RestCodeRuleCategoryParam codingRulesClassificationParam) {
         if (ToolUtil.isEmpty(codingRulesClassificationParam)) {
-            codingRulesClassificationParam = new RestCodingRulesCategoryParam();
+            codingRulesClassificationParam = new RestCodeRuleCategoryParam();
         }
         return this.codingRulesClassificationService.findPageBySpec(codingRulesClassificationParam);
     }
@@ -120,7 +120,7 @@ public class RestCodeRuleCategoryController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     public ResponseData listSelect() {
         List<Map<String, Object>> list = this.codingRulesClassificationService.listMaps();
-        RestCodingRulesCategorySelectWrapper codingRulesClassificationSelectWrapper = new RestCodingRulesCategorySelectWrapper(list);
+        RestCodeRuleCategorySelectWrapper codingRulesClassificationSelectWrapper = new RestCodeRuleCategorySelectWrapper(list);
         List<Map<String, Object>> result = codingRulesClassificationSelectWrapper.wrap();
         return ResponseData.success(result);
     }

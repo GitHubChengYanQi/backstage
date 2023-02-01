@@ -1,9 +1,9 @@
 package cn.atsoft.dasheng.coderule.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.coderule.entity.RestCodingRulesCategory;
-import cn.atsoft.dasheng.coderule.model.params.RestCodingRulesCategoryParam;
-import cn.atsoft.dasheng.coderule.model.result.RestCodingRulesCategoryResult;
+import cn.atsoft.dasheng.coderule.entity.RestCodeRuleCategory;
+import cn.atsoft.dasheng.coderule.model.params.RestCodeRuleCategoryParam;
+import cn.atsoft.dasheng.coderule.model.result.RestCodeRuleCategoryResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * @author song
  * @since 2021-10-22
  */
-public interface RestCodingRulesCategoryService extends IService<RestCodingRulesCategory> {
+public interface RestCodeRuleCategoryService extends IService<RestCodeRuleCategory> {
 
     /**
      * 新增
@@ -24,7 +24,7 @@ public interface RestCodingRulesCategoryService extends IService<RestCodingRules
      * @author song
      * @Date 2021-10-22
      */
-    void add(RestCodingRulesCategoryParam param);
+    void add(RestCodeRuleCategoryParam param);
 
     /**
      * 删除
@@ -32,7 +32,7 @@ public interface RestCodingRulesCategoryService extends IService<RestCodingRules
      * @author song
      * @Date 2021-10-22
      */
-    void delete(RestCodingRulesCategoryParam param);
+    void delete(RestCodeRuleCategoryParam param);
 
     /**
      * 更新
@@ -40,7 +40,7 @@ public interface RestCodingRulesCategoryService extends IService<RestCodingRules
      * @author song
      * @Date 2021-10-22
      */
-    void update(RestCodingRulesCategoryParam param);
+    void update(RestCodeRuleCategoryParam param);
 
     /**
      * 查询单条数据，Specification模式
@@ -48,7 +48,7 @@ public interface RestCodingRulesCategoryService extends IService<RestCodingRules
      * @author song
      * @Date 2021-10-22
      */
-    RestCodingRulesCategoryResult findBySpec(RestCodingRulesCategoryParam param);
+    RestCodeRuleCategoryResult findBySpec(RestCodeRuleCategoryParam param);
 
     /**
      * 查询列表，Specification模式
@@ -56,7 +56,7 @@ public interface RestCodingRulesCategoryService extends IService<RestCodingRules
      * @author song
      * @Date 2021-10-22
      */
-    List<RestCodingRulesCategoryResult> findListBySpec(RestCodingRulesCategoryParam param);
+    List<RestCodeRuleCategoryResult> findListBySpec(RestCodeRuleCategoryParam param);
 
     /**
      * 查询分页数据，Specification模式
@@ -64,6 +64,6 @@ public interface RestCodingRulesCategoryService extends IService<RestCodingRules
      * @author song
      * @Date 2021-10-22
      */
-     PageInfo<RestCodingRulesCategoryResult> findPageBySpec(RestCodingRulesCategoryParam param);
+     PageInfo<RestCodeRuleCategoryResult> findPageBySpec(RestCodeRuleCategoryParam param);
 
 }

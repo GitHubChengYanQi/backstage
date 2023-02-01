@@ -1,15 +1,10 @@
 package cn.atsoft.dasheng.goods.sku.service.impl;
 
 
-import cn.atsoft.dasheng.base.log.BussinessLog;
-import cn.atsoft.dasheng.base.pojo.page.PageFactory;
-import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.coderule.entity.RestCodingRules;
-import cn.atsoft.dasheng.coderule.service.RestCodingRulesService;
+import cn.atsoft.dasheng.coderule.entity.RestCodeRule;
+import cn.atsoft.dasheng.coderule.service.RestCodeRuleService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.goods.brand.entity.RestBrand;
 import cn.atsoft.dasheng.goods.brand.model.params.RestSkuBrandBindParam;
-import cn.atsoft.dasheng.goods.brand.model.result.RestBrandResult;
 import cn.atsoft.dasheng.goods.brand.service.RestBrandService;
 import cn.atsoft.dasheng.goods.brand.service.RestSkuBrandBindService;
 import cn.atsoft.dasheng.goods.category.entity.RestCategory;
@@ -20,8 +15,6 @@ import cn.atsoft.dasheng.goods.classz.entity.RestAttributeValues;
 import cn.atsoft.dasheng.goods.classz.entity.RestClass;
 import cn.atsoft.dasheng.goods.classz.model.RestAttributes;
 import cn.atsoft.dasheng.goods.classz.model.RestValues;
-import cn.atsoft.dasheng.goods.classz.model.result.RestAttributeResult;
-import cn.atsoft.dasheng.goods.classz.model.result.RestAttributeValuesResult;
 import cn.atsoft.dasheng.goods.classz.service.RestAttributeService;
 import cn.atsoft.dasheng.goods.classz.service.RestAttributeValuesService;
 import cn.atsoft.dasheng.goods.classz.service.RestClassService;
@@ -33,33 +26,24 @@ import cn.atsoft.dasheng.goods.sku.model.result.RestSkuResult;
 import cn.atsoft.dasheng.goods.sku.service.RestSkuService;
 import cn.atsoft.dasheng.goods.spu.entity.RestSpu;
 import cn.atsoft.dasheng.goods.spu.model.params.RestSpuParam;
-import cn.atsoft.dasheng.goods.spu.model.result.RestSpuResult;
 import cn.atsoft.dasheng.goods.spu.service.RestSpuService;
-import cn.atsoft.dasheng.goods.texture.entity.RestTextrue;
 import cn.atsoft.dasheng.goods.texture.model.result.RestTextrueResult;
 import cn.atsoft.dasheng.goods.texture.service.RestTextrueService;
 import cn.atsoft.dasheng.goods.unit.entity.RestUnit;
 import cn.atsoft.dasheng.goods.unit.model.result.RestUnitResult;
 import cn.atsoft.dasheng.goods.unit.service.RestUnitService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
-import cn.hutool.crypto.SecureUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -93,7 +77,7 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 //    private ErpPartsDetailService partsDetailService; //清单详情
 //
 //    @Autowired
-    private RestCodingRulesService codingRulesService; //编码规则
+    private RestCodeRuleService codingRulesService; //编码规则
 
     @Autowired
     private RestCategoryService spuClassificationService;
@@ -209,7 +193,7 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 
             //生成编码
             if (ToolUtil.isEmpty(param.getStandard())) {
-                RestCodingRules codingRules = codingRulesService.query().eq("module", "0").eq("state", 1).one();
+                RestCodeRule codingRules = codingRulesService.query().eq("module", "0").eq("state", 1).one();
                 if (ToolUtil.isNotEmpty(codingRules)) {
                     String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId(), spu.getSpuId());
 
