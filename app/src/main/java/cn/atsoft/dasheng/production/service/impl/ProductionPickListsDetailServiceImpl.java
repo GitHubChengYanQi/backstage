@@ -4,12 +4,16 @@ package cn.atsoft.dasheng.production.service.impl;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.request.StockView;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.StorehouseSimpleResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.SkuList;
 import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
+import cn.atsoft.dasheng.erp.model.result.SkuListResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.SkuListService;
@@ -27,6 +31,7 @@ import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -63,6 +68,8 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
     private StorehousePositionsService storehousePositionsService;
     @Autowired
     private SkuListService skuListService;
+    @Autowired
+    private StorehouseService storehouseService;
 
     @Override
     public void add(ProductionPickListsDetailParam param) {
@@ -243,7 +250,7 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
         }
         List<Long> lockedInkindIds = this.getLockedInkindIds();
 //        List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds.stream().distinct().collect(Collectors.toList()));
-        skuListService.
+        List<SkuListResult> skuLists = skuIds.size()== 0 ? new ArrayList<>() : skuListService.resultByIds(skuIds);
         /**
          * 获取相关被锁定实物数量
          */
@@ -257,7 +264,19 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
 
         //TODO notin
         List<StockDetails> stockSkus = skuIds.size() == 0 ? new ArrayList<>() : lockedInkindIds.size() == 0 ? stockDetailsService.query().in("sku_id", skuIds).eq("display", 1).list() : stockDetailsService.query().in("sku_id", skuIds).notIn("inkind_id", lockedInkindIds).eq("display", 1).list();
-        List<ProductionPickListsCartResult> cartResults = detailIds.size() == 0 ? new ArrayList<>() : pickListsCartService.listByListsDetailIds(detailIds);
+//        List<ProductionPickListsCartResult> cartResults = detailIds.size() == 0 ? new ArrayList<>() : pickListsCartService.listByListsDetailIds(detailIds);
+        List<ProductionPickListsCartResult> cartResults = BeanUtil.copyToList(carts, ProductionPickListsCartResult.class);
+        List<StorehouseSimpleResult> storehouseResults = cartResults.size() == 0 ? new ArrayList<>() : BeanUtil.copyToList(storehouseService.listByIds(cartResults.stream().map(ProductionPickListsCartResult::getStorehouseId).distinct().collect(Collectors.toList())), StorehouseSimpleResult.class, new CopyOptions());
+        for (ProductionPickListsCartResult cartResult : cartResults) {
+            for (StorehouseSimpleResult storehouseResult : storehouseResults) {
+                if (cartResult.getStorehouseId().equals(storehouseResult.getStorehouseId())){
+                    cartResult.setStorehouseResult(storehouseResult);
+                    break;
+                }
+
+            }
+        }
+
         for (StockDetails skus : stockSkus) {
             if (ToolUtil.isEmpty(skus.getBrandId())) {
                 skus.setBrandId(0L);
@@ -279,7 +298,8 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
             positionIds.add(stockDetails.getStorehousePositionsId());
         }
         positionIds = positionIds.stream().distinct().collect(Collectors.toList());
-        List<StorehousePositionsResult> positionsResultList = storehousePositionsService.resultsByIds(positionIds);
+//        List<StorehousePositionsResult> positionsResultList = storehousePositionsService.resultsByIds(positionIds);
+        List<StorehousePositionsResult> positionsResultList =positionIds.size() == 0? new ArrayList<>() : BeanUtil.copyToList(storehousePositionsService.listByIds(positionIds),StorehousePositionsResult.class);
         List<StockDetails> anyBrand = new ArrayList<>();
         stockSkus.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "", Collectors.toList())).forEach(
                 (id, transfer) -> {
@@ -374,7 +394,7 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
             positionIdList = positionIdList.stream().distinct().collect(Collectors.toList());
             result.setPositionIds(positionIdList);
 
-            for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
+            for (SkuListResult skuSimpleResult : skuLists) {
                 if (result.getSkuId().equals(skuSimpleResult.getSkuId())) {
                     result.setSkuResult(skuSimpleResult);
                     break;

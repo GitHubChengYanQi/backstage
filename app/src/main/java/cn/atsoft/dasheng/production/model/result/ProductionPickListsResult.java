@@ -64,7 +64,6 @@ public class ProductionPickListsResult implements Serializable {
     private List<ProductionPickListsDetailResult> detailResults;
 
     @ApiModelProperty("购物车集合")
-    @JSONField(serialize = false)
     private List<ProductionPickListsCartResult> cartResults;
 
     @ApiModelProperty("仓库返回集合")

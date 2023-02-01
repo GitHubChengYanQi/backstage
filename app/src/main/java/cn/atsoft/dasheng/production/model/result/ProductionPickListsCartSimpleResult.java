@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.model.result;
 
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
@@ -31,6 +32,9 @@ public class ProductionPickListsCartSimpleResult implements Serializable {
 
     @JSONField(serializeUsing= ToStringSerializer.class)
     private Long inkindId;
+
+    private Long storehouseId;
+    private StorehouseResult storehouseResult;
     /**
      * 物料id
      */

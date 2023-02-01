@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.production.model.result;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.SkuRequest;
+import cn.atsoft.dasheng.erp.model.result.SkuListResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
@@ -33,22 +34,22 @@ public class ProductionPickListsDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private SkuSimpleResult skuResult;
-
+    private SkuListResult skuResult;
+    @JSONField(serialize = false)
     private List<BrandResult> brandResults;
-
+    @JSONField(serialize = false)
     private List<Long> positionIds;
-
+    @JSONField(serialize = false)
     private List<StoreHouseNameAndSkuNumber> positionAndStockDetail;
 
     private Integer status;
-
+    @JSONField(serialize = false)
     private String pickListsName;
 
     private Long storehousePositionsId;
 
     private Long storehouseId;
-
+    @JSONField(serialize = false)
     private UserResult userResult;
 
     private String pickListsCoding;
@@ -60,15 +61,16 @@ public class ProductionPickListsDetailResult implements Serializable {
     private List<ProductionPickListsCartSimpleResult> cartResults;
 
     private Map<String,String> brandResult;
-
+    @JSONField(serialize = false)
     private ProductionPickListsResult pickListsResult;
-
+    @JSONField(serialize = false)
     private Boolean canPick;
 
     private List<String> positionNames;
 
-
+    @JSONField(serialize = false)
     private Integer lockStockDetailNumber;
+    @JSONField(serialize = false)
     private Integer needOperateNum;
 
     /**
@@ -76,7 +78,6 @@ public class ProductionPickListsDetailResult implements Serializable {
      */
     @ApiModelProperty("子表id")
     @JSONField(serializeUsing= ToStringSerializer.class)
-
     private Long pickListsDetailId;
 
     @JSONField(serializeUsing= ToStringSerializer.class)
@@ -86,7 +87,7 @@ public class ProductionPickListsDetailResult implements Serializable {
      * 主表id
      */
     @ApiModelProperty("主表id")
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField( serializeUsing= ToStringSerializer.class)
     private Long pickListsId;
 
     /**
@@ -151,6 +152,5 @@ public class ProductionPickListsDetailResult implements Serializable {
     @JSONField(serialize = false,serializeUsing= ToStringSerializer.class)
     @ApiModelProperty("部门id")
     private Long deptId;
-    @ApiModelProperty("父ID顺序数组")
-    private List<String> pidValue;
+
 }
