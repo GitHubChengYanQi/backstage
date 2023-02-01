@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.coderule.mapper.RestSerialNumberMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.coderule.entity.RestSerialNumber">
+        <id column="serial_id" property="serialId"/>
+        <result column="date" property="date"/>
+        <result column="model" property="model"/>
+        <result column="num" property="num"/>
+        <result column="md5" property="md5"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="serial_length" property="serialLength"/>
+        <result column="deptId" property="deptId"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">serial_id
+        AS "serialId", date AS "date", serial_length AS "serialLength" ,model AS "model", num AS "num", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.coderule.model.result.RestSerialNumberResult"
+            parameterType="cn.atsoft.dasheng.coderule.model.params.RestSerialNumberParam">
+        select
+        <include refid="Base_Column_List"/>
+        from serial_number where 1 = 1
+        <if test="paramCondition.serialId != null">
+            and
+            serial_id like CONCAT('%',#{paramCondition.serialId},'%')
+        </if>
+        <if test="paramCondition.date != null and paramCondition.date != ''">
+            and date like CONCAT('%',#{paramCondition.date},'%')
+        </if>
+        <if test="paramCondition.model != null and paramCondition.model != ''">
+            and model like CONCAT('%',#{paramCondition.model},'%')
+        </if>
+        <if test="paramCondition.num != null">
+            and num like CONCAT('%',#{paramCondition.num},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.coderule.model.params.RestSerialNumberParam">
+        select
+        <include refid="Base_Column_List"/>
+        from serial_number where 1 = 1
+        <if test="paramCondition.serialId != null">
+            and
+            serial_id like CONCAT('%',#{paramCondition.serialId},'%')
+        </if>
+        <if test="paramCondition.date != null and paramCondition.date != ''">
+            and date like CONCAT('%',#{paramCondition.date},'%')
+        </if>
+        <if test="paramCondition.model != null and paramCondition.model != ''">
+            and model like CONCAT('%',#{paramCondition.model},'%')
+        </if>
+        <if test="paramCondition.num != null">
+            and num like CONCAT('%',#{paramCondition.num},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.coderule.model.result.RestSerialNumberResult"
+            parameterType="cn.atsoft.dasheng.coderule.model.params.RestSerialNumberParam">
+        select
+        <include refid="Base_Column_List"/>
+        from serial_number where 1 = 1
+        <if test="paramCondition.serialId != null">
+            and
+            serial_id like CONCAT('%',#{paramCondition.serialId},'%')
+        </if>
+        <if test="paramCondition.date != null and paramCondition.date != ''">
+            and date like CONCAT('%',#{paramCondition.date},'%')
+        </if>
+        <if test="paramCondition.model != null and paramCondition.model != ''">
+            and model like CONCAT('%',#{paramCondition.model},'%')
+        </if>
+        <if test="paramCondition.num != null">
+            and num like CONCAT('%',#{paramCondition.num},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.coderule.model.params.RestSerialNumberParam">
+        select
+        <include refid="Base_Column_List"/>
+        from serial_number where 1 = 1
+        <if test="paramCondition.serialId != null">
+            and
+            serial_id like CONCAT('%',#{paramCondition.serialId},'%')
+        </if>
+        <if test="paramCondition.date != null and paramCondition.date != ''">
+            and date like CONCAT('%',#{paramCondition.date},'%')
+        </if>
+        <if test="paramCondition.model != null and paramCondition.model != ''">
+            and model like CONCAT('%',#{paramCondition.model},'%')
+        </if>
+        <if test="paramCondition.num != null">
+            and num like CONCAT('%',#{paramCondition.num},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+</mapper>

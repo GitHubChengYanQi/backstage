@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.coderule.mapper.RestCodingRulesMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.coderule.entity.RestCodingRules">
+        <id column="coding_rules_id" property="codingRulesId"/>
+        <result column="coding_rules_classification_id" property="codingRulesClassificationId"/>
+        <result column="name" property="name"/>
+        <result column="coding_rules" property="codingRules"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
+        <result column="sort" property="sort"/>
+        <result column="note" property="note"/>
+        <result column="module" property="module"/>
+        <result column="state" property="state"/>
+        <result column="serial" property="serial"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">sort
+    AS "sort",state AS "state",module AS "module",serial AS "serial",
+        coding_rules_id AS "codingRulesId", coding_rules_classification_id AS "codingRulesClassificationId", name AS "name",note AS "note", coding_rules AS "codingRules", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.coderule.model.result.RestCodingRulesResult"
+            parameterType="cn.atsoft.dasheng.coderule.model.params.RestCodingRulesParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_coding_rules where 1 = 1
+        <if test="paramCondition.codingRulesClassificationId != null">
+            and coding_rules_classification_id like CONCAT('%',#{paramCondition.codingRulesClassificationId},'%')
+        </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.codingRules != null and paramCondition.codingRules != ''">
+            and coding_rules like CONCAT('%',#{paramCondition.codingRules},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.coderule.model.params.RestCodingRulesParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_coding_rules where 1 = 1
+        <if test="paramCondition.codingRulesClassificationId != null">
+            and coding_rules_classification_id like CONCAT('%',#{paramCondition.codingRulesClassificationId},'%')
+        </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.codingRules != null and paramCondition.codingRules != ''">
+            and coding_rules like CONCAT('%',#{paramCondition.codingRules},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.coderule.model.result.RestCodingRulesResult"
+            parameterType="cn.atsoft.dasheng.coderule.model.params.RestCodingRulesParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_coding_rules where 1 = 1
+        <if test="paramCondition.codingRulesClassificationId != null">
+            and coding_rules_classification_id like CONCAT('%',#{paramCondition.codingRulesClassificationId},'%')
+        </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.codingRules != null and paramCondition.codingRules != ''">
+            and coding_rules like CONCAT('%',#{paramCondition.codingRules},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.state != null">
+            and state = #{paramCondition.state}
+        </if>
+        <if test="paramCondition.module != null">
+            and module = #{paramCondition.module}
+        </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.coderule.model.params.RestCodingRulesParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_coding_rules where 1 = 1
+        <if test="paramCondition.codingRulesClassificationId != null">
+            and coding_rules_classification_id like CONCAT('%',#{paramCondition.codingRulesClassificationId},'%')
+        </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.codingRules != null and paramCondition.codingRules != ''">
+            and coding_rules like CONCAT('%',#{paramCondition.codingRules},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+</mapper>

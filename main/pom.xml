@@ -67,6 +67,11 @@
         </dependency>
         <dependency>
             <groupId>cn.atsoft</groupId>
+            <artifactId>goods</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.atsoft</groupId>
             <artifactId>form</artifactId>
             <version>1.0.0</version>
         </dependency>

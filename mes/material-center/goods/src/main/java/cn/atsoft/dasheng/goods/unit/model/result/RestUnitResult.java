@@ -48,13 +48,14 @@ public class RestUnitResult implements Serializable {
      * 创建时间
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Date createTime;
 
     /**
      * 修改者
      */
     @ApiModelProperty(hidden = true)
-    @JSONField(serializeUsing= ToStringSerializer.class)
+    @JSONField(serialize = false)
     private Long updateUser;
 
     /**
@@ -75,6 +76,7 @@ public class RestUnitResult implements Serializable {
     @ApiModelProperty("部门编号")
     private Long deptId;
     @ApiModelProperty("父ID顺序数组")
+    @JSONField(serialize = false)
     private List<String> pidValue;
 
 }

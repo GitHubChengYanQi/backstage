@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.goods.unit.mapper.RestUnitMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.goods.unit.entity.RestUnit">
+        <id column="unit_id" property="unitId"/>
+        <result column="unit_name" property="unitName"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
+
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+
+        unit_id
+        AS "unitId", unit_name AS "unitName", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.goods.unit.model.result.RestUnitResult"
+            parameterType="cn.atsoft.dasheng.goods.unit.model.params.RestUnitParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_unit where 1 = 1
+        <if test="paramCondition.unitName != null and paramCondition.unitName != ''">
+            and unit_name like CONCAT('%',#{paramCondition.unitName},'%')
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.goods.unit.model.params.RestUnitParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_unit where 1 = 1
+        <if test="paramCondition.unitName != null and paramCondition.unitName != ''">
+            and unit_name like CONCAT('%',#{paramCondition.unitName},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.goods.unit.model.result.RestUnitResult"
+            parameterType="cn.atsoft.dasheng.goods.unit.model.params.RestUnitParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_unit where display = 1
+        <if test="paramCondition.unitName != null and paramCondition.unitName != ''">
+            and unit_name like CONCAT('%',#{paramCondition.unitName},'%')
+        </if>
+        <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
+            and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
+            CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
+        </if>
+
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.goods.unit.model.params.RestUnitParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_unit where 1 = 1
+        <if test="paramCondition.unitName != null and paramCondition.unitName != ''">
+            and unit_name like CONCAT('%',#{paramCondition.unitName},'%')
+        </if>
+    </select>
+
+</mapper>

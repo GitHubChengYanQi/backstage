@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.goods.classz.mapper.RestAttributeValuesMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.goods.classz.entity.RestAttributeValues">
+        <id column="attribute_values_id" property="attributeValuesId"/>
+        <result column="attribute_values" property="attributeValues"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="attribute_id" property="attributeId"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">  attribute_id
+    AS "attributeId",
+        attribute_values_id AS "attributeValuesId", attribute_values AS "attributeValues", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.goods.classz.model.result.RestAttributeValuesResult"
+            parameterType="cn.atsoft.dasheng.goods.classz.model.params.RestAttributeValuesParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_class_attribute_value where 1 = 1 and display = 1
+        <if test="paramCondition.attributeValuesId != null">
+            and attribute_values_id like CONCAT('%',#{paramCondition.attributeValuesId},'%')
+        </if>
+
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.goods.classz.model.params.RestAttributeValuesParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_class_attribute_value where 1 = 1 and display = 1
+        <if test="paramCondition.attributeValuesId != null">
+            and attribute_values_id like CONCAT('%',#{paramCondition.attributeValuesId},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.goods.classz.model.result.RestAttributeValuesResult"
+            parameterType="cn.atsoft.dasheng.goods.classz.model.params.RestAttributeValuesParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_class_attribute_value where display = 1
+        <if test="paramCondition.attributeValuesId != null">
+            and attribute_values_id like CONCAT('%',#{paramCondition.attributeValuesId},'%')
+        </if>
+        <if test="paramCondition.attributeValues != null and paramCondition.attributeValues != ''">
+            and attribute_values like CONCAT('%',#{paramCondition.attributeValues},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.attributeId != null">
+            and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
+        </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.goods.classz.model.params.RestAttributeValuesParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_class_attribute_value where 1 = 1 and display = 1
+        <if test="paramCondition.attributeValuesId != null">
+            and attribute_values_id like CONCAT('%',#{paramCondition.attributeValuesId},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.goods.spu.mapper.RestSpuMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.goods.spu.entity.RestSpu">
+        <id column="spu_id" property="spuId"/>
+        <result column="name" property="name"/>
+        <result column="shelf_life" property="shelfLife"/>
+        <result column="coding" property="coding"/>
+        <result column="inventory" property="inventory"/>
+        <result column="production_time" property="productionTime"/>
+        <result column="important" property="important"/>
+        <result column="weight" property="weight"/>
+        <result column="material_id" property="materialId"/>
+        <result column="cost" property="cost"/>
+        <result column="vulnerability" property="vulnerability"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
+        <result column="class_id" property="classId"/>
+        <result column="unit_id" property="unitId"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="model" property="model"/>
+        <result column="attribute" property="attribute"/>
+        <result column="curing_cycle" property="curingCycle"/>
+        <result column="cycle_type" property="cycleType"/>
+        <result column="production_type" property="productionType"/>
+        <result column="spu_classification_id" property="spuClassificationId"/>
+        <result column="type" property="type"/>
+        <result column="specifications" property="specifications"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">spu_classification_id
+    AS "spuClassificationId",type AS "type",coding AS "coding" ,specifications AS "specifications",
+        spu_id
+        AS "spuId", name AS "name", shelf_life AS "shelfLife", inventory AS "inventory", production_time AS "productionTime", important AS "important", weight AS "weight", material_id AS "materialId", cost AS "cost", vulnerability AS "vulnerability", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId", class_id AS "classId", unit_id AS "unitId", category_id AS "categoryId", attribute AS "attribute",
+curing_cycle AS "curingCycle", cycle_type AS "cycleType", model AS "model",production_type AS "productionType"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.goods.spu.model.params.RestSpuParam"
+            parameterType="cn.atsoft.dasheng.goods.spu.model.params.RestSpuParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_spu where 1 = 1 and display = 1
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.shelfLife != null">
+            and shelf_life like CONCAT('%',#{paramCondition.shelfLife},'%')
+        </if>
+        <if test="paramCondition.inventory != null">
+            and inventory like CONCAT('%',#{paramCondition.inventory},'%')
+        </if>
+        <if test="paramCondition.productionTime != null and paramCondition.productionTime != ''">
+            and production_time like CONCAT('%',#{paramCondition.productionTime},'%')
+        </if>
+        <if test="paramCondition.important != null">
+            and important like CONCAT('%',#{paramCondition.important},'%')
+        </if>
+        <if test="paramCondition.weight != null">
+            and weight like CONCAT('%',#{paramCondition.weight},'%')
+        </if>
+        <if test="paramCondition.materialId != null">
+            and material_id like CONCAT('%',#{paramCondition.materialId},'%')
+        </if>
+        <if test="paramCondition.cost != null">
+            and cost like CONCAT('%',#{paramCondition.cost},'%')
+        </if>
+        <if test="paramCondition.vulnerability != null">
+            and vulnerability like CONCAT('%',#{paramCondition.vulnerability},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.classId != null">
+            and class_id like CONCAT('%',#{paramCondition.classId},'%')
+        </if>
+        <if test="paramCondition.unitId != null">
+            and unit_id like CONCAT('%',#{paramCondition.unitId},'%')
+        </if>
+        <if test="paramCondition.categoryId != null">
+            and category_id like CONCAT('%',#{paramCondition.categoryId},'%')
+        </if>
+        <if test="paramCondition.attribute != null">
+            and attribute like CONCAT('%',#{paramCondition.attribute},'%')
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.goods.spu.model.params.RestSpuParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_spu where 1 = 1 and display = 1
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.shelfLife != null">
+            and shelf_life like CONCAT('%',#{paramCondition.shelfLife},'%')
+        </if>
+        <if test="paramCondition.inventory != null">
+            and inventory like CONCAT('%',#{paramCondition.inventory},'%')
+        </if>
+        <if test="paramCondition.productionTime != null and paramCondition.productionTime != ''">
+            and production_time like CONCAT('%',#{paramCondition.productionTime},'%')
+        </if>
+        <if test="paramCondition.important != null">
+            and important like CONCAT('%',#{paramCondition.important},'%')
+        </if>
+        <if test="paramCondition.weight != null">
+            and weight like CONCAT('%',#{paramCondition.weight},'%')
+        </if>
+        <if test="paramCondition.materialId != null">
+            and material_id like CONCAT('%',#{paramCondition.materialId},'%')
+        </if>
+        <if test="paramCondition.cost != null">
+            and cost like CONCAT('%',#{paramCondition.cost},'%')
+        </if>
+        <if test="paramCondition.vulnerability != null">
+            and vulnerability like CONCAT('%',#{paramCondition.vulnerability},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.classId != null">
+            and class_id like CONCAT('%',#{paramCondition.classId},'%')
+        </if>
+        <if test="paramCondition.unitId != null">
+            and unit_id like CONCAT('%',#{paramCondition.unitId},'%')
+        </if>
+        <if test="paramCondition.categoryId != null">
+            and category_id like CONCAT('%',#{paramCondition.categoryId},'%')
+        </if>
+        <if test="paramCondition.attribute != null">
+            and attribute like CONCAT('%',#{paramCondition.attribute},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.goods.spu.model.params.RestSpuParam"
+            parameterType="cn.atsoft.dasheng.goods.spu.model.params.RestSpuParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_spu where 1 = 1 and display = 1
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.shelfLife != null">
+            and shelf_life like CONCAT('%',#{paramCondition.shelfLife},'%')
+        </if>
+        <if test="paramCondition.inventory != null">
+            and inventory like CONCAT('%',#{paramCondition.inventory},'%')
+        </if>
+        <if test="paramCondition.productionTime != null and paramCondition.productionTime != ''">
+            and production_time like CONCAT('%',#{paramCondition.productionTime},'%')
+        </if>
+        <if test="paramCondition.important != null">
+            and important like CONCAT('%',#{paramCondition.important},'%')
+        </if>
+        <if test="paramCondition.weight != null">
+            and weight like CONCAT('%',#{paramCondition.weight},'%')
+        </if>
+        <if test="paramCondition.materialId != null">
+            and material_id like CONCAT('%',#{paramCondition.materialId},'%')
+        </if>
+        <if test="paramCondition.cost != null">
+            and cost like CONCAT('%',#{paramCondition.cost},'%')
+        </if>
+        <if test="paramCondition.vulnerability != null">
+            and vulnerability like CONCAT('%',#{paramCondition.vulnerability},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.classId != null">
+            and class_id like CONCAT('%',#{paramCondition.classId},'%')
+        </if>
+        <if test="paramCondition.unitId != null">
+            and unit_id like CONCAT('%',#{paramCondition.unitId},'%')
+        </if>
+        <if test="paramCondition.categoryId != null">
+            and category_id like CONCAT('%',#{paramCondition.categoryId},'%')
+        </if>
+        <if test="paramCondition.attribute != null">
+            and attribute like CONCAT('%',#{paramCondition.attribute},'%')
+        </if>
+        <if test="paramCondition.spuClassificationId != null">
+            and spu_classification_id like CONCAT('%',#{paramCondition.spuClassificationId},'%')
+        </if>
+        <if test="paramCondition.type != null">
+            and type = #{paramCondition.type}
+        </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.goods.spu.model.params.RestSpuParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_spu where 1 = 1 and display = 1
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.shelfLife != null">
+            and shelf_life like CONCAT('%',#{paramCondition.shelfLife},'%')
+        </if>
+        <if test="paramCondition.inventory != null">
+            and inventory like CONCAT('%',#{paramCondition.inventory},'%')
+        </if>
+        <if test="paramCondition.productionTime != null and paramCondition.productionTime != ''">
+            and production_time like CONCAT('%',#{paramCondition.productionTime},'%')
+        </if>
+        <if test="paramCondition.important != null">
+            and important like CONCAT('%',#{paramCondition.important},'%')
+        </if>
+        <if test="paramCondition.weight != null">
+            and weight like CONCAT('%',#{paramCondition.weight},'%')
+        </if>
+        <if test="paramCondition.materialId != null">
+            and material_id like CONCAT('%',#{paramCondition.materialId},'%')
+        </if>
+        <if test="paramCondition.cost != null">
+            and cost like CONCAT('%',#{paramCondition.cost},'%')
+        </if>
+        <if test="paramCondition.vulnerability != null">
+            and vulnerability like CONCAT('%',#{paramCondition.vulnerability},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.classId != null">
+            and class_id like CONCAT('%',#{paramCondition.classId},'%')
+        </if>
+        <if test="paramCondition.unitId != null">
+            and unit_id like CONCAT('%',#{paramCondition.unitId},'%')
+        </if>
+        <if test="paramCondition.categoryId != null">
+            and category_id like CONCAT('%',#{paramCondition.categoryId},'%')
+        </if>
+        <if test="paramCondition.attribute != null">
+            and attribute like CONCAT('%',#{paramCondition.attribute},'%')
+        </if>
+    </select>
+
+</mapper>

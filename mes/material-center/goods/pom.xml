@@ -22,9 +22,26 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>cn.atsoft</groupId>
+            <artifactId>base-auth</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.8.8</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>cn.atsoft</groupId>
+            <artifactId>code-rule</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>cn.atsoft</groupId>
+            <artifactId>form</artifactId>
+            <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

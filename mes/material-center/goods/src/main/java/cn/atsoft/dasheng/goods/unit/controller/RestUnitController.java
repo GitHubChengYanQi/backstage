@@ -1,9 +1,6 @@
 package cn.atsoft.dasheng.goods.unit.controller;
 
-import cn.atsoft.dasheng.app.model.params.UnitParam;
-import cn.atsoft.dasheng.app.model.result.UnitResult;
-import cn.atsoft.dasheng.app.service.UnitService;
-import cn.atsoft.dasheng.app.wrapper.UnitSelectWrapper;
+
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -12,9 +9,13 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.goods.unit.entity.RestUnit;
 import cn.atsoft.dasheng.goods.unit.model.params.RestUnitParam;
+import cn.atsoft.dasheng.goods.unit.model.result.RestUnitResult;
+import cn.atsoft.dasheng.goods.unit.service.RestUnitService;
+import cn.atsoft.dasheng.goods.unit.wrapper.RestUnitSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,15 +36,15 @@ import java.util.Map;
 public class RestUnitController extends BaseController {
 
     @Autowired
-    private UnitService unitService;
+    private RestUnitService restUnitService;
 
     /**
      * 新增接口
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody RestUnitParam unitParam) {
-        this.unitService.add(unitParam);
+    public ResponseData addItem(@RequestBody RestUnitParam restUnitParam) {
+        this.restUnitService.add(restUnitParam);
         return ResponseData.success();
     }
 
@@ -52,9 +53,9 @@ public class RestUnitController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody RestUnitParam unitParam) {
+    public ResponseData update(@RequestBody RestUnitParam restUnitParam) {
 
-        this.unitService.update(unitParam);
+        this.restUnitService.update(restUnitParam);
         return ResponseData.success();
     }
 
@@ -63,8 +64,8 @@ public class RestUnitController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody RestUnitParam unitParam)  {
-        this.unitService.delete(unitParam);
+    public ResponseData delete(@RequestBody RestUnitParam restUnitParam) {
+        this.restUnitService.delete(restUnitParam);
         return ResponseData.success();
     }
 
@@ -73,9 +74,9 @@ public class RestUnitController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData detail(@RequestBody RestUnitParam unitParam) {
-        RestUnit detail = this.unitService.getById(unitParam.getUnitId());
-        UnitResult result = new UnitResult();
+    public ResponseData detail(@RequestBody RestUnitParam restUnitParam) {
+        RestUnit detail = this.restUnitService.getById(restUnitParam.getUnitId());
+        RestUnitResult result = new RestUnitResult();
         ToolUtil.copyProperties(detail, result);
 
 //        result.setValue(parentValue);
@@ -87,22 +88,22 @@ public class RestUnitController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo list(@RequestBody(required = false) RestUnitParam unitParam) {
-        if(ToolUtil.isEmpty(unitParam)){
-            unitParam = new UnitParam();
+    public PageInfo list(@RequestBody(required = false) RestUnitParam restUnitParam) {
+        if (ToolUtil.isEmpty(restUnitParam)) {
+            restUnitParam = new RestUnitParam();
         }
         if (LoginContextHolder.getContext().isAdmin()) {
-            return this.unitService.findPageBySpec(unitParam, null);
+            return this.restUnitService.findPageBySpec(restUnitParam, null);
         } else {
             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
-            return this.unitService.findPageBySpec(unitParam, dataScope);
+            return this.restUnitService.findPageBySpec(restUnitParam, dataScope);
         }
     }
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     public ResponseData listSelect() {
-        List<Map<String, Object>> list = this.unitService.listMaps();
-        UnitSelectWrapper unitSelectWrapper = new UnitSelectWrapper(list);
+        List<Map<String, Object>> list = this.restUnitService.listMaps();
+        RestUnitSelectWrapper unitSelectWrapper = new RestUnitSelectWrapper(list);
         List<Map<String, Object>> result = unitSelectWrapper.wrap();
         return ResponseData.success(result);
     }

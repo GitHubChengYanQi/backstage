@@ -11,6 +11,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>material-center</module>
+        <module>code-rule</module>
     </modules>
 
     <artifactId>mes</artifactId>
