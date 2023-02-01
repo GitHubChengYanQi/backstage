@@ -148,7 +148,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private StockForewarnService stockForewarnService;
 
 
-    @Transactional(propagation= Propagation.REQUIRED,timeout=90)
+    @Transactional(propagation = Propagation.REQUIRED, timeout = 90)
 
     @Override
     public Map<String, Sku> add(SkuParam param) {
@@ -687,7 +687,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     public void deleteBatch(SkuParam param) {
         List<Long> skuIds = param.getId();
-        Integer stockSku = skuIds.size() == 0 ? 0 : stockDetailsService.query().in("sku_id", skuIds).eq("display",1).eq("stage",1).count();
+        Integer stockSku = skuIds.size() == 0 ? 0 : stockDetailsService.query().in("sku_id", skuIds).eq("display", 1).eq("stage", 1).count();
         if (stockSku > 0) {
             throw new ServiceException(500, "库存中中有此物品数据,删除终止");
 
@@ -935,7 +935,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         if ((
 //                !oldEntity.getSkuValueMd5().equals(md5)
                 (ToolUtil.isNotEmpty(oldEntity.getSkuName()) && ToolUtil.isNotEmpty(param.getSkuName()) &&
-                !oldEntity.getSkuName().equals(param.getSkuName()))//
+                        !oldEntity.getSkuName().equals(param.getSkuName()))//
                         || !param.getUnitId().equals(orSaveSpu.getUnitId())//
                         || !oldEntity.getBatch().equals(param.getBatch())
                         || !oldEntity.getSpuId().equals(param.getSpuId())
@@ -1047,21 +1047,23 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         return PageFactory.createPageInfo(page);
     }
-    public void formatPartDetailData(Long partSkuId,List<SkuResult> skuResults){
+
+    public void formatPartDetailData(Long partSkuId, List<SkuResult> skuResults) {
         Parts parts = partsService.lambdaQuery().eq(Parts::getSkuId, partSkuId).eq(Parts::getStatus, 99).one();
-        if(ToolUtil.isEmpty(parts)){
+        if (ToolUtil.isEmpty(parts)) {
             return;
         }
         List<ErpPartsDetail> list = partsDetailService.lambdaQuery().eq(ErpPartsDetail::getPartsId, parts.getPartsId()).eq(ErpPartsDetail::getDisplay, 1).list();
         for (SkuResult skuResult : skuResults) {
             for (ErpPartsDetail erpPartsDetail : list) {
-                if (skuResult.getSkuId().equals(erpPartsDetail.getSkuId())){
+                if (skuResult.getSkuId().equals(erpPartsDetail.getSkuId())) {
                     Double number = erpPartsDetail.getNumber();
                     skuResult.setNumber(number);
                 }
             }
         }
     }
+
     @Override
     public Page skuPage(SkuParam param) {
 
@@ -1268,8 +1270,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
          * 是否查询仓库和库位
          */
         positionsService.skuFormat(page.getRecords());
-        if(ToolUtil.isNotEmpty(param.getPartsSkuId())){
-            formatPartDetailData(param.getPartsSkuId(),page.getRecords());
+        if (ToolUtil.isNotEmpty(param.getPartsSkuId())) {
+            formatPartDetailData(param.getPartsSkuId(), page.getRecords());
         }
         return pageInfo;
     }
@@ -1545,13 +1547,16 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 attributeIds.add(valuesRequest.getAttributeId());
             }
             if (ToolUtil.isNotEmpty(skuResult.getMaterialId())) {
-                List<Long> materialIdList = JSON.parseArray(skuResult.getMaterialId(), Long.class);
-                skuResult.setMaterialIdList(materialIdList);
-                materialIds.addAll(materialIdList);
+                try {
+                    materialIds.add(Long.valueOf(skuResult.getMaterialId()));
+                } catch (Exception e) {
+
+                }
+
             }
         }
         List<MaintenanceCycle> maintenanceCycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
-        List<StockForewarn> stockForewarns = skuIds.size() == 0 ? new ArrayList<>() : stockForewarnService.lambdaQuery().eq(StockForewarn::getType,"sku").in(StockForewarn::getFormId,skuIds).eq(StockForewarn::getDisplay,1).list();
+        List<StockForewarn> stockForewarns = skuIds.size() == 0 ? new ArrayList<>() : stockForewarnService.lambdaQuery().eq(StockForewarn::getType, "sku").in(StockForewarn::getFormId, skuIds).eq(StockForewarn::getDisplay, 1).list();
         List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
         List<AttributeValues> attributeValues = attributeIds.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
                 .in(AttributeValues::getAttributeId, attributeIds)
@@ -1623,23 +1628,23 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
          */
         List<StockDetails> lockStockDetail = pickListsCartService.getLockStockDetail();
 
-        List<MaterialResult> materialResults = materialService.details(materialIds);
+        List<MaterialResult> materialResults = materialIds.size() == 0 ? new ArrayList<>() : materialService.details(materialIds);
 
         for (SkuResult skuResult : param) {
             /**
              * 材质
              */
-            List<MaterialResult> materialResultList = new ArrayList<>();
-            if (ToolUtil.isNotEmpty(skuResult.getMaterialIdList())) {
-                for (Long materialId : skuResult.getMaterialIdList()) {
-                    for (MaterialResult materialResult : materialResults) {
-                        if (materialResult.getMaterialId().equals(materialId)) {
-                            materialResultList.add(materialResult);
+            if (ToolUtil.isNotEmpty(skuResult.getMaterialId())) {
+                for (MaterialResult materialResult : materialResults) {
+                    try {
+                        if (Long.valueOf(skuResult.getMaterialId()).equals(materialResult.getMaterialId())) {
+                            skuResult.setMaterialResult(materialResult);
                         }
+                    } catch (Exception e) {
+
                     }
                 }
             }
-            skuResult.setMaterialResultList(materialResultList);
 
             //图片
             List<Long> imageIds = new ArrayList<>();
@@ -1765,8 +1770,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 skuResult.setSkuJsons(list);
             }
             for (StockForewarn stockForewarn : stockForewarns) {
-                if(stockForewarn.getFormId().equals(skuResult.getSkuId())){
-                    skuResult.setStockForewarnResult(BeanUtil.copyProperties(stockForewarn,StockForewarnResult.class));
+                if (stockForewarn.getFormId().equals(skuResult.getSkuId())) {
+                    skuResult.setStockForewarnResult(BeanUtil.copyProperties(stockForewarn, StockForewarnResult.class));
                     break;
                 }
             }
