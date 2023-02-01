@@ -354,39 +354,30 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
         }
         List<UserResult> userResults = userService.getUserResultsByIds(userIds);
-        List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.resultsByPickListsIds(pickListsIds);
+        List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.pickListsTaskDetail(pickListsIds);
         List<ProductionPickListsCart> carts =pickListsIds.size() == 0 ? new ArrayList<>() : pickListsCartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickListsIds).eq(ProductionPickListsCart::getStatus,0).list();
-        List<Long> skuIds = new ArrayList<>();
-        for (ProductionPickListsDetailResult detailResult : detailResults) {
-            skuIds.add(detailResult.getSkuId());
-        }
-        List<StorehousePositionsBind> positionsBinds = skuIds.size() == 0 ? new ArrayList<>() : positionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
+
         for (ProductionPickListsResult result : results) {
 
             result.setCanOperate(false);
             List<Long> listsSkuIds = new ArrayList<>();
-            List<Long> listsPositionIds = new ArrayList<>();
             Integer numberCount = 0;
             Integer receivedCount = 0;
             List<Boolean> canPickBooleans = new ArrayList<>();
-            List<ProductionPickListsDetailResult> listShowDetails = new ArrayList<>();
+//            List<ProductionPickListsDetailResult> listShowDetails = new ArrayList<>();
             for (ProductionPickListsDetailResult detailResult : detailResults) {
                 if (detailResult.getPickListsId().equals(result.getPickListsId())) {
                     if (detailResult.getStockNumber() > 0 && detailResult.getNeedOperateNum() > 0) {
                         result.setCanOperate(true);
                     }
-                    if (listShowDetails.size() < 2) {
-                        listShowDetails.add(detailResult);
-                    }
+//                    if (listShowDetails.size() < 2) {
+//                        listShowDetails.add(detailResult);
+//                    }
                     listsSkuIds.add(detailResult.getSkuId());
                     canPickBooleans.add(detailResult.getCanPick());
                     numberCount += detailResult.getNumber();
                     receivedCount += detailResult.getReceivedNumber();
-                    for (StorehousePositionsBind positionsBind : positionsBinds) {
-                        if (detailResult.getSkuId().equals(positionsBind.getSkuId())) {
-                            listsPositionIds.add(positionsBind.getPositionId());
-                        }
-                    }
+
                 }
             }
             int cartNumber = 0;
@@ -396,9 +387,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 }
             }
             result.setCartNumCount(cartNumber);
-            result.setDetailResults(listShowDetails);
+//            result.setDetailResults(listShowDetails);
             /**
              * 是否可以领料
+             *
              */
             if (result.getUserId().equals(LoginContextHolder.getContext().getUserId()) && canPickBooleans.stream().anyMatch(i -> i)) {
                 result.setCanPick(true);
@@ -407,12 +399,11 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             }
 
             result.setSkuCount((int) listsSkuIds.stream().distinct().count());
-            result.setPositionCount((int) listsPositionIds.stream().distinct().count());
             result.setNumberCount(numberCount);
             result.setReceivedCount(receivedCount);
             for (UserResult userResult : userResults) {
                 if (result.getCreateUser().equals(result.getUserId())) {
-                    userResult.setAvatar(stepsService.imgUrl(userResult.getUserId().toString()));
+//                    userResult.setAvatar(stepsService.imgUrl(userResult.getUserId().toString()));
                     result.setCreateUserResult(userResult);
                 }
                 if (result.getUserId().equals(userResult.getUserId())) {
@@ -431,36 +422,34 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         List<Long> announcementsIds = new ArrayList<>();
 
         for (ProductionPickListsResult result : results) {
-            if (ToolUtil.isNotEmpty(result.getEnclosure())) {
-                List<Long> enclosureIds = Arrays.stream(result.getEnclosure().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-                List<String> enclosureUrl = new ArrayList<>();
-                for (Long enclosureId : enclosureIds) {
-                    String mediaUrl = mediaService.getMediaUrl(enclosureId, 1L);
-                    enclosureUrl.add(mediaUrl);
-                }
-                result.setEnclosureUrl(enclosureUrl);
-            }
+//            if (ToolUtil.isNotEmpty(result.getEnclosure())) {
+//                List<Long> enclosureIds = Arrays.stream(result.getEnclosure().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+//                List<String> enclosureUrl = new ArrayList<>();
+//                for (Long enclosureId : enclosureIds) {
+//                    String mediaUrl = mediaService.getMediaUrl(enclosureId, 1L);
+//                    enclosureUrl.add(mediaUrl);
+//                }
+//                result.setEnclosureUrl(enclosureUrl);
+//            }
             pickListsIds.add(result.getPickListsId());
             userIds.add(result.getUserId());
             userIds.add(result.getCreateUser());
 
-            if (ToolUtil.isNotEmpty(result.getRemarks())) {
-                announcementsIds.addAll(Arrays.stream(result.getRemarks().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
-            }
+//            if (ToolUtil.isNotEmpty(result.getRemarks())) {
+//                announcementsIds.addAll(Arrays.stream(result.getRemarks().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
+//            }
         }
-        announcementsIds = announcementsIds.stream().distinct().collect(Collectors.toList());
-        List<Announcements> announcements = announcementsIds.size() == 0 ? new ArrayList<>() : announcementsService.listByIds(announcementsIds);
-        List<AnnouncementsResult> announcementsResults = BeanUtil.copyToList(announcements, AnnouncementsResult.class, new CopyOptions());
+//        announcementsIds = announcementsIds.stream().distinct().collect(Collectors.toList());
+//        List<Announcements> announcements = announcementsIds.size() == 0 ? new ArrayList<>() : announcementsService.listByIds(announcementsIds);
+//        List<AnnouncementsResult> announcementsResults = BeanUtil.copyToList(announcements, AnnouncementsResult.class, new CopyOptions());
         List<UserResult> userResultsByIds = userIds.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(userIds);
         /**
          * 查询备料单与领料单
          */
 //        List<ProductionPickListsDetail> pickListsDetails =pickListsIds.size() == 0 ? new ArrayList<>() : this.pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("display", 1).list();
 //        List<ProductionPickListsDetailResult> detailResults = BeanUtil.copyToList(pickListsDetails, ProductionPickListsDetailResult.class);
-        List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.listByPickLists(pickListsIds);
+//        List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.listByPickLists(pickListsIds);
 
-
-        List<Long> positionIds = new ArrayList<>();
 
         for (ProductionPickListsResult result : results) {
             for (UserResult userResultsById : userResultsByIds) {
@@ -471,31 +460,31 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     result.setCreateUserResult(userResultsById);
                 }
             }
-            List<ProductionPickListsDetailResult> detailResultList = new ArrayList<>();
-            for (ProductionPickListsDetailResult detailResult : detailResults) {
-                if (result.getPickListsId().equals(detailResult.getPickListsId())) {
-                    if (ToolUtil.isNotEmpty(detailResult.getPositionIds())) {
-                        positionIds.addAll(detailResult.getPositionIds());
-                    }
-                    detailResultList.add(detailResult);
-                }
-            }
-            positionIds = positionIds.stream().distinct().collect(Collectors.toList());
-            result.setPositionIds(positionIds);
-            result.setDetailResults(detailResultList);
-            if (ToolUtil.isNotEmpty(result.getRemarks())) {
-                List<AnnouncementsResult> announcementsResultList = new ArrayList<>();
-                List<Long> collect = Arrays.stream(result.getRemarks().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-                collect = collect.stream().distinct().collect(Collectors.toList());
-                for (Long aLong : collect) {
-                    for (AnnouncementsResult announcementsResult : announcementsResults) {
-                        if (announcementsResult.getNoticeId().equals(aLong)) {
-                            announcementsResultList.add(announcementsResult);
-                        }
-                    }
-                }
-                result.setAnnouncementsResults(announcementsResultList);
-            }
+//            List<ProductionPickListsDetailResult> detailResultList = new ArrayList<>();
+//            for (ProductionPickListsDetailResult detailResult : detailResults) {
+//                if (result.getPickListsId().equals(detailResult.getPickListsId())) {
+//                    if (ToolUtil.isNotEmpty(detailResult.getPositionIds())) {
+//                        positionIds.addAll(detailResult.getPositionIds());
+//                    }
+////                    detailResultList.add(detailResult);
+//                }
+//            }
+//            positionIds = positionIds.stream().distinct().collect(Collectors.toList());
+//            result.setPositionIds(positionIds);
+//            result.setDetailResults(detailResultList);
+//            if (ToolUtil.isNotEmpty(result.getRemarks())) {
+//                List<AnnouncementsResult> announcementsResultList = new ArrayList<>();
+//                List<Long> collect = Arrays.stream(result.getRemarks().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+//                collect = collect.stream().distinct().collect(Collectors.toList());
+//                for (Long aLong : collect) {
+//                    for (AnnouncementsResult announcementsResult : announcementsResults) {
+//                        if (announcementsResult.getNoticeId().equals(aLong)) {
+//                            announcementsResultList.add(announcementsResult);
+//                        }
+//                    }
+//                }
+//                result.setAnnouncementsResults(announcementsResultList);
+//            }
         }
 
     }

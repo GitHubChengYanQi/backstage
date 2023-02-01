@@ -66,7 +66,11 @@ public interface ProductionPickListsDetailService extends IService<ProductionPic
 
     List<ProductionPickListsDetailResult> listByPickLists(List<Long> pickListsIds);
 
+    List<Long> getSkuIdsByPickLists(Long id);
+
     List<ProductionPickListsDetailResult> resultsByPickListsIds(List<Long> listsIds);
+
+    List<ProductionPickListsDetailResult> pickListsTaskDetail(List<Long> pickListsIds);
 
     void format(List<ProductionPickListsDetailResult> results);
 
@@ -80,5 +84,9 @@ public interface ProductionPickListsDetailService extends IService<ProductionPic
      */
      PageInfo<ProductionPickListsDetailResult> findPageBySpec(ProductionPickListsDetailParam param);
 
+    PageInfo<ProductionPickListsDetailResult> pickListsDetailList(ProductionPickListsDetailParam param);
+
     List<StockView> getUserSkuAndNumbers(DataStatisticsViewParam param);
+
+    List<Long> getPisitionIds(Long listsId);
 }

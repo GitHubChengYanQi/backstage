@@ -57,7 +57,7 @@ public class ProductionPickListsDetailResult implements Serializable {
 
     private Boolean isMeet;
 
-    private List<ProductionPickListsCartResult> cartResults;
+    private List<ProductionPickListsCartSimpleResult> cartResults;
 
     private Map<String,String> brandResult;
 
