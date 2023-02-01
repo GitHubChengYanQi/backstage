@@ -84,6 +84,12 @@ public class RestAttributeValuesServiceImpl extends ServiceImpl<RestAttributeVal
         return PageFactory.createPageInfo(page);
     }
 
+    @Override
+    public List<RestAttributeValues> restAttributeValuesByAttributeId(List<Long> attributeId) {
+        List<RestAttributeValues> restAttributeValues = this.baseMapper.restAttributeValuesByAttributeId(attributeId);
+        return restAttributeValues;
+    }
+
     private Serializable getKey(RestAttributeValuesParam param) {
         return param.getAttributeValuesId();
     }

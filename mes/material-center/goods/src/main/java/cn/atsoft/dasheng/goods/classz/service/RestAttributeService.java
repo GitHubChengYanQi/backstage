@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.goods.classz.model.params.RestAttributeParam;
 import cn.atsoft.dasheng.goods.classz.model.result.RestAttributeResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -64,6 +65,8 @@ public interface RestAttributeService extends IService<RestAttribute> {
      * @author song
      * @Date 2021-10-18
      */
-     PageInfo<RestAttributeResult> findPageBySpec(RestAttributeParam param);
+    PageInfo<RestAttributeResult> findPageBySpec(RestAttributeParam param);
+
+    List<RestAttribute> restAttributeByCategoryId(Long CategoryId);
 
 }

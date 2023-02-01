@@ -1766,7 +1766,7 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
         }
 
     @Override
-    public List<RestSku> restSkuResultBySpuId(Long spuId) {
+    public List<RestSku> skuResultBySpuId(Long spuId) {
         List<RestSku> results = this.baseMapper.restSkuResultBySpuId(spuId);
         return results;
     }

@@ -123,5 +123,20 @@
             and display like CONCAT('%',#{paramCondition.display},'%')
         </if>
     </select>
+    <select id="restAttributeValuesByAttributeId" parameterType="Long" resultType="cn.atsoft.dasheng.goods.classz.entity.RestAttributeValues">
+        SELECT
+            *
+        FROM
+            goods_class_attribute_value
+        WHERE
+            display = 1
+        <if test="attributeId != null and attributeId.size > 0">
+            AND attribute_id in (
+            <foreach collection="attributeId" index="index" item="attributeId" separator="," close=")" open="(">
+                #{attributeId}
+            </foreach>
+            )
+        </if>
+    </select>
 
 </mapper>

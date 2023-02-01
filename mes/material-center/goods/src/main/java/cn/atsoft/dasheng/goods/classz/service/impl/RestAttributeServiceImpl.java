@@ -88,6 +88,12 @@ public class RestAttributeServiceImpl extends ServiceImpl<RestAttributeMapper, R
         return PageFactory.createPageInfo(page);
     }
 
+    @Override
+    public List<RestAttribute> restAttributeByCategoryId(Long categoryId) {
+        List<RestAttribute> restAttributes = this.baseMapper.restAttributeByCategoryId(categoryId);
+        return restAttributes;
+    }
+
     private Serializable getKey(RestAttributeParam param) {
         return param.getAttributeId();
     }

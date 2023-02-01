@@ -143,28 +143,35 @@ public class RestSpuController extends BaseController {
             List<RestAttributeValueInSpu> attributeValuesResults = new ArrayList<>();
             List<Map<String, Object>> list = new ArrayList<>();
 
+            //spu分类
             RestCategory spuClassification = detail.getSpuClassificationId() == null ? new RestCategory() : restCategoryService.getById(detail.getSpuClassificationId());
 
 
-
             RestSpuResult spuResult = new RestSpuResult();
-            List<RestSku> skus = detail.getSpuId() == null ? new ArrayList<>() : skuService.restSkuResultBySpuId(detail.getSpuId());
+
+            //通过spuId 找到 RestSku
+            List<RestSku> skus = detail.getSpuId() == null ? new ArrayList<>() : skuService.skuResultBySpuId(detail.getSpuId());
 
 
-
-            List<List<RestSkuJson>> requests = new ArrayList<>();
             List<RestSkuResult> skuResultList = new ArrayList<>();
+
+            //类目id 不为空
             if (ToolUtil.isNotEmpty(detail.getCategoryId())) {
-                List<RestAttribute> itemAttributes = detail.getCategoryId() == null ? new ArrayList<>() : restAttributeService.lambdaQuery()
-                        .in(RestAttribute::getCategoryId, detail.getCategoryId()).and(i -> i.eq(RestAttribute::getDisplay, 1))
-                        .list();
+                //通过类目Id 查到 类目属性结合
+
+//                List<ItemAttribute> itemAttributes = detail.getCategoryId() == null ? new ArrayList<>() : itemAttributeService.lambdaQuery().in(ItemAttribute::getCategoryId, detail.getCategoryId()).and(i -> i.eq(ItemAttribute::getDisplay, 1).list();
+                List<RestAttribute> itemAttributes = detail.getCategoryId() == null ? new ArrayList<>() : restAttributeService.restAttributeByCategoryId(detail.getCategoryId());
+
                 List<Long> attId = new ArrayList<>();
+
                 for (RestAttribute itemAttribute : itemAttributes) {
                     attId.add(itemAttribute.getAttributeId());
                 }
-                List<RestAttributeValues> attributeValues = attId.size() == 0 ? new ArrayList<>() : restAttributeValuesService.lambdaQuery()
-                        .in(RestAttributeValues::getAttributeId, attId).and(i -> i.eq(RestAttributeValues::getDisplay, 1))
-                        .list();
+
+                //通过 类目属性id 得到类目属性数据 集合
+//                List<RestAttributeValues> attributeValues = attId.size() == 0 ? new ArrayList<>() : restAttributeValuesService.lambdaQuery().in(RestAttributeValues::getAttributeId, attId).and(i -> i.eq(RestAttributeValues::getDisplay, 1)).list();
+
+                List<RestAttributeValues> attributeValues = attId.size() == 0 ? new ArrayList<>() : restAttributeValuesService.restAttributeValuesByAttributeId(attId);
                 if (ToolUtil.isNotEmpty(itemAttributes)) {
                     for (RestSku sku : skus) {
                         //list
@@ -242,7 +249,7 @@ public class RestSpuController extends BaseController {
 
                     skuRequest.setTree(tree);
                 }
-                JSONArray jsonArray = new JSONArray();
+                JSONArray jsonArray;
                 List<RestAttribute> attributes = new ArrayList<>();
                 if (ToolUtil.isNotEmpty(detail.getAttribute()) && detail.getAttribute() != "" && detail.getAttribute() != null) {
                     jsonArray = JSONUtil.parseArray(detail.getAttribute());
@@ -255,7 +262,7 @@ public class RestSpuController extends BaseController {
             if (ToolUtil.isNotEmpty(spuClassification)) {
                 RestCategoryResult spuClassificationResult = new RestCategoryResult();
                 ToolUtil.copyProperties(spuClassification, spuClassificationResult);
-                spuResult.setSpuClassificationResult(spuClassificationResult);
+                spuResult.setRestCategoryResult(spuClassificationResult);
             }
 
             spuResult.setSku(skuRequest);
@@ -273,7 +280,7 @@ public class RestSpuController extends BaseController {
             if (ToolUtil.isNotEmpty(spuClassification)) {
                 RestCategoryResult spuClassificationResult = new RestCategoryResult();
                 ToolUtil.copyProperties(spuClassification, spuClassificationResult);
-                spuResult.setSpuClassificationResult(spuClassificationResult);
+                spuResult.setRestCategoryResult(spuClassificationResult);
             }
 
             RestUnit unit = restUnitService.getById(detail.getUnitId());
@@ -332,7 +339,7 @@ public class RestSpuController extends BaseController {
                 spuQueryWrapper.in("type", spuParam.getType());
             }
 
-        }else{
+        } else {
 
         }
         spuQueryWrapper.in("display", 1);

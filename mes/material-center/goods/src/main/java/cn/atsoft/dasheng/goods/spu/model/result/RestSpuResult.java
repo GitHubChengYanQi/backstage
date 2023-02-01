@@ -33,6 +33,7 @@ public class RestSpuResult implements Serializable {
     //单位
     private RestUnitResult unitResult;
 
+    @JSONField(serialize = false)
     private String specifications;
 
     private static final long serialVersionUID = 1L;
@@ -41,7 +42,6 @@ public class RestSpuResult implements Serializable {
      */
     private Integer type;
 
-    private RestClassResult categoryResult;
 
 
     //类目
@@ -53,8 +53,8 @@ public class RestSpuResult implements Serializable {
     //材质
     private RestTextrue material;
 
-    //类目
-    private RestCategoryResult spuClassificationResult;
+    //分类
+    private RestCategoryResult restCategoryResult;
 
     /**
      * 分类id
@@ -119,6 +119,7 @@ public class RestSpuResult implements Serializable {
      * 物品重量
      */
     @ApiModelProperty("物品重量")
+    @JSONField(serialize = false)
     private Integer weight;
 
     /**
@@ -139,6 +140,7 @@ public class RestSpuResult implements Serializable {
      * 易损
      */
     @ApiModelProperty("易损")
+    @JSONField(serialize = false)
     private Integer vulnerability;
 
     /**

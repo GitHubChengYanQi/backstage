@@ -66,4 +66,6 @@ public interface RestAttributeValuesService extends IService<RestAttributeValues
      */
      PageInfo<RestAttributeValuesResult> findPageBySpec(RestAttributeValuesParam param);
 
+     List<RestAttributeValues> restAttributeValuesByAttributeId(List<Long> attributeId);
+
 }

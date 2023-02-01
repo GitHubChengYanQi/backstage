@@ -159,5 +159,15 @@
             and display like CONCAT('%',#{paramCondition.display},'%')
         </if>
     </select>
-
+    <select id="restAttributeByCategoryId" parameterType="Long" resultType="cn.atsoft.dasheng.goods.classz.entity.RestAttribute">
+        SELECT
+            *
+        FROM
+            goods_class_attribute
+        WHERE
+            display = 1
+        <if test="categoryId != null">
+            AND category_id = #{categoryId}
+        </if>
+    </select>
 </mapper>

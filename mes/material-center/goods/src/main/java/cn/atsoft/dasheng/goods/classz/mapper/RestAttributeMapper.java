@@ -52,4 +52,6 @@ public interface RestAttributeMapper extends BaseMapper<RestAttribute> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") RestAttributeParam paramCondition);
 
+    List<RestAttribute> restAttributeByCategoryId(@Param("categoryId") Long categoryId);
+
 }
