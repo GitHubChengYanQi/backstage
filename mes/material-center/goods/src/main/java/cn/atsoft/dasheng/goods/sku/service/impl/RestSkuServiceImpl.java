@@ -1,8 +1,8 @@
 package cn.atsoft.dasheng.goods.sku.service.impl;
 
 
-import cn.atsoft.dasheng.coderule.entity.RestCodeRule;
-import cn.atsoft.dasheng.coderule.service.RestCodeRuleService;
+import cn.atsoft.dasheng.codeRule.entity.RestCodeRule;
+import cn.atsoft.dasheng.codeRule.service.RestCodeRuleService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.goods.brand.model.params.RestSkuBrandBindParam;
 import cn.atsoft.dasheng.goods.brand.service.RestBrandService;
