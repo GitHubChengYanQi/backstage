@@ -1,7 +1,7 @@
 package cn.atsoft.dasheng.coderule.model.result;
 
 
-import cn.atsoft.dasheng.coderule.model.RestCodings;
+import cn.atsoft.dasheng.coderule.model.RestCode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -27,7 +27,7 @@ public class RestCodingRulesResult implements Serializable {
     private RestCodingRulesCategoryResult codingRulesClassificationResult;
 
 
-    private List<RestCodings> codings;
+    private List<RestCode> codings;
 
     @ApiModelProperty("描述")
     private String note;

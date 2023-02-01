@@ -1,6 +1,6 @@
 package cn.atsoft.dasheng.coderule.mapper;
 
-import cn.atsoft.dasheng.coderule.entity.RestCodingRulesCategory;
+import cn.atsoft.dasheng.coderule.model.RestCodeRulesCategory;
 import cn.atsoft.dasheng.coderule.model.params.RestCodingRulesCategoryParam;
 import cn.atsoft.dasheng.coderule.model.result.RestCodingRulesCategoryResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -18,7 +18,7 @@ import java.util.Map;
  * @author song
  * @since 2021-10-22
  */
-public interface RestCodingRulesCategoryMapper extends BaseMapper<RestCodingRulesCategory> {
+public interface RestCodingRulesCategoryMapper extends BaseMapper<RestCodeRulesCategory> {
 
     /**
      * 获取列表

@@ -4,9 +4,9 @@ package cn.atsoft.dasheng.coderule.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.coderule.entity.RestCodingRules;
-import cn.atsoft.dasheng.coderule.entity.RestCodingRulesCategory;
+import cn.atsoft.dasheng.coderule.model.RestCodeRulesCategory;
 import cn.atsoft.dasheng.coderule.mapper.RestCodingRulesMapper;
-import cn.atsoft.dasheng.coderule.model.RestCodings;
+import cn.atsoft.dasheng.coderule.model.RestCode;
 import cn.atsoft.dasheng.coderule.model.params.RestCodingRulesParam;
 import cn.atsoft.dasheng.coderule.model.params.RestSerialNumberParam;
 import cn.atsoft.dasheng.coderule.model.result.RestCodingRulesCategoryResult;
@@ -62,7 +62,7 @@ public class RestCodingRulesServiceImpl extends ServiceImpl<RestCodingRulesMappe
         if (param.getCodings().size() == 0) {
             throw new ServiceException(500, "必须定义规则！");
         } else {
-            for (RestCodings codings : param.getCodings()) {
+            for (RestCode codings : param.getCodings()) {
                 if (codingRules.equals("")) {
                     codingRules = codings.getValues();
                 } else {
@@ -98,7 +98,7 @@ public class RestCodingRulesServiceImpl extends ServiceImpl<RestCodingRulesMappe
             if (param.getCodings().size() == 0) {
                 throw new ServiceException(500, "必须定义规则！");
             } else {
-                for (RestCodings codings : param.getCodings()) {
+                for (RestCode codings : param.getCodings()) {
                     if (codingRules.equals("")) {
                         codingRules = codings.getValues();
                     } else {
@@ -168,12 +168,12 @@ public class RestCodingRulesServiceImpl extends ServiceImpl<RestCodingRulesMappe
             classIds.add(codingRulesResult.getCodingRulesClassificationId());
             rulesIds.add(codingRulesResult.getCodingRulesId());
         }
-        List<RestCodingRulesCategory> list = classIds.size() == 0 ? new ArrayList<>() : codingRulesClassificationService.lambdaQuery().in(RestCodingRulesCategory::getCodingRulesClassificationId, classIds).list();
+        List<RestCodeRulesCategory> list = classIds.size() == 0 ? new ArrayList<>() : codingRulesClassificationService.lambdaQuery().in(RestCodeRulesCategory::getCodingRulesClassificationId, classIds).list();
 
 
 
         for (RestCodingRulesResult codingRulesResult : param) {
-            for (RestCodingRulesCategory codingRulesClassification : list) {
+            for (RestCodeRulesCategory codingRulesClassification : list) {
                 if (codingRulesResult.getCodingRulesClassificationId() != null &&
                         codingRulesClassification.getCodingRulesClassificationId() != null &&
                         codingRulesResult.getCodingRulesClassificationId().equals(codingRulesClassification.getCodingRulesClassificationId())) {

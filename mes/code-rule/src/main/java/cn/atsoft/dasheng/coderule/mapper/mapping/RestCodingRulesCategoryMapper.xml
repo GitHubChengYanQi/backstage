@@ -3,7 +3,7 @@
 <mapper namespace="cn.atsoft.dasheng.coderule.mapper.RestCodingRulesCategoryMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.coderule.entity.RestCodingRulesCategory">
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.coderule.model.RestCodeRulesCategory">
         <id column="coding_rules_classification_id" property="codingRulesClassificationId"/>
         <result column="name" property="name"/>
         <result column="sort" property="sort"/>

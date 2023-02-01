@@ -3,7 +3,7 @@ package cn.atsoft.dasheng.coderule.controller;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.coderule.entity.RestCodingRules;
-import cn.atsoft.dasheng.coderule.model.RestCodings;
+import cn.atsoft.dasheng.coderule.model.RestCode;
 import cn.atsoft.dasheng.coderule.model.params.RestCodingRulesParam;
 import cn.atsoft.dasheng.coderule.model.result.RestCodingRulesResult;
 import cn.atsoft.dasheng.coderule.service.RestCodingRulesService;
@@ -100,9 +100,9 @@ public class RestCodingRulesController extends BaseController {
 
         if (ToolUtil.isNotEmpty(detail.getCodingRules())) {
             String[] split = detail.getCodingRules().split(",");
-            List<RestCodings> codingsList = new ArrayList<>();
+            List<RestCode> codingsList = new ArrayList<>();
             for (String s : split) {
-                RestCodings codings = new RestCodings();
+                RestCode codings = new RestCode();
                 codings.setValues(s);
                 codingsList.add(codings);
             }

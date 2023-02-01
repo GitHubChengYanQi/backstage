@@ -2,7 +2,7 @@ package cn.atsoft.dasheng.coderule.model.params;
 
 import cn.atsoft.dasheng.base.dict.AbstractDictMap;
 import cn.atsoft.dasheng.coderule.model.RestCodingSerial;
-import cn.atsoft.dasheng.coderule.model.RestCodings;
+import cn.atsoft.dasheng.coderule.model.RestCode;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -44,7 +44,7 @@ public class RestCodingRulesParam extends AbstractDictMap implements Serializabl
 
     private Integer module;
 
-    private List<RestCodings> codings;
+    private List<RestCode> codings;
 
     /**
      * 编码规则id
