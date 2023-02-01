@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.goods.classz.entity.RestAttribute;
 import cn.atsoft.dasheng.goods.classz.entity.RestAttributeValues;
 import cn.atsoft.dasheng.goods.classz.entity.RestClass;
 import cn.atsoft.dasheng.goods.classz.model.result.RestClassResult;
+import cn.atsoft.dasheng.goods.sku.model.RestSkuResultByRab;
 import cn.atsoft.dasheng.goods.spu.model.RestSpuAttribute;
 import cn.atsoft.dasheng.goods.texture.entity.RestTextrue;
 import cn.atsoft.dasheng.goods.unit.model.result.RestUnitResult;
@@ -47,7 +48,7 @@ public class RestSpuResult implements Serializable {
     private RestClass restClass;
 
 
-    private RestSpuAttribute sku;
+    private RestSkuResultByRab sku;
 
     //材质
     private RestTextrue material;

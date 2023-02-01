@@ -1,7 +1,6 @@
-package cn.atsoft.dasheng.goods.classz.model.result;
+package cn.atsoft.dasheng.goods.classz.model;
 
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.goods.classz.model.RestAttributeValueInSpu;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 

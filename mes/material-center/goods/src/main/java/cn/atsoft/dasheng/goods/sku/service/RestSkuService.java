@@ -127,4 +127,5 @@ public interface RestSkuService extends IService<RestSku> {
 //    RestSkuResult getDetail(Long skuId);
 //
 //    Long addSkuFromSpu(PartsParam partsParam);
+    List<RestSku> restSkuResultBySpuId(Long spuId);
 }

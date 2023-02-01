@@ -634,4 +634,15 @@ type
 <!--            </foreach>-->
 <!--        </if>-->
 <!--    </select>           -->
+    <select id="restSkuResultBySpuId" parameterType="Long" resultType="cn.atsoft.dasheng.goods.sku.entity.RestSku">
+        SELECT
+            *
+        FROM
+            goods_sku
+        WHERE
+            display = 1
+          <if test="spuId != null">
+              AND spu_id = #{spuId}
+          </if>
+    </select>
 </mapper>

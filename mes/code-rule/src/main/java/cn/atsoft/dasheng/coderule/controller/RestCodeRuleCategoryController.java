@@ -24,7 +24,7 @@ import java.util.Map;
 @RequestMapping("/codingRulesCategory/{version}")
 @ApiVersion("2.0")
 @Api(tags = "编码规则分类 管理")
-public class RestCodingRulesCategoryController extends BaseController {
+public class RestCodeRuleCategoryController extends BaseController {
 
     @Autowired
     private RestCodingRulesCategoryService codingRulesClassificationService;

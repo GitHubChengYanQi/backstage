@@ -38,7 +38,7 @@ import java.util.Map;
 @RequestMapping("/codingRules/{version}")
 @ApiVersion("2.0")
 @Api(tags = "编码规则 管理")
-public class RestCodingRulesController extends BaseController {
+public class RestCodeRuleController extends BaseController {
 
     @Autowired
     private RestCodingRulesService codingRulesService;

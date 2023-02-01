@@ -12,15 +12,13 @@ import cn.atsoft.dasheng.goods.category.service.RestCategoryService;
 import cn.atsoft.dasheng.goods.classz.entity.RestAttribute;
 import cn.atsoft.dasheng.goods.classz.entity.RestAttributeValues;
 import cn.atsoft.dasheng.goods.classz.entity.RestClass;
-import cn.atsoft.dasheng.goods.classz.model.RestAttributeValueInSpu;
-import cn.atsoft.dasheng.goods.classz.model.RestAttributes;
-import cn.atsoft.dasheng.goods.classz.model.RestValues;
-import cn.atsoft.dasheng.goods.classz.model.result.RestAttributeInSpu;
+import cn.atsoft.dasheng.goods.classz.model.*;
 import cn.atsoft.dasheng.goods.classz.service.RestAttributeService;
 import cn.atsoft.dasheng.goods.classz.service.RestAttributeValuesService;
 import cn.atsoft.dasheng.goods.classz.service.RestClassService;
 import cn.atsoft.dasheng.goods.sku.entity.RestSku;
 import cn.atsoft.dasheng.goods.sku.model.RestSkuJson;
+import cn.atsoft.dasheng.goods.sku.model.RestSkuResultByRab;
 import cn.atsoft.dasheng.goods.sku.model.result.RestSkuResult;
 import cn.atsoft.dasheng.goods.sku.service.RestSkuService;
 import cn.atsoft.dasheng.goods.spu.entity.RestSpu;
@@ -139,11 +137,10 @@ public class RestSpuController extends BaseController {
         RestSpu detail = this.restSpuService.getById(restSpuParam.getSpuId());
 
         if (ToolUtil.isNotEmpty(detail)) {
-//            SkuRequest skuRequest = new SkuRequest();
-//
-//
-//            List<AttributeInSpu> attributeResults = new ArrayList<>();
-//            List<AttributeValueInSpu> attributeValuesResults = new ArrayList<>();
+            RestSkuResultByRab skuRequest = new RestSkuResultByRab();
+
+            List<RestAttributeInSpu> attributeResults = new ArrayList<>();
+            List<RestAttributeValueInSpu> attributeValuesResults = new ArrayList<>();
             List<Map<String, Object>> list = new ArrayList<>();
 
             RestCategory spuClassification = detail.getSpuClassificationId() == null ? new RestCategory() : restCategoryService.getById(detail.getSpuClassificationId());
@@ -151,17 +148,12 @@ public class RestSpuController extends BaseController {
 
 
             RestSpuResult spuResult = new RestSpuResult();
-            List<RestSku> skus = detail.getSpuId() == null ? new ArrayList<>() :
-                    skuService.query().in("spu_id", detail.getSpuId()).and(i -> i.eq("display", 1)).list();
-            //取skuIds 去清单查找是否存在bom
-            List<Long> skuIds = new ArrayList<>();
-            for (RestSku sku : skus) {
-                skuIds.add(sku.getSkuId());
-            }
+            List<RestSku> skus = detail.getSpuId() == null ? new ArrayList<>() : skuService.restSkuResultBySpuId(detail.getSpuId());
+
+
 
             List<List<RestSkuJson>> requests = new ArrayList<>();
             List<RestSkuResult> skuResultList = new ArrayList<>();
-//            List<CategoryRequest> categoryRequests = new ArrayList<>();
             if (ToolUtil.isNotEmpty(detail.getCategoryId())) {
                 List<RestAttribute> itemAttributes = detail.getCategoryId() == null ? new ArrayList<>() : restAttributeService.lambdaQuery()
                         .in(RestAttribute::getCategoryId, detail.getCategoryId()).and(i -> i.eq(RestAttribute::getDisplay, 1))
@@ -189,22 +181,22 @@ public class RestSpuController extends BaseController {
                         Map<String, Object> skuValueMap = new HashMap<>();
                         skuValueMap.put("id", sku.getSkuId().toString());
 
-//                        if (ToolUtil.isNotEmpty(valuesRequests)) {
-//                            for (RestAttributeValues valuesRequest : valuesRequests) {
-//                                AttributeInSpu itemAttributeResult = new AttributeInSpu();
-//                                itemAttributeResult.setK_s(valuesRequest.getAttributeId());
-//                                attributeResults.add(itemAttributeResult);
-//                                AttributeValueInSpu attributeValuesResult = new AttributeValueInSpu();
-//                                attributeValuesResult.setId(valuesRequest.getAttributeValuesId());
-//                                attributeValuesResult.setAttributeId(valuesRequest.getAttributeId());
-//                                attributeValuesResults.add(attributeValuesResult);
-//
-//                                skuValueMap.put(ToolUtil.isEmpty(valuesRequest.getAttributeId()) ? "" : "s" + valuesRequest.getAttributeId().toString(), ToolUtil.isEmpty(valuesRequest.getAttributeValuesId()) ? "" : valuesRequest.getAttributeValuesId().toString());
-//                            }
-//
-//                        }
-//                        list.add(skuValueMap);
-//                        skuResultList.add(skuResult);
+                        if (ToolUtil.isNotEmpty(valuesRequests)) {
+                            for (RestAttributeValues valuesRequest : valuesRequests) {
+                                RestAttributeInSpu itemAttributeResult = new RestAttributeInSpu();
+                                itemAttributeResult.setK_s(valuesRequest.getAttributeId());
+                                attributeResults.add(itemAttributeResult);
+                                RestAttributeValueInSpu attributeValuesResult = new RestAttributeValueInSpu();
+                                attributeValuesResult.setId(valuesRequest.getAttributeValuesId());
+                                attributeValuesResult.setAttributeId(valuesRequest.getAttributeId());
+                                attributeValuesResults.add(attributeValuesResult);
+
+                                skuValueMap.put(ToolUtil.isEmpty(valuesRequest.getAttributeId()) ? "" : "s" + valuesRequest.getAttributeId().toString(), ToolUtil.isEmpty(valuesRequest.getAttributeValuesId()) ? "" : valuesRequest.getAttributeValuesId().toString());
+                            }
+
+                        }
+                        list.add(skuValueMap);
+                        skuResultList.add(skuResult);
 
 
                     }
@@ -241,23 +233,23 @@ public class RestSpuController extends BaseController {
                             }
 
                         }
-//                        attributeInSpu.setV(v);
+                        attributeInSpu.setV(v);
                         tree.add(attributeInSpu);
                         attribute.setAttributeValues(valuesList);
 
 
                     }
 
-//                    skuRequest.setTree(tree);
+                    skuRequest.setTree(tree);
                 }
-//                JSONArray jsonArray = new JSONArray();
-//                List<RestAttribute> attributes = new ArrayList<>();
-//                if (ToolUtil.isNotEmpty(detail.getAttribute()) && detail.getAttribute() != "" && detail.getAttribute() != null) {
-//                    jsonArray = JSONUtil.parseArray(detail.getAttribute());
-//                    attributes = JSONUtil.toList(jsonArray, RestAttribute.class);
-//                }
+                JSONArray jsonArray = new JSONArray();
+                List<RestAttribute> attributes = new ArrayList<>();
+                if (ToolUtil.isNotEmpty(detail.getAttribute()) && detail.getAttribute() != "" && detail.getAttribute() != null) {
+                    jsonArray = JSONUtil.parseArray(detail.getAttribute());
+                    attributes = JSONUtil.toList(jsonArray, RestAttribute.class);
+                }
 
-//                skuRequest.setList(list);
+                skuRequest.setList(list);
 
             }
             if (ToolUtil.isNotEmpty(spuClassification)) {
@@ -266,7 +258,7 @@ public class RestSpuController extends BaseController {
                 spuResult.setSpuClassificationResult(spuClassificationResult);
             }
 
-//            spuResult.setSku(skuRequest);
+            spuResult.setSku(skuRequest);
 
 
             //映射材质对象
@@ -276,7 +268,7 @@ public class RestSpuController extends BaseController {
             }
 
             RestClass category = restClassService.getById(detail.getCategoryId());
-//            spuResult.setCategory(category);
+            spuResult.setRestClass(category);
 
             if (ToolUtil.isNotEmpty(spuClassification)) {
                 RestCategoryResult spuClassificationResult = new RestCategoryResult();
@@ -291,7 +283,6 @@ public class RestSpuController extends BaseController {
 
             ToolUtil.copyProperties(detail, spuResult);
 
-//            spuResult.setCategoryRequests(categoryRequests);
 
             return ResponseData.success(spuResult);
         } else {

@@ -70,4 +70,5 @@ public interface RestSkuMapper extends BaseMapper<RestSku> {
 
 //    List<SkuBind> skuBindList(@Param("SkuBindParam") SkuBindParam skuBindParam);
 
+    List<RestSku> restSkuResultBySpuId(@Param("spuId") Long spuId);
 }
