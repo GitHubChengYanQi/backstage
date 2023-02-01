@@ -19,17 +19,9 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class RestAttributeValuesParam extends AbstractDictMap implements Serializable, BaseValidatingParam, Comparable<RestAttributeValuesParam> {
+public class RestAttributeValuesParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
-    /**
-     * 属性Id
-     */
-    @Override
-    public int compareTo(RestAttributeValuesParam o) {
-        return (int) (this.attributeId - o.getAttributeId());
-    }
 
     private Long attributeId;
 
@@ -83,13 +75,4 @@ public class RestAttributeValuesParam extends AbstractDictMap implements Seriali
         return null;
     }
 
-    @Override
-    public void init() {
-
-    }
-
-    @Override
-    protected void initBeWrapped() {
-
-    }
 }

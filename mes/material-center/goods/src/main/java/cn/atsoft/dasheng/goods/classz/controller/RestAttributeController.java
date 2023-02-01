@@ -61,7 +61,6 @@ public class RestAttributeController extends BaseController {
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @BussinessLog(value = "修改属性", key = "name", dict = RestAttributeParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody RestAttributeParam restAttributeParam) {
 
@@ -76,7 +75,6 @@ public class RestAttributeController extends BaseController {
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @BussinessLog(value = "删除属性", key = "name", dict = RestAttributeParam.class)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody RestAttributeParam restAttributeParam) {
         this.restAttributeService.delete(restAttributeParam);

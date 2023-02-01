@@ -40,6 +40,7 @@ public class RestCodeRuleResult implements Serializable {
      * 状态
      */
     private Integer state;
+
     private Integer module;
     /**
      * 排序

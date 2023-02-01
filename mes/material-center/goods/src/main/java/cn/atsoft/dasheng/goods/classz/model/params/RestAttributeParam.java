@@ -19,24 +19,18 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class RestAttributeParam extends AbstractDictMap implements Serializable, Comparable<RestAttributeParam>, BaseValidatingParam {
+public class RestAttributeParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
-    private List<RestAttributeValuesParam> attributeValuesParams;
-
-    private RestAttributeValuesParam attributeValuesParam;
-    /**
-     * 是否標配
-     */
-    private Long standard;
 
     /**
      * 属性id
      */
     @ApiModelProperty("属性id")
     private Long attributeId;
-    private Long categoryId;
+
+    @ApiModelProperty("类目ID")
+    private Long classId;
 
     /**
      * 属性名
@@ -44,12 +38,7 @@ public class RestAttributeParam extends AbstractDictMap implements Serializable,
     @ApiModelProperty("属性名")
     private String attribute;
 
-    /**
-     * 产品id
-     */
-    @ApiModelProperty("产品id")
-    private Long itemId;
-
+    private List<RestAttributeValuesParam> attributeValuesParams;
     /**
      * 创建者
      */
@@ -86,27 +75,9 @@ public class RestAttributeParam extends AbstractDictMap implements Serializable,
     @ApiModelProperty("排序")
     private Long sort;
 
-
-    @ApiModelProperty("父ID顺序数组")
-    private List<String> pidValue;
-
     @Override
     public String checkParam() {
         return null;
     }
 
-    @Override
-    public int compareTo(RestAttributeParam o) {
-        return (int) (o.getAttributeId() - this.getAttributeId());
-    }
-
-    @Override
-    public void init() {
-
-    }
-
-    @Override
-    protected void initBeWrapped() {
-
-    }
 }

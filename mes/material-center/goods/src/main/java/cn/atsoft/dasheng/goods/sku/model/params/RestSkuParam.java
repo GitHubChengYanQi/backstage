@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.goods.sku.model.params;
 
 import cn.atsoft.dasheng.base.dict.AbstractDictMap;
 import cn.atsoft.dasheng.goods.category.entity.RestCategory;
+import cn.atsoft.dasheng.goods.classz.model.params.RestAttributeParam;
 import cn.atsoft.dasheng.goods.classz.model.params.RestAttributeValuesParam;
 import cn.atsoft.dasheng.goods.spu.model.RestSpuAttribute;
 import cn.atsoft.dasheng.goods.spu.model.params.RestSpuParam;
@@ -25,97 +26,62 @@ import java.util.Map;
  */
 @Data
 @ApiModel
-public class RestSkuParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
-
+public class RestSkuParam implements Serializable, BaseValidatingParam {
 
 
     private static final long serialVersionUID = 1L;
-    private List<RestAttributeValuesParam> attributeValues;
-    @ApiModelProperty("skuId")
-    private List<Long> brandIds;
-    private Long skuId;
-    private Long customerId;
-    private List<Long> skuIds = new ArrayList<>();
-    private List<Long> imageIds;
-    private List<Long> enclosureIds;
-//    private List<GeneralFormDataParam> generalFormDataParams;
-    private List<Long> fileIds;
-    private RestSpuParam spu;
-    private Long spuClassificationId;
-    private Long spuStandard;
-    private List<Long> id;
-    private List<Long> noSkuIds;
-    private Long spuClass;
-    private Long unitId;
-    private Integer batch;
-    private String spuName;
-    private String name;
-    private Integer maintenancePeriod;
-    private String fileId;
-    private RestCategory spuClassification;
-    private String spuClassName;
-    private Long oldSkuId;
-    private Long partsSkuId;
-//    private List<SkuAttributeAndValue> sku;
-    private String customerName;
-    private String selectType;
-    private List<Long> storehousePositionsIds;
-    private Long storehousePositionsId;
-    private Long storehouseId;
-    private List<Long> customerIds;
-    private List<Long> spuClassIds;  //物料分类查询条件
-    private String fromType;
-    private String thisMonth;   //本月
-    private Integer timeWithin; //查询条件(几天内)
-    private String startTime;
-    private String endTime;
-    private String enclosure;   //附件
-    private String model;//型号
-    private String packaging;//包装方式
 
-
-    private List<Long> anomalySkuIds; //异常的物料
-    private Boolean openBom = false;
-    private Boolean openPosition = false;
-
-    private String sort;
-    private Map<String, String> sortMap;
-
-    private Long status;
-    /**
-     * 是否查询仓库
-     */
-    private Boolean stockView = false;
-    /**
-     * 按库存数查询参数
-     */
-    private Integer mixNum;
-    private Integer maxNum;
-    /**
-     * 按bom查询条件
-     */
-//    private SelectBomEnum selectBom;
     /**
      * 编码
      */
+    @ApiModelProperty(value = "物料编码",notes = "为空则根据规则自动生成编码")
     private String coding;
-    /**
-     * 类型
-     */
-    private RestSpuAttribute spuAttributes;
+
+    @ApiModelProperty("spuId")
+    private Long spuId;
+
+    @ApiModelProperty(value = "spu名称",notes = "如果spuId为空则spuName为必填，创建对应spu")
+    private String spuName;
+
+    @ApiModelProperty("型号名")
+    private String name;
+
+    @ApiModelProperty("型号名")
+    private String skuName;
+
+    @ApiModelProperty(value = "类目Id",notes = "如果为空则使用spuName创建类目")
+    private Long classId;
+
+    private List<RestAttributeParam> attribute;
+
+    @ApiModelProperty("分类Id")
+    private Long categoryId;
+
+    @ApiModelProperty("物料单位Id")
+    private Long unitId;
+
+    @ApiModelProperty("材质")
+    private Long texture;
+
+    private String enclosure;   //附件
+
+    private String model;//型号
+
+    private String packaging;//包装方式
+
+    private Long status;
+
     private Integer type;
+
     @ApiModelProperty("添加方式")
     private Integer addMethod;
-    /**
-     * sku名字
-     */
-    @ApiModelProperty("sku名字")
-    private String skuName;
+
+
     @ApiModelProperty("sku唯一标识")
     private String skuValue;
+
     @ApiModelProperty("备注")
     private String remarks;
-
 
     @ApiModelProperty("图片")
     private String images;
@@ -124,10 +90,13 @@ public class RestSkuParam extends AbstractDictMap implements Serializable, BaseV
 
     @ApiModelProperty("sku加密")
     private String skuValueMd5;
+
     @ApiModelProperty("是否禁用")
     private Integer isBan;
+
     @ApiModelProperty("规格")
     public String specifications;
+
     @ApiModelProperty("执行标准")
     private String standard;
 
@@ -171,12 +140,6 @@ public class RestSkuParam extends AbstractDictMap implements Serializable, BaseV
     private Long qualityPlanId;
 
     /**
-     * spu id
-     */
-    @ApiModelProperty("spu id")
-    private Long spuId;
-
-    /**
      * 创建时间
      */
     @ApiModelProperty(hidden = true)
@@ -206,21 +169,10 @@ public class RestSkuParam extends AbstractDictMap implements Serializable, BaseV
     @ApiModelProperty("状态")
     private Integer display;
 
-    @ApiModelProperty("父ID顺序数组")
-    private List<String> pidValue;
 
     @Override
     public String checkParam() {
         return null;
     }
 
-    @Override
-    public void init() {
-
-    }
-
-    @Override
-    protected void initBeWrapped() {
-
-    }
 }

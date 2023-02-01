@@ -39,7 +39,7 @@ public class RestAttributeServiceImpl extends ServiceImpl<RestAttributeMapper, R
 
     @Override
     public Long add(RestAttributeParam param) {
-        Integer count = this.query().eq("category_id", param.getCategoryId()).eq("attribute", param.getAttribute())
+        Integer count = this.query().eq("category_id", param.getClassId()).eq("attribute", param.getAttribute())
                 .in("display", 1)
                 .count();
         if (count > 0) {

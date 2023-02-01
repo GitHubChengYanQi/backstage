@@ -37,13 +37,17 @@ public class RestAttributeValuesServiceImpl extends ServiceImpl<RestAttributeVal
 
     @Override
     public Long add(RestAttributeValuesParam param) {
-        Integer count = this.query().eq("attribute_id", param.getAttributeId()).eq("attribute_values", param.getAttributeValues()).eq("display", 1).count();
-        if (count > 0) {
-            throw new ServiceException(500, "请不要重复添加属性");
+        RestAttributeValues restAttributeValues = this.getOne(new QueryWrapper<RestAttributeValues>(){{
+            eq("attribute_id", param.getAttributeId());
+            eq("attribute_values", param.getAttributeValues());
+            eq("display", 1);
+        }});
+        if (ToolUtil.isEmpty(restAttributeValues)) {
+            RestAttributeValues entity = getEntity(param);
+            this.save(entity);
+            return entity.getAttributeValuesId();
         }
-        RestAttributeValues entity = getEntity(param);
-        this.save(entity);
-        return entity.getAttributeValuesId();
+        return restAttributeValues.getAttributeValuesId();
     }
 
 

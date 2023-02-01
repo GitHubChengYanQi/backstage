@@ -35,7 +35,7 @@ public class RestClassParam extends AbstractDictMap implements Serializable, Bas
      * 物品类目Id
      */
     @ApiModelProperty("物品类目Id")
-    private Long categoryId;
+    private Long classId;
 
     /**
      * 上级分类id
@@ -47,7 +47,7 @@ public class RestClassParam extends AbstractDictMap implements Serializable, Bas
      * 物品类目名称
      */
     @ApiModelProperty("物品类目名称")
-    private String categoryName;
+    private String name;
 
     /**
      * 创建者
@@ -79,10 +79,6 @@ public class RestClassParam extends AbstractDictMap implements Serializable, Bas
     @ApiModelProperty("状态")
     private Integer display;
 
-
-    private String children;
-
-    private String childrens;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
