@@ -38,6 +38,10 @@ public class ProductionPickListsResult implements Serializable {
     @ApiModelProperty("相关的库位")
     private List<Long> positionIds;
 
+    @ApiModelProperty("相关的库位")
+    @JSONField(serialize = false)
+    private List<Long> skuIds;
+
     @ApiModelProperty("是否可领料")
     private Boolean canPick;
     private String type;
@@ -56,6 +60,7 @@ public class ProductionPickListsResult implements Serializable {
     private UserResult userResult;
 
     @ApiModelProperty("子表集合")
+    @JSONField(serialize = false)
     private List<ProductionPickListsDetailResult> detailResults;
 
     @ApiModelProperty("购物车集合")

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
@@ -117,18 +118,40 @@ public class ProductionPickListsDetailController extends BaseController {
      */
     @RequestMapping(value = "/noPageList", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public List<ProductionPickListsDetailResult> noPageList(@RequestBody(required = false) ProductionPickListsDetailParam productionPickListsDetailParam) {
+    public ResponseData noPageList(@RequestBody(required = false) ProductionPickListsDetailParam productionPickListsDetailParam) {
         if (ToolUtil.isEmpty(productionPickListsDetailParam)) {
             productionPickListsDetailParam = new ProductionPickListsDetailParam();
         }
         if (ToolUtil.isNotEmpty(productionPickListsDetailParam.getStorehousePositionsId())) {
             List<Long> endChild = storehousePositionsService.getEndChild(productionPickListsDetailParam.getStorehousePositionsId());
             if (ToolUtil.isNotEmpty(endChild)) {
-                List<Long> childrens = endChild;
-                productionPickListsDetailParam.setStorehousePositionsIds(childrens);
+                productionPickListsDetailParam.setStorehousePositionsIds(endChild);
             }
         }
-        return this.productionPickListsDetailService.findListBySpec(productionPickListsDetailParam);
+
+        return ResponseData.success(this.productionPickListsDetailService.findListBySpec(productionPickListsDetailParam));
+    }
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/noPageList/{version}", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    @ApiVersion("1.1")
+    public ResponseData noPageList1(@RequestBody(required = false) ProductionPickListsDetailParam productionPickListsDetailParam) {
+        if (ToolUtil.isEmpty(productionPickListsDetailParam)) {
+            productionPickListsDetailParam = new ProductionPickListsDetailParam();
+        }
+        if (ToolUtil.isNotEmpty(productionPickListsDetailParam.getStorehousePositionsId())) {
+            List<Long> endChild = storehousePositionsService.getEndChild(productionPickListsDetailParam.getStorehousePositionsId());
+            if (ToolUtil.isNotEmpty(endChild)) {
+                productionPickListsDetailParam.setStorehousePositionsIds(endChild);
+            }
+        }
+
+        return ResponseData.success(this.productionPickListsDetailService.pickListsDetailList(productionPickListsDetailParam));
     }
 
 

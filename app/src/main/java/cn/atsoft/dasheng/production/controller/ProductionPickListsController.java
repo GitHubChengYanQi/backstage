@@ -171,13 +171,11 @@ public class ProductionPickListsController extends BaseController {
         productionPickListsService.format(new ArrayList<ProductionPickListsResult>() {{
             add(result);
         }});
-        List<Long> skuIds = new ArrayList<>();
-        for (ProductionPickListsDetailResult detailResult : result.getDetailResults()) {
-            skuIds.add(detailResult.getSkuId());
-        }
+        result.setPositionIds(pickListsDetailService.getPisitionIds(result.getPickListsId()));
 
-        List<StorehousePositionsResult> storehousePositionsResults = skuIds.size() == 0 ? new ArrayList<>() : storehousePositionsBindService.treeView(skuIds);
-        result.setStorehousePositionsResults(storehousePositionsResults);
+//        List<Long> skuIds = pickListsDetailService.getSkuIdsByPickLists(result.getPickListsId());
+//        List<StorehousePositionsResult> storehousePositionsResults = skuIds.size() == 0 ? new ArrayList<>() : storehousePositionsBindService.treeView(skuIds);
+//        result.setStorehousePositionsResults(storehousePositionsResults);
         return ResponseData.success(result);
     }
 

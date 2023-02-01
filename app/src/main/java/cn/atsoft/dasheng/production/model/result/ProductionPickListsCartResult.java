@@ -28,11 +28,18 @@ import java.util.List;
 public class ProductionPickListsCartResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     private SkuSimpleResult skuResult;
     private List<Long> brandIds;
     private List<String> brandNames;
+    @JSONField(serialize = false )
+
     private ProductionPickListsResult productionPickListsResult;
+    @JSONField(serialize = false )
+
     private ProductionPickListsResult pickListsResult;
+    @JSONField(serialize = false )
+
     private ProductionPickListsDetailResult productionPickListsDetailResult;
 
     private Long stockNumber;

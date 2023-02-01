@@ -30,7 +30,9 @@ public interface ProductionPickListsDetailMapper extends BaseMapper<ProductionPi
      * @Date 2022-03-25
      */
     List<ProductionPickListsDetailResult> customList(@Param("paramCondition") ProductionPickListsDetailParam paramCondition);
-    
+    Page<ProductionPickListsDetailResult> pickListsDetailList(@Param("page") Page page, @Param("paramCondition") ProductionPickListsDetailParam paramCondition);
+    List<Long> getSkuIdsByPickLists(@Param("pickListsId") Long pickListsId);
+
     List<ProductionPickListsDetailResult> customList2(@Param("paramCondition") ProductionPickListsDetailParam paramCondition);
 
     
