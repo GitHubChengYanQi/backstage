@@ -94,6 +94,7 @@ public class SkuResult implements Serializable {
     private List<MediaResult> enclosureResults;
     private Boolean editSkuFlag; //是否可以更改物料相关信息（字典配置）
     private List<Long> materialIdList;
+    private MaterialResult materialResult;
     private List<MaterialResult> materialResultList;
     private StockForewarnResult stockForewarnResult;//库存预警返回对象
 
