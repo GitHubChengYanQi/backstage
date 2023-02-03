@@ -23,6 +23,8 @@ public class MediaParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     private List<String> types;
+    private List<Long> mediaIds;
+    private String option;
     private String fieldName;
 
     /**

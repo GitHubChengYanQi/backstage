@@ -859,7 +859,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                     case "OUTSTOCK":
                         ProductionPickListsResult pickListsRestult = pickListsService.detail(processTask.getFormId());
                         for (ProductionPickListsDetailResult detailResult : pickListsRestult.getDetailResults()) {
-                            skuSimpleResults.add(detailResult.getSkuResult());
+//                            skuSimpleResults.add(detailResult.getSkuResult());
                         }
                         coding = pickListsRestult.getCoding();
                         break;

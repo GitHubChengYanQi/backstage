@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -746,10 +747,14 @@ public class ExcelAsync {
          * 无此库位 需要新建
          */
         StorehousePositions newPosition = new StorehousePositions();
-        newPosition.setName(position);
-        newPosition.setPid(pid);
-        newPosition.setStorehouseId(houseId);
-        positionsService.save(newPosition);
+        StorehousePositionsParam positionsParam = new StorehousePositionsParam();
+
+        positionsParam.setName(position);
+        positionsParam.setPid(pid);
+        positionsParam.setStorehouseId(houseId);
+
+        ToolUtil.copyProperties(positionsParam,newPosition);
+        positionsService.add(positionsParam);
         positions.add(newPosition);
         return newPosition;
     }

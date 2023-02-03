@@ -11,8 +11,8 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.BatchSkuParam;
+import cn.atsoft.dasheng.erp.model.params.SkuListParam;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
-import cn.atsoft.dasheng.erp.model.result.InstockLogDetailResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.pojo.SkuBind;
@@ -83,6 +83,9 @@ public class SkuController extends BaseController {
 
     @Autowired
     private InstockLogDetailService instockLogDetailService;
+
+    @Autowired
+    private SkuListService skuListService;
 
 
     /**
@@ -367,6 +370,19 @@ public class SkuController extends BaseController {
         //ServiceMapper中区别于普通list因为排序方式不相同
 
         return this.skuService.changePageBySpec(skuParam);
+    }
+
+    /**
+     * 查询列表
+     */
+    @ApiVersion("1.1")
+    @RequestMapping(value = "{v}/list", method = RequestMethod.POST)
+    @ApiOperation("查询")
+    public PageInfo list11(@RequestBody(required = false) SkuListParam skuListParam){
+        if (ToolUtil.isNotEmpty(skuListParam.getMinimumInventory()) && ToolUtil.isNotEmpty(skuListParam.getMaximumInventory()) && skuListParam.getMinimumInventory() >= skuListParam.getMaximumInventory()) {
+            throw new ServiceException(500,"输入的最小值应大于最大值");
+        }
+        return this.skuListService.listByKeyWord(skuListParam);
     }
 
     /**
