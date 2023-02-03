@@ -106,7 +106,7 @@ public class RestClassController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData detail(@RequestBody RestClassParam categoryParam) {
-        RestClass detail = this.restClassService.getById(categoryParam.getCategoryId());
+        RestClass detail = this.restClassService.getById(categoryParam.getClassId());
         RestClassResult result = new RestClassResult();
         List<RavAndRabByRestClass> categoryRequests = new ArrayList<>();
         List<RestAttributeParam> itemAttributeParamList = new ArrayList<>();
@@ -153,17 +153,6 @@ public class RestClassController extends BaseController {
         ToolUtil.copyProperties(detail, result);
         result.setRavAndRabByRestClass(categoryRequests);
         return ResponseData.success(result);
-    }
-
-    /**
-     * 批量添加
-     *
-     * @return
-     */
-    @RequestMapping(value = "/addList", method = RequestMethod.POST)
-    public ResponseData addList(@RequestBody RestClassParam restClassParam) {
-        this.restClassService.addList(restClassParam);
-        return ResponseData.success();
     }
 
     /**

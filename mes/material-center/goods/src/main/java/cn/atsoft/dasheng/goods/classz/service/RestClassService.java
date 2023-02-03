@@ -67,5 +67,4 @@ public interface RestClassService extends IService<RestClass> {
      */
      PageInfo<RestClassResult> findPageBySpec(RestClassParam param);
 
-    void addList(RestClassParam param);
 }

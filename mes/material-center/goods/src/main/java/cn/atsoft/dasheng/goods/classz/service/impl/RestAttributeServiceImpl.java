@@ -19,6 +19,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,11 +40,15 @@ public class RestAttributeServiceImpl extends ServiceImpl<RestAttributeMapper, R
 
     @Override
     public Long add(RestAttributeParam param) {
-        Integer count = this.query().eq("category_id", param.getClassId()).eq("attribute", param.getAttribute())
-                .in("display", 1)
-                .count();
-        if (count > 0) {
-            throw new ServiceException(500, "请不要重复添加属性");
+        RestAttribute restAttribute = this.getOne(new QueryWrapper<RestAttribute>() {
+            {
+                eq("category_id", param.getClassId());
+                eq("attribute", param.getAttribute());
+                in("display", 1);
+            }
+        });
+        if (ToolUtil.isNotEmpty(restAttribute)) {
+            return restAttribute.getAttributeId();
         }
         RestAttribute entity = getEntity(param);
         this.save(entity);

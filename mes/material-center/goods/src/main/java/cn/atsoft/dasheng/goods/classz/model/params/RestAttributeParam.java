@@ -38,6 +38,7 @@ public class RestAttributeParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("属性名")
     private String attribute;
 
+    @ApiModelProperty("属性下所有的值")
     private List<RestAttributeValuesParam> attributeValuesParams;
     /**
      * 创建者
