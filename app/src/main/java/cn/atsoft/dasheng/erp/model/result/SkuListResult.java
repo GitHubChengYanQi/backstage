@@ -1,9 +1,11 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.appBase.model.result.MediaResult;
 import io.swagger.models.auth.In;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class SkuListResult {
@@ -15,6 +17,9 @@ public class SkuListResult {
     private String skuName;
     //物料价格
     private double price;
+
+    List<MediaResult> imgResults;    //图片返回
+
 
     public double getPrice() {
         return price/100;
@@ -38,7 +43,7 @@ public class SkuListResult {
 
     private String categoryName;
 
-    private Long materialId;
+    private String materialId;
 
     private String materialName;
 

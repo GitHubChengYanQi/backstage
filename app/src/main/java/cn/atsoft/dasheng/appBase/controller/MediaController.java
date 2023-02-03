@@ -27,9 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -130,6 +128,32 @@ public class MediaController extends BaseController {
     public ResponseData getObject(@Param("mediaId") Long mediaId) {
         String url = mediaService.getMediaUrl(mediaId, 0L);
         return ResponseData.success(url);
+    }
+    @RequestMapping("/getMediaUrl")
+    @ApiOperation("获取浏览地址")
+    public ResponseData getMediaUrl(@Param("mediaId") Long mediaId,@Param("option") String option) {
+//        String url = mediaService.getMediaUrl(mediaId, 0L);
+        String url = mediaService.getMediaUrlAddUseData(mediaId, 0L, option);
+        return ResponseData.success(url);
+    }
+    @RequestMapping(value = "/getMediaUrls" , method = RequestMethod.POST)
+    @ApiOperation("获取浏览地址")
+    public ResponseData getMediaUrls(@RequestBody MediaParam param) {
+//        String url = mediaService.getMediaUrl(mediaId, 0L);
+        if (ToolUtil.isEmpty(param.getMediaIds())){
+            return ResponseData.success(new ArrayList<>());
+        }
+        List<MediaResult> results = new ArrayList<>();
+        for (Long mediaId : param.getMediaIds()) {
+            MediaResult mediaResult = new MediaResult();
+            mediaResult.setMediaId(mediaId);
+            mediaResult.setUrl(mediaService.getMediaUrlAddUseData(mediaId, 0L, null));
+            if (ToolUtil.isNotEmpty(param.getOption())) {
+                mediaResult.setThumbUrl(mediaService.getMediaUrlAddUseData(mediaId, 0L,param.getOption()));
+            }
+            results.add(mediaResult);
+        }
+        return ResponseData.success(results);
     }
 
     @RequestMapping("/getObjectMeta")

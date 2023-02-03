@@ -21,6 +21,7 @@ import cn.atsoft.dasheng.erp.service.SkuBrandBindService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -134,9 +135,8 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
 
     @Override
     public List<BrandResult> getBrandResults(List<Long> brandIds) {
-        List<BrandResult> brandResults = new ArrayList<>();
         if (ToolUtil.isEmpty(brandIds)) {
-            return brandResults;
+            return new ArrayList<>();
         }
         List<Brand> brands = this.query().in("brand_id", brandIds).eq("display", 1).list();
 
@@ -144,14 +144,10 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
 
 
         if (ToolUtil.isEmpty(brands)) {
-            return brandResults;
+            return new ArrayList<>();
         }
-        for (Brand brand : brands) {
-            BrandResult brandResult = new BrandResult();
-            ToolUtil.copyProperties(brand, brandResult);
-            brandResults.add(brandResult);
-        }
-        return brandResults;
+
+        return BeanUtil.copyToList(brands, BrandResult.class);
     }
 
     @Override

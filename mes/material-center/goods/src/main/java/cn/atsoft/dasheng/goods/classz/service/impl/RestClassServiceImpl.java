@@ -23,14 +23,17 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -43,85 +46,53 @@ import java.util.Map;
 @Service
 public class RestClassServiceImpl extends ServiceImpl<RestClassMapper, RestClass> implements RestClassService {
 
-    @Autowired
-    private RestAttributeService restAttributeService;
-    @Autowired
-    private RestAttributeValuesService restAttributeValuesService;
-
     @Override
     public Long add(RestClassParam param) {
-        Integer count = this.query().in("category_name", param.getCategoryName())
-                .in("display", 1)
-                .count();
-        if (count > 0) {
-            throw new ServiceException(500, "分类不可重复添加");
+        RestClass entity = this.getOne(new QueryWrapper<RestClass>() {{
+            eq("category_name", param.getName());
+            eq("display", 1);
+        }});
+        if (ToolUtil.isEmpty(entity)){
+            entity = getEntity(param);
+            this.save(entity);
         }
-        RestClass entity = getEntity(param);
-        this.save(entity);
-        // 更新当前节点，及下级
-
-        RestClass category = new RestClass();
-        Map<String, List<Long>> childrenMap = getChildrens(entity.getPid());
-        category.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
-        category.setChildren(JSON.toJSONString(childrenMap.get("children")));
-        QueryWrapper<RestClass> QueryWrapper = new QueryWrapper<>();
-        QueryWrapper.eq("category_id", entity.getPid());
-        this.update(category, QueryWrapper);
-
-        updateChildren(entity.getPid());
-
+        updateChildren(entity.getCategoryId());
         return entity.getCategoryId();
     }
+    public List<Long> getChildrens(Long id) {
 
-    /**
-     * 递归
-     */
-    public Map<String, List<Long>> getChildrens(Long id) {
+        List<RestClass> restClassList = this.query().like("pid", id).eq("display", 1).list();
 
-        List<Long> childrensSkuIds = new ArrayList<>();
-        Map<String, List<Long>> result = new HashMap<String, List<Long>>() {
-            {
-                put("children", new ArrayList<>());
-                put("childrens", new ArrayList<>());
-            }
-        };
-
-        List<Long> skuIds = new ArrayList<>();
-        RestClass category = this.query().eq("category_id", id).eq("display", 1).one();
-        if (ToolUtil.isNotEmpty(category)) {
-            List<RestClass> details = this.query().eq("pid", category.getCategoryId()).eq("display", 1).list();
-            for (RestClass detail : details) {
-                skuIds.add(detail.getCategoryId());
-                childrensSkuIds.add(detail.getCategoryId());
-                Map<String, List<Long>> childrenMap = this.getChildrens(detail.getCategoryId());
-                childrensSkuIds.addAll(childrenMap.get("childrens"));
-            }
-            result.put("children", skuIds);
-            result.put("childrens", childrensSkuIds);
+        List<Long> childrenList = new ArrayList<>();
+        for (RestClass restClass : restClassList) {
+            childrenList.add(restClass.getCategoryId());
+            childrenList.addAll(getChildrens(restClass.getCategoryId()));
         }
-        return result;
+        return childrenList;
     }
+
 
     /**
      * 更新包含它的
      */
     public void updateChildren(Long id) {
-        List<RestClass> categories = this.query().like("children", id).eq("display", 1).list();
-        for (RestClass category : categories) {
-            Map<String, List<Long>> childrenMap = getChildrens(id);
-            JSONArray childrensjsonArray = JSONUtil.parseArray(category.getChildrens());
-            List<Long> longs = JSONUtil.toList(childrensjsonArray, Long.class);
-            List<Long> list = childrenMap.get("childrens");
-            for (Long aLong : list) {
-                longs.add(aLong);
-            }
-            category.setChildrens(JSON.toJSONString(longs));
-            // update
-            QueryWrapper<RestClass> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("category_id", category.getCategoryId());
-            this.update(category, queryWrapper);
-            updateChildren(category.getCategoryId());
-        }
+        RestClass restClass = this.getById(id);
+        if(ToolUtil.isEmpty(restClass)) return;
+
+        List<RestClass> restClassList = this.query().like("pid", id).eq("display", 1).list();
+
+        List<Long> children = new ArrayList<>();
+        children.addAll(restClassList.stream().map(RestClass::getCategoryId).collect(Collectors.toList()));
+
+        List<Long> childrens = new ArrayList<Long>(){{
+            add(restClass.getCategoryId());
+        }};
+        childrens.addAll(getChildrens(id));
+
+        restClass.setChildren(StringUtils.join(children,","));
+        restClass.setChildrens(StringUtils.join(childrens,","));
+        this.updateById(restClass);
+        updateChildren(restClass.getPid());
     }
 
     @Override
@@ -130,7 +101,7 @@ public class RestClassServiceImpl extends ServiceImpl<RestClassMapper, RestClass
         RestClass category = new RestClass();
         category.setDisplay(0);
         QueryWrapper<RestClass> categoryQueryWrapper = new QueryWrapper<>();
-        categoryQueryWrapper.in("category_id", param.getCategoryId());
+        categoryQueryWrapper.in("category_id", param.getClassId());
         this.update(category, categoryQueryWrapper);
     }
 
@@ -139,16 +110,16 @@ public class RestClassServiceImpl extends ServiceImpl<RestClassMapper, RestClass
     public void update(RestClassParam param) {
         //如果设为顶级 修改所有当前节点的父级
         if (param.getPid() == 0) {
-            List<RestClass> categories = this.query().like("childrens", param.getCategoryId()).list();
+            List<RestClass> categories = this.query().like("childrens", param.getClassId()).list();
             for (RestClass category : categories) {
                 JSONArray jsonArray = JSONUtil.parseArray(category.getChildrens());
                 JSONArray childrenJson = JSONUtil.parseArray(category.getChildren());
                 List<Long> oldchildrenList = JSONUtil.toList(childrenJson, Long.class);
                 List<Long> newChildrenList = new ArrayList<>();
                 List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
-                longs.remove(param.getCategoryId());
+                longs.remove(param.getClassId());
                 for (Long aLong : oldchildrenList) {
-                    if (!aLong.equals(param.getCategoryId())) {
+                    if (!aLong.equals(param.getClassId())) {
                         newChildrenList.add(aLong);
                     }
                 }
@@ -160,7 +131,7 @@ public class RestClassServiceImpl extends ServiceImpl<RestClassMapper, RestClass
         }
         //防止循环添加
         if (ToolUtil.isNotEmpty(param.getPid())) {
-            List<RestClass> categories = this.query().in("category_id", param.getCategoryId()).eq("display", 1).list();
+            List<RestClass> categories = this.query().in("category_id", param.getClassId()).eq("display", 1).list();
             for (RestClass category : categories) {
                 JSONArray jsonArray = JSONUtil.parseArray(category.getChildrens());
                 List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
@@ -172,26 +143,13 @@ public class RestClassServiceImpl extends ServiceImpl<RestClassMapper, RestClass
             }
         }
 
-        RestClass category = this.getById(param.getCategoryId());
-        if (!category.getCategoryName().equals(param.getCategoryName())) {
-            Integer count = this.query().in("display", 1).in("category_name", param.getCategoryName()).count();
+        RestClass category = this.getById(param.getClassId());
+        if (!category.getCategoryName().equals(param.getName())) {
+            Integer count = this.query().in("display", 1).in("category_name", param.getClassId()).count();
             if (count > 0) {
                 throw new ServiceException(500, "名字已重复");
             }
         }
-
-        // 更新当前节点，及下级
-        RestClass newCategory = new RestClass();
-        Map<String, List<Long>> childrenMap = getChildrens(param.getPid());
-        List<Long> childrens = childrenMap.get("childrens");
-        childrens.add(param.getCategoryId());
-        newCategory.setChildrens(JSON.toJSONString(childrens));
-        List<Long> children = childrenMap.get("children");
-        children.add(param.getCategoryId());
-        newCategory.setChildren(JSON.toJSONString(children));
-        QueryWrapper<RestClass> QueryWrapper = new QueryWrapper<>();
-        QueryWrapper.eq("category_id", param.getPid());
-        this.update(newCategory, QueryWrapper);
 
         updateChildren(param.getPid());
 
@@ -220,7 +178,7 @@ public class RestClassServiceImpl extends ServiceImpl<RestClassMapper, RestClass
     }
 
     private Serializable getKey(RestClassParam param) {
-        return param.getCategoryId();
+        return param.getClassId();
     }
 
     private Page<RestClassResult> getPageContext() {
@@ -260,55 +218,5 @@ public class RestClassServiceImpl extends ServiceImpl<RestClassMapper, RestClass
         }
     }
 
-    /**
-     * 批量添加
-     *
-     * @param param
-     */
-    @Override
-    @Transactional
-    public void addList(RestClassParam param) {
-        if (ToolUtil.isNotEmpty(param.getCategoryId())) {
-            this.remove(new QueryWrapper<RestClass>() {{
-                eq("category_id", param.getCategoryId());
-            }});
 
-            List<RestAttribute> attributes = restAttributeService.query().eq("category_id", param.getCategoryId()).list();
-            if (attributes.size() > 0) {
-                restAttributeService.removeByIds(new ArrayList<Long>() {{
-                    for (RestAttribute attribute : attributes) {
-                        add(attribute.getAttributeId());
-                    }
-                }});
-                restAttributeValuesService.remove(new QueryWrapper<RestAttributeValues>() {{
-                    in("attribute_id", new ArrayList<Long>() {{
-                        for (RestAttribute attribute : attributes) {
-                            add(attribute.getAttributeId());
-                        }
-                    }});
-                }});
-            }
-
-
-        }
-        RestClass category = new RestClass();
-        ToolUtil.copyProperties(param, category);
-        this.save(category);
-
-        for (RestAttributeParam itemAttributeParam : param.getItemAttributeParams()) {
-            RestAttribute itemAttribute = new RestAttribute();
-            ToolUtil.copyProperties(itemAttributeParam, itemAttribute);
-            itemAttribute.setCategoryId(category.getCategoryId());
-            restAttributeService.save(itemAttribute);
-
-            for (RestAttributeValuesParam attributeValuesParam : itemAttributeParam.getAttributeValuesParams()) {
-                RestAttributeValues attributeValues = new RestAttributeValues();
-                ToolUtil.copyProperties(attributeValuesParam, attributeValues);
-                attributeValues.setAttributeId(itemAttribute.getAttributeId());
-                restAttributeValuesService.save(attributeValues);
-            }
-
-        }
-
-    }
 }

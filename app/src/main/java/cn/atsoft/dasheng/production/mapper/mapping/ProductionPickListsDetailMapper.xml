@@ -94,7 +94,7 @@
         <if test="paramCondition.pickListsId!=null">
             and a.pick_lists_id = #{paramCondition.pickListsId}
         </if>
-        and a.status = 0
+        and a.status != -1
         UNION
         select
         <include refid="left_join_stock_details"/>
@@ -120,7 +120,61 @@
         <if test="paramCondition.pickListsId!=null">
             and a.pick_lists_id = #{paramCondition.pickListsId}
         </if>
-        and a.status = 0
+        and a.status != -1
+    </select>
+    <select id="pickListsDetailList" resultType="cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult"
+            parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam">
+        select
+        <include refid="left_join_stock_details"/>
+        FROM
+        `daoxin_production_pick_lists_detail` a
+        LEFT JOIN daoxin_erp_stock_details b ON a.sku_id = b.sku_id
+        AND a.brand_id = b.brand_id
+        WHERE 1 = 1
+        <if test="paramCondition.storehousePositionsId!=null">
+            and(
+            b.storehouse_positions_id = #{paramCondition.storehousePositionsId}
+            <if test="paramCondition.storehousePositionsIds != null and paramCondition.storehousePositionsIds.size >0">
+                or b.storehouse_positions_id in
+                <foreach collection="paramCondition.storehousePositionsIds" index="index" item="state" separator=","
+                         close=")" open="(">
+                    #{state}
+                </foreach>
+
+            </if>
+            )
+            and b.display = 1 and b.stage = 1
+        </if>
+        <if test="paramCondition.pickListsId!=null">
+            and a.pick_lists_id = #{paramCondition.pickListsId}
+        </if>
+        and a.status != -1
+        UNION
+        select
+        <include refid="left_join_stock_details"/>
+        FROM
+        `daoxin_production_pick_lists_detail` a
+        LEFT JOIN daoxin_erp_stock_details b ON a.sku_id = b.sku_id
+        WHERE 1 = 1
+        <if test="paramCondition.storehousePositionsId!=null">
+            and (
+            b.storehouse_positions_id = #{paramCondition.storehousePositionsId}
+            <if test="paramCondition.storehousePositionsIds != null and paramCondition.storehousePositionsIds.size >0">
+                or b.storehouse_positions_id in
+                <foreach collection="paramCondition.storehousePositionsIds" index="index" item="state" separator=","
+                         close=")" open="(">
+                    #{state}
+                </foreach>
+
+            </if>
+            )
+            and b.display = 1 and b.stage = 1
+            and a.brand_id = 0
+        </if>
+        <if test="paramCondition.pickListsId!=null">
+            and a.pick_lists_id = #{paramCondition.pickListsId}
+        </if>
+        and a.status != -1
     </select>
     <select id="customList2" resultType="cn.atsoft.dasheng.production.model.result.ProductionPickListsDetailResult"
             parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam">
@@ -132,6 +186,13 @@
         <if test="paramCondition.status!=null">
             and a.status = #{paramCondition.status}
         </if>
+    </select>
+    <select id="getSkuIdsByPickLists" resultType="Long">
+        select
+        sku_id
+        FROM `daoxin_production_pick_lists_detail`
+        where 1=1 and display = 1 and pick_lists_id = #{pickListsId}
+        group by sku_id
     </select>
 
 
