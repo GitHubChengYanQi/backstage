@@ -29,8 +29,6 @@ public class BomsController {
     @Autowired
     private BomService bomService;
 
-    @Autowired
-    private SkuListService skuListService;
 
     /**
      * 新增接口

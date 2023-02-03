@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.erp.entity;
+package cn.atsoft.dasheng.bom.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -7,7 +7,7 @@ import java.util.Date;
 
 @Data
 @TableName("daoxin_erp_bom_detail")
-public class BomDetail {
+public class RestBomDetail {
     @TableId(value = "bom_detail_id", type = IdType.ID_WORKER)
     private Long bomDetailId;
 

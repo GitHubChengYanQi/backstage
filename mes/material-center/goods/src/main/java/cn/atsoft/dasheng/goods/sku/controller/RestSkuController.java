@@ -81,7 +81,7 @@ public class RestSkuController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody RestSkuParam restSkuParam) {
         restSkuParam.setAddMethod(1);
-        restSkuParam.setSkuId(null);
+//        restSkuParam.setSkuId(null);
         restSkuParam.setCreateTime(null);
         restSkuParam.setCreateUser(null);
         restSkuParam.setUpdateTime(null);

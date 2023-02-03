@@ -185,9 +185,9 @@ public class RestClassServiceImpl extends ServiceImpl<RestClassMapper, RestClass
         return PageFactory.defaultPage();
     }
 
-    private RestClass getOldEntity(RestClassParam param) {
-        return this.getById(getKey(param));
-    }
+//    private RestClass getOldEntity(RestClassParam param) {
+//        return this.getById(getKey(param));
+//    }
 
     private RestClass getEntity(RestClassParam param) {
         RestClass entity = new RestClass();

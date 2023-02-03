@@ -3,7 +3,7 @@ package cn.atsoft.dasheng.codeRule.controller;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.codeRule.entity.RestCodeRule;
-import cn.atsoft.dasheng.codeRule.model.RestCodings;
+import cn.atsoft.dasheng.codeRule.model.RestCode;
 import cn.atsoft.dasheng.codeRule.model.params.RestCodeRuleParam;
 import cn.atsoft.dasheng.codeRule.model.result.RestCodeRuleResult;
 import cn.atsoft.dasheng.codeRule.service.RestCodeRuleService;

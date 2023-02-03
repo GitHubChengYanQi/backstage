@@ -148,204 +148,204 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 
     @Transactional(propagation = Propagation.REQUIRED, timeout = 90)
 
-    @Override
+//    @Override
     public Map<String, RestSku> add(RestSkuParam param) {
-
-        RestSku result = new RestSku();
-        Long skuId = null;
-
-        /**
-         * type=1 是整机添加
-         */
-        if (param.getType() == 0) {
-            /**
-             * 查询分类  添加分类
-             */
-
-
-//            Long spuClassificationId = this.getOrSaveSpuClass(param);
-            RestCategory spuClassification = spuClassificationService.getById(param.getSpuClass());
-            Integer parentSpuClassifications = spuClassificationService.query().eq("pid", spuClassification.getSpuClassificationId()).eq("display", 1).count();
-            if (parentSpuClassifications > 0) {
-                throw new ServiceException(500, "物料必须添加在最底级分类中");
-            }
-            Long spuClassificationId = spuClassification.getSpuClassificationId();
-            /**
-             * sku名称（skuName）加型号(spuName)判断防止重复
-             */
-
-            RestClass category = this.getOrSaveCategory(param);
-            Long categoryId = category.getCategoryId();
-            RestSpu spu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
-            //同分类，同产品下不可有同名物料
-//            Dict md5FlagDict = dictService.query().eq("code", "skuMd5").one();
-//            boolean md5Flag = ToolUtil.isNotEmpty(md5FlagDict) && md5FlagDict.getStatus().equals("ENABLE");
 //
-//            RestSku sku = this.throwDuplicate(param, spu.getSpuId());
-//            if (ToolUtil.isNotEmpty(sku) && md5Flag) {
-//                {
-//                    return new HashMap<String, RestSku>() {{
-//                        put("error", sku);
-//                    }};
-//                }
+//        RestSku result = new RestSku();
+//        Long skuId = null;
+//
+//        /**
+//         * type=1 是整机添加
+//         */
+//        if (param.getType() == 0) {
+//            /**
+//             * 查询分类  添加分类
+//             */
+//
+//
+////            Long spuClassificationId = this.getOrSaveSpuClass(param);
+//            RestCategory spuClassification = spuClassificationService.getById(param.getSpuClass());
+//            Integer parentSpuClassifications = spuClassificationService.query().eq("pid", spuClassification.getSpuClassificationId()).eq("display", 1).count();
+//            if (parentSpuClassifications > 0) {
+//                throw new ServiceException(500, "物料必须添加在最底级分类中");
 //            }
-
-
-            //生成编码
-            if (ToolUtil.isEmpty(param.getStandard())) {
-                RestCodeRule codingRules = codingRulesService.query().eq("module", "0").eq("state", 1).one();
-                if (ToolUtil.isNotEmpty(codingRules)) {
-                    String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId(), spu.getSpuId());
-
-                    RestCategory classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
-                    if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
-                        String replace = "";
-                        if (ToolUtil.isNotEmpty(classification.getCodingClass())) {
-                            replace = backCoding.replace("${skuClass}", classification.getCodingClass());
-                        } else {
-                            replace = backCoding.replace("${skuClass}", "");
-                        }
-
-                        param.setStandard(replace);
-                        param.setCoding(replace);
-
-                    }
-                } else {
-                    throw new ServiceException(500, "当前无此规则");
-                }
-            }
-            /**
-             * 判断成品码是否重复
-             */
-            int count = skuService.count(new QueryWrapper<RestSku>() {{
-                eq("standard", param.getStandard());
-                eq("display", 1);
-            }});
-            if (count > 0) {
-                throw new ServiceException(500, "编码/成品码重复");
-            }
-
-
-            /**
-             * 查询产品，添加产品 在上方spu查询
-             */
-            Long spuId = spu.getSpuId();
-
-            /**
-             * 做匹配保存 属性属性值方法
-             *
-             */
-//            List<RestAttributeValues> list = ToolUtil.isEmpty(param.getSku()) ? new ArrayList<>() : this.addAttributeAndValue(param.getSku(), categoryId);
-
-            RestSku entity = getEntity(param);
+//            Long spuClassificationId = spuClassification.getSpuClassificationId();
+//            /**
+//             * sku名称（skuName）加型号(spuName)判断防止重复
+//             */
 //
-//            list.sort(Comparator.comparing(RestAttributeValues::getAttributeId));
-//            String json = JSON.toJSONString(list);
+//            RestClass category = this.getOrSaveCategory(param);
+//            Long categoryId = category.getCategoryId();
+//            RestSpu spu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
+//            //同分类，同产品下不可有同名物料
+////            Dict md5FlagDict = dictService.query().eq("code", "skuMd5").one();
+////            boolean md5Flag = ToolUtil.isNotEmpty(md5FlagDict) && md5FlagDict.getStatus().equals("ENABLE");
+////
+////            RestSku sku = this.throwDuplicate(param, spu.getSpuId());
+////            if (ToolUtil.isNotEmpty(sku) && md5Flag) {
+////                {
+////                    return new HashMap<String, RestSku>() {{
+////                        put("error", sku);
+////                    }};
+////                }
+////            }
 //
-//            entity.setSpuId(spuId);
-//            entity.setSkuValue(json);
 //
-//            String md5 = SecureUtil.md5(entity.getSkuValue() + entity.getSpuId().toString() + entity.getSkuName() + spuClassificationId);
+//            //生成编码
+//            if (ToolUtil.isEmpty(param.getStandard())) {
+//                RestCodeRule codingRules = codingRulesService.query().eq("module", "0").eq("state", 1).one();
+//                if (ToolUtil.isNotEmpty(codingRules)) {
+//                    String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId(), spu.getSpuId());
 //
-//            entity.setSkuValueMd5(md5);
-//            if (md5Flag) {
-//                Integer skuCount = skuService.lambdaQuery().eq(RestSku::getSkuValueMd5, md5).and(i -> i.eq(RestSku::getDisplay, 1).ne(RestSku::getSkuId, entity.getSkuId())).count();
-//                if (skuCount > 0) {
-//                    throw new ServiceException(500, "该物料已经存在");
-//                }
-//            }
-            this.save(entity);
-            skuId = entity.getSkuId();
-            ToolUtil.copyProperties(entity, result);
-            /**
-             * 绑定品牌（多个）
-             */
-            if (ToolUtil.isNotEmpty(param.getBrandIds())) {
-                skuBrandBindService.addBatch(new RestSkuBrandBindParam() {{
-                    setBrandIds(param.getBrandIds());
-                    setSkuId(entity.getSkuId());
-                }});
-            }
-
-        } else if (param.getType() == 1) {
-            Long spuId = param.getSpu().getSpuId();
-            if (ToolUtil.isEmpty(spuId)) {
-                spuId = spuService.lambdaQuery().eq(RestSpu::getName, param.getSpu().getName()).and(i -> i.eq(RestSpu::getDisplay, 1)).one().getSpuId();
-            }
-
-            if (spuId == null) {
-                RestSpuParam spu = new RestSpuParam();
-                spu.setName(param.getSpu().getName());
-                spu.setSpuClassificationId(param.getSpuClassificationId());
-                spu.setIsHidden(false);
-                spu.setType(0);
-                spuId = spuService.add(spu);
-            } else {
-                param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(RestAttributes::getAttributeId));
-                List<RestAttributeValues> list = new ArrayList<>();
-                for (RestAttributes spuRequest : param.getSpuAttributes().getSpuRequests()) {
-                    RestAttributeValues attributeValueResult = new RestAttributeValues();
-                    attributeValueResult.setAttributeId(Long.valueOf(spuRequest.getAttributeId()));
-                    for (RestValues attributeValue : spuRequest.getAttributeValues()) {
-                        attributeValueResult.setAttributeValuesId(Long.valueOf(attributeValue.getAttributeValuesId()));
-                    }
-                    list.add(attributeValueResult);
-                }
-                RestSku entity = getEntity(param);
-                entity.setSpuId(spuId);
-                String json = JSON.toJSONString(list);
-                entity.setSkuValue(json);
-//                entity.setSkuValue(spuId + "," + json);
-//                String md5 = SecureUtil.md5(entity.getSkuValue() + entity.getSpuId().toString() + entity.getSkuName() + param.getSpuClassificationId());
-//                entity.setSkuValueMd5(md5);
-//                Dict md5FlagDict = dictService.query().eq("code", "skuMd5").one();
-//                boolean md5Flag = ToolUtil.isNotEmpty(md5FlagDict) && md5FlagDict.getStatus().equals("ENABLE");
-//                if (md5Flag) {
-//                    Integer skuCount = skuService.lambdaQuery().eq(RestSku::getSkuValueMd5, md5).and(i -> i.eq(RestSku::getDisplay, 1).ne(RestSku::getSkuId, entity.getSkuId())).count();
-//                    if (skuCount > 0) {
-//                        throw new ServiceException(500, "该物料已经存在");
+//                    RestCategory classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
+//                    if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
+//                        String replace = "";
+//                        if (ToolUtil.isNotEmpty(classification.getCodingClass())) {
+//                            replace = backCoding.replace("${skuClass}", classification.getCodingClass());
+//                        } else {
+//                            replace = backCoding.replace("${skuClass}", "");
+//                        }
+//
+//                        param.setStandard(replace);
+//                        param.setCoding(replace);
+//
 //                    }
+//                } else {
+//                    throw new ServiceException(500, "当前无此规则");
 //                }
-                /**
-                 * //原 SKU防重复判断
-                 *
-                 *
-                 *  ↓为新sku防止重复判断  以名称加型号 做数据库比对判断
-                 */
-//                this.save(entity);
-//                if (ToolUtil.isNotEmpty(param.getMaintenancePeriod())) {
-//                    MaintenanceCycle maintenanceCycle = new MaintenanceCycle();
-//                    maintenanceCycle.setSkuId(entity.getSkuId());
-//                    maintenanceCycle.setMaintenancePeriod(param.getMaintenancePeriod());
-//                    maintenanceCycleService.save(maintenanceCycle);
-//                }
-//                skuId = entity.getSkuId();
-//                ToolUtil.copyProperties(entity, result);
-//                /**
-//                 * 绑定品牌（多个）
-//                 */
-                if (ToolUtil.isNotEmpty(param.getBrandIds())) {
-                    skuBrandBindService.addBatch(new RestSkuBrandBindParam() {{
-                        setBrandIds(param.getBrandIds());
-                        setSkuId(entity.getSkuId());
-                    }});
-                }
 //            }
-
-            }
-//        if (ToolUtil.isNotEmpty(param.getOldSkuId())) {
-//            ActivitiProcess activitiProcess = processService.query().eq("form_id", param.getOldSkuId()).eq("type", "ship").eq("display", 1).one();
-//            if (ToolUtil.isNotEmpty(activitiProcess)) {
-//                copyProcessRoute(param.getOldSkuId(), skuId);
+//            /**
+//             * 判断成品码是否重复
+//             */
+//            int count = skuService.count(new QueryWrapper<RestSku>() {{
+//                eq("standard", param.getStandard());
+//                eq("display", 1);
+//            }});
+//            if (count > 0) {
+//                throw new ServiceException(500, "编码/成品码重复");
+//            }
+//
+//
+//            /**
+//             * 查询产品，添加产品 在上方spu查询
+//             */
+//            Long spuId = spu.getSpuId();
+//
+//            /**
+//             * 做匹配保存 属性属性值方法
+//             *
+//             */
+////            List<RestAttributeValues> list = ToolUtil.isEmpty(param.getSku()) ? new ArrayList<>() : this.addAttributeAndValue(param.getSku(), categoryId);
+//
+//            RestSku entity = getEntity(param);
+////
+////            list.sort(Comparator.comparing(RestAttributeValues::getAttributeId));
+////            String json = JSON.toJSONString(list);
+////
+////            entity.setSpuId(spuId);
+////            entity.setSkuValue(json);
+////
+////            String md5 = SecureUtil.md5(entity.getSkuValue() + entity.getSpuId().toString() + entity.getSkuName() + spuClassificationId);
+////
+////            entity.setSkuValueMd5(md5);
+////            if (md5Flag) {
+////                Integer skuCount = skuService.lambdaQuery().eq(RestSku::getSkuValueMd5, md5).and(i -> i.eq(RestSku::getDisplay, 1).ne(RestSku::getSkuId, entity.getSkuId())).count();
+////                if (skuCount > 0) {
+////                    throw new ServiceException(500, "该物料已经存在");
+////                }
+////            }
+//            this.save(entity);
+//            skuId = entity.getSkuId();
+//            ToolUtil.copyProperties(entity, result);
+//            /**
+//             * 绑定品牌（多个）
+//             */
+//            if (ToolUtil.isNotEmpty(param.getBrandIds())) {
+//                skuBrandBindService.addBatch(new RestSkuBrandBindParam() {{
+//                    setBrandIds(param.getBrandIds());
+//                    setSkuId(entity.getSkuId());
+//                }});
+//            }
+//
+//        } else if (param.getType() == 1) {
+//            Long spuId = param.getSpu().getSpuId();
+//            if (ToolUtil.isEmpty(spuId)) {
+//                spuId = spuService.lambdaQuery().eq(RestSpu::getName, param.getSpu().getName()).and(i -> i.eq(RestSpu::getDisplay, 1)).one().getSpuId();
+//            }
+//
+//            if (spuId == null) {
+//                RestSpuParam spu = new RestSpuParam();
+//                spu.setName(param.getSpu().getName());
+//                spu.setSpuClassificationId(param.getSpuClassificationId());
+//                spu.setIsHidden(false);
+//                spu.setType(0);
+//                spuId = spuService.add(spu);
 //            } else {
-//                copySkuBomById(param.getOldSkuId(), skuId);
+//                param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(RestAttributes::getAttributeId));
+//                List<RestAttributeValues> list = new ArrayList<>();
+//                for (RestAttributes spuRequest : param.getSpuAttributes().getSpuRequests()) {
+//                    RestAttributeValues attributeValueResult = new RestAttributeValues();
+//                    attributeValueResult.setAttributeId(Long.valueOf(spuRequest.getAttributeId()));
+//                    for (RestValues attributeValue : spuRequest.getAttributeValues()) {
+//                        attributeValueResult.setAttributeValuesId(Long.valueOf(attributeValue.getAttributeValuesId()));
+//                    }
+//                    list.add(attributeValueResult);
+//                }
+//                RestSku entity = getEntity(param);
+//                entity.setSpuId(spuId);
+//                String json = JSON.toJSONString(list);
+//                entity.setSkuValue(json);
+////                entity.setSkuValue(spuId + "," + json);
+////                String md5 = SecureUtil.md5(entity.getSkuValue() + entity.getSpuId().toString() + entity.getSkuName() + param.getSpuClassificationId());
+////                entity.setSkuValueMd5(md5);
+////                Dict md5FlagDict = dictService.query().eq("code", "skuMd5").one();
+////                boolean md5Flag = ToolUtil.isNotEmpty(md5FlagDict) && md5FlagDict.getStatus().equals("ENABLE");
+////                if (md5Flag) {
+////                    Integer skuCount = skuService.lambdaQuery().eq(RestSku::getSkuValueMd5, md5).and(i -> i.eq(RestSku::getDisplay, 1).ne(RestSku::getSkuId, entity.getSkuId())).count();
+////                    if (skuCount > 0) {
+////                        throw new ServiceException(500, "该物料已经存在");
+////                    }
+////                }
+//                /**
+//                 * //原 SKU防重复判断
+//                 *
+//                 *
+//                 *  ↓为新sku防止重复判断  以名称加型号 做数据库比对判断
+//                 */
+////                this.save(entity);
+////                if (ToolUtil.isNotEmpty(param.getMaintenancePeriod())) {
+////                    MaintenanceCycle maintenanceCycle = new MaintenanceCycle();
+////                    maintenanceCycle.setSkuId(entity.getSkuId());
+////                    maintenanceCycle.setMaintenancePeriod(param.getMaintenancePeriod());
+////                    maintenanceCycleService.save(maintenanceCycle);
+////                }
+////                skuId = entity.getSkuId();
+////                ToolUtil.copyProperties(entity, result);
+////                /**
+////                 * 绑定品牌（多个）
+////                 */
+//                if (ToolUtil.isNotEmpty(param.getBrandIds())) {
+//                    skuBrandBindService.addBatch(new RestSkuBrandBindParam() {{
+//                        setBrandIds(param.getBrandIds());
+//                        setSkuId(entity.getSkuId());
+//                    }});
+//                }
+////            }
+//
 //            }
+////        if (ToolUtil.isNotEmpty(param.getOldSkuId())) {
+////            ActivitiProcess activitiProcess = processService.query().eq("form_id", param.getOldSkuId()).eq("type", "ship").eq("display", 1).one();
+////            if (ToolUtil.isNotEmpty(activitiProcess)) {
+////                copyProcessRoute(param.getOldSkuId(), skuId);
+////            } else {
+////                copySkuBomById(param.getOldSkuId(), skuId);
+////            }
+////        }
 //        }
-        }
-        return new HashMap<String, RestSku>() {{
-            put("success", result);
-        }};
-    }
+//        return new HashMap<String, RestSku>() {{
+//            put("success", result);
+//        }};
+//    }
 
 //    private void copySkuBomById(Long oldSkuId, Long newSkuId) {
 //        Parts parts = partsService.query().eq("sku_id", oldSkuId).eq("display", 1).eq("status", 99).one();
@@ -1516,6 +1516,8 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 //    }
 //
 //
+        return null;
+    }
         @Override
         public void format (List < RestSkuResult > param) {
 
@@ -1769,6 +1771,12 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
     public List<RestSku> skuResultBySpuId(Long spuId) {
         List<RestSku> results = this.baseMapper.restSkuResultBySpuId(spuId);
         return results;
+    }
+
+    @Override
+    public List<RestSku> getByIds(List<Long> skuIds) {
+        skuIds.add(0L);
+        return this.baseMapper.getByIds(skuIds);
     }
 
     //
@@ -2166,69 +2174,69 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 //        return skuMap;
 //    }
 //
-        private RestClass getOrSaveCategory (RestSkuParam param){
-            RestClass category = new RestClass();
-            RestClass entity = new RestClass();
-
-            if (ToolUtil.isNotEmpty(param.getSpu().getCategoryId())) {
-                category = categoryService.getById(param.getSpu().getCategoryId());
-            } else {
-                if (ToolUtil.isEmpty(param.getSpu().getName())) {
-                    throw new ServiceException(500, "请传入产品名称");
-                }
-                String trim = param.getSpu().getName().trim(); //去空格
-                QueryWrapper<RestClass> queryWrapper = new QueryWrapper<>();
-                queryWrapper.last("limit 1");
-                queryWrapper.eq("category_name", trim);
-                queryWrapper.eq("display", 1);
-                category = categoryService.getOne(queryWrapper);
-            }
-
-            if (ToolUtil.isEmpty(category)) {
-                entity = new RestClass();
-                entity.setCategoryName(param.getSpu().getName().replace(" ", ""));
-                categoryService.save(entity);
-            } else {
-                ToolUtil.copyProperties(category, entity);
-            }
-            return entity;
-
-        }
+//        private RestClass getOrSaveCategory (RestSkuParam param){
+//            RestClass category = new RestClass();
+//            RestClass entity = new RestClass();
 //
-        private RestSpu getOrSaveSpu (RestSkuParam param, Long spuClassificationId, Long categoryId){
-            RestSpu spu = new RestSpu();
-
-            if (ToolUtil.isNotEmpty(param.getSpu().getSpuId())) {
-                spu = spuService.lambdaQuery().eq(RestSpu::getSpuId, param.getSpu().getSpuId()).and(i -> i.eq(RestSpu::getSpuClassificationId, spuClassificationId)).and(i -> i.eq(RestSpu::getDisplay, 1)).one();
-            } else if (ToolUtil.isNotEmpty(param.getSpu().getName())) {
-                spu = spuService.lambdaQuery().eq(RestSpu::getName, param.getSpu().getName()).and(i -> i.eq(RestSpu::getSpuClassificationId, spuClassificationId)).and(i -> i.eq(RestSpu::getDisplay, 1)).one();
-            }
-            RestSpu spuEntity = new RestSpu();
-
-            if (ToolUtil.isNotEmpty(spu)) {
-                if (ToolUtil.isNotEmpty(param.getSpu().getCoding())) {
-                    spu.setCoding(param.getSpu().getCoding());
-                }
-                ToolUtil.copyProperties(spu, spuEntity);
-                spuEntity.setSpuClassificationId(spuClassificationId);
-                spuEntity.setUnitId(param.getUnitId());
-                spuService.updateById(spuEntity);
-                return spuEntity;
-
-            } else {
-                if (ToolUtil.isNotEmpty(param.getSpu().getCoding())) {
-                    spuEntity.setCoding(param.getSpu().getCoding());
-                }
-                spuEntity.setSpuClassificationId(spuClassificationId);
-                spuEntity.setUnitId(param.getUnitId());
-                spuEntity.setName(param.getSpu().getName());
-                spuEntity.setSpuClassificationId(spuClassificationId);
-                spuEntity.setCategoryId(categoryId);
-                spuEntity.setType(0);
-                spuService.save(spuEntity);
-            }
-            return spuEntity;
-        }
+//            if (ToolUtil.isNotEmpty(param.getSpu().getCategoryId())) {
+//                category = categoryService.getById(param.getSpu().getCategoryId());
+//            } else {
+//                if (ToolUtil.isEmpty(param.getSpu().getName())) {
+//                    throw new ServiceException(500, "请传入产品名称");
+//                }
+//                String trim = param.getSpu().getName().trim(); //去空格
+//                QueryWrapper<RestClass> queryWrapper = new QueryWrapper<>();
+//                queryWrapper.last("limit 1");
+//                queryWrapper.eq("category_name", trim);
+//                queryWrapper.eq("display", 1);
+//                category = categoryService.getOne(queryWrapper);
+//            }
+//
+//            if (ToolUtil.isEmpty(category)) {
+//                entity = new RestClass();
+//                entity.setCategoryName(param.getSpu().getName().replace(" ", ""));
+//                categoryService.save(entity);
+//            } else {
+//                ToolUtil.copyProperties(category, entity);
+//            }
+//            return entity;
+//
+//        }
+//
+//        private RestSpu getOrSaveSpu (RestSkuParam param, Long spuClassificationId, Long categoryId){
+//            RestSpu spu = new RestSpu();
+//
+//            if (ToolUtil.isNotEmpty(param.getSpu().getSpuId())) {
+//                spu = spuService.lambdaQuery().eq(RestSpu::getSpuId, param.getSpu().getSpuId()).and(i -> i.eq(RestSpu::getSpuClassificationId, spuClassificationId)).and(i -> i.eq(RestSpu::getDisplay, 1)).one();
+//            } else if (ToolUtil.isNotEmpty(param.getSpu().getName())) {
+//                spu = spuService.lambdaQuery().eq(RestSpu::getName, param.getSpu().getName()).and(i -> i.eq(RestSpu::getSpuClassificationId, spuClassificationId)).and(i -> i.eq(RestSpu::getDisplay, 1)).one();
+//            }
+//            RestSpu spuEntity = new RestSpu();
+//
+//            if (ToolUtil.isNotEmpty(spu)) {
+//                if (ToolUtil.isNotEmpty(param.getSpu().getCoding())) {
+//                    spu.setCoding(param.getSpu().getCoding());
+//                }
+//                ToolUtil.copyProperties(spu, spuEntity);
+//                spuEntity.setSpuClassificationId(spuClassificationId);
+//                spuEntity.setUnitId(param.getUnitId());
+//                spuService.updateById(spuEntity);
+//                return spuEntity;
+//
+//            } else {
+//                if (ToolUtil.isNotEmpty(param.getSpu().getCoding())) {
+//                    spuEntity.setCoding(param.getSpu().getCoding());
+//                }
+//                spuEntity.setSpuClassificationId(spuClassificationId);
+//                spuEntity.setUnitId(param.getUnitId());
+//                spuEntity.setName(param.getSpu().getName());
+//                spuEntity.setSpuClassificationId(spuClassificationId);
+//                spuEntity.setCategoryId(categoryId);
+//                spuEntity.setType(0);
+//                spuService.save(spuEntity);
+//            }
+//            return spuEntity;
+//        }
 
         /**
          * 查询产品 新建或返回已有产品id
@@ -2236,29 +2244,29 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
          * @param param
          * @return
          */
-        private Long getOrSaveSpuClass (RestSkuParam param){
-            Long spuClassificationId = 0L;
-            RestCategory spuClassification = new RestCategory();
-
-            if (ToolUtil.isNotEmpty(param.getSpuClassification().getSpuClassificationId())) {
-                spuClassification = spuClassificationService.lambdaQuery().eq(RestCategory::getSpuClassificationId, param.getSpuClassification().getSpuClassificationId()).and(i -> i.eq(RestCategory::getDisplay, 1)).and(i -> i.eq(RestCategory::getType, 2)).one();
-            } else {
-                spuClassification = spuClassificationService.lambdaQuery().eq(RestCategory::getName, param.getSpuClassification().getName()).and(i -> i.eq(RestCategory::getDisplay, 1)).and(i -> i.eq(RestCategory::getType, 2)).one();
-            }
-
-            if (ToolUtil.isEmpty(spuClassification)) {
-                RestCategory spuClassificationEntity = new RestCategory();
-                spuClassificationEntity.setName(param.getSpuClassification().getName());
-                spuClassificationEntity.setType(1L);
-                spuClassificationEntity.setPid(param.getSpuClass());
-                spuClassificationService.save(spuClassificationEntity);
-                spuClassificationId = spuClassificationEntity.getSpuClassificationId();
-            } else {
-                spuClassificationId = spuClassification.getSpuClassificationId();
-            }
-            param.setSpuClass(spuClassificationId);
-            return spuClassificationId;
-        }
+//        private Long getOrSaveSpuClass (RestSkuParam param){
+//            Long spuClassificationId = 0L;
+//            RestCategory spuClassification = new RestCategory();
+//
+//            if (ToolUtil.isNotEmpty(param.getSpuClassification().getSpuClassificationId())) {
+//                spuClassification = spuClassificationService.lambdaQuery().eq(RestCategory::getSpuClassificationId, param.getSpuClassification().getSpuClassificationId()).and(i -> i.eq(RestCategory::getDisplay, 1)).and(i -> i.eq(RestCategory::getType, 2)).one();
+//            } else {
+//                spuClassification = spuClassificationService.lambdaQuery().eq(RestCategory::getName, param.getSpuClassification().getName()).and(i -> i.eq(RestCategory::getDisplay, 1)).and(i -> i.eq(RestCategory::getType, 2)).one();
+//            }
+//
+//            if (ToolUtil.isEmpty(spuClassification)) {
+//                RestCategory spuClassificationEntity = new RestCategory();
+//                spuClassificationEntity.setName(param.getSpuClassification().getName());
+//                spuClassificationEntity.setType(1L);
+//                spuClassificationEntity.setPid(param.getSpuClass());
+//                spuClassificationService.save(spuClassificationEntity);
+//                spuClassificationId = spuClassificationEntity.getSpuClassificationId();
+//            } else {
+//                spuClassificationId = spuClassification.getSpuClassificationId();
+//            }
+//            param.setSpuClass(spuClassificationId);
+//            return spuClassificationId;
+//        }
 //    @Override
 //    public RestSkuResult getDetail(Long skuId) {
 //
@@ -2326,13 +2334,13 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 //    }
 
 
-        private RestSku throwDuplicate (RestSkuParam param, Long spuId){
-            List<RestSku> skus = this.query().eq("sku_name", param.getSkuName()).list();
-            for (RestSku sku : skus) {
-                if (sku.getSpuId().equals(spuId)) {
-                    return sku;
-                }
-            }
-            return null;
-        }
+//        private RestSku throwDuplicate (RestSkuParam param, Long spuId){
+//            List<RestSku> skus = this.query().eq("sku_name", param.getSkuName()).list();
+//            for (RestSku sku : skus) {
+//                if (sku.getSpuId().equals(spuId)) {
+//                    return sku;
+//                }
+//            }
+//            return null;
+//        }
     }

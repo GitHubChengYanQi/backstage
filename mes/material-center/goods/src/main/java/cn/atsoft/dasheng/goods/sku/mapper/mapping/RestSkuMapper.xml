@@ -636,7 +636,7 @@ type
 <!--    </select>           -->
     <select id="restSkuResultBySpuId" parameterType="Long" resultType="cn.atsoft.dasheng.goods.sku.entity.RestSku">
         SELECT
-            *
+        <include refid="Base_Column_List"/>
         FROM
             goods_sku
         WHERE
@@ -644,5 +644,17 @@ type
           <if test="spuId != null">
               AND spu_id = #{spuId}
           </if>
+    </select>
+    <select id="getByIds" resultType="cn.atsoft.dasheng.goods.sku.entity.RestSku">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+            goods_sku
+        WHERE 1 = 1
+                and sku_id in (
+                    <foreach collection="skuIds" index="index" item="skuIds" separator=",">
+                        #{skuIds}
+                    </foreach>
+                )
     </select>
 </mapper>
