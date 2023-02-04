@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.appBase.model.result.MediaResult;
+import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import io.swagger.models.auth.In;
 import lombok.Data;
 
@@ -18,7 +19,9 @@ public class SkuListResult {
     //物料价格
     private double price;
 
-    List<MediaResult> imgResults;    //图片返回
+    List<MediaResult> imgResults;
+    //图片返回
+    private List<SkuJson> skuJsons;
 
 
     public double getPrice() {

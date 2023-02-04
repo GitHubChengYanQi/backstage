@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.goods.classz.service;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.goods.classz.entity.RestAttribute;
 import cn.atsoft.dasheng.goods.classz.model.params.RestAttributeParam;
+import cn.atsoft.dasheng.goods.classz.model.result.RestAttributeAddResult;
 import cn.atsoft.dasheng.goods.classz.model.result.RestAttributeResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -25,12 +26,13 @@ public interface RestAttributeService extends IService<RestAttribute> {
      * @author song
      * @Date 2021-10-18
      */
-    Long add(RestAttributeParam param);
+    RestAttributeAddResult add(RestAttributeParam param);
 
     /**
      * 删除
      *
-     * @author song
+     * @author
+     *
      * @Date 2021-10-18
      */
     void delete(RestAttributeParam param);

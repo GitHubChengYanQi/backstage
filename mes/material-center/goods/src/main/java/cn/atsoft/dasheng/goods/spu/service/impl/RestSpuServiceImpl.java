@@ -87,16 +87,23 @@ public class RestSpuServiceImpl extends ServiceImpl<RestSpuMapper, RestSpu> impl
     @Transactional
     @Override
     public Long add(RestSpuParam param) {
+        RestSpu entity =new RestSpu();
 
+        if(ToolUtil.isNotEmpty(param.getSpuId())){
+            entity = this.getById(param.getSpuId());
 
-        RestSpu entity = getEntity(param);
-        //查询判断是否有相同名称spu
-        Integer count = this.query().eq("name", param.getName()).eq("display", 1).count();
-        if (count > 0) {
-            throw new ServiceException(500, "产品名称重复,请更换");
         }
-        this.save(entity);
-        List<List<String>> result = new ArrayList<List<String>>();
+
+        if (ToolUtil.isEmpty(entity.getSpuId())){
+            //查询判断是否有相同名称spu
+            entity = this.query().eq("name", param.getName()).eq("display", 1).one();
+            if (ToolUtil.isEmpty(entity)) {
+                entity = getEntity(param);
+                this.save(entity);
+            }
+
+        }
+
         return entity.getSpuId();
 
 

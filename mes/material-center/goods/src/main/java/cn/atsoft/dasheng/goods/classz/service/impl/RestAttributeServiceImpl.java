@@ -5,10 +5,14 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.goods.classz.entity.RestAttribute;
+import cn.atsoft.dasheng.goods.classz.entity.RestAttributeValues;
 import cn.atsoft.dasheng.goods.classz.mapper.RestAttributeMapper;
 import cn.atsoft.dasheng.goods.classz.model.params.RestAttributeParam;
+import cn.atsoft.dasheng.goods.classz.model.params.RestAttributeValuesParam;
+import cn.atsoft.dasheng.goods.classz.model.result.RestAttributeAddResult;
 import cn.atsoft.dasheng.goods.classz.model.result.RestAttributeResult;
 import cn.atsoft.dasheng.goods.classz.service.RestAttributeService;
+import cn.atsoft.dasheng.goods.classz.service.RestAttributeValuesService;
 import cn.atsoft.dasheng.goods.spu.entity.RestSpu;
 import cn.atsoft.dasheng.goods.spu.model.result.RestSpuResult;
 import cn.atsoft.dasheng.goods.spu.service.RestSpuService;
@@ -37,22 +41,42 @@ public class RestAttributeServiceImpl extends ServiceImpl<RestAttributeMapper, R
 
     @Autowired
     private RestSpuService spuService;
+    @Autowired
+    private RestAttributeValuesService attributeValuesService;
 
     @Override
-    public Long add(RestAttributeParam param) {
-        RestAttribute restAttribute = this.getOne(new QueryWrapper<RestAttribute>() {
+    public RestAttributeAddResult add(RestAttributeParam param) {
+        RestAttribute entity = this.getOne(new QueryWrapper<RestAttribute>() {
             {
                 eq("category_id", param.getClassId());
                 eq("attribute", param.getAttribute());
                 in("display", 1);
             }
         });
-        if (ToolUtil.isNotEmpty(restAttribute)) {
-            return restAttribute.getAttributeId();
+        if (ToolUtil.isEmpty(entity)) {
+            entity = getEntity(param);
+            this.save(entity);
         }
-        RestAttribute entity = getEntity(param);
-        this.save(entity);
-        return entity.getAttributeId();
+        RestAttribute finalEntity = entity;
+        /**
+         * 将保存的属性id与属性值id集合返回
+         */
+        List<RestAttributeValues> resultValue = new ArrayList<>();
+        for (RestAttributeValuesParam attributeValuesParam : param.getAttributeValuesParams()) {
+            param.setAttributeId(entity.getAttributeId());
+            Long attributeValueId = attributeValuesService.add(attributeValuesParam);
+
+            resultValue.add(new RestAttributeValues(){{
+                setAttributeId(finalEntity.getAttributeId());
+                setAttributeValuesId(attributeValueId);
+            }});
+        }
+
+
+        return new RestAttributeAddResult(){{
+            setAttributeId(finalEntity.getAttributeId());
+            setAttributeValues(resultValue);
+        }};
     }
 
     @Override

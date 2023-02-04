@@ -6,6 +6,8 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.model.params.RestGeneralFormDataParam;
+import cn.atsoft.dasheng.form.service.RestGeneralFormDataService;
 import cn.atsoft.dasheng.goods.category.entity.RestCategory;
 import cn.atsoft.dasheng.goods.category.service.RestCategoryService;
 import cn.atsoft.dasheng.goods.sku.entity.RestSku;
@@ -18,6 +20,7 @@ import cn.atsoft.dasheng.goods.spu.service.RestSpuService;
 import cn.atsoft.dasheng.goods.unit.entity.RestUnit;
 import cn.atsoft.dasheng.goods.unit.service.RestUnitService;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +60,9 @@ public class RestSkuController extends BaseController {
     @Autowired
     private RestCategoryService spuClassificationService;
 
+    @Autowired
+    private RestGeneralFormDataService generalFormDataService;
+
 
 //    @Autowired
 //    private PrintTemplateService printTemplateService; //编辑模板
@@ -89,12 +95,12 @@ public class RestSkuController extends BaseController {
         Map<String, RestSku> skuMap = this.skuService.add(restSkuParam);
 
 //
-//        if (ToolUtil.isNotEmpty(restSkuParam.getGeneralFormDataParams()) || restSkuParam.getGeneralFormDataParams().size() > 0) {
-//            for (GeneralFormDataParam generalFormDataParam : restSkuParam.getGeneralFormDataParams()) {
-//                generalFormDataParam.setTableName("goods_sku");
-//            }
-//            generalFormDataService.addBatch(restSkuParam.getGeneralFormDataParams());
-//        }
+        if (ToolUtil.isNotEmpty(restSkuParam.getGeneralFormDataParams()) || restSkuParam.getGeneralFormDataParams().size() > 0) {
+            for (RestGeneralFormDataParam generalFormDataParam : restSkuParam.getGeneralFormDataParams()) {
+                generalFormDataParam.setTableName("goods_sku");
+            }
+            generalFormDataService.addBatch(restSkuParam.getGeneralFormDataParams());
+        }
 
         if (ToolUtil.isNotEmpty(skuMap.get("success"))) {
             return ResponseData.success(skuMap.get("success").getSkuId());
@@ -105,9 +111,8 @@ public class RestSkuController extends BaseController {
             skuService.format(new ArrayList<RestSkuResult>() {{
                 add(skuResult);
             }});
-//            return ResponseData.error(BizExceptionEnum.USER_CHECK.getCode(), BizExceptionEnum.USER_CHECK.getMessage(), skuResult);
+            return ResponseData.error(BizExceptionEnum.USER_CHECK.getCode(), BizExceptionEnum.USER_CHECK.getMessage(), skuResult);
         }
-        return ResponseData.success(skuMap.get("success").getSkuId());
     }
 
 

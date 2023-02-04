@@ -1,9 +1,13 @@
 package cn.atsoft.dasheng.goods.sku.model.params;
 
 import cn.atsoft.dasheng.base.dict.AbstractDictMap;
+import cn.atsoft.dasheng.form.model.params.RestGeneralFormDataParam;
 import cn.atsoft.dasheng.goods.category.entity.RestCategory;
+import cn.atsoft.dasheng.goods.classz.entity.RestClass;
+import cn.atsoft.dasheng.goods.classz.model.RestSkuAttributeAndValue;
 import cn.atsoft.dasheng.goods.classz.model.params.RestAttributeParam;
 import cn.atsoft.dasheng.goods.classz.model.params.RestAttributeValuesParam;
+import cn.atsoft.dasheng.goods.classz.model.params.RestClassParam;
 import cn.atsoft.dasheng.goods.spu.model.RestSpuAttribute;
 import cn.atsoft.dasheng.goods.spu.model.params.RestSpuParam;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -30,6 +34,20 @@ public class RestSkuParam implements Serializable, BaseValidatingParam {
 
 
     private static final long serialVersionUID = 1L;
+    @ApiModelProperty(value = "spu分类")
+    private RestClassParam restClass;
+    @ApiModelProperty(value = "spu分类")
+    private RestSpuAttribute spuAttribute;
+    @ApiModelProperty(value = "物料属性与属性值")
+    private List<RestSkuAttributeAndValue> skuAttributeAndValues;
+    @ApiModelProperty(value = "通用表单保存")
+    private List<RestGeneralFormDataParam> generalFormDataParams;
+    @ApiModelProperty(value = "spu分类")
+    private Long spuClassificationId;
+    @ApiModelProperty(value = "绑定品牌提交参数")
+    private List<Long> brandIds;
+    @ApiModelProperty(value = "spu分类")
+    private RestSpuParam spu;
 
     /**
      * 编码
@@ -99,12 +117,18 @@ public class RestSkuParam implements Serializable, BaseValidatingParam {
 
     @ApiModelProperty("执行标准")
     private String standard;
+    @ApiModelProperty("文件")
+    private String fileId;
 
 
     /**
      * 热处理
      */
     private String heatTreatment;
+    /**
+     * 养护周期
+     */
+    private Integer maintenancePeriod;
     /**
      * 级别
      */
@@ -113,6 +137,10 @@ public class RestSkuParam implements Serializable, BaseValidatingParam {
      * 表色
      */
     private String color;
+    /**
+     * 图幅
+     */
+    private String viewFrame;
     /**
      * 尺寸
      */
