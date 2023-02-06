@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.codeRule.entity.RestCodeRule;
 import cn.atsoft.dasheng.codeRule.mapper.RestCodeRuleMapper;
+import cn.atsoft.dasheng.codeRule.model.GenCodeInterface;
 import cn.atsoft.dasheng.codeRule.model.RestCode;
 import cn.atsoft.dasheng.codeRule.model.params.RestCodeRuleParam;
 import cn.atsoft.dasheng.codeRule.model.params.RestSerialNumberParam;
@@ -12,6 +13,7 @@ import cn.atsoft.dasheng.codeRule.model.result.RestCodeRuleResult;
 import cn.atsoft.dasheng.codeRule.service.RestCodeRuleCategoryService;
 import cn.atsoft.dasheng.codeRule.service.RestCodeRuleService;
 import cn.atsoft.dasheng.codeRule.service.RestSerialNumberService;
+import cn.atsoft.dasheng.core.util.SpringContextHolder;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.date.DateTime;
@@ -62,9 +64,9 @@ public class RestCodeRuleServiceImpl extends ServiceImpl<RestCodeRuleMapper, Res
         } else {
             for (RestCode codings : param.getCodings()) {
                 if (codingRules.equals("")) {
-                    codingRules = codings.getValues();
+                    codingRules = codings.getValue();
                 } else {
-                    codingRules = codingRules + "," + codings.getValues();
+                    codingRules = codingRules + "," + codings.getValue();
                 }
 
             }
@@ -98,9 +100,9 @@ public class RestCodeRuleServiceImpl extends ServiceImpl<RestCodeRuleMapper, Res
             } else {
                 for (RestCode codings : param.getCodings()) {
                     if (codingRules.equals("")) {
-                        codingRules = codings.getValues();
+                        codingRules = codings.getValue();
                     } else {
-                        codingRules = codingRules + "," + codings.getValues();
+                        codingRules = codingRules + "," + codings.getValue();
                     }
 
                 }
@@ -178,17 +180,24 @@ public class RestCodeRuleServiceImpl extends ServiceImpl<RestCodeRuleMapper, Res
      */
     @Override
     public String backCoding(Long ids) {
-        return this.backCoding(ids, null);
+        return this.backCoding("", null);
     }
 
     @Override
-    public String backCoding(Long ids, Long spuId) {
+    public String backCoding(String modelName,Object data) {
+
+        GenCodeInterface bean = SpringContextHolder.getBean(modelName+"GenCode");
+
         String rules = "";
-        RestCodeRule codingRules = this.getById(ids);
-        if (ToolUtil.isEmpty(codingRules.getCodingRules())) {
-            throw new ServiceException(500, "没有制定规则");
-        }
-        rules = codingRules.getCodingRules().replace(",", "");
+//        RestCodeRule codingRules = this.getById(id);
+//        if (ToolUtil.isEmpty(codingRules.getCodingRules())) {
+//            throw new ServiceException(500, "没有制定规则");
+//        }
+//        rules = codingRules.getCodingRules().replace(",", "");
+        rules =  bean.genCode(modelName, data);
+
+        rules = rules.replace(",", "");
+
         Date date = new Date();
         //年
         int year = DateUtil.year(date);
@@ -275,12 +284,12 @@ public class RestCodeRuleServiceImpl extends ServiceImpl<RestCodeRuleMapper, Res
      * @return
      */
     @Override
-    public String getCodingByModule(Long module) {
+    public String getCodingByModule(String module) {
         RestCodeRule rules = this.query().eq("module", module).eq("state", 1).one();
         if (ToolUtil.isEmpty(rules)) {
-            return "${type}";
+                throw new ServiceException(500,"无编码规则");
         }
-        return this.backCoding(rules.getCodingRulesId());
+        return rules.getCodingRules();
 
     }
 

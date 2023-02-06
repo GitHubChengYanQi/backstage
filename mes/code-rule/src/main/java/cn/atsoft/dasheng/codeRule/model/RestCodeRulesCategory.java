@@ -15,9 +15,11 @@ import java.util.List;
  */
 @Data
 public class RestCodeRulesCategory implements Serializable {
-
+    //模块key
     private String module;
-
+    //模块中文名
+    private String name;
+    //模块规则
     private List<RestCode> ruleList;
 
 

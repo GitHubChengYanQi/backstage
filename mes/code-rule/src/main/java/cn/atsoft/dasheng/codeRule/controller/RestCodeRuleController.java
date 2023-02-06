@@ -3,9 +3,13 @@ package cn.atsoft.dasheng.codeRule.controller;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.codeRule.entity.RestCodeRule;
+import cn.atsoft.dasheng.codeRule.model.GeneralRoleList;
 import cn.atsoft.dasheng.codeRule.model.RestCode;
+import cn.atsoft.dasheng.codeRule.model.RestCodeRulesCategory;
+import cn.atsoft.dasheng.codeRule.model.enums.CodingRuleFiledEnum;
 import cn.atsoft.dasheng.codeRule.model.params.RestCodeRuleParam;
 import cn.atsoft.dasheng.codeRule.model.result.RestCodeRuleResult;
+import cn.atsoft.dasheng.codeRule.service.RestCodeRuleCategoryService;
 import cn.atsoft.dasheng.codeRule.service.RestCodeRuleService;
 import cn.atsoft.dasheng.codeRule.wrapper.RestCodeRuleSelectWrapper;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -17,13 +21,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +44,9 @@ public class RestCodeRuleController extends BaseController {
 
     @Autowired
     private RestCodeRuleService codingRulesService;
+
+    @Autowired
+    private RestCodeRuleCategoryService codeRuleCategoryService;
 
     /**
      * 新增接口
@@ -103,7 +108,7 @@ public class RestCodeRuleController extends BaseController {
             List<RestCode> codingsList = new ArrayList<>();
             for (String s : split) {
                 RestCode codings = new RestCode();
-                codings.setValues(s);
+                codings.setValue(s);
                 codingsList.add(codings);
             }
             result.setCodings(codingsList);
@@ -174,6 +179,19 @@ public class RestCodeRuleController extends BaseController {
         List<Map<String, Object>> list = this.codingRulesService.listMaps(codingRulesQueryWrapper);
         RestCodeRuleSelectWrapper codingRulesSelectWrapper = new RestCodeRuleSelectWrapper(list);
         List<Map<String, Object>> result = codingRulesSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
+    /**
+     * 下拉接口
+     *
+     * @return
+     */
+    @RequestMapping(value = "/getRule", method = RequestMethod.GET)
+    public ResponseData getRule() {
+        List<RestCodeRulesCategory> restCodeRulesCategories = codeRuleCategoryService.get();
+        Map<String,Object> result = new HashMap<>();
+        result.put("generalRuleList", CodingRuleFiledEnum.listByModel(CodingRuleFiledEnum.modelEnum.general));
+        result.put("modelRuleList", CodingRuleFiledEnum.modelList());
         return ResponseData.success(result);
     }
 

@@ -1,24 +1,24 @@
-package cn.atsoft.dasheng.form.service.impl;
+package cn.atsoft.dasheng.audit.service.impl;
 
 
+import cn.atsoft.dasheng.audit.entity.ActivitiAudit;
+import cn.atsoft.dasheng.audit.service.ActivitiProcessFormLogService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.*;
-import cn.atsoft.dasheng.form.mapper.ActivitiAuditMapper;
-import cn.atsoft.dasheng.form.model.params.ActivitiAuditParam;
-import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
+import cn.atsoft.dasheng.audit.mapper.ActivitiAuditMapper;
+import cn.atsoft.dasheng.audit.model.params.ActivitiAuditParam;
+import cn.atsoft.dasheng.audit.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
 import cn.atsoft.dasheng.form.pojo.ActionStatus;
 import cn.atsoft.dasheng.form.pojo.AppointUser;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.hutool.json.JSONUtil;
 import cn.atsoft.dasheng.form.pojo.DeptPosition;
-import cn.atsoft.dasheng.form.service.ActivitiAuditService;
-import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.audit.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.form.service.DocumentStatusService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -55,7 +55,7 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
     @Autowired
     private ActivitiStepsService stepsService;
     @Autowired
-    private ActivitiProcessLogService processLogService;
+    private ActivitiProcessFormLogService processLogService;
     @Autowired
     private ActivitiAuditService auditService;
 

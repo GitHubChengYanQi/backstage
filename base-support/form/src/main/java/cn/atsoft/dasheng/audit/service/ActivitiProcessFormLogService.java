@@ -1,10 +1,9 @@
-package cn.atsoft.dasheng.form.service;
+package cn.atsoft.dasheng.audit.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
-import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
-import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
-import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.audit.model.params.ActivitiProcessLogParam;
+import cn.atsoft.dasheng.audit.model.result.ActivitiProcessLogResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.List;
  * @author Sing
  * @since 2021-11-10
  */
-public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> {
+public interface ActivitiProcessFormLogService extends IService<ActivitiProcessLog> {
 
     /**
      * 新增

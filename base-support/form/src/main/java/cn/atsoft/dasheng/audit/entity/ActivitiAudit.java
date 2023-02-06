@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.form.entity;
+package cn.atsoft.dasheng.audit.entity;
 
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import com.baomidou.mybatisplus.annotation.TableName;

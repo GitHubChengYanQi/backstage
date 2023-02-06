@@ -15,7 +15,7 @@ import java.util.Date;
  * @author song
  * @since 2021-10-22
  */
-@TableName("daoxin_erp_coding_rules")
+@TableName("daoxin_coding_rules")
 public class RestCodeRule implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -33,11 +33,11 @@ public class RestCodeRule implements Serializable {
     @TableField("state")
     private Integer state;
 
-    public Integer getModule() {
+    public String getModule() {
         return module;
     }
 
-    public void setModule(Integer module) {
+    public void setModule(String module) {
         this.module = module;
     }
 
@@ -45,7 +45,7 @@ public class RestCodeRule implements Serializable {
      * 模块
      */
     @TableField("module")
-    private Integer module;
+    private String module;
     /**
      * 排序
      */

@@ -1,12 +1,11 @@
-package cn.atsoft.dasheng.form.service;
+package cn.atsoft.dasheng.audit.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.audit.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
-import cn.atsoft.dasheng.form.model.params.ActivitiAuditParam;
-import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
-import cn.atsoft.dasheng.form.pojo.AuditRule;
+import cn.atsoft.dasheng.audit.model.params.ActivitiAuditParam;
+import cn.atsoft.dasheng.audit.model.result.ActivitiAuditResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

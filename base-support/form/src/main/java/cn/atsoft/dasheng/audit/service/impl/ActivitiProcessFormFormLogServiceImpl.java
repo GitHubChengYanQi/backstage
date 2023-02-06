@@ -1,26 +1,20 @@
-package cn.atsoft.dasheng.form.service.impl;
+package cn.atsoft.dasheng.audit.service.impl;
 
 
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.audit.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
-import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
-import cn.atsoft.dasheng.form.entity.ActivitiSteps;
-import cn.atsoft.dasheng.form.mapper.ActivitiProcessLogMapper;
-import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
-import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
-import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
-import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
-import cn.atsoft.dasheng.form.pojo.AuditRule;
-import cn.atsoft.dasheng.form.pojo.QualityRules;
-import cn.atsoft.dasheng.form.service.ActivitiAuditService;
-import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
+import cn.atsoft.dasheng.audit.mapper.ActivitiProcessLogMapper;
+import cn.atsoft.dasheng.audit.model.params.ActivitiProcessLogParam;
+import cn.atsoft.dasheng.audit.model.result.ActivitiProcessLogResult;
+import cn.atsoft.dasheng.audit.service.ActivitiAuditService;
+import cn.atsoft.dasheng.audit.service.ActivitiProcessFormLogService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
+import cn.atsoft.dasheng.form.service.impl.ActivitiProcessTaskServiceImpl;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -40,7 +34,7 @@ import java.util.List;
  * @since 2021-11-10
  */
 @Service
-public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLogMapper, ActivitiProcessLog> implements ActivitiProcessLogService {
+public class ActivitiProcessFormFormLogServiceImpl extends ServiceImpl<ActivitiProcessLogMapper, ActivitiProcessLog> implements ActivitiProcessFormLogService {
     @Autowired
     private ActivitiProcessTaskServiceImpl activitiProcessTaskService;
     @Autowired

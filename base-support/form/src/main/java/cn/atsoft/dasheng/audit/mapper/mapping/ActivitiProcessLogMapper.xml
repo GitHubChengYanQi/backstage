@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.atsoft.dasheng.form.mapper.ActivitiProcessLogMapper">
+<mapper namespace="cn.atsoft.dasheng.audit.mapper.ActivitiProcessLogMapper">
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.form.entity.ActivitiProcessLog">
@@ -26,36 +26,36 @@
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult"
-            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.audit.model.result.ActivitiProcessLogResult"
+            parameterType="cn.atsoft.dasheng.audit.model.params.ActivitiProcessLogParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_process_log where 1 = 1
     </select>
 
     <select id="customMapList" resultType="map"
-            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam">
+            parameterType="cn.atsoft.dasheng.audit.model.params.ActivitiProcessLogParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_process_log where 1 = 1
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult"
-            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.audit.model.result.ActivitiProcessLogResult"
+            parameterType="cn.atsoft.dasheng.audit.model.params.ActivitiProcessLogParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_process_log where 1 = 1
     </select>
 
     <select id="customPageMapList" resultType="map"
-            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam">
+            parameterType="cn.atsoft.dasheng.audit.model.params.ActivitiProcessLogParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_process_log where 1 = 1
     </select>
 
-    <select id="auditList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult"
-            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam">
+    <select id="auditList" resultType="cn.atsoft.dasheng.audit.model.result.ActivitiProcessLogResult"
+            parameterType="cn.atsoft.dasheng.audit.model.params.ActivitiProcessLogParam">
         select
         task_id AS "taskId"
         from activiti_process_log where 1 = 1
@@ -74,8 +74,8 @@
         group by task_id
   </select>
 
-    <select id="sendList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult"
-            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam">
+    <select id="sendList" resultType="cn.atsoft.dasheng.audit.model.result.ActivitiProcessLogResult"
+            parameterType="cn.atsoft.dasheng.audit.model.params.ActivitiProcessLogParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_process_log where 1 = 1

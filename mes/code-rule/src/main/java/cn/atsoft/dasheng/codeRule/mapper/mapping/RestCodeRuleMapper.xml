@@ -32,7 +32,7 @@
             parameterType="cn.atsoft.dasheng.codeRule.model.params.RestCodeRuleParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_coding_rules where 1 = 1
+        from daoxin_coding_rules where 1 = 1
         <if test="paramCondition.codingRulesClassificationId != null">
             and coding_rules_classification_id like CONCAT('%',#{paramCondition.codingRulesClassificationId},'%')
         </if>
@@ -65,7 +65,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.codeRule.model.params.RestCodeRuleParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_coding_rules where 1 = 1
+        from daoxin_coding_rules where 1 = 1
         <if test="paramCondition.codingRulesClassificationId != null">
             and coding_rules_classification_id like CONCAT('%',#{paramCondition.codingRulesClassificationId},'%')
         </if>
@@ -99,7 +99,7 @@
             parameterType="cn.atsoft.dasheng.codeRule.model.params.RestCodeRuleParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_coding_rules where 1 = 1
+        from daoxin_coding_rules where 1 = 1
         <if test="paramCondition.codingRulesClassificationId != null">
             and coding_rules_classification_id like CONCAT('%',#{paramCondition.codingRulesClassificationId},'%')
         </if>
@@ -138,7 +138,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.codeRule.model.params.RestCodeRuleParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_coding_rules where 1 = 1
+        from daoxin_coding_rules where 1 = 1
         <if test="paramCondition.codingRulesClassificationId != null">
             and coding_rules_classification_id like CONCAT('%',#{paramCondition.codingRulesClassificationId},'%')
         </if>

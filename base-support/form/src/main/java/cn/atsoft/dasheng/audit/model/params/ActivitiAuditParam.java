@@ -1,5 +1,6 @@
-package cn.atsoft.dasheng.form.model.params;
+package cn.atsoft.dasheng.audit.model.params;
 
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -13,7 +14,7 @@ import java.util.List;
 
 /**
  * <p>
- * 流程日志表
+ * 审批配置表
  * </p>
  *
  * @author Sing
@@ -21,31 +22,25 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class ActivitiProcessLogParam implements Serializable, BaseValidatingParam {
+public class ActivitiAuditParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private String source;
 
+    private Long processId;
     /**
      * 主键
      */
     @ApiModelProperty("主键")
-    private Long logId;
-
-    private Long taskId;
+    private Long auditId;
 
     private String url;
 
-    private Long formId;
+    private Long documentsStatusId;
 
-    private String actionStatus;
+    private String formType;
 
-    /**
-     * 流程Id
-     */
-    @ApiModelProperty("流程Id")
-    private Long peocessId;
+    private String action;
 
     /**
      * 步骤Id
@@ -53,12 +48,17 @@ public class ActivitiProcessLogParam implements Serializable, BaseValidatingPara
     @ApiModelProperty("步骤Id")
     private Long setpsId;
 
+    /**
+     * person（指定人），supervisor（主管），optional（自主选择）
+     */
+    @ApiModelProperty("person（指定人），supervisor（主管），optional（自主选择）")
+    private String type;
 
     /**
-     * 0（拒绝），1（通过）
+     * 审批规则
      */
-    @ApiModelProperty("0（拒绝），1（通过）")
-    private Integer status;
+    @ApiModelProperty("审批规则")
+    private AuditRule rule;
 
     /**
      * 删除状态

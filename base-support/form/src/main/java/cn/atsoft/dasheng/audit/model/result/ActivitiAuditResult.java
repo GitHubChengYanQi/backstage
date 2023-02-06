@@ -1,5 +1,6 @@
-package cn.atsoft.dasheng.form.model.result;
+package cn.atsoft.dasheng.audit.model.result;
 
+import cn.atsoft.dasheng.form.model.result.DocumentsStatusResult;
 import cn.atsoft.dasheng.form.pojo.ActionStatus;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import lombok.Data;

@@ -5,8 +5,16 @@ import lombok.Data;
 @Data
 public class RestCode {
 
-    private String key;
+    /**
+     * {cateGoryId}
+     * {cateGoryCoDe}
+     */
+    private String label;
 
-    private String values;
+    /**
+     * 分类ID
+     * 分类编码
+     */
+    private String value;
 
 }

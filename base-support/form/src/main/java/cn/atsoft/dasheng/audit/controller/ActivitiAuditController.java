@@ -1,17 +1,13 @@
-package cn.atsoft.dasheng.form.controller;
+package cn.atsoft.dasheng.audit.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
-import cn.atsoft.dasheng.form.model.params.ActivitiAuditParam;
-import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
-import cn.atsoft.dasheng.form.pojo.AuditRule;
-import cn.atsoft.dasheng.form.pojo.DeptPosition;
-import cn.atsoft.dasheng.form.service.ActivitiAuditService;
+import cn.atsoft.dasheng.audit.entity.ActivitiAudit;
+import cn.atsoft.dasheng.audit.model.params.ActivitiAuditParam;
+import cn.atsoft.dasheng.audit.model.result.ActivitiAuditResult;
+import cn.atsoft.dasheng.audit.service.ActivitiAuditService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.json.JSONUtil;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;

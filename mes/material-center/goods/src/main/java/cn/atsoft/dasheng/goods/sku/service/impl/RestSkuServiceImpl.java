@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.goods.sku.service.impl;
 
 
 import cn.atsoft.dasheng.codeRule.entity.RestCodeRule;
+import cn.atsoft.dasheng.codeRule.model.GenCodeInterface;
 import cn.atsoft.dasheng.codeRule.service.RestCodeRuleService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.goods.brand.model.params.RestSkuBrandBindParam;
@@ -211,23 +212,9 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 
             //生成编码
             if (ToolUtil.isEmpty(param.getStandard())) {
-                RestCodeRule codingRules = codingRulesService.query().eq("module", "0").eq("state", 1).one();
-                if (ToolUtil.isNotEmpty(codingRules)) {
-                    String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId(), spuId);
-                    String replace = backCoding;
-                    RestCategory classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClassificationId()).one();
-                    if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
-                        if (ToolUtil.isNotEmpty(classification.getCodingClass())) {
-                            replace = backCoding.replace("${skuClass}", classification.getCodingClass());
-                        } else {
-                            replace = backCoding.replace("${skuClass}", "");
-                        }
-                    }
-                    param.setStandard(replace);
-                    param.setCoding(replace);
-                } else {
-                    throw new ServiceException(500, "当前无此规则");
-                }
+                    String backCoding = codingRulesService.backCoding("sku", param);
+                    param.setStandard(backCoding);
+                    param.setCoding(backCoding);
             }
             /**
              * 判断成品码是否重复
@@ -2366,4 +2353,5 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
             }
             return null;
         }
-    }
+
+}

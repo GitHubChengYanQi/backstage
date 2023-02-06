@@ -74,14 +74,14 @@ public interface RestCodeRuleService extends IService<RestCodeRule> {
      */
     String backCoding(Long ids);
 
-    String backCoding(Long ids,Long spuId);
+    String backCoding(String modelName,Object data);
 
     /**
      * 通过模块获取编码
      * @param module
      * @return
      */
-    String getCodingByModule(Long module);
+    String getCodingByModule(String module);
 
     String defaultEncoding();
 

@@ -41,7 +41,7 @@ public class RestCodeRuleResult implements Serializable {
      */
     private Integer state;
 
-    private Integer module;
+    private String module;
     /**
      * 排序
      */

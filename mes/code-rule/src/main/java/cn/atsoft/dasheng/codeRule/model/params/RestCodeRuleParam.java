@@ -42,7 +42,7 @@ public class RestCodeRuleParam extends AbstractDictMap implements Serializable, 
      */
     private Long sort;
 
-    private Integer module;
+    private String module;
 
     private List<RestCode> codings;
 

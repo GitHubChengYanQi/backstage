@@ -1,10 +1,9 @@
-package cn.atsoft.dasheng.form.mapper;
+package cn.atsoft.dasheng.audit.mapper;
 
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
-import cn.atsoft.dasheng.form.model.params.ActivitiAuditParam;
-import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
+import cn.atsoft.dasheng.audit.entity.ActivitiAudit;
+import cn.atsoft.dasheng.audit.model.params.ActivitiAuditParam;
+import cn.atsoft.dasheng.audit.model.result.ActivitiAuditResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 

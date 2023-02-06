@@ -1,9 +1,6 @@
 package cn.atsoft.dasheng.form.model.params;
 
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
-import cn.atsoft.dasheng.form.pojo.ProcessEnum;
-import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
-import com.baomidou.mybatisplus.annotation.TableField;
+import cn.atsoft.dasheng.audit.model.params.ActivitiAuditParam;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
