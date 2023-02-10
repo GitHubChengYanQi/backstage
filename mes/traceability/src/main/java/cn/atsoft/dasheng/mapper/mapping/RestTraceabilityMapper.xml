@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.mapper.RestTraceabilityMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.entity.RestTraceability">
+        <id column="inkind_id" property="inkindId"/>
+        <result column="type" property="type"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="last_maintenance_time" property="lastMaintenanceTime"/>
+        <result column="display" property="display"/>
+        <result column="spu_id" property="spuId"/>
+        <result column="deptId" property="deptId"/>
+        <result column="cost_price" property="costPrice"/>
+        <result column="selling_price" property="sellingPrice"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="number" property="number"/>
+        <result column="source_id" property="sourceId"/>
+        <result column="source" property="source"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="batch_number" property="batchNumber"/>
+        <result column="serial_number" property="serialNumber"/>
+        <result column="production_time" property="productionTime"/>
+        <result column="pid" property="pid"/>
+        <result column="position_id" property="positionId"/>
+        <result column="anomaly" property="anomaly"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">number
+    AS "number",anomaly AS "anomaly", source AS "source", last_maintenance_time AS lastMaintenanceTime,source_id AS "sourceId",customer_id AS "customerId",batch_number AS "batchNumber",serial_number AS "serialNumber",production_time AS "productionTime",
+spu_id
+    AS "spuId", cost_price AS "costPrice" , selling_price AS "sellingPrice" ,brand_id AS "brandId",pid AS "pid",position_id AS "positionId",
+        inkind_id
+        AS "inkindId", type AS "type", sku_id AS "skuId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.model.result.RestTraceabilityResult"
+            parameterType="cn.atsoft.dasheng.model.params.RestTraceabilityParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_inkind where 1 = 1
+        <if test="paramCondition.inkindId != null and paramCondition.inkindId != ''">
+            and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
+        </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type like CONCAT('%',#{paramCondition.type},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.model.params.RestTraceabilityParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_inkind where 1 = 1
+        <if test="paramCondition.inkindId != null and paramCondition.inkindId != ''">
+            and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
+        </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type like CONCAT('%',#{paramCondition.type},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.model.result.RestTraceabilityResult"
+            parameterType="cn.atsoft.dasheng.model.params.RestTraceabilityParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_inkind where 1 = 1
+        <if test="paramCondition.inkindId != null and paramCondition.inkindId != ''">
+            and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
+        </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type like CONCAT('%',#{paramCondition.type},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.inkindIds != null and paramCondition.inkindIds.size>0 ">
+            and inkind_id in
+            <foreach collection="paramCondition.inkindIds" separator="," index="index" item="state" close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.anomaly != null and paramCondition.anomaly != ''">
+            and anomaly = #{paramCondition.anomaly}
+        </if>
+        <if test="paramCondition">
+
+        </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.model.params.RestTraceabilityParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_inkind where 1 = 1
+        <if test="paramCondition.inkindId != null and paramCondition.inkindId != ''">
+            and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')
+        </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type like CONCAT('%',#{paramCondition.type},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+
+    <sql id="stockInkind">
+    daoxin_erp_stock_details.number AS "number",
+	goods_inkind.anomaly AS "anomaly",
+	goods_inkind.source AS "source",
+	goods_inkind.last_maintenance_time AS lastMaintenanceTime,
+	goods_inkind.source_id AS "sourceId",
+	goods_inkind.customer_id AS "customerId",
+	goods_inkind.batch_number AS "batchNumber",
+	goods_inkind.serial_number AS "serialNumber",
+	goods_inkind.production_time AS "productionTime",
+	goods_inkind.spu_id AS "spuId",
+	goods_inkind.cost_price AS "costPrice",
+	goods_inkind.selling_price AS "sellingPrice",
+	goods_inkind.brand_id AS "brandId",
+	goods_inkind.pid AS "pid",
+	daoxin_erp_stock_details.storehouse_positions_id AS "positionId",
+	goods_inkind.inkind_id AS "inkindId",
+	goods_inkind.type AS "type",
+	goods_inkind.sku_id AS "skuId",
+	goods_inkind.create_user AS "createUser",
+	goods_inkind.update_user AS "updateUser",
+	goods_inkind.create_time AS "createTime",
+	goods_inkind.update_time AS "updateTime",
+	goods_inkind.display AS "display",
+	goods_inkind.deptId AS "deptId"
+    </sql>
+    <select id="stockInkindList" resultType="cn.atsoft.dasheng.model.result.RestTraceabilityResult"
+            parameterType="cn.atsoft.dasheng.model.params.RestTraceabilityParam">
+        select
+        <include refid="stockInkind"/>
+        from goods_inkind
+        JOIN ( SELECT * FROM daoxin_erp_stock_details WHERE display = 1 and number > 0 ) AS daoxin_erp_stock_details ON
+        goods_inkind.inkind_id = daoxin_erp_stock_details.inkind_id
+        WHERE
+        1 = 1
+        <if test="paramCondition.inkindIds != null and paramCondition.inkindIds.size>0 ">
+            and goods_inkind.inkind_id in
+            <foreach collection="paramCondition.inkindIds" separator="," index="index" item="state" close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.anomaly != null and paramCondition.anomaly != ''">
+            and goods_inkind.anomaly = #{paramCondition.anomaly}
+        </if>
+    </select>
+
+</mapper>

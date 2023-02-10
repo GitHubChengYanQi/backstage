@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -311,10 +312,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     }
                     break;
                 case TotalAmountInFigures:
-                    map.put(ContractEnum.TotalAmountInFigures.getDetail(), sign + ContractExcel.priceReplace(orderResult.getAllMoney()));
+                    map.put(ContractEnum.TotalAmountInFigures.getDetail(), sign + ContractExcel.priceReplace(BigDecimal.valueOf(orderResult.getAllMoney()).divide(BigDecimal.valueOf(100)).doubleValue()));
                     break;
                 case TotalAmountInWords:
-                    int money = Math.toIntExact(orderResult.getAllMoney());
+                    double money = orderResult.getAllMoney();
                     String format = NumberChineseFormatter.format(money, true, true);
                     format = format.replace("元", "圆");
                     map.put(ContractEnum.TotalAmountInWords.getDetail(), format);
@@ -493,7 +494,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (ToolUtil.isNotEmpty(paymentResult) && ToolUtil.isNotEmpty(paymentResult.getOrderId())) {
             details = detailService.getDetails(paymentResult.getOrderId());
         }
-        int allMoney = 0;
+        double allMoney = 0;
         int totalNumber = 0;
         if (ToolUtil.isNotEmpty(order.getTotalAmount())) {  //兼容之前老订单  没有总价格 
             allMoney = order.getTotalAmount();

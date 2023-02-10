@@ -1,15 +1,24 @@
 package cn.atsoft.dasheng.form.controller;
 
+import cn.atsoft.dasheng.audit.entity.ActivitiAudit;
+import cn.atsoft.dasheng.audit.service.ActivitiAuditService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
+import cn.atsoft.dasheng.form.model.enums.ModelEnum;
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
+import cn.atsoft.dasheng.form.service.ModelService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -20,6 +29,7 @@ import io.swagger.annotations.ApiOperation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -36,6 +46,16 @@ public class ActivitiStepsController extends BaseController {
     @Autowired
     private ActivitiStepsService activitiStepsService;
 
+
+    @Autowired
+    private ActivitiAuditService auditService;
+
+    @Autowired
+    private ActivitiProcessService processService;
+
+    @Autowired
+    private ModelService modelService;
+
     /**
      * 新增接口
      *
@@ -46,6 +66,40 @@ public class ActivitiStepsController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ActivitiStepsParam activitiStepsParam) {
         this.activitiStepsService.addProcess(activitiStepsParam);
+        return ResponseData.success();
+    }
+
+    @RequestMapping(value = "/{version}/add", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    @ApiVersion("2.0")
+    public ResponseData addItemV2(@RequestBody ActivitiStepsParam activitiStepsParam) throws IllegalAccessException {
+
+        ActivitiProcess process = processService.getById(activitiStepsParam.getProcessId());
+        if (process.getStatus() >= 98) {
+            throw new ServiceException(500, "当前流程已经发布,不可以修改步骤");
+        }
+        //添加配置
+        if (ToolUtil.isEmpty(activitiStepsParam.getAuditType())) {
+            throw new ServiceException(500, "请设置正确的配置");
+        }
+
+        //修改 删除之间数据
+        QueryWrapper<ActivitiSteps> stepsQueryWrapper = new QueryWrapper<>();
+        stepsQueryWrapper.eq("process_id", activitiStepsParam.getProcessId());
+        List<ActivitiSteps> activitiSteps = this.activitiStepsService.list(stepsQueryWrapper);
+        List<Long> ids = activitiSteps.stream().map(ActivitiSteps::getSetpsId).collect(Collectors.toList());
+        this.activitiStepsService.remove(stepsQueryWrapper);
+
+        QueryWrapper<ActivitiAudit> queryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(ids)) {
+            queryWrapper.in("setps_id", ids);
+            auditService.remove(queryWrapper);
+        }
+
+        //TODO 增加传入 ModelEnum
+        modelService.checkProcessData(activitiStepsParam, ModelEnum.OUTSTOCK);
+
+        this.activitiStepsService.addProcessV2(activitiStepsParam,null, process.getProcessId());
         return ResponseData.success();
     }
 

@@ -49,7 +49,7 @@ public class OrderResult implements Serializable {
 
     private String BContactsPhone;
 
-    private Integer allMoney;
+    private Double allMoney;
 
     private Adress adress;
 

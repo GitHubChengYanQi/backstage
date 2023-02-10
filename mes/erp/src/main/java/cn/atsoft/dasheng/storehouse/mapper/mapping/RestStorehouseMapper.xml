@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.storehouse.mapper.RestStorehouseMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.storehouse.entity.RestStorehouse">
+        <id column="storehouse_id" property="storehouseId"/>
+        <result column="name" property="name"/>
+        <result column="palce" property="palce"/>
+        <result column="measure" property="measure"/>
+        <result column="capacity" property="capacity"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="latitude" property="latitude"/>
+        <result column="coding" property="coding"/>
+        <result column="longitude" property="longitude"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="deptId" property="deptId"/>
+        <result column="display" property="display"/>
+<!--        <result column="children" property="children"/>-->
+<!--        <result column="childrens" property="childrens"/>-->
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">deptId
+    AS "deptId",
+longitude
+    AS "longitude",storehouse_id AS "storehouseId", name AS "name", coding AS "coding", palce AS "palce",  latitude AS "latitude", measure AS "measure", capacity AS "capacity", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.storehouse.model.result.RestStorehouseResult"
+            parameterType="cn.atsoft.dasheng.storehouse.model.params.RestStorehouseParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_storehouse where 1 = 1
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.palce != null and paramCondition.palce != ''">
+            and palce like CONCAT('%',#{paramCondition.palce},'%')
+        </if>
+        <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
+            and latitude like CONCAT('%',#{paramCondition.latitude},'%')
+        </if>
+        <if test="paramCondition.longitude != null and paramCondition.longitude != ''">
+            and longitude like CONCAT('%',#{paramCondition.longitude},'%')
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.storehouse.model.params.RestStorehouseParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_storehouse where 1 = 1
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.palce != null and paramCondition.palce != ''">
+            and palce like CONCAT('%',#{paramCondition.palce},'%')
+        </if>
+        <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
+            and latitude like CONCAT('%',#{paramCondition.latitude},'%')
+        </if>
+        <if test="paramCondition.longitude != null and paramCondition.longitude != ''">
+            and longitude like CONCAT('%',#{paramCondition.longitude},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.storehouse.model.result.RestStorehouseResult"
+            parameterType="cn.atsoft.dasheng.storehouse.model.params.RestStorehouseParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_storehouse where display = 1
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.palce != null and paramCondition.palce != ''">
+            and palce like CONCAT('%',#{paramCondition.palce},'%')
+        </if>
+        <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
+            and latitude like CONCAT('%',#{paramCondition.latitude},'%')
+        </if>
+        <if test="paramCondition.longitude != null and paramCondition.longitude != ''">
+            and longitude like CONCAT('%',#{paramCondition.longitude},'%')
+        </if>
+        <if test="paramCondition.storehouseId != null and paramCondition.storehouseId != ''">
+            and storehouse_id = #{paramCondition.storehouseId}
+        </if>
+        <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
+            and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
+            CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
+        </if>
+
+
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.storehouse.model.params.RestStorehouseParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_storehouse where 1 = 1
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.palce != null and paramCondition.palce != ''">
+            and palce like CONCAT('%',#{paramCondition.palce},'%')
+        </if>
+        <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
+            and latitude like CONCAT('%',#{paramCondition.latitude},'%')
+        </if>
+        <if test="paramCondition.longitude != null and paramCondition.longitude != ''">
+            and longitude like CONCAT('%',#{paramCondition.longitude},'%')
+        </if>
+    </select>
+
+</mapper>

@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.AUDIT;
 import static cn.atsoft.dasheng.form.pojo.StepsType.START;
@@ -62,6 +63,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     private ActivitiSetpSetDetailService setpSetDetailService;
     @Autowired
     private DocumentsActionService actionService;
+    @Autowired
+    private ModelService modelService;
 
 
     @Override
@@ -106,6 +109,58 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         } else {
             throw new ServiceException(500, "配置流程有误");
         }
+    }
+
+    @Override
+    @Transactional
+    public void addProcessV2(ActivitiStepsParam param, Long parentStepId, Long processId) {
+
+
+        /**
+         * 添加节点
+         */
+        ActivitiSteps entity = getEntity(param);
+        entity.setType(StepsType.getByType(param.getChildNode().getType()));
+        this.save(entity);
+        Long setpsId = entity.getSetpsId();
+        AuditRule auditRule = param.getAuditRule();
+        /**
+         * 添加节点规则
+         */
+        ActivitiAudit activitiAudit = new ActivitiAudit();
+        activitiAudit.setSetpsId(setpsId);
+
+        if (ToolUtil.isNotEmpty(auditRule)) {
+            activitiAudit.setRule(auditRule);
+            activitiAudit.setDocumentsStatusId(auditRule.getDocumentsStatusId());
+            activitiAudit.setFormType(auditRule.getFormType());
+            if (ToolUtil.isNotEmpty(auditRule.getActionStatuses())) {
+                actionService.combination(auditRule.getActionStatuses());
+                String action = JSON.toJSONString(auditRule.getActionStatuses());
+                activitiAudit.setAction(action);
+            }
+        }
+        activitiAudit.setType(String.valueOf(param.getAuditType()));
+        auditService.save(activitiAudit);
+        if (ToolUtil.isNotEmpty(parentStepId)) {
+            //修改父级
+            ActivitiSteps parentSteps = new ActivitiSteps();
+            parentSteps.setChildren(entity.getSetpsId().toString());
+            QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("setps_id", parentStepId);
+            this.update(parentSteps, queryWrapper);
+        }
+        parentStepId = entity.getSetpsId();
+        processId = param.getProcessId();
+        //添加ChildNode
+        if (ToolUtil.isNotEmpty(param.getChildNode())) {
+            this.addProcessV2(param.getChildNode(), parentStepId, processId);
+        }else if (ToolUtil.isNotEmpty(param.getConditionNodeList())) {
+            for (ActivitiStepsParam activitiStepsParam : param.getConditionNodeList()) {
+                this.addProcessV2(activitiStepsParam, parentStepId, processId);
+            }
+        }
+
     }
 
 
@@ -162,6 +217,47 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     }
 
     /**
+     * 添加节点
+     *
+     * @param node
+     * @param supper
+     * @param processId
+     */
+    public void luYouV2(ActivitiStepsParam node, Long supper, Long processId) {
+        //添加路由
+        ActivitiSteps activitiSteps = new ActivitiSteps();
+        if (node.getType().equals(ROUTE.getType())) {
+            activitiSteps.setStepType("路由");
+        }
+        //判断配置
+        activitiSteps.setType(StepsType.getByType(node.getType()));
+
+
+        activitiSteps.setSupper(supper);
+        activitiSteps.setStepType(node.getStepType());
+        activitiSteps.setProcessId(processId);
+        this.save(activitiSteps);
+        //添加配置
+        addAuditV2(node.getAuditType(), node.getAuditRule(), activitiSteps.getSetpsId());
+        //修改父级
+        ActivitiSteps parentSteps = new ActivitiSteps();
+        parentSteps.setChildren(activitiSteps.getSetpsId().toString());
+        QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("setps_id", supper);
+        this.update(parentSteps, queryWrapper);
+
+        //添加ChildNode
+        if (ToolUtil.isNotEmpty(node.getChildNode())) {
+            luYouV2(node.getChildNode(), activitiSteps.getSetpsId(), processId);
+        }
+        //添加分支
+        if (ToolUtil.isNotEmpty(node.getConditionNodeList())) {
+            recursiveAddV2(node.getConditionNodeList(), activitiSteps.getSetpsId(), processId);
+        }
+
+    }
+
+    /**
      * 递归添加
      *
      * @param stepsParams
@@ -210,6 +306,54 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     }
 
     /**
+     * 递归添加
+     *
+     * @param stepsParams
+     * @param supper
+     */
+    public void recursiveAddV2(List<ActivitiStepsParam> stepsParams, Long supper, Long processId) {
+        //分支遍历
+        for (ActivitiStepsParam stepsParam : stepsParams) {
+            //获取super
+            stepsParam.setSupper(supper);
+            //存分支
+            ActivitiSteps activitiSteps = new ActivitiSteps();
+            ToolUtil.copyProperties(stepsParam, activitiSteps);
+            activitiSteps.setType(BRANCH);
+            activitiSteps.setProcessId(processId);
+            this.save(activitiSteps);
+            //添加配置
+            if (ToolUtil.isEmpty(stepsParam.getAuditType())) {
+                throw new ServiceException(500, "请设置正确的配置");
+            }
+            addAudit(stepsParam.getAuditType(), stepsParam.getAuditRule(), activitiSteps.getSetpsId());
+            //修改父级节点
+            ActivitiSteps steps = this.query().eq("setps_id", supper).one();
+            //修改父级分支
+
+            if (ToolUtil.isEmpty(stepsParam.getChildNode())) {
+                throw new ServiceException(500, "请在条件下添加动作");
+            }
+            if (ToolUtil.isEmpty(steps.getConditionNodes())) {
+                steps.setConditionNodes(activitiSteps.getSetpsId().toString());
+            } else {
+                String branch = steps.getConditionNodes();
+                steps.setConditionNodes(branch + "," + activitiSteps.getSetpsId());
+            }
+            QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("setps_id", supper);
+            steps.setConditionNodes(steps.getConditionNodes());
+            this.update(steps, queryWrapper);
+            //继续递归添加
+            if (ToolUtil.isNotEmpty(stepsParam.getChildNode())) {
+                luYouV2(stepsParam.getChildNode(), activitiSteps.getSetpsId(), processId);
+            }
+
+        }
+
+    }
+
+    /**
      * 添加数据配置
      *
      * @param auditType
@@ -247,11 +391,51 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         auditService.save(activitiAudit);
     }
 
+    /**
+     * 添加数据配置
+     *
+     * @param auditType
+     * @param auditRule
+     * @param id
+     */
+    public void addAuditV2(AuditType auditType, AuditRule auditRule, Long id) {
+        ActivitiAudit activitiAudit = new ActivitiAudit();
+        activitiAudit.setSetpsId(id);
+//        switch (auditType) {
+//            case start:
+//            case process:
+//            case send:
+//                if (ToolUtil.isEmpty(auditRule)) {
+//                    throw new ServiceException(500, "配置数据错误");
+//                }
+//                activitiAudit.setRule(auditRule);
+//                break;
+//            case branch:
+//                activitiAudit.setRule(auditRule);
+//                break;
+//            case route:
+//                break;
+//        }
+        if (ToolUtil.isNotEmpty(auditRule)) {
+            activitiAudit.setRule(auditRule);
+            activitiAudit.setDocumentsStatusId(auditRule.getDocumentsStatusId());
+            activitiAudit.setFormType(auditRule.getFormType());
+            if (ToolUtil.isNotEmpty(auditRule.getActionStatuses())) {
+                actionService.combination(auditRule.getActionStatuses());
+                String action = JSON.toJSONString(auditRule.getActionStatuses());
+                activitiAudit.setAction(action);
+            }
+        }
+        activitiAudit.setType(String.valueOf(auditType));
+        auditService.save(activitiAudit);
+    }
+
 
     @Override
     public void delete(ActivitiStepsParam param) {
-        param.setDisplay(0);
-        this.updateById(this.getEntity(param));
+        ActivitiSteps entity = this.getEntity(param);
+        entity.setDisplay(0);
+        this.updateById(entity);
     }
 
     @Override

@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -27,6 +28,9 @@ public interface ActivitiStepsService extends IService<ActivitiSteps> {
      * @Date 2021-11-10
      */
     void addProcess(ActivitiStepsParam param);
+
+    @Transactional
+    void addProcessV2(ActivitiStepsParam param,Long parentStepId,Long processId);
 
     /**
      * 删除

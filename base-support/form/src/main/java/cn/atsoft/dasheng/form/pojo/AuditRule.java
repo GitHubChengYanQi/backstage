@@ -2,12 +2,13 @@ package cn.atsoft.dasheng.form.pojo;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
 @Data
-public class AuditRule {
+public class AuditRule implements Serializable{
 
     private List<Rule> rules;     //规则
 
@@ -24,7 +25,7 @@ public class AuditRule {
 
 
     @Data
-    public static class Rule {
+    public static class Rule implements Serializable{
 
         private DataType type;         //类型
 

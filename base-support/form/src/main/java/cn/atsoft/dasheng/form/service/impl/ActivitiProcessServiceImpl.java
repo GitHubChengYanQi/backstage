@@ -245,22 +245,22 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
 
     @Override
     public List<String> getModule(ProcessEnum processEnum) {
-        if (ToolUtil.isEmpty(processEnum)) {
-            throw new ServiceException(500, "请选择类型");
-        }
-        List<String> module = new ArrayList<>();
-        switch (processEnum) {
-            case 询价:
-
-            case 质检:
-                module.add(ProcessModuleEnum.入厂检.getValue());
-                break;
-            case 采购:
-                module.add(ProcessModuleEnum.采购申请.getValue());
-                module.add(ProcessModuleEnum.采购计划.getValue());
-                break;
-        }
-        return module;
+//        if (ToolUtil.isEmpty(processEnum)) {
+//            throw new ServiceException(500, "请选择类型");
+//        }
+//        List<String> module = new ArrayList<>();
+//        switch (processEnum) {
+//            case 询价:
+//
+//            case 质检:
+//                module.add(ProcessModuleEnum.入厂检.getValue());
+//                break;
+//            case 采购:
+//                module.add(ProcessModuleEnum.采购申请.getValue());
+//                module.add(ProcessModuleEnum.采购计划.getValue());
+//                break;
+//        }
+        return null;
     }
 
 

@@ -27,7 +27,6 @@ import java.util.List;
 @ApiModel
 public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
 
-    private static final long serialVersionUID = 1L;
 
     private List<ActivitiStepsParam> conditionNodeList;
 
@@ -59,6 +58,8 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("流程ID")
     private Long processId;
 
+    private Long skuId;
+
     /**
      * 步骤类型：ship（工艺），setp（工序），audit（审核），audit_process（审核流程）
      */
@@ -77,38 +78,38 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("上一步")
     private Long supper;
 
-    /**
-     * 下级步骤
-     */
-    @ApiModelProperty("下级步骤")
-    private String children;
+//    /**
+//     * 下级步骤
+//     */
+//    @ApiModelProperty("下级步骤")
+//    private String children;
 
-    /**
-     * 所有后续步骤
-     */
-    @ApiModelProperty("所有后续步骤")
-    private String childrens;
+//    /**
+//     * 所有后续步骤
+//     */
+//    @ApiModelProperty("所有后续步骤")
+//    private String childrens;
 
-    /**
-     * 删除状态
-     */
-    @ApiModelProperty("删除状态")
-    private Integer display;
-
-    @ApiModelProperty(hidden = true)
-    private Long createUser;
-
-    @ApiModelProperty(hidden = true)
-    private Long updateUser;
-
-    @ApiModelProperty(hidden = true)
-    private Date createTime;
-
-    @ApiModelProperty(hidden = true)
-    private Date updateTime;
-
-    @ApiModelProperty("父ID顺序数组")
-    private List<String> pidValue;
+//    /**
+//     * 删除状态
+//     */
+//    @ApiModelProperty("删除状态")
+//    private Integer display;
+//
+//    @ApiModelProperty(hidden = true)
+//    private Long createUser;
+//
+//    @ApiModelProperty(hidden = true)
+//    private Long updateUser;
+//
+//    @ApiModelProperty(hidden = true)
+//    private Date createTime;
+//
+//    @ApiModelProperty(hidden = true)
+//    private Date updateTime;
+//
+//    @ApiModelProperty("父ID顺序数组")
+//    private List<String> pidValue;
 
     @Override
     public String checkParam() {

@@ -31,6 +31,15 @@ public enum StepsType {
         return this.type;
     }
 
+    public static StepsType getByType(String type){
+        for (StepsType value : StepsType.values()) {
+            if(type.equals(value.getType())){
+                return value;
+            }
+        }
+        return null;
+    }
+
     @EnumValue
     private final String type;
 
