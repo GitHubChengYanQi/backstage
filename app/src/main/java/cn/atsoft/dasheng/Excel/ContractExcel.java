@@ -397,8 +397,9 @@ public class ContractExcel {
      * @return
      */
 
-    public static String priceReplace(int price) {
+    public static String priceReplace(double price) {
         BigDecimal decimal = new BigDecimal(price);
+        decimal = decimal.divide(BigDecimal.valueOf(100));
         DecimalFormat df = new DecimalFormat(",###,##0.00"); //保留二位小数
 
         return df.format(decimal);
