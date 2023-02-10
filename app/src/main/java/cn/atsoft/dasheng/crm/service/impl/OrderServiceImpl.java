@@ -315,7 +315,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     map.put(ContractEnum.TotalAmountInFigures.getDetail(), sign + ContractExcel.priceReplace(BigDecimal.valueOf(orderResult.getAllMoney()).divide(BigDecimal.valueOf(100)).doubleValue()));
                     break;
                 case TotalAmountInWords:
-                    double money = orderResult.getAllMoney();
+                    double money = BigDecimal.valueOf(orderResult.getAllMoney()).divide(BigDecimal.valueOf(100)).doubleValue();
                     String format = NumberChineseFormatter.format(money, true, true);
                     format = format.replace("元", "圆");
                     map.put(ContractEnum.TotalAmountInWords.getDetail(), format);
@@ -435,6 +435,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     }
                     map.put(ContractEnum.DeliveryCycle.getDetail(), orderResult.getLeadTime());
                     break;
+                case DeliveryDate:
+                    if (orderResult.getDeliveryDate() == null) {
+
+                    }
+                    map.put(ContractEnum.DeliveryDate.getDetail(), DateUtil.format(orderResult.getDeliveryDate(),"yyyy年MM月dd日 "));
+                    break;
                 case floatingAmount:
                     Integer floatingAmount = paymentResult.getFloatingAmount();
                     if (ToolUtil.isEmpty(floatingAmount)) {
@@ -498,6 +504,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         int totalNumber = 0;
         if (ToolUtil.isNotEmpty(order.getTotalAmount())) {  //兼容之前老订单  没有总价格 
             allMoney = order.getTotalAmount();
+        }
+        for (OrderDetailResult detail : details) {
+            totalNumber+= detail.getPurchaseNumber();
         }
         orderResult.setTotalNumber(totalNumber);
         orderResult.setAllMoney(allMoney);
