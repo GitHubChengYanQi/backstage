@@ -39,7 +39,7 @@ public interface RestOutStockOrderService extends IService<RestOutStockOrder> {
 //     * @author Captain_Jazz
 //     * @Date 2022-03-25
 //     */
-//    RestOutStockOrder add(RestOutStockOrderParam param);
+    RestOutStockOrder add(RestOutStockOrderParam param);
 
 //    /**
 //     * 删除

@@ -34,6 +34,8 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
      */
     Long add(ActivitiProcessTaskParam param);
 
+    Long addV2(ActivitiProcessTaskParam param);
+
     /**
      * 删除
      *
@@ -98,7 +100,10 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
 
     void setProcessUserIds(Long processId, Long taskId);
 
+
     Set<Long> processAuditPerson(Long processId);
+
+    List<Long> processAuditPersonV2(Long processId);
 
     Long getTaskIdByFormId(Long formId);
 

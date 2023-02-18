@@ -18,5 +18,7 @@ public class FormFieldDataSource {
     String name;
     @ApiModelProperty("值")
     List<FormFieldValue> values;
+    @ApiModelProperty("值")
+    Object value;
 
 }

@@ -2,7 +2,9 @@ package cn.atsoft.dasheng.form.service.impl;
 
 
 import cn.atsoft.dasheng.audit.entity.ActivitiAudit;
+import cn.atsoft.dasheng.audit.entity.ActivitiAuditV2;
 import cn.atsoft.dasheng.audit.service.ActivitiAuditService;
+import cn.atsoft.dasheng.audit.service.ActivitiAuditServiceV2;
 import cn.atsoft.dasheng.base.auth.context.LoginContext;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -14,6 +16,7 @@ import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessTaskMapper;
+import cn.atsoft.dasheng.form.model.FormFieldParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.pojo.*;
@@ -60,6 +63,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private UserService userService;
     @Autowired
     private ActivitiAuditService auditService;
+    @Autowired
+    private ActivitiAuditServiceV2 auditServiceV2;
     @Autowired
     private InstockOrderService instockOrderService;
     @Autowired
@@ -109,11 +114,26 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         if (!entity.getType().equals("ErrorForWard")) {   //异常转交不需要 参与人
             this.setProcessUserIds(param.getProcessId(), entity.getProcessTaskId()); //任务添加参与人
         }
-        
+
 
         this.updateById(entity);
 
         shopCartService.addDynamicByTaskId(entity.getProcessTaskId(), null, "提交了申请");  //任务创建动态
+        return entity.getProcessTaskId();
+    }
+ @Override
+    public Long addV2(ActivitiProcessTaskParam param) {
+        ActivitiProcessTask entity = getEntity(param);
+        this.save(entity);
+        String origin = this.getOrigin.newThemeAndOrigin("processTask", entity.getProcessTaskId(), ToolUtil.isEmpty(param.getSource()) ? null : param.getSource(), ToolUtil.isEmpty(param.getSourceId()) ? null : param.getSourceId());
+        entity.setOrigin(origin);
+
+        List<Long> userIds = this.processAuditPersonV2(param.getProcessId());//取出执行节点执行人
+        entity.setUserIds(JSON.toJSONString(userIds));
+
+
+        this.updateById(entity);
+
         return entity.getProcessTaskId();
     }
 
@@ -245,45 +265,43 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         }
 
 
-
-
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
         IPage<ActivitiProcessTaskResult> page = new Page<>();
         String type = param.getType();
         ProcessType enumByType = getEnumByType(type);
         if (ToolUtil.isEmpty(enumByType)) {
             page = this.baseMapper.stocktakingTask(pageContext, param);
-        }else {
-            switch (enumByType){
+        } else {
+            switch (enumByType) {
                 case ALLOCATION:
-                    page =  this.baseMapper.aboutMeTask(pageContext, param);
+                    page = this.baseMapper.aboutMeTask(pageContext, param);
                     break;
                 case INSTOCK:
-                    page =  this.baseMapper.instockTask(pageContext, param);
+                    page = this.baseMapper.instockTask(pageContext, param);
                     break;
                 case MAINTENANCE:
-                    page =  this.baseMapper.maintenanceTask(pageContext, param);
+                    page = this.baseMapper.maintenanceTask(pageContext, param);
                     break;
                 case ERROR:
-                    page =  this.baseMapper.errorTask(pageContext, param);
+                    page = this.baseMapper.errorTask(pageContext, param);
                     break;
                 case SHIP:
-                    page =  this.baseMapper.aboutMeTask(pageContext, param);
+                    page = this.baseMapper.aboutMeTask(pageContext, param);
                     break;
                 case QUALITY:
-                    page =  this.baseMapper.aboutMeTask(pageContext, param);
+                    page = this.baseMapper.aboutMeTask(pageContext, param);
                     break;
                 case OUTSTOCK:
-                    page =  this.baseMapper.outstockTask(pageContext, param);
+                    page = this.baseMapper.outstockTask(pageContext, param);
                     break;
                 case PURCHASEASK:
-                    page =  this.baseMapper.aboutMeTask(pageContext, param);
+                    page = this.baseMapper.aboutMeTask(pageContext, param);
                     break;
                 case Stocktaking:
-                    page =  this.baseMapper.stocktakingTask(pageContext, param);
+                    page = this.baseMapper.stocktakingTask(pageContext, param);
                     break;
                 case PROCUREMENTORDER:
-                    page =  this.baseMapper.aboutMeTask(pageContext, param);
+                    page = this.baseMapper.aboutMeTask(pageContext, param);
                     break;
 
                 default:
@@ -592,6 +610,55 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         return userIds;
     }
 
+    /**
+     * 取流程责任执行人
+     */
+    @Override
+    public List<Long> processAuditPersonV2(Long processId) {
+        List<Long> userIds = new ArrayList<>();
+
+        List<ActivitiSteps> activitiSteps = activitiStepsService.query().eq("process_id", processId).list();
+        List<Long> stepIds = new ArrayList<>();
+        for (ActivitiSteps activitiStep : activitiSteps) {
+            stepIds.add(activitiStep.getSetpsId());
+        }
+        List<ActivitiAuditV2> audits = stepIds.size() == 0 ? new ArrayList<>() : auditServiceV2.query().in("setps_id", stepIds).list();
+        for (ActivitiAuditV2 audit : audits) {
+            List<FormFieldParam> rule = audit.getRule();
+//            for (FormFieldParam formFieldParam : rule) {
+//                if (formFieldParam.getName().equals("rules")) {
+//                    List<AuditRule.Rule> rules = JSON.parseArray(JSON.toJSONString(formFieldParam.getValue()), AuditRule.Rule.class);
+//                    for (AuditRule.Rule ruleRule : rules) {
+//                        switch (ruleRule.getType()) {
+//                            case DeptPositions:
+//                                for (DeptPosition deptPosition : ruleRule.getDeptPositions()) {
+//                                    List<Long> positionIds = new ArrayList<>();
+//                                    for (DeptPosition.Position position : deptPosition.getPositions()) {
+//                                        if (ToolUtil.isNotEmpty(position.getValue())) {
+//                                            positionIds.add(Long.valueOf(position.getValue()));
+//                                        }
+//                                    }
+//                                    List<User> userByPositionAndDept = userService.getUserByPositionAndDept(Long.valueOf(deptPosition.getKey()), positionIds);
+//                                    for (User user : userByPositionAndDept) {
+//                                        userIds.add(user.getUserId());
+//                                    }
+//                                }
+//                                break;
+//                            case AppointUsers:
+//                                for (AppointUser appointUser : ruleRule.getAppointUsers()) {
+//                                    userIds.add(Long.valueOf(appointUser.getKey()));
+//                                }
+//                                break;
+//                        }
+//
+//                    }
+//                }
+//            }
+
+        }
+        return userIds;
+    }
+
     @Override
     public Long getTaskIdByFormId(Long formId) {
         ActivitiProcessTask task = ToolUtil.isEmpty(formId) ? new ActivitiProcessTask() : this.query().eq("form_id", formId).one();
@@ -798,7 +865,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         //查询任务
         ActivitiProcessTask processTask = this.getById(taskId);
         //判断任务是否为空
-        if (ToolUtil.isNotEmpty(processTask)){
+        if (ToolUtil.isNotEmpty(processTask)) {
             Long processId = processTask.getProcessId();
             ActivitiProcess activitiProcess = activitiProcessService.getById(processId);
             String modelName = getNameByEnum(activitiProcess.getType());
@@ -936,9 +1003,10 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         }
 
     }
+
     @Override
-    public List<ActivitiProcessTaskResult> resultsByIds(List<Long> ids){
-        if(ToolUtil.isEmpty(ids) || ids.size() == 0 ){
+    public List<ActivitiProcessTaskResult> resultsByIds(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids) || ids.size() == 0) {
             return new ArrayList<>();
         }
         List<ActivitiProcessTaskResult> results = BeanUtil.copyToList(this.listByIds(ids), ActivitiProcessTaskResult.class);

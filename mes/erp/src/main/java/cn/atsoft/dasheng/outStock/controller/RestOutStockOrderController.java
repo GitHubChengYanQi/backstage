@@ -83,21 +83,20 @@ public class RestOutStockOrderController extends BaseController {
 
     @Autowired
     private ActivitiProcessTaskService processTaskService;
-//
-//    /**
-//     * 新增接口
-//     *
-//     * @author Captain_Jazz
-//     * @Date 2022-03-25
-//     */
-//    @RequestMapping(value = "/add", method = RequestMethod.POST)
-//    @ApiOperation("新增")
-//    @Permission
-//    public ResponseData addItem(@RequestBody RestOutStockOrderParam productionPickListsParam) {
-////        this.productionPickListsService.warning(productionPickListsParam);
-//        RestOutStockOrder pickLists = this.productionPickListsService.add(productionPickListsParam);
-//        return ResponseData.success(pickLists);
-//    }
+
+    /**
+     * 新增接口
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData addItem(@RequestBody RestOutStockOrderParam productionPickListsParam) {
+//        this.productionPickListsService.warning(productionPickListsParam);
+        RestOutStockOrder pickLists = this.productionPickListsService.add(productionPickListsParam);
+        return ResponseData.success(pickLists);
+    }
 
 //    /**
 //     * 生成code

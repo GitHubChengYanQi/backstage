@@ -18,7 +18,14 @@ public enum StepsType {
     AUDIT("1"),
     SEND("2"),
     BRANCH("3"),
-    ROUTE("4");
+    ROUTE("4"),
+    start("start"),
+    branch("branch"),
+    send("send"),
+    process("process"),
+    route("route"),
+    audit("audit");
+
 
 
 

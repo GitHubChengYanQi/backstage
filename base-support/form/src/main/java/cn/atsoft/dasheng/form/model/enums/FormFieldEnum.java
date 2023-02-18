@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.form.model;
+package cn.atsoft.dasheng.form.model.enums;
 
 import io.swagger.annotations.ApiModelProperty;
 
@@ -26,7 +26,6 @@ public enum FormFieldEnum {
 
     @ApiModelProperty("流程审批操作 并签或签 按钮")
     AuditOperation("流程审批操作 并签或签 按钮");
-
 
     private final String name;
 

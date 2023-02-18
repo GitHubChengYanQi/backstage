@@ -2,7 +2,6 @@ package cn.atsoft.dasheng.form.service.impl;
 
 
 import cn.atsoft.dasheng.action.Enum.*;
-import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.audit.entity.ActivitiAudit;
 import cn.atsoft.dasheng.audit.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.audit.model.result.ActivitiProcessLogResult;
@@ -32,7 +31,6 @@ import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
-import cn.atsoft.dasheng.production.service.impl.ProductionPickListsServiceImpl;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
 import cn.atsoft.dasheng.purchase.pojo.ThemeAndOrigin;
@@ -54,8 +52,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static cn.atsoft.dasheng.form.pojo.ProcessType.ALLOCATION;
 
 
 /**
@@ -1150,6 +1146,14 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
     @Override
+    public ActivitiStepsResult addLogV2(Long processId, Long taskId) {
+        ActivitiStepsResult activitiStepsResult = stepsService.backStepsResult(processId);
+        loopAddV2(activitiStepsResult, taskId);
+        viewService.addView(taskId);
+        return activitiStepsResult;
+    }
+
+    @Override
     public ActivitiStepsResult addLog(Long processId, Long taskId, Integer status, Long loginUserId) {
         ActivitiStepsResult activitiStepsResult = stepsService.backStepsResult(processId);
         loopAdd(activitiStepsResult, taskId, status, loginUserId);
@@ -1220,6 +1224,41 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
     private void loopAdd(ActivitiStepsResult activitiStepsResult, Long taskId) {
+
+        Long processId = activitiStepsResult.getProcessId();
+
+        /**
+         * insert
+         */
+        ActivitiProcessLog processLog = new ActivitiProcessLog();
+        processLog.setPeocessId(processId);
+        processLog.setTaskId(taskId);
+        processLog.setSetpsId(activitiStepsResult.getSetpsId());
+        processLog.setStatus(-1);
+        if (ToolUtil.isNotEmpty(activitiStepsResult.getAuditRule()) && ToolUtil.isNotEmpty(activitiStepsResult.getAuditRule().getActionStatuses())) {
+            List<ActionStatus> actionStatuses = activitiStepsResult.getAuditRule().getActionStatuses();
+            if (ToolUtil.isNotEmpty(actionStatuses)) {
+                for (ActionStatus actionStatus : actionStatuses) {
+                    actionStatus.setStatus(0);
+                }
+                processLog.setActionStatus(JSON.toJSONString(actionStatuses));
+            }
+        }
+
+
+        this.save(processLog);
+
+        if (ToolUtil.isNotEmpty(activitiStepsResult.getConditionNodeList()) && activitiStepsResult.getConditionNodeList().size() > 0) {
+            for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
+                loopAdd(stepsResult, taskId);
+            }
+        }
+        if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
+            loopAdd(activitiStepsResult.getChildNode(), taskId);
+        }
+
+    }
+ private void loopAddV2(ActivitiStepsResult activitiStepsResult, Long taskId) {
 
         Long processId = activitiStepsResult.getProcessId();
 

@@ -26,6 +26,14 @@ public interface ActivitiProcessFormLogService extends IService<ActivitiProcessL
      */
     void add(ActivitiProcessLogParam param);
 
+    void audit(Long taskId, Integer status, Long userId);
+
+    List<ActivitiProcessLog> getAudit(Long taskId);
+
+    List<ActivitiProcessLog> listByTaskId(Long taskId);
+
+    void add(Long processId, Long taskId);
+
     /**
      * 删除
      *

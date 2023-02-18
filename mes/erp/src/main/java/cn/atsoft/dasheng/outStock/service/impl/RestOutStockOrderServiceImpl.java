@@ -10,11 +10,15 @@ package cn.atsoft.dasheng.outStock.service.impl;
 //import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 //import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
 //import cn.atsoft.dasheng.appBase.service.MediaService;
+
 import cn.atsoft.dasheng.audit.service.ActivitiAuditService;
+import cn.atsoft.dasheng.audit.service.ActivitiProcessFormLogService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.codeRule.entity.RestCodeRule;
+import cn.atsoft.dasheng.codeRule.service.RestCodeRuleService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 //import cn.atsoft.dasheng.erp.config.MobileService;
 //import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
@@ -30,6 +34,7 @@ import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.outStock.entity.RestOutStockOrder;
 import cn.atsoft.dasheng.outStock.mapper.RestOutStockOrderMapper;
+import cn.atsoft.dasheng.outStock.model.params.RestOutStockOrderParam;
 import cn.atsoft.dasheng.outStock.service.RestOutStockOrderService;
 //import cn.atsoft.dasheng.production.mapper.ProductionPickListsMapper;
 //import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
@@ -75,135 +80,47 @@ public class RestOutStockOrderServiceImpl extends ServiceImpl<RestOutStockOrderM
     @Autowired
     private UserService userService;
 
-//    @Autowired
+    //    @Autowired
 //    private ProductionTaskService productionTaskService;
 //
 //    @Autowired
 //    private ProductionWorkOrderService workOrderService;
 //
-//    @Autowired
-//    private ActivitiSetpSetService setpSetService;
-//
-//    @Autowired
-//    private ProductionTaskDetailService taskDetailService;
-//
-//    @Autowired
-//    private ProductionPickListsDetailService pickListsDetailService;
-//
-//    @Autowired
-//    private ProductionPickListsCartService pickListsCartService;
-//
-//    @Autowired
-//    private SkuService skuService;
-//
-//    @Autowired
-//    private PartsService partsService;
-//
-//    @Autowired
-//    private ErpPartsDetailService partsDetailService;
-//
-//    @Autowired
-//    private StockDetailsService stockDetailsService;
-//
-//    @Autowired
-//    private StorehousePositionsService storehousePositionsService;
-//
-//    @Autowired
-//    private OutstockOrderService outstockOrderService;
-//
-//    @Autowired
-//    private ProductionPickCodeService pickCodeService;
-//
-//    @Autowired
-//    private ProductionPickCodeBindService codeBindService;
-//
-//    @Autowired
-//    private MobileService mobileService;
-//
-//    @Autowired
-//    private WxCpSendTemplate wxCpSendTemplate;
-//
-//    @Autowired
-//    private CodingRulesService codingRulesService;
-//
-//    @Autowired
-//    private ActivitiSetpSetDetailService setpSetDetailService;
-//
-//    @Autowired
-//    private ShipSetpService shipSetpService;
-//
-//    @Autowired
-//    private ActivitiProcessService activitiProcessService;
-//
-//    @Autowired
-//    private ActivitiProcessTaskService activitiProcessTaskService;
-//
-//    @Autowired
-//    private ActivitiProcessLogV1Service activitiProcessLogService;
-//
-//    @Autowired
-//    private AnnouncementsService announcementsService;
-//
-//    @Autowired
-//    private DocumentsActionService actionService;
-//
-//    @Autowired
-//    private MediaService mediaService;
-//
-//    @Autowired
-//    private DocumentStatusService statusService;
-//    @Autowired
-//    private ActivitiAuditService auditService;
-//
-//    @Autowired
-//    private InstockLogDetailService instockLogDetailService;
-//
-//    @Autowired
-//    private ShopCartService shopCartService;
-//
-//    @Autowired
-//    private ActivitiProcessLogV1Service processLogService;
-//
-//    @Autowired
-//    private ActivitiStepsService activitiStepsService;
-//    @Autowired
-//    private StepsService stepsService;
-//    @Autowired
-//    private RoleService roleService;
-//    @Autowired
-//    private RedisSendCheck redisSendCheck;
-//    @Autowired
-//    private GetOrigin getOrigin;
-//    @Autowired
-//    private StorehousePositionsBindService positionsBindService;
-//    @Autowired
-//    private MessageProducer messageProducer;
-//    @Autowired
-//    private AllocationLogService allocationLogService;
-//    @Autowired
-//    private AllocationLogDetailService allocationLogDetailService;
+    @Autowired
+    private ActivitiSetpSetService setpSetService;
+
+    @Autowired
+    private RestCodeRuleService codingRulesService;
 
 
-//    @Override
-//    @Transactional
-//    public ProductionPickLists add(ProductionPickListsParam param) {
-//        ProductionPickLists entity = getEntity(param);
-//        if (ToolUtil.isEmpty(param.getCoding())) {
-//            CodingRules codingRules = codingRulesService.query().eq("module", "2").eq("state", 1).one();
-//            if (ToolUtil.isNotEmpty(codingRules)) {
-//                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
-//                entity.setCoding(coding);
-//            } else {
-//                throw new ServiceException(500, "请配置出库单据自动生成编码规则");
-//            }
-//        }
-//        entity.setStatus(0L);
-////        entity.setUserId(LoginContextHolder.getContext().getUserId());
-//        this.save(entity);
-////        String origin = getOrigin.newThemeAndOrigin("productionTask", entity.getTaskId(), entity.getSource(), entity.getSourceId());
-////        entity.setOrigin(origin);
-////        this.updateById(entity);
-//
+    @Autowired
+    private ActivitiProcessService activitiProcessService;
+
+    @Autowired
+    private ActivitiProcessTaskService activitiProcessTaskService;
+
+    @Autowired
+    private ActivitiProcessFormLogService activitiProcessLogService;
+
+    @Autowired
+    private ActivitiAuditService auditService;
+
+
+    @Override
+    @Transactional
+    public RestOutStockOrder add(RestOutStockOrderParam param) {
+        RestOutStockOrder entity = getEntity(param);
+        if (ToolUtil.isEmpty(param.getCoding())) {
+//            String coding = codingRulesService.backCoding("OutStockOrder", param);
+//            entity.setCoding(coding);
+        }
+        entity.setStatus(0L);
+        entity.setUserId(LoginContextHolder.getContext().getUserId());
+        this.save(entity);
+//        String origin = getOrigin.newThemeAndOrigin("productionTask", entity.getTaskId(), entity.getSource(), entity.getSourceId());
+//        entity.setOrigin(origin);
+//        this.updateById(entity);
+
 //        if (ToolUtil.isNotEmpty(param.getPickListsDetailParams())) {
 //            List<ShopCart> carts = new ArrayList<>();
 //            List<ProductionPickListsDetail> details = new ArrayList<>();
@@ -220,48 +137,48 @@ public class RestOutStockOrderServiceImpl extends ServiceImpl<RestOutStockOrderM
 //            shopCartService.updateBatchById(carts);
 //            pickListsDetailService.saveBatch(details);
 //        }
-//
-//
-//        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "OUTSTOCK").eq("status", 99).eq("module", "pickLists").one();
-//        if (ToolUtil.isNotEmpty(activitiProcess)) {
+
+
+        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "OutStock").eq("status", 99).eq("module", "productionOutStock").one();
+        if (ToolUtil.isNotEmpty(activitiProcess)) {
 //            activitiProcessTaskService.checkStartUser(activitiProcess.getProcessId());
 //            auditService.power(activitiProcess);//检查创建权限
-//            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-//            LoginUser user = LoginContextHolder.getContext().getUser();
-//            String name ="";
-//
-//            if (user.getId().equals(-100L)){
-//                name = param.getLoginUser().getName();
-//            }else {
-//                name = user.getName();
-//            }
-//
-//            activitiProcessTaskParam.setTaskName(name + "的出库申请 ");
-//            activitiProcessTaskParam.setRemark(entity.getNote());
-//            activitiProcessTaskParam.setUserId(param.getUserId());
+            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+            LoginUser user = LoginContextHolder.getContext().getUser();
+            String name = "";
+
+            if (user.getId().equals(-100L)) {
+                name = param.getLoginUser().getName();
+            } else {
+                name = user.getName();
+            }
+
+            activitiProcessTaskParam.setTaskName(name + "的出库申请 ");
+            activitiProcessTaskParam.setRemark(entity.getNote());
+            activitiProcessTaskParam.setUserId(param.getUserId());
 //            activitiProcessTaskParam.setFormId(entity.getPickListsId());
-//            activitiProcessTaskParam.setType("OUTSTOCK");
-//            if (ToolUtil.isNotEmpty(entity.getSource()) && entity.getSource().equals("processTask")) {
-//                activitiProcessTaskParam.setPid(param.getSourceId());
-//            }
-//            if (ToolUtil.isNotEmpty(param.getMainTaskId())) {
-//                activitiProcessTaskParam.setMainTaskId(param.getMainTaskId());
-//            }
-//            activitiProcessTaskParam.setUserId(param.getUserId());
-//            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
-//            activitiProcessTaskParam.setSource(param.getSource());
-//            activitiProcessTaskParam.setSourceId(param.getSourceId());
-//            ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
-//            ToolUtil.copyProperties(activitiProcessTaskParam, activitiProcessTask);
-//            if (ToolUtil.isNotEmpty(entity.getTheme())){
-//                activitiProcessTaskParam.setTheme(entity.getTheme());
-//            }
-//            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+            activitiProcessTaskParam.setType("OUTSTOCK");
+            if (ToolUtil.isNotEmpty(entity.getSource()) && entity.getSource().equals("processTask")) {
+                activitiProcessTaskParam.setPid(param.getSourceId());
+            }
+            if (ToolUtil.isNotEmpty(param.getMainTaskId())) {
+                activitiProcessTaskParam.setMainTaskId(param.getMainTaskId());
+            }
+            activitiProcessTaskParam.setUserId(param.getUserId());
+            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            activitiProcessTaskParam.setSource(param.getSource());
+            activitiProcessTaskParam.setSourceId(param.getSourceId());
+            ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
+            ToolUtil.copyProperties(activitiProcessTaskParam, activitiProcessTask);
+            if (ToolUtil.isNotEmpty(entity.getTheme())) {
+                activitiProcessTaskParam.setTheme(entity.getTheme());
+            }
+            Long processTask = activitiProcessTaskService.addV2(activitiProcessTaskParam);
 //            //添加铃铛
 //            wxCpSendTemplate.setSource("processTask");
 //            wxCpSendTemplate.setSourceId(taskId);
 //            //添加log
-//            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+            activitiProcessLogService.add(activitiProcess.getProcessId(), processTask);
 //            activitiProcessLogService.autoAudit(taskId, 1, LoginContextHolder.getContext().getUserId());
 //            if (ToolUtil.isNotEmpty(param.getRemarkUserIds())) {
 //
@@ -280,22 +197,23 @@ public class RestOutStockOrderServiceImpl extends ServiceImpl<RestOutStockOrderM
 //                remarksParam.setContent(param.getRemark());
 //
 //            }
-//
-//        } else {
-//            throw new ServiceException(500, "请创建质检流程！");
-//        }
-//        return entity;
-//    }
-//
+
+        } else {
+            throw new ServiceException(500, "请创建质检流程！");
+        }
+        return entity;
+    }
+
+    //
 //    @Override
 //    public void delete(ProductionPickListsParam param) {
 //        this.removeById(getKey(param));
 //    }
 //
 //    @Override
-//    public void update(ProductionPickListsParam param) {
-//        ProductionPickLists oldEntity = getOldEntity(param);
-//        ProductionPickLists newEntity = getEntity(param);
+//    public void update(RestOutStockOrderParam param) {
+//        RestOutStockOrder oldEntity = getOldEntity(param);
+//        RestOutStockOrder newEntity = getEntity(param);
 //        ToolUtil.copyProperties(newEntity, oldEntity);
 //        this.updateById(newEntity);
 //    }
@@ -594,23 +512,25 @@ public class RestOutStockOrderServiceImpl extends ServiceImpl<RestOutStockOrderM
 //        }
 //    }
 //
-//    private Serializable getKey(ProductionPickListsParam param) {
-//        return param.getPickListsId();
-//    }
-//
+    private Serializable getKey(RestOutStockOrderParam param) {
+        return param.getPickListsId();
+    }
+
+    //
 //    private Page<ProductionPickListsResult> getPageContext() {
 //        return PageFactory.defaultPage();
 //    }
 //
-//    private ProductionPickLists getOldEntity(ProductionPickListsParam param) {
-//        return this.getById(getKey(param));
-//    }
-//
-//    private ProductionPickLists getEntity(ProductionPickListsParam param) {
-//        ProductionPickLists entity = new ProductionPickLists();
-//        ToolUtil.copyProperties(param, entity);
-//        return entity;
-//    }
+    private RestOutStockOrder getOldEntity(RestOutStockOrderParam param) {
+        return this.getById(getKey(param));
+    }
+
+    //
+    private RestOutStockOrder getEntity(RestOutStockOrderParam param) {
+        RestOutStockOrder entity = new RestOutStockOrder();
+        ToolUtil.copyProperties(param, entity);
+        return entity;
+    }
 //
 //    /**
 //     * 库存预警

@@ -31,6 +31,8 @@ public class ActivitiAuditParam implements Serializable, BaseValidatingParam {
     /**
      * 主键
      */
+    @ApiModelProperty("步骤id集合")
+    private List<Long> stepsIds;
     @ApiModelProperty("主键")
     private Long auditId;
 

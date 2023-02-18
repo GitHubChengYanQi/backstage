@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class ModelProcessDao {
 //    模块
-    private ModelEnum model;
+    private String model;
 
 //    模块名
     private String modelName;

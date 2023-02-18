@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.audit.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiStepsResultV2;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -76,6 +77,8 @@ public interface ActivitiStepsService extends IService<ActivitiSteps> {
     ActivitiStepsResult backStepsResult(Long id);
 
 
+    ActivitiStepsResultV2 backStepsResultV2(Long id);
+
     ActivitiStepsResult getSteps(Long id);
 
 
@@ -87,7 +90,11 @@ public interface ActivitiStepsService extends IService<ActivitiSteps> {
     ActivitiStepsResult getStepResult(Long processId);
 
 
+    ActivitiStepsResultV2 getStepResultV2(Long processId);
+
     List<ActivitiStepsResult> getStepsByProcessId(Long processId);
+
+    List<ActivitiStepsResultV2> getStepsByProcessIdV2(Long processId);
 
     /**
      * 流程结构返回状态

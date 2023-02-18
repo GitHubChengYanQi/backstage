@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.form.controller;
 
 import cn.atsoft.dasheng.audit.entity.ActivitiAudit;
 import cn.atsoft.dasheng.audit.service.ActivitiAuditService;
+import cn.atsoft.dasheng.audit.service.ActivitiAuditServiceV2;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
@@ -12,6 +13,7 @@ import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.model.result.ActivitiStepsResultV2;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.form.service.ModelService;
@@ -49,6 +51,7 @@ public class ActivitiStepsController extends BaseController {
 
     @Autowired
     private ActivitiAuditService auditService;
+
 
     @Autowired
     private ActivitiProcessService processService;
@@ -97,9 +100,9 @@ public class ActivitiStepsController extends BaseController {
         }
 
         //TODO 增加传入 ModelEnum
-        modelService.checkProcessData(activitiStepsParam, ModelEnum.OUTSTOCK);
+//        modelService.checkProcessData(activitiStepsParam, ModelEnum.OUTSTOCK);
 
-        this.activitiStepsService.addProcessV2(activitiStepsParam,null, process.getProcessId());
+        this.activitiStepsService.addProcessV2(activitiStepsParam,0L, process.getProcessId());
         return ResponseData.success();
     }
 
@@ -151,6 +154,19 @@ public class ActivitiStepsController extends BaseController {
     @ApiOperation("详情")
     public ResponseData detail(@RequestBody ActivitiStepsParam activitiStepsParam) {
         ActivitiStepsResult steps = activitiStepsService.getStepResult(activitiStepsParam.getProcessId());
+//        ActivitiStepsResult stepsResult = this.activitiStepsService.backStepsResult(activitiStepsParam.getProcessId());
+        return ResponseData.success(steps);
+    }
+  /**
+     * 查看详情接口
+     *
+     * @author Sing
+     * @Date 2021-11-10
+     */
+    @RequestMapping(value = "/{version}/detail", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public ResponseData detailV2(@RequestBody ActivitiStepsParam activitiStepsParam) {
+        ActivitiStepsResultV2 steps = activitiStepsService.getStepResultV2(activitiStepsParam.getProcessId());
 //        ActivitiStepsResult stepsResult = this.activitiStepsService.backStepsResult(activitiStepsParam.getProcessId());
         return ResponseData.success(steps);
     }

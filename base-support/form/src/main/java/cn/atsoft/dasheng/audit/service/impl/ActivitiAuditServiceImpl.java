@@ -2,6 +2,9 @@ package cn.atsoft.dasheng.audit.service.impl;
 
 
 import cn.atsoft.dasheng.audit.entity.ActivitiAudit;
+import cn.atsoft.dasheng.audit.entity.ActivitiAuditV2;
+import cn.atsoft.dasheng.audit.model.result.ActivitiAuditResultV2;
+import cn.atsoft.dasheng.audit.service.ActivitiAuditServiceV2;
 import cn.atsoft.dasheng.audit.service.ActivitiProcessFormLogService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -58,6 +61,8 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
     private ActivitiProcessFormLogService processLogService;
     @Autowired
     private ActivitiAuditService auditService;
+    @Autowired
+    private ActivitiAuditServiceV2 auditServiceV2;
 
     @Autowired
     private UserService userService;
@@ -102,6 +107,12 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
     public void delete(ActivitiAuditParam param) {
         param.setDisplay(0);
         this.updateById(this.getEntity(param));
+    }
+    @Override
+    public List<ActivitiAuditV2> listByStepsIds(List<Long> ids){
+        return  ids.size() == 0 ? new ArrayList<>() : this.auditServiceV2.list(new QueryWrapper<ActivitiAuditV2>() {{
+            in("setps_id", ids);
+        }});
     }
 
     @Override
@@ -149,6 +160,26 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
 
             for (ActivitiAudit audit : audits) {
                 ActivitiAuditResult auditResult = new ActivitiAuditResult();
+                ToolUtil.copyProperties(audit, auditResult);
+                DocumentsStatusResult detail = documentStatusService.detail(auditResult.getDocumentsStatusId());
+                auditResult.setStatusResult(detail);
+                if (ToolUtil.isNotEmpty(auditResult.getAction())) {
+                    List<ActionStatus> statuses = JSON.parseArray(auditResult.getAction(), ActionStatus.class);
+                    auditResult.setStatuses(statuses);
+                }
+                auditResults.add(auditResult);
+            }
+        }
+        return auditResults;
+    }
+    @Override
+    public List<ActivitiAuditResultV2> backAuditsV2(List<Long> ids) {
+        List<ActivitiAuditResultV2> auditResults = new ArrayList<>();
+        if (ids.size() > 0) {
+            List<ActivitiAuditResultV2> audits = this.auditServiceV2.resultByIds(ids);
+
+            for (ActivitiAuditResultV2 audit : audits) {
+                ActivitiAuditResultV2 auditResult = new ActivitiAuditResultV2();
                 ToolUtil.copyProperties(audit, auditResult);
                 DocumentsStatusResult detail = documentStatusService.detail(auditResult.getDocumentsStatusId());
                 auditResult.setStatusResult(detail);

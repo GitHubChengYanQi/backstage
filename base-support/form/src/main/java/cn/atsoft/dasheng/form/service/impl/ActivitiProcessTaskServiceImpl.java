@@ -34,10 +34,21 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
 
 
+//    @Override
+//    public ActivitiProcessTask add(ActivitiProcessTaskParam param) {
+//        ActivitiProcessTask entity = getEntity(param);
+//        this.save(entity);
+//        return entity;
+//    }
+
     @Override
-    public void add(ActivitiProcessTaskParam param) {
-        ActivitiProcessTask entity = getEntity(param);
-        this.save(entity);
+    public Long add(ActivitiProcessTaskParam param) {
+        return null;
+    }
+
+    @Override
+    public Long addV2(ActivitiProcessTaskParam param) {
+        return null;
     }
 
     @Override

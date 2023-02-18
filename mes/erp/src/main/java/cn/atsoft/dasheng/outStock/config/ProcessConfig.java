@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,10 +22,10 @@ public class ProcessConfig {
     private ModelService modelService;
 
     @Bean
-    public void register() {
+    public void routeRegister() {
         modelService.register(new ModelProcessDao(){{
-            setModel(ModelEnum.OUTSTOCK);
-            setModelName(ModelEnum.OUTSTOCK.getName());
+            setModel("OutStock");
+            setModelName("出库单");
             setTypes(new ArrayList<ModelType>(){{
                 add(new ModelType(){{
                     setName(ProcessModuleEnum.productionOutStock.getModuleName());

@@ -24,7 +24,7 @@ public class ActivitiSetpSetDetail implements Serializable {
     /**
      * 详情Id
      */
-      @TableId(value = "detail_id", type = IdType.AUTO)
+      @TableId(value = "detail_id", type = IdType.ID_WORKER)
     private Long detailId;
 
     /**

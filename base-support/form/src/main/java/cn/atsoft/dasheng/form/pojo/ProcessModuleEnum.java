@@ -30,7 +30,9 @@ public enum ProcessModuleEnum {
     pickLists("出库单申请"),
     allocation("调拨申请"),
     reMaintenance("复检复调"),
-    productionTask("生产任务");
+    productionTask("生产任务"),
+    route("工艺路线"),
+    ships("工艺路线");
 
     @EnumValue
     private String moduleName;

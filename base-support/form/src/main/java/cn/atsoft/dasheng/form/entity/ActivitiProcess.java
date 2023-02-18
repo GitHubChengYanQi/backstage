@@ -26,7 +26,7 @@ public class ActivitiProcess implements Serializable {
     /**
      * 流程ID，主键
      */
-    @TableId(value = "process_id", type = IdType.AUTO)
+    @TableId(value = "process_id", type = IdType.ID_WORKER)
     private Long processId;
 
     /**

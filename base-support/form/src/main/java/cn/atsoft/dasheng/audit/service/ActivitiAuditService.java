@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.audit.service;
 
+import cn.atsoft.dasheng.audit.entity.ActivitiAuditV2;
+import cn.atsoft.dasheng.audit.model.result.ActivitiAuditResultV2;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.audit.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -41,6 +43,8 @@ public interface ActivitiAuditService extends IService<ActivitiAudit> {
     void delete(ActivitiAuditParam param);
 
 
+    List<ActivitiAuditV2> listByStepsIds(List<Long> ids);
+
     ActivitiAuditResult getAudit(Long id);
 
     /**
@@ -78,6 +82,8 @@ public interface ActivitiAuditService extends IService<ActivitiAudit> {
 
     List<ActivitiAuditResult> backAudits(List<Long> ids);
 
+
+    List<ActivitiAuditResultV2> backAuditsV2(List<Long> ids);
 
     List<Long> getUserIds(Long taskId);
     void power(ActivitiProcess activitiProcess);

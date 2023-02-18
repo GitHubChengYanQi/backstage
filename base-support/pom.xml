@@ -25,6 +25,7 @@
         <module>dbctn</module>
         <module>oauth2</module>
         <module>form</module>
+        <module>message</module>
     </modules>
 
 </project>

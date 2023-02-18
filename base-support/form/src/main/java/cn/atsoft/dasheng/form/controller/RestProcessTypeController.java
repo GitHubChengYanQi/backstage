@@ -35,14 +35,14 @@ public class RestProcessTypeController {
     }
 
     @RequestMapping(value = "/getByModel", method = RequestMethod.GET)
-    public ResponseData getModuleEnum(@RequestParam ModelEnum model) {
+    public ResponseData getModuleEnum(@RequestParam String model) {
 
         return ResponseData.success(modelService.getByModel(model));
     }
 
 
     @RequestMapping(value = "/getFormByModel", method = RequestMethod.GET)
-    public ResponseData getFormByModel(@RequestParam ModelEnum model) {
+    public ResponseData getFormByModel(@RequestParam String model) {
 
         return ResponseData.success(modelService.getFormByModel(model));
     }

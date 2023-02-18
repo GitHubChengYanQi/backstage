@@ -15,9 +15,10 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>material-center</module>
         <module>code-rule</module>
         <module>erp</module>
+        <module>make</module>
+        <module>material-center</module>
         <module>traceability</module>
     </modules>
 

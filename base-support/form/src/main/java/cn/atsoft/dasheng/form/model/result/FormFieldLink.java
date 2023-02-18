@@ -6,7 +6,8 @@ import lombok.Value;
 @Data
 public class FormFieldLink {
     private String title;
-    private String key;
+
+    private String field;
 
     private String value;;
 }

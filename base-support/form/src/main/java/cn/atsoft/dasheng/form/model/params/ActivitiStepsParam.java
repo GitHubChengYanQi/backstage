@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.form.model.params;
 
+import cn.atsoft.dasheng.form.model.FormField;
+import cn.atsoft.dasheng.form.model.FormFieldParam;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.AuditType;
 import cn.atsoft.dasheng.form.pojo.QualityRules;
@@ -32,11 +34,11 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
 
     private ActivitiStepsParam childNode;
 
-    private QualityRules rule;
-
     private AuditType auditType;
 
     private AuditRule auditRule;
+
+    private List<FormFieldParam> roleList;
 
     private String stepType;
 

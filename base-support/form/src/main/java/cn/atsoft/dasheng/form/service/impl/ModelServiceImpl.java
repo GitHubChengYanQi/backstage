@@ -2,24 +2,20 @@ package cn.atsoft.dasheng.form.service.impl;
 
 import cn.atsoft.dasheng.core.util.SpringContextHolder;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.form.model.FormField;
-import cn.atsoft.dasheng.form.model.FormFieldEnum;
-import cn.atsoft.dasheng.form.model.ModelProcessDao;
-import cn.atsoft.dasheng.form.model.ProcessInterface;
+import cn.atsoft.dasheng.form.model.*;
+import cn.atsoft.dasheng.form.model.enums.FormFieldEnum;
 import cn.atsoft.dasheng.form.model.enums.ModelEnum;
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
+import cn.atsoft.dasheng.form.model.result.FormFieldKeyAndValue;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
+import cn.atsoft.dasheng.form.pojo.AuditType;
 import cn.atsoft.dasheng.form.pojo.StepsType;
 import cn.atsoft.dasheng.form.service.ModelService;
-import cn.atsoft.dasheng.form.service.ReflectUtils;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.stereotype.Service;
-import sun.reflect.misc.FieldUtil;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -53,7 +49,7 @@ public class ModelServiceImpl implements ModelService {
      * @return
      */
     @Override
-    public ModelProcessDao getByModel(ModelEnum model) {
+    public ModelProcessDao getByModel(String model) {
         for (ModelProcessDao modelProcessDao : list()) {
             if (modelProcessDao.getModel().equals(model)) {
                 return modelProcessDao;
@@ -63,102 +59,68 @@ public class ModelServiceImpl implements ModelService {
     }
 
     @Override
-    public List<FormField> getFormByModel(ModelEnum model) {
-        ProcessInterface bean = SpringContextHolder.getBean(model.name() + "ProcessFormConfig");
+    public List<GetFormByModelResult> getFormByModel(String model) {
+        ProcessInterface bean = SpringContextHolder.getBean(model + "ProcessFormConfig");
+        List<GetFormByModelResult> result = new ArrayList<>();
+        for (AuditType value : AuditType.values()) {
+                result.add(new GetFormByModelResult() {{
+                    setKey(value);
+                    setTitle(value.getName());
+                    setFields(bean.getProcessForm(value));
+                }});
 
-        return bean.getProcessForm();
-    }
-
-    public List<FormField> getAllFormByModel(ModelEnum model) {
-        ProcessInterface bean = SpringContextHolder.getBean(model.name() + "ProcessFormConfig");
-        List<FormField> result = new ArrayList<>();
-        getAllChildren(bean.getProcessForm(), result);
+        }
         return result;
     }
 
-    public void getAllChildren(List<FormField> data, List<FormField> result) {
-//        result.addAll(data);
-//        for (FormField datum : data) {
-//            if(ToolUtil.isNotEmpty(datum.getChildren())){
-//                this.getAllChildren(datum.getChildren(),result);
-//            }
-//        }
-    }
-    private void getAllFields (Field[] declaredFields,Class<?> selfClass,List<Field> formByModel){
+//    public List<FormField> getAllFormByModel(ModelEnum model, AuditType key) {
+//        ProcessInterface bean = SpringContextHolder.getBean(model + "ProcessFormConfig");
+//        List<FormField> result = new ArrayList<>();
+//        getAllChildren(bean.getProcessForm(key), result);
+//        return result;
+//    }
 
-        for (Field declaredField : declaredFields) {
-            declaredField.setAccessible(true);
-//            type(declaredField)&&!declaredField.getName().equals("clazz")&&!declaredField.getName().equals("Class") && !declaredField.getType().equals(selfClass) && Arrays.stream(declaredField.getType().getInterfaces()).anyMatch(i->i.getSimpleName().equals("Serializable"))
-            if (type(declaredField) &&!declaredField.getType().equals(selfClass)){
-                try{
-                    Field[] declaredFields1 = declaredField.getClass().getDeclaredFields();
-                    getAllFields(declaredFields1,selfClass,formByModel);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-            if (!type(declaredField)){
-                formByModel.add(declaredField);
-            }
 
-        }
-    }
+
     @Override
-    public boolean checkProcessData(ActivitiStepsParam param, ModelEnum model) throws IllegalAccessException {
+    public boolean checkProcessData(ActivitiStepsParam param, String  model) throws IllegalAccessException {
 
-        List<FormField> formByModel = getFormByModel(model);
-        List<Field> needCheckField = new ArrayList<>();
-        Field[] declaredFields1 = FieldUtils.getAllFields(param.getClass());
-        Field[] declaredFields = ReflectUtils.getAllField(param.getClass());
-        getAllFields(declaredFields,param.getClass(),needCheckField);
-//        Field[] declaredFields = param.getClass().getDeclaredFields();
-        for (FormField formField : formByModel) {
-            for (Field declaredField : declaredFields) {
-                declaredField.setAccessible(true);if (formField.getField().equals(declaredField.getName())) {
-                    if (ToolUtil.isEmpty(declaredField.get(param))){
-                        throw new ServiceException(500, "缺少提交数据");
-                    }else {
-                        needCheckField.add(declaredField);
-                        break;
+        List<GetFormByModelResult> formByModel = getFormByModel(model);
+
+
+
+        List<FormFieldParam> roleList = param.getRoleList();
+
+
+        //        获取联动数据
+        List<FormField> checkField = new ArrayList<>();
+        for (GetFormByModelResult formFieldResult : formByModel) {
+            if (param.getAuditType().equals(formFieldResult.getKey())){
+                for (FormField formField : formFieldResult.getFields()) {
+
+
+                    if (ToolUtil.isNotEmpty(roleList)) {
+                        for (FormFieldParam formFieldParam : roleList) {
+                            if (ToolUtil.isEmpty(formField.getLinks()) || (ToolUtil.isNotEmpty(formField.getLinks()) && formField.getLinks().stream().anyMatch(i -> i.getField().equals(formFieldParam.getName()) && i.getValue().equals(formFieldParam.getValue())))) {
+                                checkField.add(formField);
+                                break;
+                            }
+                        }
                     }
                 }
             }
         }
-//        获取联动数据
-        List<FormField> checkField = new ArrayList<>();
-        for (FormField formField : formByModel) {
-            for (Field declaredField : needCheckField) {
-                    if (ToolUtil.isEmpty(formField.getLinks())||(ToolUtil.isNotEmpty(formField.getLinks()) && formField.getLinks().stream().anyMatch(i -> {
-                        try {
-                            return i.getKey().equals(declaredField.getName()) && i.getValue().equals(declaredField.get(param));
-                        } catch (IllegalAccessException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }))) {
-                        checkField.add(formField);
-                    }
-            }
-        }
-
-
+//
+//
         for (FormField formField : checkField) {
-            for (Field declaredField : needCheckField) {
-                if (formField.getField().equals(declaredField.getName())) {
+            for (FormFieldParam formFieldParam : roleList) {
+                if (formField.getName().equals(formFieldParam.getName())) {
                     if (ToolUtil.isNotEmpty(formField.getDataSource().getValues())) {
 //                        判断值
-                        if (formField.getDataSource().getValues().stream().anyMatch(i -> {
-                            try {
-                                return i.getValue().equals(declaredField.get(param));
-                            } catch (IllegalAccessException e) {
-                                throw new RuntimeException(e);
-                            }
-                        })) {
-                            //TODO 校验值
-                            if (formField.getType().equals(FormFieldEnum.Select)) {
+                        if (formField.getDataSource().getValues().stream().anyMatch(i -> i.getValue().equals(formFieldParam.getValue()))) {
 
-                            }
                         } else {
-                            throw new ServiceException(500, "传入字段缺少值或值错误:" + formField.getName());
+                            throw new ServiceException(500, "传入字段缺少值或值错误:" + formField.getTitle());
                         }
                     }
                 }
@@ -176,39 +138,10 @@ public class ModelServiceImpl implements ModelService {
 
     }
 
-    private boolean checkProcessDataDetail(ActivitiStepsParam param, List<FormField> allFormByModel) {
-        AuditRule auditRule = param.getAuditRule();
-        if (!param.getType().equals(StepsType.BRANCH.getType())) {
-            for (FormField formField : allFormByModel) {
-                switch (formField.getType()) {
-                    case SelectUser:
-                        if (ToolUtil.isNotEmpty(auditRule.getRules())) {
-
-                        } else {
-                            throw new ServiceException(500, "请选择人员范围");
-                        }
-                        break;
-                    case AuditOperation:
-                        if (ToolUtil.isEmpty(auditRule.getNodeApprovalType())) {
-                            throw new ServiceException(500, "请选择审批操作");
-                        }
-                        break;
-                    case Select:
-                        if (ToolUtil.isEmpty(formField.getDataSource())) {
-//                            formField.get
-                        }
-                }
-            }
-        }
-
-
-        return true;
-    }
-
     private Boolean type(Field field) {
         Class<?>[] interfaces = field.getClass().getInterfaces();
 //        return Arrays.stream(interfaces).anyMatch(i->i.getSimpleName().equals("Serializable"));
-                switch (field.getType().getSimpleName()) {
+        switch (field.getType().getSimpleName()) {
             case "long":
             case "Long":
             case "String":

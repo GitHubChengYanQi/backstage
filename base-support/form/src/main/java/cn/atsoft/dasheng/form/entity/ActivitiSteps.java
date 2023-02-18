@@ -35,7 +35,7 @@ public class ActivitiSteps implements Serializable {
     /**
      * 步骤Id，主键
      */
-    @TableId(value = "setps_id", type = IdType.AUTO)
+    @TableId(value = "setps_id", type = IdType.ID_WORKER)
     private Long setpsId;
     /**
      * 分支
