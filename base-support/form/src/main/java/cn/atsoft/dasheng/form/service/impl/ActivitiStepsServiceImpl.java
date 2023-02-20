@@ -114,7 +114,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     }
 
     @Override
-    @Transactional
     public void addProcessV2(ActivitiStepsParam param, Long parentStepId, Long processId) {
 
 
@@ -127,7 +126,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         entity.setSupper(parentStepId);
         this.save(entity);
         Long setpsId = entity.getSetpsId();
-        AuditRule auditRule = param.getAuditRule();
         /**
          * 添加节点规则
          */
@@ -147,18 +145,13 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         if (ToolUtil.isNotEmpty(param.getRoleList())) {
             for (FormFieldParam formFieldParam : param.getRoleList()) {
                 if (ToolUtil.isNotEmpty(formFieldParam.getName()) && ToolUtil.isNotEmpty(formFieldParam.getValue())) {
-                    switch (formFieldParam.getName()){
+                    switch (formFieldParam.getName()) {
                         case "documentsStatusId":
                             activitiAudit.setDocumentsStatusId(Long.valueOf(formFieldParam.getValue().toString()));
                             break;
                         case "actionStatuses":
                             activitiAudit.setAction((String) formFieldParam.getValue());
                             break;
-//                        case "rules":
-////                            List<FormFieldParam> formFieldParams = JSON.parseArray(String.valueOf(formFieldParam.getValue()), FormFieldParam.class);
-////                            activitiAudit.setRule(formFieldParams);
-//                            break;
-
                     }
                 }
             }
@@ -166,22 +159,28 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         activitiAudit.setRule(param.getRoleList());
 
 
-
         activitiAudit.setType(String.valueOf(param.getAuditType()));
+
         auditServiceV2.save(activitiAudit);
-        if (ToolUtil.isNotEmpty(parentStepId)) {
-            //修改父级
-            ActivitiSteps parentSteps = new ActivitiSteps();
-            parentSteps.setChildren(entity.getSetpsId().toString());
-            QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("setps_id", parentStepId);
-            this.update(parentSteps, queryWrapper);
+
+
+        //更新父级
+        ActivitiSteps parent = this.query().eq("setps_id", parentStepId).one();
+        //修改父级
+        if(ToolUtil.isNotEmpty(parent)){
+            if (ToolUtil.isEmpty(parent.getConditionNodes())) {
+                parent.setConditionNodes(setpsId.toString());
+            } else {
+                parent.setConditionNodes(parent.getConditionNodes() + "," + setpsId);
+            }
+            parent.setChildren(setpsId.toString());
+            this.updateById(parent);
         }
         parentStepId = entity.getSetpsId();
         //添加ChildNode
         if (ToolUtil.isNotEmpty(param.getChildNode())) {
             this.addProcessV2(param.getChildNode(), parentStepId, processId);
-        }else if (ToolUtil.isNotEmpty(param.getConditionNodeList())) {
+        } else if (ToolUtil.isNotEmpty(param.getConditionNodeList())) {
             for (ActivitiStepsParam activitiStepsParam : param.getConditionNodeList()) {
                 this.addProcessV2(activitiStepsParam, parentStepId, processId);
             }
@@ -252,9 +251,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     public void luYouV2(ActivitiStepsParam node, Long supper, Long processId) {
         //添加路由
         ActivitiSteps activitiSteps = new ActivitiSteps();
-        if (node.getType().equals(route.name())) {
-            activitiSteps.setStepType("路由");
-        }
         //判断配置
         activitiSteps.setType(StepsType.getByType(node.getType()));
 
@@ -537,7 +533,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         return activitiStepsResult;
     }
-/**
+
+    /**
      * 返回发起人
      *
      * @param id
@@ -557,7 +554,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         if (ToolUtil.isNotEmpty(audit)) {
             if (ToolUtil.isNotEmpty(audit.getRule())) {
                 activitiStepsResult.setAuditType(audit.getType());
-                    activitiStepsResult.setRoleList(audit.getRule());
+                activitiStepsResult.setRoleList(audit.getRule());
             }
         }
 
@@ -610,7 +607,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         return activitiStepsResults;
     }
- /**
+
+    /**
      * 递归取分支
      *
      * @param stepIds
@@ -681,7 +679,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         return luyou;
     }
- /**
+
+    /**
      * 查询节点
      *
      * @param id
@@ -841,6 +840,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
         return groupSteps(steps, auditResults, top);
     }
+
     /**
      * 树形结构
      *
@@ -906,7 +906,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         return stepsResult;
     }
- /**
+
+    /**
      * 组合数据
      *
      * @param steps
@@ -916,9 +917,9 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
         //获取当前规则
         getAuditV2(auditResults, stepsResult);
-        if (ToolUtil.isNotEmpty(stepsResult)){
+        if (ToolUtil.isNotEmpty(stepsResult)) {
             //路由或节点
-            if ( ToolUtil.isNotEmpty(stepsResult.getChildren())) {
+            if (ToolUtil.isNotEmpty(stepsResult.getChildren())) {
                 //获取下一级
                 ActivitiStepsResultV2 childStep = getChildStepV2(steps, stepsResult);
                 ActivitiStepsResultV2 result = groupStepsV2(steps, auditResults, childStep);
@@ -951,6 +952,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         return null;
     }
+
     /**
      * 取出下一级
      */
@@ -978,6 +980,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         return childBranch;
     }
+
     /**
      * 取出下级分支
      */
@@ -1071,6 +1074,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             }
         }
     }
+
     /**
      * 获取当前规则
      */
@@ -1103,6 +1107,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         return stepsResults;
     }
+
     /**
      * 返回当前processId 所有steps
      *
