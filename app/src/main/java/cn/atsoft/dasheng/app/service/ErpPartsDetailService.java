@@ -74,5 +74,7 @@ public interface ErpPartsDetailService extends IService<ErpPartsDetail> {
 
     List<ErpPartsDetailResult> getDetails(List<Long> partIds);
 
+    List<ErpPartsDetail> listByPartIds(List<Long> ids);
+
     void format(List<ErpPartsDetailResult> data);
 }
