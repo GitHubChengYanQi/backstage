@@ -32,7 +32,8 @@ public class ProductionPickListsCartSimpleResult implements Serializable {
 
     @JSONField(serializeUsing= ToStringSerializer.class)
     private Long inkindId;
-
+    @ApiModelProperty("品牌id")
+    private Long brandId;
     private Long storehouseId;
     private StorehouseResult storehouseResult;
     /**
