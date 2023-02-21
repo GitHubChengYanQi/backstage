@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Parts;
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
@@ -73,7 +74,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
     private PartsService partsService;
 
     @Autowired
-    private ErpPartsDetailService erpPartsDetailService;
+    private ErpPartsDetailService partsDetailService;
 
     @Override
     public void add(StockForewarnParam param) {
@@ -97,15 +98,54 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
 
     @Override
     public void saveOrUpdateByat(List<StockForewarnParam> params) {
-        List<StockForewarn> paramEntity = BeanUtil.copyToList(params, StockForewarn.class);
 
         params.removeIf(i -> ToolUtil.isEmpty(i.getInventoryFloor()) && ToolUtil.isEmpty(i.getInventoryCeiling()));
 
+        List<Long> skuIds = params.stream().map(StockForewarnParam::getFormId).collect(Collectors.toList());
+         //TODO 如果物料有bom 将bom中的物品一并进行预警添加
+        List<Parts> parts = partsService.lambdaQuery().in(Parts::getSkuId, skuIds).orderByDesc(Parts::getCreateTime).groupBy(Parts::getSkuId).list();
+        if (parts.size()>0){
 
-        List<Long> skuId = paramEntity.stream().map(StockForewarn::getFormId).collect(Collectors.toList());
+            List<ErpPartsDetail> partsDetails = partsDetailService.listByPartIds(parts.stream().map(Parts::getPartsId).collect(Collectors.toList()));
+            List<StockForewarnParam> addParams = new ArrayList<>();
+            for (StockForewarnParam param : params) {
+                for (Parts part : parts) {
+                    if (param.getFormId().equals(part.getSkuId())){
+                        for (ErpPartsDetail partsDetail : partsDetails) {
+                            if (part.getPartsId().equals(partsDetail.getPartsId()) && partsDetail.getAutoOutstock().equals(1)){
+                                addParams.add(new StockForewarnParam(){{
+                                    setFormId(partsDetail.getSkuId());
+                                    if (ToolUtil.isNotEmpty(param.getInventoryCeiling())){
+                                        setInventoryCeiling((int) (param.getInventoryCeiling()*partsDetail.getNumber()));
+                                    }
+                                    if (ToolUtil.isNotEmpty(param.getInventoryFloor())) {
+                                        setInventoryFloor((int) (param.getInventoryFloor()*partsDetail.getNumber()));
+                                    }
+                                }});
+                            }
+                        }
+                    }
+                }
+            }
+            params.addAll(addParams);
+            List<StockForewarnParam> totalList = new ArrayList<>();
+            //合并相同物料取物料最大数进行保存
+            params.parallelStream().collect(Collectors.groupingBy(StockForewarnParam::getFormId, Collectors.toList())).forEach(
+                    (id, transfer) -> {
+                        transfer.stream().reduce((a, b) -> new StockForewarnParam() {{
+                            setFormId(a.getFormId());
+                            setInventoryFloor(Math.max(a.getInventoryFloor(),b.getInventoryFloor()));
+                            setInventoryCeiling(Math.max(a.getInventoryCeiling(),b.getInventoryCeiling()));
+                        }}).ifPresent(totalList::add);
+                    }
+            );
+            params = totalList;
+        }
+        List<StockForewarn> paramEntity = BeanUtil.copyToList(params, StockForewarn.class);
 
+        skuIds = paramEntity.stream().map(StockForewarn::getFormId).collect(Collectors.toList());
 
-        List<StockForewarn> stockForewarns = skuId.size() == 0 ? new ArrayList<>() : this.lambdaQuery().in(StockForewarn::getFormId, skuId).eq(StockForewarn::getDisplay, 1).list();
+        List<StockForewarn> stockForewarns = skuIds.size() == 0 ? new ArrayList<>() : this.lambdaQuery().in(StockForewarn::getFormId, skuIds).eq(StockForewarn::getDisplay, 1).list();
 
         for (StockForewarn stockForewarn : stockForewarns) {
             stockForewarn.setDisplay(0);
@@ -135,9 +175,9 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
     public void saveBatchByBomId(Long bomId, StockForewarnParam param) {
         //通过传过来的bomId找到子表的bomId 在通过找到的bomId 连接库存预警表 找到所有的 skuId =  formId 的数据
         List<StockForewarnResult> stockForewarnResults = this.baseMapper.findSkuIdsByPartsId(bomId);
-        //定义一个保存的集合和更新的集合
-        List<StockForewarn> saveList = new ArrayList<>();
-        List<StockForewarn> updateList = new ArrayList<>();
+//        //定义一个保存的集合和更新的集合
+//        List<StockForewarn> saveList = new ArrayList<>();
+//        List<StockForewarn> updateList = new ArrayList<>();
         //循环遍历stockForewarnList
         //主键没有就新增 ， 传什么改什么
         for (StockForewarnResult stockForewarn : stockForewarnResults) {

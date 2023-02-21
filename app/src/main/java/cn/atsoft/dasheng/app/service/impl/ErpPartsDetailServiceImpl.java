@@ -178,7 +178,10 @@ public class ErpPartsDetailServiceImpl extends ServiceImpl<ErpPartsDetailMapper,
         }
         return detailResults;
     }
-
+    @Override
+    public List<ErpPartsDetail> listByPartIds(List<Long> ids){
+       return this.lambdaQuery().in(ErpPartsDetail::getPartsId,ids).eq(ErpPartsDetail::getDisplay,1).list();
+    }
     @Override
     public void format(List<ErpPartsDetailResult> data) {
         List<Long> skuIds = new ArrayList<>();
