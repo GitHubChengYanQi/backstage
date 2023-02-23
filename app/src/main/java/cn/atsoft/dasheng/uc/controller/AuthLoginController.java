@@ -267,6 +267,7 @@ public class AuthLoginController extends BaseController {
             throw new ServiceException(500, "参数错误");
         }
         String token = ucMemberAuth.code2session(miniAppLoginParam);
+
 //        String token = ucMemberAuth.getUserProfile(miniAppLoginParam, sessionKey);
         return ResponseData.success(token);
     }
@@ -315,21 +316,24 @@ public class AuthLoginController extends BaseController {
             String token = authService.login(username, password);
             JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
             Long userId = jwtPayLoad.getUserId();//userId
-            if (ToolUtil.isNotEmpty(ucJwtPayLoad.getType()) && ucJwtPayLoad.getType().equals("wxCp") && ToolUtil.isNotEmpty(userId)) {
+            Long memberId = ucJwtPayLoad.getMemberId();//memberId
+            if (ToolUtil.isNotEmpty(ucJwtPayLoad.getType())
+//                    && ucJwtPayLoad.getType().equals("wxCp")
+                   && ToolUtil.isNotEmpty(userId)) {
                 WxuserInfo wxuserInfo = new WxuserInfo();
-                wxuserInfo.setMemberId(ucJwtPayLoad.getUserId());
+                wxuserInfo.setMemberId(memberId);
                 wxuserInfo.setUserId(userId);
-                wxuserInfo.setSource("wxCp");
+//                wxuserInfo.setSource("wxCp");
                 QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
                 wxuserInfoQueryWrapper.eq("user_id", userId);
-                wxuserInfoQueryWrapper.eq("source", "wxCp");
+//                wxuserInfoQueryWrapper.eq("source", ucJwtPayLoad.getType());
                 wxuserInfoQueryWrapper.eq("display", 1);
                 wxuserInfoService.saveOrUpdate(wxuserInfo, wxuserInfoQueryWrapper);
             }
             logger.info("account"+username+"_"+"userId"+userId+"_"+"ucJwtPayLoad"+ JSON.toJSONString(ucJwtPayLoad));
             return ResponseData.success(token);
         } catch (Exception ignored) {
-
+            ignored.printStackTrace();
         }
         //登录并创建token
 //        String token = authService.login(username, password);

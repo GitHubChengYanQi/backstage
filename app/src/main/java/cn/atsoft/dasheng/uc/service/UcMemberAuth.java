@@ -8,10 +8,13 @@ import cn.atsoft.dasheng.binding.cpUser.model.params.CpuserInfoParam;
 import cn.atsoft.dasheng.binding.cpUser.service.CpuserInfoService;
 import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.uc.entity.UcMember;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.entity.UcSmsCode;
 import cn.atsoft.dasheng.uc.jwt.UcJwtPayLoad;
+import cn.atsoft.dasheng.uc.jwt.UcJwtTokenUtil;
 import cn.atsoft.dasheng.uc.model.params.MiniAppLoginParam;
 import cn.atsoft.dasheng.uc.model.params.MiniAppUserProfileParam;
 import cn.atsoft.dasheng.uc.model.params.UcOpenUserInfoParam;
@@ -49,9 +52,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.util.List;
 
+import static cn.atsoft.dasheng.base.auth.jwt.JwtTokenUtil.generateToken;
 import static cn.atsoft.dasheng.base.consts.ConstantsContext.getJwtSecretExpireSec;
 import static cn.atsoft.dasheng.base.consts.ConstantsContext.getTokenHeaderName;
 import static cn.atsoft.dasheng.core.util.HttpContext.getIp;
+import static cn.atsoft.dasheng.uc.jwt.UcJwtTokenUtil.getJwtPayLoad;
 
 @Service
 public class UcMemberAuth {
@@ -79,6 +84,10 @@ public class UcMemberAuth {
 
     @Autowired
     private WxuserInfoService wxuserInfoService;
+
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private CpuserInfoService cpuserInfoService;
@@ -179,10 +188,11 @@ public class UcMemberAuth {
         queryWrapper.gt("create_time", dateTime);
 //        queryWrapper.eq("phone", phone);
         int count = loginLogService.count(queryWrapper);
-        if (count >= 10) {
-            LogManager.me().executeLog(LogTaskFactory.loginLog(phone, "登录错误次数过多:" + code, getIp()));
-            throw new ServiceException(400, "登录错误次数过多");
-        }
+        //TODO 增加登录状态条件
+//        if (count >= 10) {
+//            LogManager.me().executeLog(LogTaskFactory.loginLog(phone, "登录错误次数过多:" + code, getIp()));
+//            throw new ServiceException(400, "登录错误次数过多");
+//        }
         QueryWrapper<UcSmsCode> codeQueryWrapper = new QueryWrapper<>();
 
         // 查找300秒内的验证码
@@ -247,7 +257,37 @@ public class UcMemberAuth {
         UcOpenUserInfo ucOpenUserInfo = new UcOpenUserInfo();
         ToolUtil.copyProperties(userInfo, ucOpenUserInfo);
 
-        return login(ucOpenUserInfo);
+        String token = login(ucOpenUserInfo);
+
+
+
+        try{
+            UcJwtPayLoad jwtPayLoad = getJwtPayLoad(token);
+            Long memberId = jwtPayLoad.getMemberId();
+            WxuserInfo wxuserInfo = wxuserInfoService.getByMemberId(memberId);
+
+            UcMember ucMember = ucMemberService.getByMemberId(memberId);
+            String account = "";
+            if (ToolUtil.isNotEmpty(ucMember)) {
+                User user = userService.getById(wxuserInfo.getUserId());
+                account = user.getAccount();
+            }
+            JwtPayLoad payLoad = new JwtPayLoad();
+
+            if (ToolUtil.isNotEmpty(wxuserInfo.getUserId())){
+                payLoad = new JwtPayLoad(wxuserInfo.getUserId(), account, "xxxx");
+
+            }else {
+                payLoad = new JwtPayLoad(null, account, "xxxx");
+
+            }
+
+            token = JwtTokenUtil.generateToken(payLoad);
+        }catch (Exception e){
+                e.printStackTrace();
+        }
+        return token;
+
     }
 
     public String getUserProfile(MiniAppUserProfileParam miniAppUserProfileParam) {
@@ -398,11 +438,12 @@ public class UcMemberAuth {
             }
         }
 
-        UcJwtPayLoad payLoad = new UcJwtPayLoad(userInfo.getSource(), memberId, account, "xxxx");
+        UcJwtPayLoad payLoad = new UcJwtPayLoad(userInfo.getSource(), null, account, "xxxx");
 
         payLoad.setType(userInfo.getSource());
         payLoad.setMobile(mobile);
-        String token = JwtTokenUtil.generateToken(payLoad);
+        payLoad.setMemberId(memberId);
+        String token = generateToken(payLoad);
         // TODO 可以用 sessionManage缓存用户信息，暂时先不加了
 
         // 创建cookie
@@ -424,7 +465,7 @@ public class UcMemberAuth {
         UcJwtPayLoad payLoad = new UcJwtPayLoad(type, id, account, "xxxx");
 //        payLoad.setType(type);
         payLoad.setMobile(mobile);
-        String token = JwtTokenUtil.generateToken(payLoad);
+        String token = generateToken(payLoad);
         // 创建cookie
         addLoginCookie(token);
 

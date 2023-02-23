@@ -3,7 +3,6 @@ package cn.atsoft.dasheng.uc.service.impl;
 
 import cn.atsoft.dasheng.api.uc.entity.OpenUserInfo;
 import cn.atsoft.dasheng.api.uc.service.OpenUserInfoService;
-import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.uc.entity.UcMember;
 import cn.atsoft.dasheng.uc.mapper.UcMemberMapper;
 import cn.atsoft.dasheng.uc.model.params.UcMemberParam;
@@ -99,6 +98,14 @@ public class UcMemberServiceImpl extends ServiceImpl<UcMemberMapper, UcMember> i
         UcMember entity = new UcMember();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+
+    @Override
+    public UcMember getByMemberId(Long memberId){
+        QueryWrapper<UcMember> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("member_id", memberId);
+        UcMember ucMember = this.getOne(queryWrapper);
+        return this.getOne(queryWrapper);
     }
 
 

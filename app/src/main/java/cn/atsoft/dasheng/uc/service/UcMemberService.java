@@ -67,4 +67,5 @@ public interface UcMemberService extends IService<UcMember> {
      */
      PageInfo findPageBySpec(UcMemberParam param);
 
+    UcMember getByMemberId(Long memberId);
 }
