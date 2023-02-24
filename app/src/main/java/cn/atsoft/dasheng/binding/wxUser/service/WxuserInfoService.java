@@ -74,4 +74,5 @@ public interface WxuserInfoService extends IService<WxuserInfo> {
      */
     Boolean sendPermissions(Long type,Long userId);
 
+    WxuserInfo getByMemberId(Long memberId);
 }

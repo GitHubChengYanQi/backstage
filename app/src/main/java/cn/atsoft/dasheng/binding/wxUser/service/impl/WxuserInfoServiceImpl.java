@@ -25,9 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -145,6 +143,10 @@ public class WxuserInfoServiceImpl extends ServiceImpl<WxuserInfoMapper, WxuserI
         WxuserInfo entity = new WxuserInfo();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+    @Override
+    public  WxuserInfo getByMemberId(Long memberId) {
+        return this.lambdaQuery().eq(WxuserInfo::getMemberId, memberId).eq(WxuserInfo::getDisplay, 1).one();
     }
 
 }

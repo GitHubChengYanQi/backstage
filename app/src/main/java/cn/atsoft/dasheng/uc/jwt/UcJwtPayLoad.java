@@ -13,6 +13,8 @@ public class UcJwtPayLoad extends JwtPayLoad {
 
     private String mobile;
 
+    private Long memberId;
+
     public UcJwtPayLoad() {
     }
 
@@ -28,6 +30,7 @@ public class UcJwtPayLoad extends JwtPayLoad {
         Map<String, Object> map = super.toMap();
         map.put("type", this.type);
         map.put("mobile", this.mobile);
+        map.put("memberId",this.memberId);
         return map;
     }
 
@@ -49,6 +52,7 @@ public class UcJwtPayLoad extends JwtPayLoad {
             ucJwtPayLoad.setAccount((String) map.get("account"));
             ucJwtPayLoad.setMobile((String) map.get("mobile"));
             ucJwtPayLoad.setUserKey((String) map.get("userKey"));
+            ucJwtPayLoad.setMemberId((Long) map.get("memberId"));
             return ucJwtPayLoad;
         }
     }
