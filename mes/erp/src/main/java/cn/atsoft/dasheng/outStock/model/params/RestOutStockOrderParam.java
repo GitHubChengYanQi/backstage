@@ -27,6 +27,7 @@ public class RestOutStockOrderParam implements Serializable, BaseValidatingParam
     private List<RestOutStockOrderDetailParam> pickListsDetailParams;
     private List<RestOutStockCartParam> cartsParams;
     private List<Long> pickListsIds;
+    private List<Long> cartIds;
     private String pickListsName;
     private String pickCode;
     private String remark;

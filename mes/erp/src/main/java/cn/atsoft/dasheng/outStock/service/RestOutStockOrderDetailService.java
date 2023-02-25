@@ -67,7 +67,7 @@ public interface RestOutStockOrderDetailService extends IService<RestOutStockOrd
 
     List<RestOutStockOrderDetailResult> listStatus0ByPickLists(List<Long> pickListsIds);
 
-    List<RestOutStockOrderDetailResult> listByPickLists(List<Long> pickListsIds);
+    List<RestOutStockOrderDetail> listByPickLists(List<Long> pickListsIds);
 
     List<Long> getSkuIdsByPickLists(Long id);
 

@@ -136,9 +136,9 @@ public class RestOutStockOrderDetailServiceImpl extends ServiceImpl<RestOutStock
     }
 
     @Override
-    public List<RestOutStockOrderDetailResult> listByPickLists(List<Long> pickListsIds) {
-        List<RestOutStockOrderDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id", pickListsIds).eq("display", 1).list();
-        List<RestOutStockOrderDetailResult> results = BeanUtil.copyToList(pickListsDetails, RestOutStockOrderDetailResult.class);
+    public List<RestOutStockOrderDetail> listByPickLists(List<Long> pickListsIds) {
+        List<RestOutStockOrderDetail> results = pickListsIds.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id", pickListsIds).eq("display", 1).list();
+//        List<RestOutStockOrderDetailResult> results = BeanUtil.copyToList(pickListsDetails, RestOutStockOrderDetailResult.class);
 //        this.format(results);
         return results;
 

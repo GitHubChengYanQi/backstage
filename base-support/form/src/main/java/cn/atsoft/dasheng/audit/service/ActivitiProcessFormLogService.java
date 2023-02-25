@@ -75,6 +75,7 @@ public interface ActivitiProcessFormLogService extends IService<ActivitiProcessL
     PageInfo findPageBySpec(ActivitiProcessLogParam param);
 
 
+    void checkAction(Long id, String formType, Long actionId, Long loginUserId);
 
-
+    void checkLogActionComplete(Long taskId, Long stepId, Long actionId, Long loginUserId);
 }

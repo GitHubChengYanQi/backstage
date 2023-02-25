@@ -8,13 +8,8 @@ package cn.atsoft.dasheng.stockDetail.service.impl;
 //import cn.atsoft.dasheng.app.pojo.SpuClassDetail;
 //import cn.atsoft.dasheng.app.pojo.StockCensus;
 //import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
-import cn.atsoft.dasheng.base.pojo.page.PageFactory;
-import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.core.datascope.DataScope;
-import cn.atsoft.dasheng.core.util.ToolUtil;
 //import cn.atsoft.dasheng.form.service.StepsService;
 import cn.atsoft.dasheng.goods.sku.service.RestSkuService;
-import cn.atsoft.dasheng.model.exception.ServiceException;
 //import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 //import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 //import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
@@ -27,21 +22,14 @@ import cn.atsoft.dasheng.stockDetail.model.result.RestStockDetailsResult;
 import cn.atsoft.dasheng.stockDetail.service.RestStockDetailsService;
 import cn.atsoft.dasheng.storehouse.service.RestStorehouseService;
 import cn.atsoft.dasheng.storehousePosition.service.RestStorehousePositionsService;
-import cn.atsoft.dasheng.sys.modular.system.entity.User;
-import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+        import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+        import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+        import org.springframework.stereotype.Service;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.stream.Collectors;
+        import java.util.*;
 
 /**
  * <p>
@@ -843,4 +831,9 @@ public class RestStockDetailsServiceImpl extends ServiceImpl<RestStockDetailsMap
 //    public List<StockDetailView> stockDetailViews(){
 //        return this.baseMapper.stockDetailView();
 //    }
+
+    @Override
+    public List<RestStockDetails> resultByTraceability(List<Long> ids){
+        return this.lambdaQuery().in(RestStockDetails::getInkindId,ids).list();
+    }
 }

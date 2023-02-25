@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.audit.service.impl;
 
 import cn.atsoft.dasheng.audit.entity.ActivitiAuditV2;
 import cn.atsoft.dasheng.audit.entity.ActivitiProcessLogDetail;
+import cn.atsoft.dasheng.audit.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.audit.service.ActivitiProcessFormLogDetailService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -18,7 +19,6 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.model.FormFieldParam;
-import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResultV2;
 import cn.atsoft.dasheng.form.pojo.*;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
@@ -264,10 +264,10 @@ public class ActivitiProcessFormLogServiceImpl extends ServiceImpl<ActivitiProce
             ActivitiAuditV2 activitiAudit = getRule(activitiAuditList, activitiProcessLog.getSetpsId());
 
             if (ToolUtil.isNotEmpty(activitiAudit) && activitiAudit.getType().equals("send")) {
-                updateStatus(activitiProcessLog.getLogId(),1,  loginUserId);
+                updateStatus(activitiProcessLog.getLogId(), 1, loginUserId);
 
                 ActivitiSteps activitiSteps = getSteps(allSteps, activitiProcessLog.getSetpsId());
-                List<ActivitiProcessLog> processLogs = updateSupper(allSteps, logs, activitiSteps,loginUserId);
+                List<ActivitiProcessLog> processLogs = updateSupper(allSteps, logs, activitiSteps, loginUserId);
 
 
                 if (processLogs.size() > 0) {
@@ -280,6 +280,7 @@ public class ActivitiProcessFormLogServiceImpl extends ServiceImpl<ActivitiProce
             }
         }
     }
+
     private ActivitiSteps getSteps(List<ActivitiSteps> steps, Long stepId) {
         for (ActivitiSteps step : steps) {
             if (step.getSetpsId().toString().equals(stepId.toString())) {
@@ -291,13 +292,14 @@ public class ActivitiProcessFormLogServiceImpl extends ServiceImpl<ActivitiProce
 
     /**
      * 更新上级节点
+     *
      * @param steps
      * @param processLogs
      * @param activitiSteps
      * @param loginUser
      * @return
      */
-    private List<ActivitiProcessLog> updateSupper(List<ActivitiSteps> steps, List<ActivitiProcessLog> processLogs, ActivitiSteps activitiSteps,Long loginUser) {
+    private List<ActivitiProcessLog> updateSupper(List<ActivitiSteps> steps, List<ActivitiProcessLog> processLogs, ActivitiSteps activitiSteps, Long loginUser) {
         List<ActivitiProcessLog> logs = new ArrayList<>();
 
         for (ActivitiSteps step : steps) {
@@ -310,7 +312,7 @@ public class ActivitiProcessFormLogServiceImpl extends ServiceImpl<ActivitiProce
                         //TODO 原判断 if (log.getStatus().equals(1))
                         if (log.getStatus().equals(1)) {
                             for (ActivitiProcessLog processLog : processLogs) {
-                                if (processLog.getSetpsId().equals(log.getSetpsId()) && ((ToolUtil.isNotEmpty(processLog.getAuditUserId()) && processLog.getAuditUserId().equals(loginUser) )||ToolUtil.isEmpty(processLog.getAuditUserId())) ) {
+                                if (processLog.getSetpsId().equals(log.getSetpsId()) && ((ToolUtil.isNotEmpty(processLog.getAuditUserId()) && processLog.getAuditUserId().equals(loginUser)) || ToolUtil.isEmpty(processLog.getAuditUserId()))) {
                                     processLog.setStatus(1);
                                 }
                             }
@@ -318,7 +320,7 @@ public class ActivitiProcessFormLogServiceImpl extends ServiceImpl<ActivitiProce
                                 logs.add(log);
                             }
 //                            logs.add(log);
-                            List<ActivitiProcessLog> newLogs = updateSupper(steps, processLogs, getSteps(steps, step.getSupper()),loginUser);
+                            List<ActivitiProcessLog> newLogs = updateSupper(steps, processLogs, getSteps(steps, step.getSupper()), loginUser);
                             logs.addAll(newLogs);
                         }
                         break;
@@ -333,7 +335,7 @@ public class ActivitiProcessFormLogServiceImpl extends ServiceImpl<ActivitiProce
                             }
                             logs.add(log);
                             // 下级完成递归传入当前步骤判断上一级
-                            List<ActivitiProcessLog> newLogs = updateSupper(steps, processLogs, getSteps(steps, step.getSupper()),loginUser);
+                            List<ActivitiProcessLog> newLogs = updateSupper(steps, processLogs, getSteps(steps, step.getSupper()), loginUser);
                             logs.addAll(newLogs);
                         }
                         break;
@@ -364,7 +366,7 @@ public class ActivitiProcessFormLogServiceImpl extends ServiceImpl<ActivitiProce
                                 }
                             }
                             logs.add(log);
-                            List<ActivitiProcessLog> routeLog = updateSupper(steps, processLogs, getSteps(steps, step.getSupper()),loginUser);
+                            List<ActivitiProcessLog> routeLog = updateSupper(steps, processLogs, getSteps(steps, step.getSupper()), loginUser);
                             logs.addAll(routeLog);
                         }
 //                        return logs;
@@ -406,6 +408,7 @@ public class ActivitiProcessFormLogServiceImpl extends ServiceImpl<ActivitiProce
 
         return true;
     }
+
     /**
      * 取下一级
      *
@@ -529,6 +532,7 @@ public class ActivitiProcessFormLogServiceImpl extends ServiceImpl<ActivitiProce
         }
         return null;
     }
+
     private ActivitiProcessLog getLog(List<ActivitiProcessLog> processLogs, ActivitiSteps activitiSteps) {
 
         for (ActivitiProcessLog processLog : processLogs) {
@@ -552,10 +556,10 @@ public class ActivitiProcessFormLogServiceImpl extends ServiceImpl<ActivitiProce
     @Override
     public void add(Long processId, Long taskId) {
         ActivitiStepsResultV2 activitiStepsResultV2 = stepsService.backStepsResultV2(processId);
-        this.loopAddLogs(activitiStepsResultV2, taskId,0L);
+        this.loopAddLogs(activitiStepsResultV2, taskId, 0L);
     }
 
-    private void loopAddLogs(ActivitiStepsResultV2 steps, Long taskId,Long parentLogId) {
+    private void loopAddLogs(ActivitiStepsResultV2 steps, Long taskId, Long parentLogId) {
         Long processId = steps.getProcessId();
 
         /**
@@ -565,7 +569,7 @@ public class ActivitiProcessFormLogServiceImpl extends ServiceImpl<ActivitiProce
         processLog.setPeocessId(processId);
         processLog.setTaskId(taskId);
         processLog.setSetpsId(steps.getSetpsId());
-        if (steps.getType().equals(StepsType.route)){
+        if (steps.getType().equals(StepsType.route)) {
             processLog.setRouteLogId(parentLogId);
         }
         processLog.setStatus(-1);
@@ -611,11 +615,11 @@ public class ActivitiProcessFormLogServiceImpl extends ServiceImpl<ActivitiProce
         logDetailService.addByLog(processLog, userIds);
         if (ToolUtil.isNotEmpty(steps.getConditionNodeList()) && steps.getConditionNodeList().size() > 0) {
             for (ActivitiStepsResultV2 stepsResult : steps.getConditionNodeList()) {
-                loopAddLogs(stepsResult, taskId,processLog.getLogId());
+                loopAddLogs(stepsResult, taskId, processLog.getLogId());
             }
         }
         if (ToolUtil.isNotEmpty(steps.getChildNode())) {
-            loopAddLogs(steps.getChildNode(), taskId,processLog.getLogId());
+            loopAddLogs(steps.getChildNode(), taskId, processLog.getLogId());
         }
     }
 
@@ -745,4 +749,82 @@ public class ActivitiProcessFormLogServiceImpl extends ServiceImpl<ActivitiProce
         return entity;
     }
 
+    @Override
+    public void checkAction(Long id, String formType, Long actionId, Long loginUserId) {
+
+        ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("type", formType).eq("form_id", id).eq("display", 1).one();
+        if (ToolUtil.isEmpty(processTask)) {
+            throw new ServiceException(500, "当前任务不存在");
+        }
+        List<ActivitiProcessLog> logs = this.getAudit(processTask.getProcessTaskId());
+        List<Long> stepIds = new ArrayList<>();
+        for (ActivitiProcessLog processLog : logs) {
+            stepIds.add(processLog.getSetpsId());
+        }
+        List<ActivitiSteps> activitiStepList = stepIds.size() == 0 ? new ArrayList<>() : stepsService.listByIds(stepIds);
+        for (ActivitiProcessLog processLog : logs) {
+            for (ActivitiSteps step : activitiStepList) {
+                if (processLog.getSetpsId().equals(step.getSetpsId()) && step.getStepType().equals("status") && (ToolUtil.isEmpty(processLog.getAuditUserId()) || processLog.getAuditUserId().equals(loginUserId))) {
+                    this.checkLogActionComplete(processTask.getProcessTaskId(), step.getSetpsId(), actionId, loginUserId);
+                    return;
+                }
+            }
+        }
+    }
+
+    /**
+     * 检查节点动作完成(下)
+     *
+     * @param taskId
+     * @param stepId
+     * @param
+     */
+    @Override
+    public void checkLogActionComplete(Long taskId, Long stepId, Long actionId, Long loginUserId) {
+        List<ActivitiProcessLog> processLogs = this.query().eq("task_id", taskId).eq("setps_id", stepId).list();
+        ActivitiAuditResult audit = auditService.getAudit(stepId);
+
+        //TODO 等待动作节点更换逻辑后 增加人员判断
+//        if (this.checkUser(audit.getRule(), taskId)) {
+        for (ActivitiProcessLog processLog : processLogs) {
+            //TODO 可以将其他人的JSON一并更改
+            if ((ToolUtil.isEmpty(processLog.getAuditUserId()) || processLog.getAuditUserId().equals(loginUserId)) && ToolUtil.isNotEmpty(processLog.getActionStatus())) {
+                List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
+                for (ActionStatus actionStatus : actionStatuses) {
+                    if (actionStatus.getActionId().equals(actionId)) {
+                        actionStatus.setStatus(1);
+                    }
+                }
+                processLog.setActionStatus(JSON.toJSONString(actionStatuses));
+                this.updateById(processLog);
+
+                boolean isChecked = false;
+                boolean completeFlag = true;
+
+
+                actionStatuses.removeIf(i -> !i.getChecked());
+                if (actionStatuses.stream().allMatch(i -> i.getStatus().equals(1) && i.getChecked())) {
+                    this.audit(taskId, 1, loginUserId);
+
+                }
+//                for (ActionStatus actionStatus : actionStatuses) {
+//                    if (actionStatus.getStatus().equals(0) && actionStatus.getChecked()) {
+//                        completeFlag = false;
+//
+//                        break;
+//                    } else if (actionStatus.getStatus().equals(0)) {
+//                        completeFlag = false;
+//                        break;
+//                    }
+//                    if (actionStatus.getChecked()) {
+//                        isChecked = true;
+//                    }
+//                }
+//                if (completeFlag && isChecked) {
+//                }
+//            }
+            }
+
+        }
+    }
 }

@@ -65,7 +65,7 @@ public interface RestOutStockOrderService extends IService<RestOutStockOrder> {
 //     */
 //    RestOutStockOrderResult findBySpec(RestOutStockOrderParam param);
 //
-//    String createCode(RestOutStockOrderParam param);
+    String createCode(RestOutStockOrderParam param);
 //
 //    /**
 //     * 查询列表，Specification模式
@@ -102,7 +102,7 @@ public interface RestOutStockOrderService extends IService<RestOutStockOrder> {
 //    Map<Integer, List<ActivitiProcessTask>> unExecuted(Long taskId);
 //
 //
-//    String outStock(RestOutStockOrderParam param);
+    String outStock(RestOutStockOrderParam param);
 //
 //
 //    void outStockBySku(RestOutStockOrderParam param);

@@ -34,6 +34,8 @@ import cn.atsoft.dasheng.outStock.model.params.RestOutStockOrderParam;
 import cn.atsoft.dasheng.outStock.service.RestOutStockCartService;
 import cn.atsoft.dasheng.outStock.service.RestOutStockOrderDetailService;
 import cn.atsoft.dasheng.outStock.service.RestOutStockOrderService;
+import cn.atsoft.dasheng.sendTemplate.RestRedisSendCheck;
+import cn.atsoft.dasheng.sendTemplate.pojo.RestRedisTemplatePrefixEnum;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.CharsetUtil;
@@ -69,6 +71,8 @@ public class RestOutStockOrderController extends BaseController {
     private RestOutStockOrderDetailService pickListsDetailService;
     @Autowired
     private RestOutStockCartService productionPickListsCartService;
+    @Autowired
+    private RestRedisSendCheck redisSendCheck;
 
 //    @Autowired
 //    private StorehousePositionsBindService storehousePositionsBindService;
@@ -84,6 +88,29 @@ public class RestOutStockOrderController extends BaseController {
     @Autowired
     private ActivitiProcessTaskService processTaskService;
 
+    /**
+     * 新增接口
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/createOutStockOrder", method = RequestMethod.POST)
+    @ApiOperation("出库")
+    public ResponseData outStock(@RequestBody RestOutStockOrderParam productionPickListsParam) {
+//        inventoryService.staticState();
+        if (ToolUtil.isEmpty(productionPickListsParam)) {
+            productionPickListsParam = new RestOutStockOrderParam();
+        }
+        List<Object> list = redisSendCheck.getList(RestRedisTemplatePrefixEnum.LLM.getValue()+productionPickListsParam.getCode());
+        List<Long> cartIds = BeanUtil.copyToList(list, Long.class);
+        productionPickListsParam.setCartIds(cartIds);
+        this.productionPickListsService.outStock(productionPickListsParam);
+        redisSendCheck.deleteListOrObject(RestRedisTemplatePrefixEnum.LLM.getValue() + productionPickListsParam.getCode());
+        redisSendCheck.deleteListOrObject(RestRedisTemplatePrefixEnum.LLJCM.getValue() + productionPickListsParam.getCode());
+//        this.productionPickListsService.warning(productionPickListsParam);
+        this.productionPickListsService.outStock(productionPickListsParam);
+        return ResponseData.success();
+    }
     /**
      * 新增接口
      *
