@@ -112,6 +112,9 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
 
         List<String> collect = Arrays.stream(type.split("\\.(?=[^\\.]+$)")).collect(Collectors.toList());
         String fileName = type;
+        if (ToolUtil.isEmpty(collect.get(1))){
+            throw new ServiceException(500,"传入参数格式错误");
+        }
         String sname = collect.get(1);
 
         if (!userId.equals(0L) && ToolUtil.isNotEmpty(sname)) {

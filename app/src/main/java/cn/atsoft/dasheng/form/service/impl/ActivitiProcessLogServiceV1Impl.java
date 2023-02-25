@@ -3,11 +3,16 @@ package cn.atsoft.dasheng.form.service.impl;
 
 import cn.atsoft.dasheng.action.Enum.*;
 import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.audit.entity.ActivitiAudit;
+import cn.atsoft.dasheng.audit.model.result.ActivitiAuditResult;
+import cn.atsoft.dasheng.audit.model.result.ActivitiProcessLogResult;
+import cn.atsoft.dasheng.audit.service.ActivitiAuditService;
 import cn.atsoft.dasheng.auditView.service.AuditViewService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.util.SpringContextHolder;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
@@ -18,8 +23,8 @@ import cn.atsoft.dasheng.erp.service.impl.CheckInstock;
 import cn.atsoft.dasheng.erp.service.impl.CheckQualityTask;
 import cn.atsoft.dasheng.erp.service.impl.ProcessTaskEndSend;
 import cn.atsoft.dasheng.form.entity.*;
-import cn.atsoft.dasheng.form.mapper.ActivitiProcessLogMapper;
-import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
+import cn.atsoft.dasheng.audit.mapper.ActivitiProcessLogMapper;
+import cn.atsoft.dasheng.audit.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.result.*;
 import cn.atsoft.dasheng.form.pojo.*;
 import cn.atsoft.dasheng.form.service.*;
@@ -1379,7 +1384,6 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
 
     private void loopAdd(ActivitiStepsResult activitiStepsResult, Long taskId) {
         List<ActivitiProcessLog> processLogs = new ArrayList<>();
-
         Long processId = activitiStepsResult.getProcessId();
         List<Long> users = taskSend.selectUsers(activitiStepsResult.getAuditRule(), taskId);
         if (activitiStepsResult.getType().toString().equals(StepsType.START.getType())) {

@@ -189,7 +189,7 @@ public class MessageController extends BaseController {
     }
 
     @RequestMapping(value = "/jump", method = RequestMethod.GET)
-    @ApiOperation("列表")
+    @ApiOperation("消息路径跳转")
     public void jump(HttpServletRequest request, HttpServletResponse response, Long id) throws IOException {
         Message message = messageService.getById(id);
         if (message.getSource().equals("processTask")) {

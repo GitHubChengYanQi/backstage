@@ -312,7 +312,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     }
                     break;
                 case TotalAmountInFigures:
-                    map.put(ContractEnum.TotalAmountInFigures.getDetail(), sign + ContractExcel.priceReplace(orderResult.getAllMoney()));
+                    map.put(ContractEnum.TotalAmountInFigures.getDetail(), sign + ContractExcel.priceReplace(BigDecimal.valueOf(orderResult.getAllMoney()).divide(BigDecimal.valueOf(100)).doubleValue()));
                     break;
                 case TotalAmountInWords:
                     double money = BigDecimal.valueOf(orderResult.getAllMoney()).divide(BigDecimal.valueOf(100)).doubleValue();
@@ -500,7 +500,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (ToolUtil.isNotEmpty(paymentResult) && ToolUtil.isNotEmpty(paymentResult.getOrderId())) {
             details = detailService.getDetails(paymentResult.getOrderId());
         }
-        int allMoney = 0;
+        double allMoney = 0;
         int totalNumber = 0;
         if (ToolUtil.isNotEmpty(order.getTotalAmount())) {  //兼容之前老订单  没有总价格 
             allMoney = order.getTotalAmount();

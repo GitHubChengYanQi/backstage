@@ -25,7 +25,8 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
      * @author Jazz
      * @Date 2021-11-19
      */
-    void add(ActivitiProcessTaskParam param);
+    Long add(ActivitiProcessTaskParam param);
+    Long addV2(ActivitiProcessTaskParam param);
 
     /**
      * 删除

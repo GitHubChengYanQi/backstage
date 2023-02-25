@@ -770,7 +770,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Transactional
     public List<Long> inStock(InstockOrderParam param) {
 
-        boolean operat = activitiProcessLogService.canOperat(ProcessType.INSTOCK.name(), ProcessModuleEnum.createInstock.name(), InStockActionEnum.performInstock.name());
+        boolean operat = activitiProcessLogService.canOperat(ProcessType.INSTOCK.name(), "直接入库", InStockActionEnum.performInstock.name());
         if (!operat) {
             throw new ServiceException(500, "你没有入库权限");
         }

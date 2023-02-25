@@ -4,32 +4,22 @@ package cn.atsoft.dasheng.form.service.impl;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
-import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessTaskMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
-import cn.atsoft.dasheng.form.pojo.AppointUser;
-import cn.atsoft.dasheng.form.pojo.AuditRule;
-import cn.atsoft.dasheng.form.service.ActivitiAuditService;
-import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * <p>
@@ -44,10 +34,21 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
 
 
+//    @Override
+//    public ActivitiProcessTask add(ActivitiProcessTaskParam param) {
+//        ActivitiProcessTask entity = getEntity(param);
+//        this.save(entity);
+//        return entity;
+//    }
+
     @Override
-    public void add(ActivitiProcessTaskParam param) {
-        ActivitiProcessTask entity = getEntity(param);
-        this.save(entity);
+    public Long add(ActivitiProcessTaskParam param) {
+        return null;
+    }
+
+    @Override
+    public Long addV2(ActivitiProcessTaskParam param) {
+        return null;
     }
 
     @Override

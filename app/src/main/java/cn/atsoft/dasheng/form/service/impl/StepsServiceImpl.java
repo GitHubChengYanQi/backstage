@@ -613,7 +613,10 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         }
         List<Parts> parts = skus.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skus).eq("status", 99).list();
         for (Parts part : parts) {
-            List<Long> longs = JSON.parseArray(part.getChildrens(), Long.class);
+            List<Long> longs = new ArrayList<>();
+            if (ToolUtil.isNotEmpty(part.getChildrens())) {
+                longs = JSON.parseArray(part.getChildrens(), Long.class);
+            }
             for (Long aLong : longs) {
                 skuIds.removeIf(i -> i.equals(aLong));
             }

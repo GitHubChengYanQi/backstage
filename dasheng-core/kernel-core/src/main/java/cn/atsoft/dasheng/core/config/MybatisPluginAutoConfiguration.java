@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 /**
  * MybatisPlus配置
@@ -41,6 +42,7 @@ public class MybatisPluginAutoConfiguration {
      */
     @Bean
     public PaginationInterceptor paginationInterceptor() {
+
         return new PaginationInterceptor();
     }
 
@@ -59,6 +61,7 @@ public class MybatisPluginAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public DataScopeInterceptor dataScopeInterceptor() {
+
         return new DataScopeInterceptor();
     }
 

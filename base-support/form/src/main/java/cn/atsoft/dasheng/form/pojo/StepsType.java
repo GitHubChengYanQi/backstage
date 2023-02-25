@@ -18,7 +18,14 @@ public enum StepsType {
     AUDIT("1"),
     SEND("2"),
     BRANCH("3"),
-    ROUTE("4");
+    ROUTE("4"),
+    start("start"),
+    branch("branch"),
+    send("send"),
+    process("process"),
+    route("route"),
+    audit("audit");
+
 
 
 
@@ -29,6 +36,15 @@ public enum StepsType {
 
     public String getType() {
         return this.type;
+    }
+
+    public static StepsType getByType(String type){
+        for (StepsType value : StepsType.values()) {
+            if(type.equals(value.getType())){
+                return value;
+            }
+        }
+        return null;
     }
 
     @EnumValue

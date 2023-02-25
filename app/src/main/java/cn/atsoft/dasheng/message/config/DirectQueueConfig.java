@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import javax.annotation.PostConstruct;
 import java.util.Map;
 
-@Configuration
+//@Configuration
 public class DirectQueueConfig {
 
     protected static final Logger logger = LoggerFactory.getLogger(DirectQueueConfig.class);

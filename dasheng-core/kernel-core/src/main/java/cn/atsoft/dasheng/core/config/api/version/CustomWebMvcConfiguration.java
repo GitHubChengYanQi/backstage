@@ -9,14 +9,14 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * 应该是没用了
+ * 统一放在了 main 包内启用
+ */
 @Configuration
 @RequiredArgsConstructor
 //public class CustomWebMvcConfiguration extends WebMvcConfigurationSupport {
 public class CustomWebMvcConfiguration implements WebMvcConfigurer, WebMvcRegistrations {
 
-    @Override
-    @NotNull
-    public RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
-        return new ApiVersionRequestMappingHandlerMapping();
-    }
+
 }

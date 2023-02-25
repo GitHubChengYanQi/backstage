@@ -52,6 +52,11 @@ public class ActivitiProcessLog implements Serializable {
      */
     @TableField("task_id")
     private Long taskId;
+    /**
+     * 步骤Id
+     */
+    @TableField("route_log_id")
+    private Long routeLogId;
 
     /**
      * 步骤Id
@@ -180,18 +185,30 @@ public class ActivitiProcessLog implements Serializable {
         this.auditUserId = auditUserId;
     }
 
+    public Long getRouteLogId() {
+        return routeLogId;
+    }
+
+    public void setRouteLogId(Long routeLogId) {
+        this.routeLogId = routeLogId;
+    }
+
     @Override
     public String toString() {
         return "ActivitiProcessLog{" +
                 "logId=" + logId +
                 ", peocessId=" + peocessId +
+                ", actionStatus='" + actionStatus + '\'' +
                 ", setpsId=" + setpsId +
+                ", taskId=" + taskId +
+                ", routeLogId=" + routeLogId +
+                ", auditUserId=" + auditUserId +
                 ", status=" + status +
                 ", display=" + display +
                 ", createUser=" + createUser +
                 ", updateUser=" + updateUser +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
-                "}";
+                '}';
     }
 }

@@ -3,7 +3,6 @@ package cn.atsoft.dasheng.form.service;
 import cn.atsoft.dasheng.base.auth.context.LoginContext;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
@@ -34,6 +33,8 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
      * @Date 2021-11-19
      */
     Long add(ActivitiProcessTaskParam param);
+
+    Long addV2(ActivitiProcessTaskParam param);
 
     /**
      * 删除
@@ -99,7 +100,10 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
 
     void setProcessUserIds(Long processId, Long taskId);
 
+
     Set<Long> processAuditPerson(Long processId);
+
+    List<Long> processAuditPersonV2(Long processId);
 
     Long getTaskIdByFormId(Long formId);
 

@@ -9,7 +9,7 @@ import cn.atsoft.dasheng.form.entity.TaskParticipant;
 import cn.atsoft.dasheng.form.mapper.TaskParticipantMapper;
 import cn.atsoft.dasheng.form.model.params.TaskParticipantParam;
 import cn.atsoft.dasheng.form.model.result.TaskParticipantResult;
-import cn.atsoft.dasheng.form.service.ActivitiAuditService;
+import cn.atsoft.dasheng.audit.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.form.service.TaskParticipantService;

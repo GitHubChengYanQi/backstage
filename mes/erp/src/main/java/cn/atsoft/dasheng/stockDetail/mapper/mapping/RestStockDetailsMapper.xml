@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.stockDetail.mapper.RestStockDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.stockDetail.entity.RestStockDetails">
+        <id column="stock_item_id" property="stockItemId"/>
+        <result column="stock_id" property="stockId"/>
+        <result column="price" property="price"/>
+        <result column="item_id" property="itemId"/>
+        <result column="storehouse_id" property="storehouseId"/>
+        <result column="storage_time" property="storageTime"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="barcode" property="barcode"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="stage" property="stage"/>
+        <result column="outstock_order_id" property="outStockOrderId"/>
+        <result column="deptId" property="deptId"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="storehouse_positions_id" property="storehousePositionsId"/>
+        <result column="number" property="number"/>
+        <result column="qr_code_id" property="qrCodeId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="inkind_id" property="inkindId"/>
+    </resultMap>
+
+<!--    &lt;!&ndash; 通用查询结果列 &ndash;&gt;-->
+<!--    <sql id="Base_Column_List">outstock_order_id-->
+<!--    AS "outStockOrderId",deptId AS "deptId",number AS "number",qr_code_id AS "qrCodeId",inkind_id AS "inkindId",customer_id AS "customerId",-->
+<!--stage-->
+<!--    AS "stage",sku_id AS "skuId",storehouse_positions_id AS "storehousePositionsId",-->
+<!--        barcode AS "barcode", brand_id AS "brandId", item_id AS "itemId", storehouse_id AS "storehouseId",  stock_item_id AS "stockItemId", stock_id AS "stockId", price AS "price", storage_time AS "storageTime", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"-->
+<!--    </sql>-->
+<!--    <sql id="Excel_List">-->
+<!--        number-->
+<!--        AS "number",-->
+<!--        customer_id AS "customerId",-->
+<!--        sku_id AS "skuId",-->
+<!--        storehouse_positions_id AS "storehousePositionsId",-->
+<!--        brand_id AS "brandId",-->
+<!--        storehouse_id AS "storehouseId",-->
+<!--        stock_item_id AS "stockItemId",-->
+<!--        stock_id AS "stockId",-->
+<!--        display AS "display" ,-->
+<!--        stage AS "stage",-->
+<!--        stage AS "stage",-->
+<!--        sum(number) AS "skuSum"-->
+<!--    </sql>-->
+
+
+<!--    <select id="customList" resultType="cn.atsoft.dasheng.stockDetail.model.result.RestStockDetailsResult"-->
+<!--            parameterType="cn.atsoft.dasheng.stockDetail.model.params.RestStockDetailsParam">-->
+<!--        select-->
+<!--        <include refid="Base_Column_List"/>-->
+
+<!--        from daoxin_erp_stock_details where 1 = 1-->
+<!--        <if test="paramCondition.stockId != null">-->
+<!--            and stock_id = #{paramCondition.stockId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.storehouseId != null">-->
+<!--            and storehouse_id = #{paramCondition.storehouseId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.brandId != null">-->
+<!--            and brand_id = #{paramCondition.brandId}-->
+<!--        </if>-->
+<!--    </select>-->
+
+<!--    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.stockDetail.model.params.RestStockDetailsParam">-->
+<!--        select-->
+<!--        <include refid="Base_Column_List"/>-->
+<!--        from daoxin_erp_stock_details where 1 = 1-->
+<!--        <if test="paramCondition.stockId != null">-->
+<!--            and stock_id = #{paramCondition.stockId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.itemId != null">-->
+<!--            and item_id = #{paramCondition.itemId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.storehouseId != null">-->
+<!--            and storehouse_id = #{paramCondition.storehouseId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.brandId != null">-->
+<!--            and brand_id = #{paramCondition.brandId}-->
+<!--        </if>-->
+<!--    </select>-->
+
+<!--    <select id="customPageList" resultType="cn.atsoft.dasheng.stockDetail.model.result.RestStockDetailsResult"-->
+<!--            parameterType="cn.atsoft.dasheng.stockDetail.model.params.RestStockDetailsParam">-->
+<!--        select-->
+<!--        <include refid="Base_Column_List"/>-->
+<!--        from daoxin_erp_stock_details where display = 1 and number != 0-->
+<!--        <if test="paramCondition.stockId != null">-->
+<!--            and stock_id = #{paramCondition.stockId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.skuId != null">-->
+<!--            and sku_id = #{paramCondition.skuId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.storageTime !=null">-->
+<!--            and storage_time like CONCAT('%',#{paramCondition.storageTime},'%')-->
+<!--        </if>-->
+<!--        <if test="paramCondition.qrCodeid != null ">-->
+<!--            and inkind_id in (-->
+<!--            select form_id from qr_code_bind where display = 1 and SUBSTRING(qr_code_id, -6) like-->
+<!--            CONCAT('%',#{paramCondition.qrCodeid},'%') and source = 'item'-->
+<!--            )-->
+<!--        </if>-->
+<!--        <if test="paramCondition.storehouseId != null">-->
+<!--            and storehouse_id = #{paramCondition.storehouseId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.brandId != null">-->
+<!--            and brand_id = #{paramCondition.brandId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.outStockOrderId != null">-->
+<!--            and outstock_order_id = #{paramCondition.outStockOrderId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.storehousePositionsId != null">-->
+<!--            and storehouse_positions_id = #{paramCondition.storehousePositionsId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.stage != null">-->
+<!--            and stage = #{paramCondition.stage}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.skuName != null ">-->
+<!--            and sku_id in (SELECT sku_id from goods_sku where spu_id in (select spu_id from goods_spu where name like-->
+<!--            CONCAT-->
+<!--            ('%',#{paramCondition.skuName},'%') ) )-->
+<!--            UNION-->
+<!--            SELECT-->
+<!--            <include refid="Base_Column_List"/>-->
+<!--            FROM daoxin_erp_stock_details where sku_id in (SELECT sku_id from goods_sku where sku_name like CONCAT-->
+<!--            ('%',#{paramCondition.skuName},'%') )-->
+<!--        </if>-->
+<!--        <if test="paramCondition.deptId != null and paramCondition.deptId != 0">-->
+<!--            and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like-->
+<!--            CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))-->
+<!--        </if>-->
+<!--        <if test="paramCondition.inkindIds != null and  paramCondition.inkindIds.size>0">-->
+<!--            and inkind_id in-->
+<!--            <foreach collection="paramCondition.inkindIds" index="index" item="state" separator="," close=")" open="(">-->
+<!--                #{state}-->
+<!--            </foreach>-->
+<!--        </if>-->
+<!--        <if test="paramCondition.inkindId !=null">-->
+<!--            and inkind_id like CONCAT('%',#{paramCondition.inkindId},'%')-->
+<!--        </if>-->
+<!--        <if test="paramCondition.lockedInkindIds != null and paramCondition.lockedInkindIds.size >0 ">-->
+<!--            and inkind_id not in-->
+<!--            <foreach collection="paramCondition.lockedInkindIds" separator="," open="(" item="state" index="index"-->
+<!--                     close=")">-->
+<!--                #{state}-->
+<!--            </foreach>-->
+<!--        </if>-->
+<!--        <choose>-->
+<!--            <when test="paramCondition.status != null and paramCondition.status == -1">-->
+<!--                and inkind_id in (-->
+<!--                select inkind_id from goods_inkind where anomaly = 1-->
+<!--                )-->
+<!--            </when>-->
+<!--            <when test="paramCondition.status != null and paramCondition.status == 99">-->
+<!--                and inkind_id in (-->
+<!--                select inkind_id from goods_inkind where anomaly = 0-->
+<!--                )-->
+<!--            </when>-->
+<!--        </choose>-->
+<!--    </select>-->
+
+<!--    <select id="customPageMapList" resultType="map"-->
+<!--            parameterType="cn.atsoft.dasheng.stockDetail.model.params.RestStockDetailsParam">-->
+<!--        select-->
+<!--        <include refid="Base_Column_List"/>-->
+
+<!--        from daoxin_erp_stock_details where 1 = 1-->
+<!--        <if test="paramCondition.stockId != null">-->
+<!--            and stock_id = #{paramCondition.stockId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.itemId != null">-->
+<!--            and item_id = #{paramCondition.itemId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.storehouseId != null">-->
+<!--            and storehouse_id = #{paramCondition.storehouseId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.brandId != null">-->
+<!--            and brand_id = #{paramCondition.brandId}-->
+<!--        </if>-->
+<!--    </select>-->
+
+<!--&lt;!&ndash;    &lt;!&ndash;EXCEL导出查询&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;    <select id="stockDetailExcelExport" resultType="cn.atsoft.dasheng.Excel.pojo.StockDetailExcel"&ndash;&gt;-->
+<!--&lt;!&ndash;            parameterType="cn.atsoft.dasheng.stockDetail.model.params.RestStockDetailsParam">&ndash;&gt;-->
+<!--&lt;!&ndash;        select&ndash;&gt;-->
+<!--&lt;!&ndash;        <include refid="Excel_List"/>&ndash;&gt;-->
+
+<!--&lt;!&ndash;        from daoxin_erp_stock_details where 1 = 1&ndash;&gt;-->
+<!--&lt;!&ndash;        GROUP BY sku_id,storehouse_positions_id&ndash;&gt;-->
+<!--&lt;!&ndash;    </select>&ndash;&gt;-->
+
+
+<!--    &lt;!&ndash;    需要养护实物查询&ndash;&gt;-->
+<!--    <select id="maintenanceQuerry" resultType="cn.atsoft.dasheng.stockDetail.entity.RestStockDetails"-->
+<!--            parameterType="cn.atsoft.dasheng.stockDetail.model.params.RestStockDetailsParam">-->
+<!--        select-->
+<!--        <include refid="Base_Column_List"/>-->
+<!--        from daoxin_erp_stock_details where display = 1 and number != 0 and stage = 1-->
+
+<!--        <if test="paramCondition.storehouseId != null">-->
+<!--            and storehouse_id = #{paramCondition.storehouseId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.brandId != null">-->
+<!--            and brand_id = #{paramCondition.brandId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.storehousePositionsId != null">-->
+<!--            and storehouse_positions_id = #{paramCondition.storehousePositionsId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.skuIds != null and  paramCondition.skuIds.size>0">-->
+<!--            and sku_id in-->
+<!--            <foreach collection="paramCondition.skuIds" index="index" item="state" separator="," close=")" open="(">-->
+<!--                #{state}-->
+<!--            </foreach>-->
+<!--        </if>-->
+<!--        <if test="paramCondition.brandIds != null and  paramCondition.brandIds.size>0">-->
+<!--            and brand_id in-->
+<!--            <foreach collection="paramCondition.brandIds" index="index" item="state" separator="," close=")" open="(">-->
+<!--                #{state}-->
+<!--            </foreach>-->
+<!--        </if>-->
+<!--        <if test=" paramCondition.notNeedMaintenanceInkindIds != null  and paramCondition.notNeedMaintenanceInkindIds.size>0">-->
+<!--            and inkind_id not in-->
+<!--            <foreach collection="paramCondition.notNeedMaintenanceInkindIds" index="index"-->
+<!--                     item="notNeedMaintenanceInkindId" separator="," close=")" open="(">-->
+<!--                #{notNeedMaintenanceInkindId}-->
+<!--            </foreach>-->
+<!--        </if>-->
+<!--        <if test=" paramCondition.positionIds != null  and paramCondition.positionIds.size>0">-->
+<!--            and storehouse_positions_id in-->
+<!--            <foreach collection="paramCondition.positionIds" index="index" item="positionId" separator="," close=")"-->
+<!--                     open="(">-->
+<!--                #{positionId}-->
+<!--            </foreach>-->
+<!--        </if>-->
+
+<!--    </select>-->
+
+<!--    <select id="getInkindIds" resultType="Long" parameterType="cn.atsoft.dasheng.stockDetail.model.params.RestStockDetailsParam">-->
+<!--        select form_id-->
+<!--        from qr_code_bind where display = 1 and source = 'item'-->
+<!--        <if test="paramCondition.inkind != null ">-->
+<!--            and SUBSTRING(qr_code_id, -6) like CONCAT('%',#{paramCondition.inkind})-->
+<!--        </if>-->
+
+<!--    </select>-->
+
+<!--    <select id="getNumberByStock" resultType="integer"-->
+<!--            parameterType="cn.atsoft.dasheng.stockDetail.model.params.RestStockDetailsParam">-->
+<!--        select sum(number) as number-->
+<!--        from daoxin_erp_stock_details where display = 1-->
+<!--        <if test="skuId != null ">-->
+<!--            and sku_id = #{skuId}-->
+<!--        </if>-->
+<!--        <if test="brandId !=null">-->
+<!--            and brand_id =#{brandId}-->
+<!--        </if>-->
+<!--        <if test="positionId != null">-->
+<!--            and storehouse_positions_id = #{positionId}-->
+<!--        </if>-->
+<!--        group by-->
+<!--        <trim suffixOverrides=",">-->
+<!--            <if test="skuId != null ">-->
+<!--                sku_id,-->
+<!--            </if>-->
+<!--            <if test="brandId !=null">-->
+<!--                brand_id ,-->
+<!--            </if>-->
+<!--            <if test="positionId != null">-->
+<!--                storehouse_positions_id ,-->
+<!--            </if>-->
+
+<!--        </trim>-->
+<!--    </select>-->
+
+<!--    <select id="stockInKindList" resultType="cn.atsoft.dasheng.stockDetail.model.result.RestStockDetailsResult">-->
+<!--        SELECT daoxin_erp_stock_details.sku_id    as skuId,-->
+<!--               daoxin_erp_stock_details.inkind_id as inkindId,-->
+<!--               daoxin_erp_stock_details.number    as num,-->
+<!--               goods_sku.spu_id                   as spuId,-->
+<!--               goods_spu.spu_classification_id    as spuClassificationId,-->
+<!--               goods_inkind.anomaly               as anomaly,-->
+<!--               daoxin_erp_stock_details.number    as number-->
+<!--        FROM daoxin_erp_stock_details-->
+<!--                 LEFT JOIN goods_sku ON goods_sku.sku_id = daoxin_erp_stock_details.sku_id-->
+<!--                 LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id-->
+<!--                 LEFT JOIN goods_inkind on daoxin_erp_stock_details.inkind_id = goods_inkind.inkind_id-->
+
+<!--        WHERE daoxin_erp_stock_details.number > 0-->
+<!--          and daoxin_erp_stock_details.display = 1-->
+
+
+<!--    </select>-->
+<!--    <select id="stockDetailView" resultType="cn.atsoft.dasheng.app.model.request.StockDetailView">-->
+<!--        SELECT sku_id      AS "skuId",-->
+<!--               brand_id    AS "brandId",-->
+<!--               sum(number) AS "number"-->
+<!--        from daoxin_erp_stock_details-->
+
+<!--        WHERE display = 1-->
+<!--          and stage = 1-->
+<!--        GROUP BY sku_id, brand_id-->
+<!--    </select>-->
+<!--    <select id="skuDetailView" parameterType="cn.atsoft.dasheng.stockDetail.model.params.RestStockDetailsParam" resultType="cn.atsoft.dasheng.stockDetail.model.result.RestStockDetailsResult">-->
+<!--        SELECT-->
+<!--            sku_id AS "skuId",-->
+<!--            storehouse_positions_id AS "storehousePositionsId",-->
+<!--            sum(number) AS "number",-->
+<!--            create_time AS "createTime"-->
+<!--        from daoxin_erp_stock_details-->
+
+<!--        WHERE 1=1 and display = 1-->
+<!--          and stage = 1-->
+<!--        <if test="paramCondition.skuId!=null">-->
+<!--            and sku_id = #{paramCondition.skuId}-->
+<!--        </if>-->
+<!--        GROUP BY sku_id, storehouse_positions_id-->
+<!--    </select>-->
+
+<!--    <select id="dataStatisticsView" resultType="cn.atsoft.dasheng.app.model.request.StockDetailView"-->
+<!--            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">-->
+<!--        SELECT-->
+<!--        sum( detail.number ) AS "number",-->
+<!--        class.`name` AS "className",-->
+<!--        material.`name` AS "materialName",-->
+<!--        storehouse.`name` AS "storehouseName",-->
+<!--        class.spu_classification_id AS "spuClassId",-->
+<!--        material.material_id AS "materialId",-->
+<!--        storehouse.storehouse_id AS "storehouseId",-->
+<!--        customer.customer_id AS "customerId",-->
+<!--        customer.customer_name AS "customerName",-->
+<!--        count( DISTINCT detail.sku_id ) AS "skuCount",-->
+<!--        detail.create_time AS "createTime"-->
+<!--        FROM-->
+<!--        daoxin_erp_stock_details detail-->
+<!--        LEFT JOIN goods_inkind inkind ON detail.inkind_id = inkind.inkind_id-->
+<!--        LEFT JOIN goods_sku sku on detail.sku_id = sku.sku_id-->
+<!--        LEFT JOIN goods_spu spu on sku.spu_id = spu.spu_id-->
+<!--        LEFT JOIN goods_spu_class class on class.spu_classification_id = spu.spu_classification_id-->
+<!--        LEFT JOIN daoxin_erp_material material on sku.material_id = material.material_id-->
+<!--        LEFT JOIN daoxin_erp_storehouse storehouse on storehouse.storehouse_id = detail.storehouse_id-->
+<!--        LEFT JOIN daoxin_crm_customer customer on inkind.customer_id = customer.customer_id-->
+<!--        WHERE-->
+<!--        detail.display = 1 and detail.stage = 1-->
+<!--        <if test="paramCondition.spuClassId != null">-->
+<!--            and spu.spu_classification_id = #{paramCondition.spuClassId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.materialId != null">-->
+<!--            and material.material_id = #{paramCondition.materialId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.customerId != null">-->
+<!--            and customer.customer_id = #{paramCondition.customerId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.storehouseId != null">-->
+<!--            and storehouse.storehouse_id = #{paramCondition.storehouseId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.searchType != null">-->
+<!--            <choose>-->
+<!--                <when test="paramCondition.searchType.name == 'SPU_CLASS'">-->
+<!--                    GROUP BY-->
+<!--                    spu.spu_classification_id-->
+<!--                </when>-->
+<!--                <when test="paramCondition.searchType.name == 'STOREHOUSE'">-->
+<!--                    GROUP BY-->
+<!--                    storehouse.storehouse_id-->
+<!--                </when>-->
+<!--                <when test="paramCondition.searchType.name == 'MATERIAL'">-->
+<!--                    GROUP BY-->
+<!--                    material.material_id-->
+<!--                </when>-->
+<!--                <when test="paramCondition.searchType.name == 'CUSTOMER'">-->
+<!--                    GROUP BY-->
+<!--                    customer.customer_id-->
+<!--                </when>-->
+<!--            </choose>-->
+<!--        </if>-->
+
+<!--        ORDER BY-->
+<!--        sum( detail.number ) DESC-->
+<!--    </select>-->
+<!--    <select id="dataStatisticsViewDetail" resultType="cn.atsoft.dasheng.app.model.request.StockDetailView"-->
+<!--            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">-->
+<!--        SELECT-->
+<!--        sum( detail.number ) AS "number",-->
+<!--        detail.sku_id AS "skuId",-->
+<!--        class.spu_classification_id AS "spuClassId",-->
+<!--        material.material_id AS "materialId",-->
+<!--        storehouse.storehouse_id AS "storehouseId",-->
+<!--        customer.customer_id AS "customerId",-->
+<!--        detail.create_time AS "createTime"-->
+<!--        FROM-->
+<!--        daoxin_erp_stock_details detail-->
+<!--        LEFT JOIN goods_inkind inkind ON detail.inkind_id = inkind.inkind_id-->
+<!--        LEFT JOIN goods_sku sku on detail.sku_id = sku.sku_id-->
+<!--        LEFT JOIN goods_spu spu on sku.spu_id = spu.spu_id-->
+<!--        LEFT JOIN goods_spu_class class on class.spu_classification_id = spu.spu_classification_id-->
+<!--        LEFT JOIN daoxin_erp_material material on sku.material_id = material.material_id-->
+<!--        LEFT JOIN daoxin_erp_storehouse storehouse on storehouse.storehouse_id = detail.storehouse_id-->
+<!--        LEFT JOIN daoxin_crm_customer customer on inkind.customer_id = customer.customer_id-->
+<!--        WHERE-->
+<!--        detail.display = 1 and detail.stage = 1-->
+<!--        <if test="paramCondition.spuClassId != null">-->
+<!--            and spu.spu_classification_id = #{paramCondition.spuClassId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.materialId != null">-->
+<!--            and material.material_id = #{paramCondition.materialId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.customerId != null">-->
+<!--            and customer.customer_id = #{paramCondition.customerId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.storehouseId != null">-->
+<!--            and storehouse.storehouse_id = #{paramCondition.storehouseId}-->
+<!--        </if>-->
+<!--        GROUP BY detail.sku_id-->
+<!--        ORDER BY-->
+<!--        sum( detail.number ) DESC-->
+<!--    </select>-->
+<!--    <select id="stockNumberCycle" resultType="cn.atsoft.dasheng.app.model.request.StockDetailView"-->
+<!--            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">-->
+<!--        SELECT-->
+<!--        sum( detail.number ) AS "number",-->
+<!--        class.`name` AS "className",-->
+<!--        class.spu_classification_id AS "spuClassId",-->
+<!--        material.material_id AS "materialId",-->
+<!--        storehouse.storehouse_id AS "storehouseId",-->
+<!--        customer.customer_id AS "customerId",-->
+<!--        material.`name` AS "materialName",-->
+<!--        storehouse.`name` AS "storehouseName",-->
+<!--        customer.customer_name AS "customerName",-->
+<!--        count( DISTINCT detail.sku_id ) AS "skuCount",-->
+<!--        detail.create_time AS "createTime"-->
+<!--        FROM-->
+<!--        daoxin_erp_stock_details detail-->
+<!--        LEFT JOIN goods_inkind inkind ON detail.inkind_id = inkind.inkind_id-->
+<!--        LEFT JOIN goods_sku sku on detail.sku_id = sku.sku_id-->
+<!--        LEFT JOIN goods_spu spu on sku.spu_id = spu.spu_id-->
+<!--        LEFT JOIN goods_spu_class class on class.spu_classification_id = spu.spu_classification_id-->
+<!--        LEFT JOIN daoxin_erp_material material on sku.material_id = material.material_id-->
+<!--        LEFT JOIN daoxin_erp_storehouse storehouse on storehouse.storehouse_id = detail.storehouse_id-->
+<!--        LEFT JOIN daoxin_crm_customer customer on inkind.customer_id = customer.customer_id-->
+<!--        WHERE-->
+<!--        detail.display = 1 and detail.stage = 1-->
+<!--        <if test="paramCondition.cycle!=null">-->
+<!--            <choose>-->
+<!--                <when test="paramCondition.cycle == '1month'">-->
+<!--                    AND detail.create_time &gt;= DATE_SUB( CURDATE(), INTERVAL 1 MONTH )-->
+<!--                </when>-->
+<!--                <when test="paramCondition.cycle == '1month-3month'">-->
+<!--                    AND detail.create_time &lt;= DATE_SUB( CURDATE(), INTERVAL 1 MONTH )-->
+<!--                    AND detail.create_time &gt;= DATE_SUB( CURDATE(), INTERVAL 3 MONTH )-->
+<!--                </when>-->
+<!--                <when test="paramCondition.cycle == '3month-6month'">-->
+<!--                    AND detail.create_time &lt;= DATE_SUB( CURDATE(), INTERVAL 3 MONTH )-->
+<!--                    AND detail.create_time &gt;= DATE_SUB( CURDATE(), INTERVAL 6 MONTH )-->
+<!--                </when>-->
+<!--                <when test="paramCondition.cycle == 'after6month'">-->
+<!--                    AND detail.create_time &lt;= DATE_SUB( CURDATE(), INTERVAL 6 MONTH )-->
+<!--                </when>-->
+<!--            </choose>-->
+
+<!--        </if>-->
+<!--        <if test="paramCondition.spuClassId != null">-->
+<!--            and spu.spu_classification_id = #{paramCondition.spuClassId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.materialId != null">-->
+<!--            and material.material_id = #{paramCondition.materialId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.customerId != null">-->
+<!--            and customer.customer_id = #{paramCondition.customerId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.storehouseId != null">-->
+<!--            and storehouse.storehouse_id = #{paramCondition.storehouseId}-->
+<!--        </if>-->
+<!--    </select>-->
+<!--    <select id="stockNumberCycleDetail" resultType="cn.atsoft.dasheng.app.model.request.StockDetailView"-->
+<!--            parameterType="cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam">-->
+<!--        SELECT-->
+<!--        sum( detail.number ) AS "number",-->
+<!--        detail.sku_id AS "skuId",-->
+<!--        detail.create_time AS "createTime"-->
+<!--        FROM-->
+<!--        daoxin_erp_stock_details detail-->
+<!--        LEFT JOIN goods_inkind inkind ON detail.inkind_id = inkind.inkind_id-->
+<!--        LEFT JOIN goods_sku sku on detail.sku_id = sku.sku_id-->
+<!--        LEFT JOIN goods_spu spu on sku.spu_id = spu.spu_id-->
+<!--        LEFT JOIN goods_spu_class class on class.spu_classification_id = spu.spu_classification_id-->
+<!--        LEFT JOIN daoxin_erp_material material on sku.material_id = material.material_id-->
+<!--        LEFT JOIN daoxin_erp_storehouse storehouse on storehouse.storehouse_id = detail.storehouse_id-->
+<!--        LEFT JOIN daoxin_crm_customer customer on inkind.customer_id = customer.customer_id-->
+<!--        WHERE-->
+<!--        detail.display = 1 and detail.stage = 1-->
+<!--        <if test="paramCondition.cycle!=null">-->
+<!--            <choose>-->
+<!--                <when test="paramCondition.cycle == '1month'">-->
+<!--                    AND detail.create_time &gt;= DATE_SUB( CURDATE(), INTERVAL 1 MONTH )-->
+<!--                </when>-->
+<!--                <when test="paramCondition.cycle == '1month-3month'">-->
+<!--                    AND detail.create_time &lt;= DATE_SUB( CURDATE(), INTERVAL 1 MONTH )-->
+<!--                    AND detail.create_time &gt;= DATE_SUB( CURDATE(), INTERVAL 3 MONTH )-->
+<!--                </when>-->
+<!--                <when test="paramCondition.cycle == '3month-6month'">-->
+<!--                    AND detail.create_time &lt;= DATE_SUB( CURDATE(), INTERVAL 3 MONTH )-->
+<!--                    AND detail.create_time &gt;= DATE_SUB( CURDATE(), INTERVAL 6 MONTH )-->
+<!--                </when>-->
+<!--                <when test="paramCondition.cycle == 'after6month'">-->
+<!--                    AND detail.create_time &lt;= DATE_SUB( CURDATE(), INTERVAL 6 MONTH )-->
+<!--                </when>-->
+<!--            </choose>-->
+
+<!--        </if>-->
+<!--        <if test="paramCondition.spuClassId != null">-->
+<!--            and spu.spu_classification_id = #{paramCondition.spuClassId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.materialId != null">-->
+<!--            and material.material_id = #{paramCondition.materialId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.customerId != null">-->
+<!--            and customer.customer_id = #{paramCondition.customerId}-->
+<!--        </if>-->
+<!--        <if test="paramCondition.storehouseId != null">-->
+<!--            and storehouse.storehouse_id = #{paramCondition.storehouseId}-->
+<!--        </if>-->
+<!--        GROUP BY detail.sku_id-->
+<!--        ORDER BY sum( detail.number )-->
+<!--    </select>-->
+
+</mapper>

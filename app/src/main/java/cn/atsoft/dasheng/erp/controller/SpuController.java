@@ -330,8 +330,10 @@ public class SpuController extends BaseController {
 
             Unit unit = unitService.getById(detail.getUnitId());
             UnitResult unitResult = new UnitResult();
-            ToolUtil.copyProperties(unit, unitResult);
-            spuResult.setUnitResult(unitResult);
+            if(ToolUtil.isNotEmpty(unit)){
+                ToolUtil.copyProperties(unit, unitResult);
+                spuResult.setUnitResult(unitResult);
+            }
 
             ToolUtil.copyProperties(detail, spuResult);
 
