@@ -231,12 +231,12 @@ public class AuthLoginController extends BaseController {
     public ResponseData cpLoginByCode(@RequestParam("code") String code) {
         String token = ucMemberAuth.cpLogin(code);
         UcJwtPayLoad jwtPayLoad = UcJwtTokenUtil.getJwtPayLoad(token);
-        Long memberId = jwtPayLoad.getUserId();
+        Long memberId = jwtPayLoad.getMemberId();
 
         if (ToolUtil.isNotEmpty(memberId)) {
             QueryWrapper<WxuserInfo> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("member_id", memberId);
-            queryWrapper.in("source", "wxCp");
+//            queryWrapper.in("source", "wxCp");
             queryWrapper.isNotNull("user_id");
             queryWrapper.eq("display", 1);
             queryWrapper.last("limit 1");
@@ -357,7 +357,7 @@ public class AuthLoginController extends BaseController {
                 wxuserInfo.setDisplay(0);
                 QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
                 wxuserInfoQueryWrapper.eq("user_id", userId);
-                wxuserInfoQueryWrapper.eq("source", "wxCp");
+//                wxuserInfoQueryWrapper.eq("source", "wxCp");
                 wxuserInfoQueryWrapper.eq("display", 1);
                 wxuserInfoService.update(wxuserInfo, wxuserInfoQueryWrapper);
             }

@@ -61,10 +61,12 @@ public class InstockSendTemplate {
     public List<String> userIds() {
         //获取uuid
         List<String> uuIds = new ArrayList<>();
-        WxuserInfo wxuserInfo = wxuserInfoService.query().eq("user_id", businessTrack.getUserId()).eq("source", "wxCp").one();
+//        WxuserInfo wxuserInfo = wxuserInfoService.query().eq("user_id", businessTrack.getUserId()).eq("source", "wxCp").one();
+        WxuserInfo wxuserInfo = wxuserInfoService.query().eq("user_id", businessTrack.getUserId()).one();
         if (ToolUtil.isNotEmpty(wxuserInfo)) {
 
-            UcOpenUserInfo ucOpenUserInfo = ucOpenUserInfoService.query().eq("member_id", wxuserInfo.getMemberId()).eq("source", "wxCp").one();
+//            UcOpenUserInfo ucOpenUserInfo = ucOpenUserInfoService.query().eq("member_id", wxuserInfo.getMemberId()).eq("source", "wxCp").one();
+            UcOpenUserInfo ucOpenUserInfo = ucOpenUserInfoService.query().eq("member_id", wxuserInfo.getMemberId()).one();
 
             if (ToolUtil.isNotEmpty(ucOpenUserInfo)) {
                 uuIds.add(ucOpenUserInfo.getUuid());
