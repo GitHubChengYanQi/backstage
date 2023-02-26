@@ -842,7 +842,6 @@ public class RestOutStockOrderServiceImpl extends ServiceImpl<RestOutStockOrderM
 
         List<Long> stockIds = new ArrayList<>();
 
-        Long fromAllocation = isFromAllocation(ToolUtil.isNotEmpty(pickListsIds.get(0)) ? pickListsIds.get(0) : null);
         /**
          * 取出购物车数据
          */
@@ -852,12 +851,14 @@ public class RestOutStockOrderServiceImpl extends ServiceImpl<RestOutStockOrderM
 
         List<Long> traceabilitieIds = listsCarts.stream().map(RestOutStockCart::getInkindId).collect(Collectors.toList());
 //      计算库存 进行出库数据更新
-        traceabilityService.update(new RestTraceability() {{
-                                       setDisplay(0);
-                                   }}, new QueryWrapper<RestTraceability>() {{
-                                       in("inkind_id", traceabilitieIds);
-                                   }}
-        );
+        if(traceabilitieIds.size()>0){
+            traceabilityService.update(new RestTraceability() {{
+                                           setDisplay(0);
+                                       }}, new QueryWrapper<RestTraceability>() {{
+                                           in("inkind_id", traceabilitieIds);
+                                       }}
+            );
+        }
         List<RestStockDetails> restStockDetails = stockDetailsService.resultByTraceability(traceabilitieIds);
         for (RestStockDetails restStockDetail : restStockDetails) {
             restStockDetail.setDisplay(0);

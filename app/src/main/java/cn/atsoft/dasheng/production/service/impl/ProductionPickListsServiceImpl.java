@@ -20,7 +20,6 @@ import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
-import cn.atsoft.dasheng.erp.model.result.AnnouncementsResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
@@ -318,6 +317,22 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
         List<Object> list = redisSendCheck.getList(pickCode);
         List<Object> objects = BeanUtil.copyToList(param.getCartsParams(), Object.class);
+        if (ToolUtil.isEmpty(list)) {
+            redisSendCheck.pushList(pickCode, objects, 1000L * 60L * 10L);
+            redisSendCheck.pushObject(checkCode, LoginContextHolder.getContext().getUserId(), 1000L * 60L * 10L);
+            return code;
+        }
+        return createCode(param);
+    }
+    @Override
+    public String createCodeV2(ProductionPickListsParam param) {
+        String code = String.valueOf(RandomUtil.randomLong(1000, 9999));
+        String pickCode = RedisTemplatePrefixEnum.LLM.getValue() + code;
+        String checkCode = RedisTemplatePrefixEnum.LLJCM.getValue() + code;
+
+
+        List<Object> list = redisSendCheck.getList(pickCode);
+        List<Object> objects = BeanUtil.copyToList(param.getCartIds(), Object.class);
         if (ToolUtil.isEmpty(list)) {
             redisSendCheck.pushList(pickCode, objects, 1000L * 60L * 10L);
             redisSendCheck.pushObject(checkCode, LoginContextHolder.getContext().getUserId(), 1000L * 60L * 10L);

@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
@@ -114,6 +115,19 @@ public class ProductionPickListsController extends BaseController {
     @ApiOperation("新增")
     public ResponseData createCode(@RequestBody ProductionPickListsParam productionPickListsParam) {
         String code = this.productionPickListsService.createCode(productionPickListsParam);
+        return ResponseData.success(code);
+    }
+    /**
+     * 生成code
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/{version}/createCode", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    @ApiVersion("2.0")
+    public ResponseData createCodeV2(@RequestBody ProductionPickListsParam productionPickListsParam) {
+        String code = this.productionPickListsService.createCodeV2(productionPickListsParam);
         return ResponseData.success(code);
     }
 

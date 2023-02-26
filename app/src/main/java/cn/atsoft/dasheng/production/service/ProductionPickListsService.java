@@ -61,6 +61,8 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
 
     String createCode(ProductionPickListsParam param);
 
+    String createCodeV2(ProductionPickListsParam param);
+
     /**
      * 查询列表，Specification模式
      *
