@@ -552,7 +552,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     }
 
     @Override
-    public void checkNumberTrue(Long id, Integer status, Long actionId) {
+    public void checkNumberTrue(Long id, Integer status, String actionType) {
         if (status != 98) {
             throw new ServiceException(500, "您传入的状态不正确");
         } else {
@@ -561,7 +561,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 setMessageType(AuditMessageType.AUDIT);
                 setFormId(id);
                 setForm("instock");
-                setActionId(actionId);
+                setActionId(actionType);
             }});
         }
 
@@ -840,7 +840,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
              * 消息队列完成动作
              */
 
-            activitiProcessLogService.checkAction(param.getInstockOrderId(), "INSTOCK", param.getActionId(), LoginContextHolder.getContext().getUserId());
+            activitiProcessLogService.checkAction(param.getInstockOrderId(), "INSTOCK", param.getActionType(), LoginContextHolder.getContext().getUserId());
 //            messageProducer.auditMessageDo(new AuditEntity() {{
 //                setAuditType(CHECK_ACTION);
 //                setMessageType(AuditMessageType.AUDIT);
@@ -1258,7 +1258,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 setMessageType(AuditMessageType.AUDIT);
                 setFormId(param.getInstockOrderId());
                 setForm("instock");
-                setActionId(param.getActionId());
+                setActionId(param.getActionType());
             }});
         }
         return orderComplete;
@@ -1552,7 +1552,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 setMessageType(AuditMessageType.AUDIT);
                 setFormId(order.getInstockOrderId());
                 setForm(ReceiptsEnum.INSTOCK.name());
-                setActionId(action.getDocumentsActionId());
+                setActionId(ReceiptsEnum.INSTOCK.name());
             }});
 
         }

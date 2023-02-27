@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.erp.model.params.SkuListParam;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.pojo.SkuBind;
 import cn.atsoft.dasheng.erp.pojo.SkuBindParam;
 import cn.atsoft.dasheng.erp.pojo.SkuLogDetail;
@@ -86,6 +87,9 @@ public class SkuController extends BaseController {
 
     @Autowired
     private SkuListService skuListService;
+
+    @Autowired
+    private StorehousePositionsBindService positionsBindService;
 
 
     /**
@@ -275,16 +279,9 @@ public class SkuController extends BaseController {
                 sku.setUnit(unit);
             }
             if (ToolUtil.isNotEmpty(spu.getSpuClassificationId())) {
-//                SpuClassification spuClassification = spuClassificationService.getById(spu.getSpuClassificationId());
-//                sku.setSpuClassification(spuClassification);  //产品
-//
-//                if (ToolUtil.isNotEmpty(spuClassification.getPid())) {
                 //分类
                 SpuClassification spuClassification1 = spuClassificationService.getById(spu.getSpuClassificationId());
                 sku.setSpuClass(spuClassification1.getSpuClassificationId());
-//                    sku.setSkuClass(spuClassification1);
-//                }
-
             }
         }
         if (ToolUtil.isNotEmpty(sku.getQualityPlanId())) {
@@ -295,7 +292,7 @@ public class SkuController extends BaseController {
         if (ToolUtil.isNotEmpty(user)) {
             sku.setCreateUserName(user.getName());
         }
-
+        sku.setPositionsResult(positionsBindService.sku2position(sku.getSkuId()));
         Dict dict = dictService.query().eq("code", "editSku").one();
         boolean editSkuFlag = ToolUtil.isNotEmpty(dict) && dict.getStatus().equals("ENABLE");
         sku.setEditSkuFlag(editSkuFlag);

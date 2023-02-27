@@ -18,7 +18,7 @@ public class InStockByOrderParam {
 
     private Long instockOrderId;
 
-    private Long actionId;
+    private String actionType;
 
     @Data
     public class SkuParam {

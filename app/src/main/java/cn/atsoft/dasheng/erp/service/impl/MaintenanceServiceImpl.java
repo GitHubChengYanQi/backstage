@@ -723,7 +723,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
         ActivitiProcessTask task = activitiProcessTaskService.query().eq("type", "MAINTENANCE").eq("form_id", id).one();
         if (ToolUtil.isNotEmpty(task)) {
             DocumentsAction action = actionService.query().eq("action", MaintenanceActionEnum.maintenanceing.name()).eq("display", 1).one();
-            activitiProcessLogService.checkAction(task.getFormId(), task.getType(), action.getDocumentsActionId(), LoginContextHolder.getContext().getUserId());
+            activitiProcessLogService.checkAction(task.getFormId(), task.getType(), MaintenanceActionEnum.maintenanceing.name(), LoginContextHolder.getContext().getUserId());
         }
 
     }
