@@ -104,7 +104,7 @@ public class UcMemberServiceImpl extends ServiceImpl<UcMemberMapper, UcMember> i
     public UcMember getByMemberId(Long memberId){
         QueryWrapper<UcMember> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("member_id", memberId);
-        UcMember ucMember = this.getOne(queryWrapper);
+        queryWrapper.eq("display",1);
         return this.getOne(queryWrapper);
     }
 

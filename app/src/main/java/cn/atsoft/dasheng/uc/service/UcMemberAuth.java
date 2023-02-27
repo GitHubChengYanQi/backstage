@@ -257,30 +257,21 @@ public class UcMemberAuth {
 
         String token = login(ucOpenUserInfo);
 
-
-
         try{
             UcJwtPayLoad jwtPayLoad = getJwtPayLoad(token);
             Long memberId = jwtPayLoad.getMemberId();
             WxuserInfo wxuserInfo = wxuserInfoService.getByMemberId(memberId);
-
-            UcMember ucMember = ucMemberService.getByMemberId(memberId);
-            String account = "";
-            if (ToolUtil.isNotEmpty(ucMember)) {
-                User user = userService.getById(wxuserInfo.getUserId());
-                account = user.getAccount();
+            if(ToolUtil.isEmpty(wxuserInfo) || ToolUtil.isEmpty(wxuserInfo.getUserId())){
+                return token;
             }
-            JwtPayLoad payLoad = new JwtPayLoad();
-
-            if (ToolUtil.isNotEmpty(wxuserInfo.getUserId())){
-                payLoad = new JwtPayLoad(wxuserInfo.getUserId(), account, "xxxx");
-
-            }else {
-                payLoad = new JwtPayLoad(null, account, "xxxx");
-
+            User user = userService.getById(wxuserInfo.getUserId());
+            if(ToolUtil.isEmpty(user)){
+                return token;
             }
 
-            token = JwtTokenUtil.generateToken(payLoad);
+            JwtPayLoad    payLoad = new JwtPayLoad(wxuserInfo.getUserId(), user.getAccount(), "xxxx");
+
+            return JwtTokenUtil.generateToken(payLoad);
         }catch (Exception e){
                 e.printStackTrace();
         }
