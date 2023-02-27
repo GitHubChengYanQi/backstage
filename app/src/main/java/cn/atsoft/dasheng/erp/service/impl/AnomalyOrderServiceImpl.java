@@ -782,7 +782,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
             /**
              * 消息队列完成动作
              */
-            processLogService.checkAction(param.getOrderId(), "ERROR", param.getActionId(), LoginContextHolder.getContext().getUserId());
+            processLogService.checkAction(param.getOrderId(), "ERROR", param.getActiontype(), LoginContextHolder.getContext().getUserId());
 //            messageProducer.auditMessageDo(new AuditEntity() {{
 //                setAuditType(CHECK_ACTION);
 //                setMessageType(AuditMessageType.AUDIT);

@@ -43,7 +43,7 @@ public interface InstockOrderService extends IService<InstockOrder> {
 
     void addRecord(InstockOrderParam param);
 
-    void checkNumberTrue(Long id, Integer status, Long actionId);
+    void checkNumberTrue(Long id, Integer status, String actionType);
 
     void checkNumberFalse(Long id, Integer status);
 

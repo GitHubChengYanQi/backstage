@@ -78,7 +78,7 @@ public class InstockOrderController extends BaseController {
     @RequestMapping(value = "/checkNumberTrue", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData checkNumberTrue(@RequestBody @Valid InstockOrderParam instockOrderParam) {
-        this.instockOrderService.checkNumberTrue(instockOrderParam.getInstockOrderId(), instockOrderParam.getState(), instockOrderParam.getActionId());
+        this.instockOrderService.checkNumberTrue(instockOrderParam.getInstockOrderId(), instockOrderParam.getState(), instockOrderParam.getActionType());
         return ResponseData.success();
     }
 

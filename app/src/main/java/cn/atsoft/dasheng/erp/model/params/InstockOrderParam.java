@@ -30,7 +30,7 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
 
     private Boolean directInStock = false;   //是否直接入库
 
-
+    private String actionType;
 
     private String url;
 

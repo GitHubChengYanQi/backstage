@@ -540,10 +540,10 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
                                 //如果来源存的是流程任务的id
                                 ActivitiProcessTask parentProcessTask = activitiProcessTaskService.getById(themeAndOrigin.getSourceId());
 
-                                checkAction(parentProcessTask.getProcessId(), ReceiptsEnum.QUALITY.name(), QualityActionEnum.done.getStatus(), loginUserId);
+                                checkAction(parentProcessTask.getProcessId(), ReceiptsEnum.QUALITY.name(), QualityActionEnum.done.name(), loginUserId);
                             } else {
                                 //如果来源存的是主单据的id
-                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.QUALITY.name(), QualityActionEnum.done.getStatus(), loginUserId);
+                                checkAction(themeAndOrigin.getSourceId(), ReceiptsEnum.QUALITY.name(), QualityActionEnum.done.name(), loginUserId);
                             }
                         }
                     }
@@ -770,7 +770,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
      * @param-
      */
     @Override
-    public void checkAction(Long id, String formType, Long actionId, Long loginUserId) {
+    public void checkAction(Long id, String formType, String actionType, Long loginUserId) {
 
         ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("type", formType).eq("form_id", id).eq("display", 1).one();
         if (ToolUtil.isEmpty(processTask)) {
@@ -788,14 +788,14 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
         for (ActivitiProcessLog processLog : logs) {
             for (ActivitiSteps activitiStep : activitiSteps) {
                 if (processLog.getSetpsId().equals(activitiStep.getSetpsId()) && activitiStep.getStepType().equals("status") && (ToolUtil.isEmpty(processLog.getAuditUserId()) || processLog.getAuditUserId().equals(loginUserId))) {
-                    this.checkLogActionComplete(processTask.getProcessTaskId(), activitiStep.getSetpsId(), actionId, loginUserId);
+                    this.checkLogActionComplete(processTask.getProcessTaskId(), activitiStep.getSetpsId(), actionType, loginUserId);
                     return;
                 }
             }
         }
     }
 
-    public void checkAction(Long id, Long actionId, Long loginUserId) {
+    public void checkAction(Long id, String  actionType, Long loginUserId) {
         ActivitiProcessTask processTask = activitiProcessTaskService.getById(id);
         List<ActivitiProcessLog> logs = this.getAudit3(processTask.getProcessTaskId());
         List<Long> stepIds = new ArrayList<>();
@@ -806,7 +806,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
         for (ActivitiProcessLog processLog : logs) {
             for (ActivitiSteps activitiStep : activitiSteps) {
                 if (processLog.getSetpsId().equals(activitiStep.getSetpsId()) && activitiStep.getStepType().equals("status")) {
-                    this.checkLogActionComplete(processTask.getProcessTaskId(), activitiStep.getSetpsId(), actionId, loginUserId);
+                    this.checkLogActionComplete(processTask.getProcessTaskId(), activitiStep.getSetpsId(), actionType, loginUserId);
                 }
             }
         }
@@ -820,10 +820,8 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
      * @param
      */
     @Override
-    public void checkLogActionComplete(Long taskId, Long stepId, Long actionId, Long loginUserId) {
+    public void checkLogActionComplete(Long taskId, Long stepId, String actionType, Long loginUserId) {
         List<ActivitiProcessLog> processLogs = this.query().eq("task_id", taskId).eq("setps_id", stepId).list();
-        ActivitiAuditResult audit = auditService.getAudit(stepId);
-
         //TODO 等待动作节点更换逻辑后 增加人员判断
 //        if (this.checkUser(audit.getRule(), taskId)) {
         for (ActivitiProcessLog processLog : processLogs) {
@@ -831,7 +829,7 @@ public class ActivitiProcessLogServiceV1Impl extends ServiceImpl<ActivitiProcess
             if ((ToolUtil.isEmpty(processLog.getAuditUserId()) ||processLog.getAuditUserId().equals(loginUserId)) && ToolUtil.isNotEmpty(processLog.getActionStatus())) {
                 List<ActionStatus> actionStatuses = JSON.parseArray(processLog.getActionStatus(), ActionStatus.class);
                 for (ActionStatus actionStatus : actionStatuses) {
-                    if (actionStatus.getActionId().equals(actionId)) {
+                    if (actionStatus.getAction().equals(actionType)) {
                         actionStatus.setStatus(1);
                     }
                 }

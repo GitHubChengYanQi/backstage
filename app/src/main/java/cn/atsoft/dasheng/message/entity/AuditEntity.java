@@ -44,7 +44,7 @@ public class AuditEntity {
     /**
      * 单据动作id
      */
-    private Long actionId;
+    private String actionId;
 
     /**
      * 审批动作枚举）
