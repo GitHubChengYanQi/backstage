@@ -186,13 +186,12 @@ public class UcMemberAuth {
 
         String dateTime = ToolUtil.getCreateTimeBefore(600);
         queryWrapper.gt("create_time", dateTime);
-//        queryWrapper.eq("phone", phone);
+        queryWrapper.eq("log_name", "登录日志");
         int count = loginLogService.count(queryWrapper);
-        //TODO 增加登录状态条件
-//        if (count >= 10) {
-//            LogManager.me().executeLog(LogTaskFactory.loginLog(phone, "登录错误次数过多:" + code, getIp()));
-//            throw new ServiceException(400, "登录错误次数过多");
-//        }
+        if (count >= 10) {
+            LogManager.me().executeLog(LogTaskFactory.loginLog(phone, "登录错误次数过多:" + code, getIp()));
+            throw new ServiceException(400, "登录错误次数过多");
+        }
         QueryWrapper<UcSmsCode> codeQueryWrapper = new QueryWrapper<>();
 
         // 查找300秒内的验证码
@@ -250,7 +249,6 @@ public class UcMemberAuth {
         // TODO 多台服务器负载的情况下应 使用 Redis 保存Session spring-session-data-redis
 //        HttpSession session = Objects.requireNonNull(HttpContext.getRequest()).getSession();
 //        session.setAttribute("wxMiniApp-sessionKey", sessionKey); // 解密 小程序提交的 加密用户信息
-
         redisTemplate.boundValueOps(redisPreKey + "sessionKey").set(sessionKey);
         userInfo.setUuid(result.getOpenid());
         userInfo.setSource("WXMINIAPP");
