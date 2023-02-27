@@ -16,7 +16,6 @@
 package cn.atsoft.dasheng.sys.core.auth;
 
 import cn.atsoft.dasheng.base.enums.CommonStatus;
-import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.core.auth.cache.SessionManager;
 import cn.atsoft.dasheng.sys.core.auth.util.TokenUtil;
 import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
@@ -276,8 +275,28 @@ public class AuthServiceImpl implements AuthService {
         }
         String requestURI = request.getRequestURI().replaceFirst(ConfigListener.getConf().get("contextPath"), "");
         String[] str = requestURI.split("/");
-        if (str.length > 3) {
-            requestURI = "/" + str[1] + "/" + str[2];
+//        if (str.length > 3) {
+//            requestURI = "/" + str[1] + "/" + str[2];
+//        }
+        if (LoginContextHolder.getContext().hasPermission(requestURI)) {
+            return true;
+        }
+        return false;
+    }
+    @Override
+    public boolean checkAll(Integer length) {
+        HttpServletRequest request = HttpContext.getRequest();
+        LoginUser user = LoginContextHolder.getContext().getUser();
+        if (null == user) {
+            return false;
+        }
+        String requestURI = request.getRequestURI().replaceFirst(ConfigListener.getConf().get("contextPath"), "");
+        String[] str = requestURI.split("/");
+        if (length > 0) {
+            requestURI = "";
+            for (Integer i = 1; i <= length; i++) {
+                requestURI+="/"+str[i];
+            }
         }
         if (LoginContextHolder.getContext().hasPermission(requestURI)) {
             return true;

@@ -35,4 +35,5 @@ public @interface Permission {
      */
     String[] value() default {};
     String name() default "";
+    int length() default 0;
 }
