@@ -870,8 +870,11 @@ public class RestOutStockOrderServiceImpl extends ServiceImpl<RestOutStockOrderM
 
 
         for (RestOutStockCart listsCart : listsCarts) {
+            listsCart.setStatus(99);
+            listsCart.setDisplay(0);
             stockIds.add(listsCart.getStorehouseId());
         }
+        outStockCartService.updateBatchById(listsCarts);
         //计算出库单子表状态
         for (RestOutStockOrderDetail pickListsDetail : pickListsDetails) {
             for (RestOutStockCart listsCart : listsCarts) {
@@ -885,6 +888,7 @@ public class RestOutStockOrderServiceImpl extends ServiceImpl<RestOutStockOrderM
                 }
             }
         }
+        outStockOrderDetailService.updateBatchById(pickListsDetails);
         /**
          * 计算 单据状态
          * 如果单据子表状态全部为完成

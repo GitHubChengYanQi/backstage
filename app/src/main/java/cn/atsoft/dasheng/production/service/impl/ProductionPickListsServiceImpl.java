@@ -329,12 +329,15 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         String code = String.valueOf(RandomUtil.randomLong(1000, 9999));
         String pickCode = RedisTemplatePrefixEnum.LLM.getValue() + code;
         String checkCode = RedisTemplatePrefixEnum.LLJCM.getValue() + code;
-
+        List<Object> collect = Collections.singletonList(param.getCartIds());
+        List<Object> cartIds = new ArrayList<>();
+        for (Long cartId : param.getCartIds()) {
+            cartIds.add(cartId);
+        }
 
         List<Object> list = redisSendCheck.getList(pickCode);
-        List<Object> objects = BeanUtil.copyToList(param.getCartIds(), Object.class);
         if (ToolUtil.isEmpty(list)) {
-            redisSendCheck.pushList(pickCode, objects, 1000L * 60L * 10L);
+            redisSendCheck.pushList(pickCode, cartIds, 1000L * 60L * 10L);
             redisSendCheck.pushObject(checkCode, LoginContextHolder.getContext().getUserId(), 1000L * 60L * 10L);
             return code;
         }

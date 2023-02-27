@@ -102,13 +102,16 @@ public class RestOutStockOrderController extends BaseController {
             productionPickListsParam = new RestOutStockOrderParam();
         }
         List<Object> list = redisSendCheck.getList(RestRedisTemplatePrefixEnum.LLM.getValue()+productionPickListsParam.getCode());
-        List<Long> cartIds = BeanUtil.copyToList(list, Long.class);
+        List<Long> cartIds = new ArrayList<>();
+        for (Object obj : list) {
+            cartIds.add((Long) obj);
+        }
+
         productionPickListsParam.setCartIds(cartIds);
         this.productionPickListsService.outStock(productionPickListsParam);
         redisSendCheck.deleteListOrObject(RestRedisTemplatePrefixEnum.LLM.getValue() + productionPickListsParam.getCode());
         redisSendCheck.deleteListOrObject(RestRedisTemplatePrefixEnum.LLJCM.getValue() + productionPickListsParam.getCode());
-//        this.productionPickListsService.warning(productionPickListsParam);
-        this.productionPickListsService.outStock(productionPickListsParam);
+//        this.productionPickListsService.warnincg(productionPickListsParam);
         return ResponseData.success();
     }
     /**

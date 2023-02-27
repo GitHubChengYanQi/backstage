@@ -36,6 +36,7 @@ public class ProductionPickListsCartSimpleResult implements Serializable {
     private Long inkindId;
     @ApiModelProperty("品牌id")
     private Long brandId;
+    private Integer status;
     private Long storehouseId;
     private StorehouseResult storehouseResult;
     /**

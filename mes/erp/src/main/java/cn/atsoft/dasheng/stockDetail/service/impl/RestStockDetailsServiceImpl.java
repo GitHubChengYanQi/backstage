@@ -834,6 +834,9 @@ public class RestStockDetailsServiceImpl extends ServiceImpl<RestStockDetailsMap
 
     @Override
     public List<RestStockDetails> resultByTraceability(List<Long> ids){
+        if (ids.size() == 0 ){
+            return new ArrayList<>();
+        }
         return this.lambdaQuery().in(RestStockDetails::getInkindId,ids).list();
     }
 }
