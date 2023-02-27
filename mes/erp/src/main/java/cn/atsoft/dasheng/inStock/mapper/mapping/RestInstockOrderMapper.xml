@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.inStock.mapper.InstockOrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.inStock.entity.RestInstockOrder">
+        <id column="instock_order_id" property="instockOrderId"/>
+        <result column="user_id" property="userId"/>
+        <result column="customer_Id" property="customerId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="stock_user_id" property="stockUserId"/>
+        <result column="urgent" property="urgent"/>
+        <result column="enclosure" property="enclosure"/>
+        <result column="instock_time" property="instockTime"/>
+        <result column="remark" property="remark"/>
+        <result column="enclosure" property="enclosure"/>
+        <result column="display" property="display"/>
+        <result column="coding" property="coding"/>
+        <result column="deptId" property="deptId"/>
+        <result column="state" property="state"/>
+        <result column="theme" property="theme"/>
+        <result column="origin" property="origin"/>
+        <result column="storehouse_id" property="storeHouseId"/>
+        <result column="register_time" property="registerTime"/>
+        <result column="storehouse_positions_id" property="storehousePositionsId"/>
+        <result column="source" property="source"/>
+        <result column="source_id" property="sourceId"/>
+        <result column="type" property="type"/>
+        <result column="status" property="status"/>
+        <result column="notice_id" property="noticeId"/>
+        <result column="push_people" property="pushPeople"/>
+        <result column="instock_type" property="instockType"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">stock_user_id
+    AS "stockUserId",urgent AS "urgent",enclosure AS "enclosure",type AS "type",status AS "status",notice_id AS "noticeId",customer_id AS "customerId",
+        storehouse_id AS "storeHouseId",register_time AS "registerTime", theme AS "theme" , origin AS "origin" ,storehouse_positions_id AS "storehousePositionsId",source AS "source",
+          source_id AS "sourceId",push_people AS "pushPeople",
+        instock_order_id AS "instockOrderId", user_id AS "userId", coding AS "coding", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId", state AS "state" , instock_type AS "instockType""
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.inStock.model.result.RestInstockOrderResult"
+            parameterType="cn.atsoft.dasheng.inStock.model.params.RestInstockOrderParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_instock_order where 1 = 1
+        <if test="paramCondition.instockOrderId != null">
+            and instock_order_id like CONCAT('%',#{paramCondition.instockOrderId},'%')
+        </if>
+        <if test="paramCondition.userId != null">
+            and user_id like CONCAT('%',#{paramCondition.userId},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.state != null and paramCondition.state != ''">
+            and state like CONCAT('%',#{paramCondition.state},'%')
+        </if>
+    </select>
+    <select id="countOrderByType" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.inStock.model.params.DataStatisticsViewParam">
+        SELECT
+        count(instock_order_id) AS "orderCount",create_user AS "createUser",instock_type AS "type",create_time AS "createTime"
+        FROM
+            daoxin_erp_instock_order
+        WHERE 1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY instock_type
+    </select>
+    <select id="countOrderByStatus" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.inStock.model.params.DataStatisticsViewParam">
+        SELECT
+            count(instock_order_id) AS "orderCount",create_user AS "createUser",status AS "status",instock_type AS "type"
+        FROM
+            daoxin_erp_instock_order
+        WHERE 1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY status
+
+    </select>
+    <select id="countOrderByUser" resultType="cn.atsoft.dasheng.app.model.request.StockView"
+            parameterType="cn.atsoft.dasheng.inStock.model.params.DataStatisticsViewParam">
+        SELECT
+            count(instock_order_id) AS "orderCount",create_time AS "createTime",create_user AS "createUser",status AS "status",instock_type AS "type"
+        FROM
+            daoxin_erp_instock_order
+        WHERE 1 = 1
+        <if test="paramCondition.beginTime!=null and paramCondition.endTime!=null">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.beginTime},'%Y/%m/%d
+            %H:%i:%s')
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY create_user
+        ORDER BY count(instock_order_id) DESC
+
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.inStock.model.params.RestInstockOrderParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_instock_order where 1 = 1
+        <if test="paramCondition.instockOrderId != null">
+            and instock_order_id like CONCAT('%',#{paramCondition.instockOrderId},'%')
+        </if>
+        <if test="paramCondition.userId != null">
+            and user_id like CONCAT('%',#{paramCondition.userId},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.state != null and paramCondition.state != ''">
+            and state like CONCAT('%',#{paramCondition.state},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.inStock.model.result.RestInstockOrderResult"
+            parameterType="cn.atsoft.dasheng.inStock.model.params.RestInstockOrderParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_instock_order where 1 = 1 and display = 1
+        <if test="paramCondition.instockOrderId != null">
+            and instock_order_id like CONCAT('%',#{paramCondition.instockOrderId},'%')
+        </if>
+        <if test="paramCondition.userId != null">
+            and user_id like CONCAT('%',#{paramCondition.userId},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.state != null and paramCondition.state != ''">
+            and state like CONCAT('%',#{paramCondition.state},'%')
+        </if>
+
+    </select>
+
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.inStock.model.params.RestInstockOrderParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_instock_order where 1 = 1
+        <if test="paramCondition.instockOrderId != null">
+            and instock_order_id like CONCAT('%',#{paramCondition.instockOrderId},'%')
+        </if>
+        <if test="paramCondition.userId != null">
+            and user_id like CONCAT('%',#{paramCondition.userId},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.state != null and paramCondition.state != ''">
+            and state like CONCAT('%',#{paramCondition.state},'%')
+        </if>
+    </select>
+
+</mapper>
