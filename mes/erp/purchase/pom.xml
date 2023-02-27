@@ -5,19 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>cn.atsoft</groupId>
-        <artifactId>mes</artifactId>
+        <artifactId>dasheng</artifactId>
         <version>1.0.0</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>erp</artifactId>
-    <packaging>pom</packaging>
-
-    <modules>
-        <module>stock</module>
-        <module>purchase</module>
-    </modules>
-
+    <artifactId>purchase</artifactId>
     <dependencies>
         <dependency>
             <groupId>com.baomidou</groupId>
