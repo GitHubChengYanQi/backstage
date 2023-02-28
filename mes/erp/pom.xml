@@ -16,6 +16,7 @@
     <modules>
         <module>stock</module>
         <module>purchase</module>
+        <module>erp-base</module>
     </modules>
 
     <dependencies>

@@ -201,6 +201,66 @@
         </if>
     </select>
 
+    <select id="orderList" resultType="cn.atsoft.dasheng.purchase.model.result.RestOrderSimpleResult"
+            parameterType="cn.atsoft.dasheng.purchase.model.params.RestOrderParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_order where 1 = 1 and display = 1
+        <if test="paramCondition.orderId != null">
+            and order_id like CONCAT('%',#{paramCondition.orderId},'%')
+        </if>
+        <if test="paramCondition.contractId != null">
+            and contract_id like CONCAT('%',#{paramCondition.contractId},'%')
+        </if>
+        <if test="paramCondition.price != null">
+            and price like CONCAT('%',#{paramCondition.price},'%')
+        </if>
+        <if test="paramCondition.buyerId != null">
+            and buyer_id like CONCAT('%',#{paramCondition.buyerId},'%')
+        </if>
+        <if test="paramCondition.sellerId != null">
+            and seller_id like CONCAT('%',#{paramCondition.sellerId},'%')
+        </if>
+        <if test="paramCondition.theme != null and paramCondition.theme != ''">
+            and theme like CONCAT('%',#{paramCondition.theme},'%')
+        </if>
+        <if test="paramCondition.origin != null and paramCondition.origin != ''">
+            and origin like CONCAT('%',#{paramCondition.origin},'%')
+        </if>
+        <if test="paramCondition.type != null">
+            and type like CONCAT('%',#{paramCondition.type},'%')
+        </if>
+        <if test="paramCondition.generateContract != null">
+            and generate_contract like CONCAT('%',#{paramCondition.generateContract},'%')
+        </if>
+        <if test="paramCondition.deliveryDate != null and paramCondition.deliveryDate != ''">
+            and delivery_date like CONCAT('%',#{paramCondition.deliveryDate},'%')
+        </if>
+        <if test="paramCondition.coding != null and paramCondition.coding != ''">
+            and coding like CONCAT('%',#{paramCondition.coding},'%')
+        </if>
+        <if test="paramCondition.customerName != null and paramCondition.customerName!= ''">
+            and seller_id in (
+            select customer_id from daoxin_crm_customer where customer_name like
+            CONCAT('%',#{paramCondition.customerName},'%')
+            )
+        </if>
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and order_id in (
+            select order_id from daoxin_crm_order_detail where sku_id in (
+            select sku_id from goods_sku where sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+            union
+            select sku_id from goods_sku where standard like CONCAT('%',#{paramCondition.skuName},'%')
+            union
+            select sku_id from goods_sku where spu_id in (select spu_id from goods_spu where name like
+            CONCAT('%',#{paramCondition.skuName},'%') )
+            )
+            ) or buyer_id in (select customer_id from daoxin_crm_customer where customer_name like
+            #{paramCondition.skuName} and display = 1
+            ) or coding like #{paramCondition.skuName}
+        </if>
+    </select>
+
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.purchase.model.params.RestOrderParam">
         select
         <include refid="Base_Column_List"/>

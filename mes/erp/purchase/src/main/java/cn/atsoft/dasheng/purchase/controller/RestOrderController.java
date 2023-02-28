@@ -33,73 +33,48 @@ import javax.validation.Valid;
 @Api(tags = "订单表")
 public class RestOrderController extends BaseController {
 
-    @Autowired
-    private RestOrderService orderService;
-
-
-    /**
-     * 新增接口
-     *
-     * @author song
-     * @Date 2022-02-23
-     */
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody @Valid RestOrderParam orderParam) {
-
-//        if (ToolUtil.isEmpty(orderParam.getCoding())) {
-//            CodingRules codingRules = codingRulesService.query().eq("module", "11").eq("state", 1).one();
-//            if (ToolUtil.isNotEmpty(codingRules)) {
-//                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
-//                orderParam.setCoding(coding);
-//            } else {
-//                throw new ServiceException(500, "请配置采购单据自动生成编码规则");
-//            }
+//    @Autowired
+//    private RestOrderService orderService;
+//
+//
+//    /**
+//     * 新增接口
+//     *
+//     * @author song
+//     * @Date 2022-02-23
+//     */
+//    @RequestMapping(value = "/add", method = RequestMethod.POST)
+//    @ApiOperation("新增")
+//    public ResponseData addItem(@RequestBody @Valid RestOrderParam orderParam) {
+//
+////        if (ToolUtil.isEmpty(orderParam.getCoding())) {
+////            CodingRules codingRules = codingRulesService.query().eq("module", "11").eq("state", 1).one();
+////            if (ToolUtil.isNotEmpty(codingRules)) {
+////                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+////                orderParam.setCoding(coding);
+////            } else {
+////                throw new ServiceException(500, "请配置采购单据自动生成编码规则");
+////            }
+////        }
+//
+//        RestOrder order = this.orderService.add(orderParam);
+//        return ResponseData.success(order);
+//    }
+//
+//    /**
+//     * 查询列表
+//     *
+//     * @author song
+//     * @Date 2022-02-23
+//     */
+//    @RequestMapping(value = "/list", method = RequestMethod.POST)
+//    @ApiOperation("列表")
+//    public PageInfo<RestOrderResult> list(@RequestBody(required = false) RestOrderParam orderParam) {
+//        if (ToolUtil.isEmpty(orderParam)) {
+//            orderParam = new RestOrderParam();
 //        }
-
-        RestOrder order = this.orderService.add(orderParam);
-        return ResponseData.success(order);
-    }
-
-
-
-
-
-
-    /**
-     * 查询列表
-     *
-     * @author song
-     * @Date 2022-02-23
-     */
-    @RequestMapping(value = "/list", method = RequestMethod.POST)
-    @ApiOperation("列表")
-    public PageInfo<RestOrderResult> list(@RequestBody(required = false) RestOrderParam orderParam) {
-        if (ToolUtil.isEmpty(orderParam)) {
-            orderParam = new RestOrderParam();
-        }
-        return this.orderService.findPageBySpec(orderParam);
-    }
-
-
-    /**
-     * 查询列表
-     *
-     * @author song
-     * @Date 2022-02-23
-     */
-    @RequestMapping(value = "/simpleList", method = RequestMethod.POST)
-    @ApiOperation("列表")
-    public PageInfo<RestOrderResult> simpleList(@RequestBody(required = false) RestOrderParam orderParam) {
-        if (ToolUtil.isEmpty(orderParam)) {
-            orderParam = new RestOrderParam();
-        }
-        PageInfo<RestOrderResult> pageBySpec = this.orderService.findPageBySpec(orderParam);
-        return ;
-    }
-
-
-
+//        return this.orderService.findPageBySpec(orderParam);
+//    }
 }
 
 

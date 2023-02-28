@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.purchase.entity.RestOrder;
 import cn.atsoft.dasheng.purchase.model.params.RestOrderParam;
 import cn.atsoft.dasheng.purchase.model.result.RestOrderResult;
+import cn.atsoft.dasheng.service.IErpBase;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.Set;
  * @author song
  * @since 2022-02-23
  */
-public interface RestOrderService extends IService<RestOrder> {
+public interface RestOrderService extends IService<RestOrder>   {
 
     /**
      * 新增

@@ -19,7 +19,7 @@ public class OutStockProcessFormConfig implements ProcessInterface {
     @Override
     public List<FormField> getProcessForm(AuditType key) {
         switch (key) {
-            case AuditType.start:
+            case start:
                 return new ArrayList<FormField>() {{
                     /**
                      * 人员范围
@@ -41,9 +41,9 @@ public class OutStockProcessFormConfig implements ProcessInterface {
 
 
                 }};
-            case AuditType.route:
+            case route:
                     return new ArrayList<>();
-            case AuditType.process:
+            case process:
                 return new ArrayList<FormField>() {{
 
                     /**

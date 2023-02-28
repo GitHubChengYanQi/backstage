@@ -14,8 +14,10 @@ import cn.atsoft.dasheng.purchase.mapper.RestOrderDetailMapper;
 import cn.atsoft.dasheng.purchase.model.params.RestOrderDetailParam;
 import cn.atsoft.dasheng.purchase.model.result.RestOrderDetailResult;
 import cn.atsoft.dasheng.purchase.service.RestOrderDetailService;
+import cn.atsoft.dasheng.service.IErpBase;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -35,8 +38,8 @@ import java.util.List;
  * @author song
  * @since 2022-02-23
  */
-@Service
-public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMapper, RestOrderDetail> implements RestOrderDetailService {
+@Service("RestOrderDetailService")
+public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMapper, RestOrderDetail> implements RestOrderDetailService, IErpBase {
 
     @Autowired
     private ActivitiProcessService processService;
@@ -105,7 +108,15 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
     }
 
 
+    @Override
+    public PageInfo getOrderList(Map<String, Object> param) {
+        return null;
+    }
 
+    @Override
+    public PageInfo getOrderDetailList(Map<String, Object> param) {
+        RestOrderDetailParam restOrderDetailParam = BeanUtil.mapToBean(param, RestOrderDetailParam.class, true);
 
-
+        return this.findPageBySpec(restOrderDetailParam);
+    }
 }

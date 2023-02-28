@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -29,14 +30,14 @@ public class RestOrderSimpleResult implements Serializable {
     /**
      * 订单编号
      */
-    @ApiModelProperty("订单编号")
+    @ApiModelProperty("id")
     private Long orderId;
-
-    /**
-     * 合同id
-     */
-    @ApiModelProperty("合同id")
-    private Long contractId;
+//
+//    /**
+//     * 合同id
+//     */
+//    @ApiModelProperty("合同id")
+//    private Long contractId;
     /**
      * 主题
      */
@@ -46,10 +47,20 @@ public class RestOrderSimpleResult implements Serializable {
     @ApiModelProperty("备注")
     private String remark;
 
+    @ApiModelProperty("订单编号")
+    private String coding;
+
+
+    @ApiModelProperty("创建时间")
+    private Date createTime;
+
     /**
      * 创建者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Long createUser;
+
+    private UserResult createUserResult;
 
 }

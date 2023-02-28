@@ -16,6 +16,7 @@
 
     <modules>
         <module>code-rule</module>
+        <module>crm</module>
         <module>erp</module>
         <module>make</module>
         <module>material-center</module>

@@ -10,7 +10,14 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>purchase</artifactId>
+    <artifactId>erp-base</artifactId>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.baomidou</groupId>
@@ -57,12 +64,6 @@
         </dependency>
         <dependency>
             <groupId>cn.atsoft</groupId>
-            <artifactId>erp-base</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>cn.atsoft</groupId>
             <artifactId>code-rule</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>
@@ -80,10 +81,5 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
 </project>
