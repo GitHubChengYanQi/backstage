@@ -122,11 +122,17 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
     }
 
     @Override
-    public List<ProductionPickListsDetailResult> listByPickLists(List<Long> pickListsIds) {
+    public List<ProductionPickListsDetailResult> resultsByPickLists(List<Long> pickListsIds) {
         List<ProductionPickListsDetail> pickListsDetails = pickListsIds.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id", pickListsIds).eq("display", 1).list();
         List<ProductionPickListsDetailResult> results = BeanUtil.copyToList(pickListsDetails, ProductionPickListsDetailResult.class);
         this.format(results);
         return results;
+
+    }
+
+    @Override
+    public List<ProductionPickListsDetail> listByPickLists(List<Long> pickListsIds) {
+        return pickListsIds.size() == 0 ? new ArrayList<>() : this.query().in("pick_lists_id", pickListsIds).eq("display", 1).list();
 
     }
 

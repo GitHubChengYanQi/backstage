@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.production.service.impl;
 
 import cn.atsoft.dasheng.action.Enum.OutStockActionEnum;
 import cn.atsoft.dasheng.app.entity.Parts;
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.model.request.StockView;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
@@ -27,6 +28,7 @@ import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetDetailResult;
 import cn.atsoft.dasheng.form.pojo.ActionStatus;
+import cn.atsoft.dasheng.form.pojo.ProcessType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.message.entity.MarkDownTemplate;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
@@ -54,6 +56,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -186,6 +189,12 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     private AllocationLogService allocationLogService;
     @Autowired
     private AllocationLogDetailService allocationLogDetailService;
+    @Autowired
+    private InkindService inkindService;
+    @Autowired
+    private SkuHandleRecordService skuHandleRecordService;
+    @Autowired
+    private StockLogService stockLogService;
 
 
     @Override
@@ -330,7 +339,6 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         String code = String.valueOf(RandomUtil.randomLong(1000, 9999));
         String pickCode = RedisTemplatePrefixEnum.LLM.getValue() + code;
         String checkCode = RedisTemplatePrefixEnum.LLJCM.getValue() + code;
-        List<Object> collect = Collections.singletonList(param.getCartIds());
         List<Object> cartIds = new ArrayList<>();
         for (Long cartId : param.getCartIds()) {
             cartIds.add(cartId);
@@ -468,8 +476,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
          */
 //        List<ProductionPickListsDetail> pickListsDetails =pickListsIds.size() == 0 ? new ArrayList<>() : this.pickListsDetailService.query().in("pick_lists_id", pickListsIds).eq("display", 1).list();
 //        List<ProductionPickListsDetailResult> detailResults = BeanUtil.copyToList(pickListsDetails, ProductionPickListsDetailResult.class);
-//        List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.listByPickLists(pickListsIds);
-
+        List<ProductionPickListsDetailResult> detailResults = pickListsDetailService.resultsByPickLists(pickListsIds);
+        List<ProductionPickListsCart> carts =pickListsIds.size() == 0 ? new ArrayList<>() : pickListsCartService.lambdaQuery().in(ProductionPickListsCart::getPickListsId, pickListsIds).eq(ProductionPickListsCart::getStatus,0).list();
 
         for (ProductionPickListsResult result : results) {
             for (UserResult userResultsById : userResultsByIds) {
@@ -480,6 +488,25 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     result.setCreateUserResult(userResultsById);
                 }
             }
+            Integer receivedCount = 0;
+            Integer numberCount = 0;
+            int cartNumber = 0;
+            for (ProductionPickListsCart cart : carts) {
+                if (cart.getPickListsId().equals(result.getPickListsId())){
+                    cartNumber+=cart.getNumber();
+                }
+            }
+            result.setCartNumCount(cartNumber);
+
+//            List<ProductionPickListsDetailResult> listShowDetails = new ArrayList<>();
+            for (ProductionPickListsDetailResult detailResult : detailResults) {
+                if (detailResult.getPickListsId().equals(result.getPickListsId())) {
+                    receivedCount += detailResult.getReceivedNumber();
+                    numberCount += detailResult.getNumber();
+                }
+            }
+            result.setReceivedCount(receivedCount);
+            result.setNumberCount(numberCount);
 //            List<ProductionPickListsDetailResult> detailResultList = new ArrayList<>();
 //            for (ProductionPickListsDetailResult detailResult : detailResults) {
 //                if (result.getPickListsId().equals(detailResult.getPickListsId())) {
@@ -611,7 +638,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
             setItems("领料通知");
             setUrl(mobileService.getMobileConfig().getUrl() + "/#/ReceiptsDetail?id=" + param.getTaskId());
-            setDescription("库管那里有新的物料待领取 领料码："+code);
+            setDescription("库管那里有新的物料待领取 \n 领料码："+"<font color = \"info\">"+code+"");
             setFunction(MarkDownTemplateTypeEnum.pickSend);
             setType(0);
             setUserId(LoginContextHolder.getContext().getUserId());
@@ -1136,6 +1163,85 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         return null;
     }
 
+
+
+    @Override
+    public String outStockV2(ProductionPickListsParam param) {
+        List<Long> cartIds = param.getCartIds();
+        if (cartIds.size() == 0){
+            throw new ServiceException(500,"物料已出库完成");
+        }
+        List<ProductionPickListsCart> listsCarts = cartIds.size() == 0 ? new ArrayList<>() : pickListsCartService.listByIds(cartIds);
+        List<Long> detailIds = listsCarts.stream().map(ProductionPickListsCart::getPickListsDetailId).collect(Collectors.toList());
+        List<Long> pickListsIds = listsCarts.stream().map(ProductionPickListsCart::getPickListsId).collect(Collectors.toList());
+
+        List<Long> stockIds = new ArrayList<>();
+
+        /**
+         * 取出购物车数据
+         */
+        List<ProductionPickLists> pickLists = pickListsIds.size() == 0 ? new ArrayList<>() : this.listByIds(pickListsIds);
+
+        List<ProductionPickListsDetail> pickListsDetails = detailIds.size() == 0 ? new ArrayList<>() : pickListsDetailService.listByPickLists(pickListsIds);
+
+
+        doOutStock(listsCarts,pickLists.get(0).getTaskId());
+
+
+        for (ProductionPickListsCart listsCart : listsCarts) {
+            listsCart.setStatus(99);
+            listsCart.setDisplay(0);
+            stockIds.add(listsCart.getStorehouseId());
+        }
+        pickListsCartService.updateBatchById(listsCarts);
+        //计算出库单子表状态
+        for (ProductionPickListsDetail pickListsDetail : pickListsDetails) {
+            for (ProductionPickListsCart listsCart : listsCarts) {
+                if (pickListsDetail.getPickListsDetailId().equals(listsCart.getPickListsDetailId())){
+                    Integer receivedNumber = pickListsDetail.getReceivedNumber();
+                    pickListsDetail.setReceivedNumber(receivedNumber+listsCart.getNumber());
+                    //如果全部领料则完成子表状态
+                    if (pickListsDetail.getReceivedNumber().equals(pickListsDetail.getNumber())){
+                        pickListsDetail.setStatus(99);
+                    }
+                }
+            }
+        }
+        pickListsDetailService.updateBatchById(pickListsDetails);
+        /**
+         * 计算 单据状态
+         * 如果单据子表状态全部为完成
+         * 则更新单据状态为完成
+         */
+        List<ProductionPickLists> checkActionPickListsList = new ArrayList<>();
+        for (ProductionPickLists pickList : pickLists) {
+            List<ProductionPickListsDetail> pickListsDetailList = new ArrayList<>();
+            for (ProductionPickListsDetail pickListsDetail : pickListsDetails) {
+                if (pickList.getPickListsId().equals(pickListsDetail.getPickListsId())) {
+                    pickListsDetailList.add(pickListsDetail);
+                }
+            }
+            if (pickListsDetailList.stream().allMatch(i->i.getStatus().equals(99))){
+                checkActionPickListsList.add(pickList);
+            }
+
+
+        }
+
+//        //如果购物车有数量拆分情况  则新增一条购物车
+//        outStockCartService.updateBatchById(listsCarts);
+        /** TODO
+         * 更新领料单状态
+         * 如有任务 则更新任务
+         */
+        checkListsStatus(checkActionPickListsList);
+//        shopCartService.addDynamic(pickLists.get(0).getPickListsId(), skuId, "领取了物料 " + skuService.skuMessage(skuId));
+        return null;
+    }
+
+
+
+
     private Long isFromAllocation(Long pickListsId) {
         ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("form_id", pickListsId).eq("type", "OUTSTOCK").one();
         if (ToolUtil.isNotEmpty(processTask) && ToolUtil.isNotEmpty(processTask.getPid())) {
@@ -1146,7 +1252,29 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         }
         return null;
     }
-
+    public void doOutStock(List<ProductionPickListsCart> carts,Long taskId) {
+        List<Long> inkinds = carts.stream().map(ProductionPickListsCart::getInkindId).collect(Collectors.toList());
+        List<Inkind> restTraceabilities = inkinds.size() == 0 ? new ArrayList<>() : inkindService.listByIds(inkinds);
+        List<StockDetails> restStockDetails =  inkinds.size() == 0 ? new ArrayList<>() : stockDetailsService.lambdaQuery().in(StockDetails::getInkindId,inkinds).list();
+        stockLogService.addBatch(restStockDetails,"processTask","reduce", ProcessType.OUTSTOCK);
+        for (StockDetails restStockDetail : restStockDetails) {
+            skuHandleRecordService.addRecord(restStockDetail.getSkuId(),restStockDetail.getBrandId(),restStockDetail.getStorehousePositionsId(),restStockDetail.getCustomerId(),taskId,restStockDetail.getNumber(),"OUTSTOCK");
+            restStockDetail.setDisplay(0);
+            restStockDetail.setNumber(0L);
+            restStockDetail.setStage(0);
+        }
+        stockDetailsService.updateBatchById(restStockDetails);
+        //      计算库存 进行出库数据更新
+        if(restTraceabilities.size()>0){
+            inkindService.update(new Inkind() {{
+                                     setDisplay(0);
+                                 }}, new QueryWrapper<Inkind>() {{
+                                     in("inkind_id", inkinds);
+                                 }}
+            );
+        }
+        //添加物料操作记录以及库存操作记录
+    }
     private void allForOut(List<ProductionPickLists> pickLists, List<ProductionPickListsCart> listsCarts, List<ProductionPickListsCartParam> cartParams) {
         List<Long> stockIds = new ArrayList<>();
         List<Long> pickListsIds = new ArrayList<>();

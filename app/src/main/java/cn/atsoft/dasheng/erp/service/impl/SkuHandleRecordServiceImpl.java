@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -67,6 +68,9 @@ public class SkuHandleRecordServiceImpl extends ServiceImpl<SkuHandleRecordMappe
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private StockDetailsService stockDetailsService;
+
 
     @Override
     public void add(SkuHandleRecordParam param) {
@@ -99,6 +103,74 @@ public class SkuHandleRecordServiceImpl extends ServiceImpl<SkuHandleRecordMappe
         this.save(skuHandleRecord);
     }
 
+    @Override
+    public void addRecord(Long skuId, Long brandId, Long positionId, Long customerId, Long taskId, Long number, String source) {
+        Long beforeNumber = stockDetailsService.getNumberCountBySkuId(skuId);
+        ActivitiProcessTask task = taskService.getById(taskId);
+        SkuHandleRecord skuHandleRecord = new SkuHandleRecord();
+        skuHandleRecord.setSkuId(skuId);
+        skuHandleRecord.setBrandId(brandId);
+        skuHandleRecord.setPositionId(positionId);
+
+        skuHandleRecord.setSource(source);
+
+        skuHandleRecord.setNowStockNumber(beforeNumber);
+        skuHandleRecord.setCustomerId(customerId);
+        skuHandleRecord.setOperationNumber(number);
+        skuHandleRecord.setBalanceNumber(beforeNumber+number);
+        skuHandleRecord.setOperationTime(new Date());
+
+        if (ToolUtil.isNotEmpty(task)) {
+            if (ToolUtil.isNotEmpty(task.getProcessTaskId())) {
+                skuHandleRecord.setSourceId(task.getProcessTaskId());
+            }
+            if (ToolUtil.isNotEmpty(task.getFormId())) {
+                skuHandleRecord.setReceiptId(task.getFormId());
+            }
+            if (ToolUtil.isNotEmpty(task.getProcessTaskId())) {
+                skuHandleRecord.setTaskId(task.getProcessTaskId());
+            }
+            if (ToolUtil.isNotEmpty(task.getTheme())) {
+                skuHandleRecord.setTheme(task.getTheme());
+            }
+        }
+        skuHandleRecord.setOperationUserId(LoginContextHolder.getContext().getUserId());
+        this.save(skuHandleRecord);
+    }
+    @Override
+    public void addOutRecord(Long skuId, Long brandId, Long positionId, Long customerId, Long taskId, Long number, String source) {
+        Long beforeNumber = stockDetailsService.getNumberCountBySkuId(skuId);
+        ActivitiProcessTask task = taskService.getById(taskId);
+        SkuHandleRecord skuHandleRecord = new SkuHandleRecord();
+        skuHandleRecord.setSkuId(skuId);
+        skuHandleRecord.setBrandId(brandId);
+        skuHandleRecord.setPositionId(positionId);
+
+        skuHandleRecord.setSource(source);
+
+        skuHandleRecord.setNowStockNumber(beforeNumber);
+        skuHandleRecord.setCustomerId(customerId);
+        skuHandleRecord.setOperationNumber(number);
+        skuHandleRecord.setBalanceNumber(beforeNumber-number);
+        skuHandleRecord.setOperationTime(new Date());
+
+        if (ToolUtil.isNotEmpty(task)) {
+            if (ToolUtil.isNotEmpty(task.getProcessTaskId())) {
+                skuHandleRecord.setSourceId(task.getProcessTaskId());
+            }
+            if (ToolUtil.isNotEmpty(task.getFormId())) {
+                skuHandleRecord.setReceiptId(task.getFormId());
+            }
+            if (ToolUtil.isNotEmpty(task.getProcessTaskId())) {
+                skuHandleRecord.setTaskId(task.getProcessTaskId());
+            }
+            if (ToolUtil.isNotEmpty(task.getTheme())) {
+                skuHandleRecord.setTheme(task.getTheme());
+            }
+        }
+        skuHandleRecord.setOperationUserId(LoginContextHolder.getContext().getUserId());
+        this.save(skuHandleRecord);
+    }
     @Override
     public void delete(SkuHandleRecordParam param) {
         this.removeById(getKey(param));

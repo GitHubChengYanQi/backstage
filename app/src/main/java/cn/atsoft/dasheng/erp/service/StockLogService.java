@@ -1,10 +1,12 @@
 package cn.atsoft.dasheng.erp.service;
 
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.StockLog;
 import cn.atsoft.dasheng.erp.entity.StockLogDetail;
 import cn.atsoft.dasheng.erp.model.params.StockLogParam;
 import cn.atsoft.dasheng.erp.model.result.StockLogResult;
+import cn.atsoft.dasheng.form.pojo.ProcessType;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -26,6 +28,8 @@ public interface StockLogService extends IService<StockLog> {
      * @Date 2022-12-22
      */
     void add(StockLogParam param);
+
+    void addBatch(List<StockDetails> param, String source, String type, ProcessType numberType);
 
     void addByOutStock(List<StockLog> stockLogs, List<StockLogDetail> stockLogDetails);
 

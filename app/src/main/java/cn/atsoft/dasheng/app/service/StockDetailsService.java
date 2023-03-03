@@ -140,4 +140,8 @@ public interface StockDetailsService extends IService<StockDetails> {
     List<StockDetails> fundStockDetailByCart(ProductionPickListsCartParam param);
 
     List<StockDetailView> stockDetailViews();
+
+    Long getNumberCountBySkuId(Long skuId);
+
+    List<StockDetails> getNumberCountEntityBySkuIds(List<Long> skuIds);
 }

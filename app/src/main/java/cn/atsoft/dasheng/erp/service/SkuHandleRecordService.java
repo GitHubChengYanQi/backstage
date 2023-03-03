@@ -29,6 +29,10 @@ public interface SkuHandleRecordService extends IService<SkuHandleRecord> {
 
     void addRecord(Long skuId, Long brandId, Long positionId, Long customerId, String source, ActivitiProcessTask task, Long operationNumber, Long nowStockNum, Long balanceNumber);
 
+    void addRecord(Long skuId, Long brandId, Long positionId, Long customerId, Long taskId, Long number, String source);
+
+    void addOutRecord(Long skuId, Long brandId, Long positionId, Long customerId, Long taskId, Long number, String source);
+
     /**
      * 删除
      *

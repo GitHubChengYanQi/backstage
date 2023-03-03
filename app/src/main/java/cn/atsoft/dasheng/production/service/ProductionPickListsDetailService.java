@@ -64,7 +64,8 @@ public interface ProductionPickListsDetailService extends IService<ProductionPic
 
     List<ProductionPickListsDetailResult> listStatus0ByPickLists(List<Long> pickListsIds);
 
-    List<ProductionPickListsDetailResult> listByPickLists(List<Long> pickListsIds);
+    List<ProductionPickListsDetailResult> resultsByPickLists(List<Long> pickListsIds);
+    List<ProductionPickListsDetail> listByPickLists(List<Long> pickListsIds);
 
     List<Long> getSkuIdsByPickLists(Long id);
 

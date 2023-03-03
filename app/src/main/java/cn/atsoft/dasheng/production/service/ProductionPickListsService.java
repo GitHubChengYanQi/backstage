@@ -101,6 +101,8 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
     String outStock(ProductionPickListsParam param);
 
 
+    String outStockV2(ProductionPickListsParam param);
+
     void outStockBySku(ProductionPickListsParam param);
 
     ProductionPickListsResult detail(Long id);

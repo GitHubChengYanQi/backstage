@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.StockLog;
@@ -11,6 +13,7 @@ import cn.atsoft.dasheng.erp.model.result.StockLogResult;
 import cn.atsoft.dasheng.erp.service.StockLogDetailService;
 import  cn.atsoft.dasheng.erp.service.StockLogService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.pojo.ProcessType;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -18,7 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -32,13 +37,90 @@ import java.util.List;
 public class StockLogServiceImpl extends ServiceImpl<StockLogMapper, StockLog> implements StockLogService {
     @Autowired
     private StockLogDetailService stockLogDetailService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
     @Override
     public void add(StockLogParam param){
         StockLog entity = getEntity(param);
         this.save(entity);
     }
+    @Override
+    public void addBatch(List<StockDetails> param, String source, String type, ProcessType numberType){
+        List<Long> skuIds = param.stream().map(StockDetails::getSkuId).distinct().collect(Collectors.toList());
+        List<StockDetails> stockNumberList = stockDetailsService.getNumberCountEntityBySkuIds(skuIds);
+        /**
+         * TODO afterNumber beforeNumber
+         */
+        List<StockDetails> totalList = new ArrayList<>();
+        param.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + item.getStorehousePositionsId(), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new StockDetails() {{
+                        setSkuId(a.getSkuId());
+                        setNumber(a.getNumber() + b.getNumber());
+                        setStorehouseId(a.getStorehouseId());
+                        setStorehousePositionsId(a.getStorehousePositionsId());
+                    }}).ifPresent(totalList::add);
+                }
+        );
+        List<StockLog> stockLogs = new ArrayList<>();
 
+
+        for (StockDetails stockDetails : totalList) {
+            stockLogs.add( new StockLog(){{
+                for (StockDetails details : stockNumberList) {
+
+                    if (details.getSkuId().equals(stockDetails.getSkuId())){
+                        setBeforeNumber(Math.toIntExact(details.getNumber()));
+                        if (numberType.equals(ProcessType.OUTSTOCK)){
+                            setAfterNumber((int) (details.getNumber()-stockDetails.getNumber()));
+                        }else {
+                            setAfterNumber((int) (details.getNumber()+stockDetails.getNumber()));
+                        }
+
+                    }
+                }
+                setNumber(Math.toIntExact(stockDetails.getNumber()));
+                setSkuId(stockDetails.getSkuId());
+                setType(type);
+                setStorehousePositionsId(stockDetails.getStorehousePositionsId());
+            }});
+
+        }
+        this.saveBatch(stockLogs);
+        List<StockLogDetail> logDetails = new ArrayList<>();
+        for (StockLog stockLog : stockLogs) {
+            for (StockDetails stockDetails : param) {
+                if (stockLog.getSkuId().equals(stockDetails.getSkuId()) && stockLog.getStorehousePositionsId().equals(stockDetails.getStorehousePositionsId())){
+                    logDetails.add(new StockLogDetail(){{
+                        for (StockDetails details : stockNumberList) {
+                            if (details.getSkuId().equals(stockDetails.getSkuId())){
+                                setBeforeNumber(Math.toIntExact(details.getNumber()));
+                                if (numberType.equals(ProcessType.OUTSTOCK)){
+                                    setAfterNumber((int) (details.getNumber()-stockDetails.getNumber()));
+                                    details.setNumber(details.getNumber()-stockDetails.getNumber());
+                                }else {
+                                    setAfterNumber((int) (details.getNumber()+stockDetails.getNumber()));
+                                    details.setNumber(details.getNumber()+stockDetails.getNumber());
+                                }
+
+                            }
+                        }
+                        setSkuId(stockDetails.getSkuId());
+                        setInkindId(stockDetails.getInkindId());
+                        setNumber(Math.toIntExact(stockDetails.getNumber()));
+                        setStorehouseId(stockDetails.getStorehouseId());
+                        setStorehousePositionsId(stockDetails.getStorehousePositionsId());
+                        setType(type);
+                        setSource(source);
+                        setStockLogId(stockLog.getStockLogId());
+                    }});
+                }
+            }
+        }
+
+        stockLogDetailService.saveBatch(logDetails);
+    }
     @Override
     public void addByOutStock(List<StockLog> stockLogs, List<StockLogDetail> stockLogDetails){
         this.saveBatch(stockLogs);

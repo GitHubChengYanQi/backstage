@@ -192,9 +192,6 @@ public class taskV1Controller {
                     ProductionPickListsResult pickListsRestult = pickListsService.detail(taskResult.getFormId());
 
                     taskResult.setReceipts(pickListsRestult);
-                    taskService.format(new ArrayList<ActivitiProcessTaskResult>(){{
-                        add(taskResult);
-                    }});
                     break;
                 case "MAINTENANCE":
                     MaintenanceResult maintenanceResult = maintenanceService.detail(taskResult.getFormId());

@@ -97,7 +97,7 @@ public class RestOutStockOrderController extends BaseController {
      * @author Captain_Jazz
      * @Date 2022-03-25
      */
-    @RequestMapping(value = "/createOutStockOrder", method = RequestMethod.POST)
+    @RequestMapping(value = "/createOutStockOrder1", method = RequestMethod.POST)
     @ApiOperation("出库")
     public ResponseData outStock(@RequestBody RestOutStockOrderParam productionPickListsParam) {
 //        inventoryService.staticState();

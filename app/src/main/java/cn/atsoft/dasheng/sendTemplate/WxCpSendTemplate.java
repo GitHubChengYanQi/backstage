@@ -110,8 +110,8 @@ public class WxCpSendTemplate {
     }
     private List<UserId2WxOpenId> userIds2UuIdsObject(List<Long> userIds) {
         List<UserId2WxOpenId> userId2WxOpenIds = new ArrayList<>();
-//        List<WxuserInfo> wxuserInfos = userIds.size() == 0 ? new ArrayList<>() : wxuserInfoService.query().in("user_id", userIds).eq("source", "wxCp").orderByDesc("create_time").groupBy("user_id").list();
         List<WxuserInfo> wxuserInfos = userIds.size() == 0 ? new ArrayList<>() : wxuserInfoService.query().in("user_id", userIds).orderByDesc("create_time").groupBy("user_id").list();
+//        List<WxuserInfo> wxuserInfos = userIds.size() == 0 ? new ArrayList<>() : wxuserInfoService.query().in("user_id", userIds).orderByDesc("create_time").groupBy("user_id").list();
 
         List<Long> memberIds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(wxuserInfos)) {
@@ -121,7 +121,7 @@ public class WxCpSendTemplate {
         }
 
 //        List<UcOpenUserInfo> userInfoList = memberIds.size() == 0 ? new ArrayList<>() : ucOpenUserInfoService.query().in("member_id", memberIds).eq("source", "wxCp").list();
-        List<UcOpenUserInfo> userInfoList = memberIds.size() == 0 ? new ArrayList<>() : ucOpenUserInfoService.query().in("member_id", memberIds).list();
+        List<UcOpenUserInfo> userInfoList = memberIds.size() == 0 ? new ArrayList<>() : ucOpenUserInfoService.query().in("member_id", memberIds).eq("source", "wxCp").list();
         if (ToolUtil.isNotEmpty(userInfoList)) {
             for (Long userId : userIds) {
                 for (WxuserInfo wxuserInfo : wxuserInfos) {

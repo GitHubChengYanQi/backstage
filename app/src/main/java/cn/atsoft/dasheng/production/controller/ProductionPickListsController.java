@@ -56,6 +56,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -329,6 +330,60 @@ public class ProductionPickListsController extends BaseController {
         redisSendCheck.deleteListOrObject(RedisTemplatePrefixEnum.LLJCM.getValue() + productionPickListsParam.getCode());
         return ResponseData.success();
     }
+
+
+
+
+    @RequestMapping(value = "/{version}/createOutStockOrder", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    @ApiVersion("v1.2")
+    public ResponseData createOutStockOrderV2(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
+        inventoryService.staticState();
+        if (ToolUtil.isEmpty(productionPickListsParam)) {
+            productionPickListsParam = new ProductionPickListsParam();
+        }
+        List<Long> cartIdList = new ArrayList<>();
+
+//        List<Object> list = redisSendCheck.getList(RedisTemplatePrefixEnum.LLM.getValue()+productionPickListsParam.getCode());
+//        List<ProductionPickListsCartParam> productionPickListsCartParams = BeanUtil.copyToList(list, ProductionPickListsCartParam.class);
+//        productionPickListsParam.setCartsParams(productionPickListsCartParams);
+//        this.productionPickListsService.outStock(productionPickListsParam);
+//        redisSendCheck.deleteListOrObject(RedisTemplatePrefixEnum.LLM.getValue() + productionPickListsParam.getCode());
+//        redisSendCheck.deleteListOrObject(RedisTemplatePrefixEnum.LLJCM.getValue() + productionPickListsParam.getCode());
+
+
+
+        try{
+            if (ToolUtil.isEmpty(productionPickListsParam)) {
+                productionPickListsParam = new ProductionPickListsParam();
+            }
+            List<Object> list = redisSendCheck.getList(RedisTemplatePrefixEnum.LLM.getValue()+productionPickListsParam.getCode());
+            cartIdList = new ArrayList<>();
+            for (Object obj : list) {
+                ProductionPickListsCartParam rest = JSON.parseObject(JSON.toJSONString(obj), ProductionPickListsCartParam.class);
+                if (ToolUtil.isNotEmpty(rest.getCartIds())) {
+                    cartIdList.addAll(rest.getCartIds());
+                }
+            }
+
+
+        }catch (Exception e){
+            Long taskId = (Long)redisSendCheck.getObject(RedisTemplatePrefixEnum.LLM.getValue()+productionPickListsParam.getCode());
+            ActivitiProcessTask task = processTaskService.getById(taskId);
+            List<ProductionPickListsCart> cartList = productionPickListsCartService.lambdaQuery().eq(ProductionPickListsCart::getPickListsId, task.getFormId()).eq(ProductionPickListsCart::getStatus, 0).list();
+            List<ProductionPickListsCartParam> productionPickListsParams = BeanUtil.copyToList(cartList, ProductionPickListsCartParam.class);
+            productionPickListsParam.setCartsParams(productionPickListsParams);
+            cartIdList = cartList.stream().map(ProductionPickListsCart::getPickListsCart).distinct().collect(Collectors.toList());
+        }
+        productionPickListsParam.setCartIds(cartIdList);
+
+        this.productionPickListsService.outStockV2(productionPickListsParam);
+        redisSendCheck.deleteListOrObject(RedisTemplatePrefixEnum.LLM.getValue() + productionPickListsParam.getCode());
+        redisSendCheck.deleteListOrObject(RedisTemplatePrefixEnum.LLJCM.getValue() + productionPickListsParam.getCode());
+
+        return ResponseData.success();
+    }
+
     @RequestMapping(value = "/checkCode", method = RequestMethod.GET)
     @ApiOperation("列表")
     public ResponseData checkCode(@RequestParam String code) {

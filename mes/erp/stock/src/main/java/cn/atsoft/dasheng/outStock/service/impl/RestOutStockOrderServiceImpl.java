@@ -1277,9 +1277,7 @@ public class RestOutStockOrderServiceImpl extends ServiceImpl<RestOutStockOrderM
 //            }
 //        }
         for (RestOutStockOrder pickList : pickLists) {
-            if (pickList.getStatus().equals(99L)){
                 this.checkAction(pickList.getPickListsId());
-            }
         }
     }
 //
