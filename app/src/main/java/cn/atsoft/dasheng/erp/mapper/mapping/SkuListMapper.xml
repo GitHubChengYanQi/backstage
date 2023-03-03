@@ -149,5 +149,98 @@
             and ship_num &gt; 0
         </if>
     </select>
+    <select id="customPageListBySkuView" resultType="cn.atsoft.dasheng.erp.model.result.SkuListResult">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        view_sku
+        WHERE 1=1
+        <if test="params.keyWord != null and params.keyWord != '' ">
+            AND (sku_id like CONCAT('%',#{params.keyWord},'%')
+            OR standard like CONCAT('%',#{params.keyWord},'%')
+            OR sku_name like CONCAT('%',#{params.keyWord},'%')
+            OR customer_name like CONCAT('%',#{params.keyWord},'%')
+            OR brand_name like CONCAT('%',#{params.keyWord},'%')
+            OR spu_name like CONCAT('%',#{params.keyWord},'%')
+            OR category_name like CONCAT('%',#{params.keyWord},'%')
+            OR remarks like CONCAT('%',#{params.keyWord},'%')
+            OR model_coding like CONCAT('%',#{params.keyWord},'%')
+            OR `model` like CONCAT('%',#{params.keyWord},'%')
+            OR packaging like CONCAT('%',#{params.keyWord},'%')
+            OR heat_treatment like CONCAT('%',#{params.keyWord},'%')
+            OR sku_size like CONCAT('%',#{params.keyWord},'%')
+            OR color like CONCAT('%',#{params.keyWord},'%')
+            OR weight like CONCAT('%',#{params.keyWord},'%')
+            OR part_no like CONCAT('%',#{params.keyWord},'%')
+            OR `type` like CONCAT('%',#{params.keyWord},'%')
+            OR specifications like CONCAT('%',#{params.keyWord},'%')
+            OR unit_name like CONCAT('%',#{params.keyWord},'%')
+            OR view_frame like CONCAT('%',#{params.keyWord},'%')
+            )
+        </if>
+        <if test="params.partsId != null">
+            and sku_id in(
+            select sku_id from daoxin_erp_parts_detail where parts_id = #{params.partsId}
+            )
+        </if>
+        <if test="params.brandIds != null and params.brandIds.size > 0 ">
+            and sku_id in(
+            select sku_id from goods_sku_brand_bind where brand_id in(
+            <foreach collection="params.brandIds" index="index" item="brandIds" separator=",">
+                #{brandIds}
+            </foreach>
+            )
+            )
+        </if>
+        <if test="params.customerIds != null and params.customerIds.size > 0 ">
+            and sku_id in(
+            select sku_id from daoxin_supply where customer_id in(
+            <foreach collection="params.customerIds" index="index" item="customerIds" separator=",">
+                #{customerIds}
+            </foreach>
+            )
+            )
+        </if>
+        <if test="params.materialIds != null and params.materialIds.size > 0 ">
+            and material_id in(
+            <foreach collection="params.materialIds" index="index" item="materialIds" separator=",">
+                #{materialIds}
+            </foreach>)
+        </if>
+        <if test="params.positionIds != null and params.positionIds.size > 0 ">
+            and sku_id in(
+            select sku_id from view_sku_store_pos_all where position_id in(
+            <foreach collection="params.positionIds" index="index" item="positionIds" separator=",">
+                #{positionIds}
+            </foreach>
+            )
+            )
+        </if>
+        <if test="params.storeIds != null and params.storeIds.size > 0 ">
+            and sku_id in(
+            select sku_id from view_sku_store_pos_all where store_id in(
+            <foreach collection="params.storeIds" index="index" item="storeId" separator=",">
+                #{storeId}
+            </foreach>
+            )
+            )
+        </if>
+
+        <if test="params.minimumInventory != null">
+            and stock_num &gt; #{params.minimumInventory}
+        </if>
+        <if test="params.maximumInventory != null ">
+            and stock_num &lt; #{params.maximumInventory}
+        </if>
+        <if test="params.categoryId != null">
+            and category_id like CONCAT('%',#{params.categoryId},'%')
+        </if>
+        <if test="params.bomNum != null">
+            and bom_num &gt; 0
+        </if>
+        <if test="params.shipNum != null">
+            and ship_num &gt; 0
+        </if>
+    </select>
 
 </mapper>

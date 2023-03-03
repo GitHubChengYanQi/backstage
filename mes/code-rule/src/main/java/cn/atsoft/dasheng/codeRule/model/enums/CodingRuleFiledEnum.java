@@ -24,7 +24,9 @@ public enum CodingRuleFiledEnum {
 
     //sku
     skuClass("分类码","${skuClass}", sku),
-    spuCoding("产品码","${spuCoding}", sku);
+    spuCoding("产品码","${spuCoding}", sku),
+
+    storehouse("仓库码","${storehouse}", inStockOrder);
 
 
      final String label;
@@ -117,7 +119,7 @@ public enum CodingRuleFiledEnum {
     }
 
     public enum modelEnum {
-        general("通用"),sku("物料");
+        general("通用"),sku("物料"),inStockOrder("入库单");
         final String name;
 
         modelEnum(String name) {

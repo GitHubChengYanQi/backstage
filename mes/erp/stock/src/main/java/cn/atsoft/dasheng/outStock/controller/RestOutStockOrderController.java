@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 //import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 //import cn.atsoft.dasheng.erp.service.InventoryService;
 //import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.pojo.ProcessType;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
@@ -29,7 +30,9 @@ import cn.atsoft.dasheng.model.response.ResponseData;
 //import cn.atsoft.dasheng.production.service.ProductionTaskService;
 //import cn.atsoft.dasheng.sendTemplate.RedisSendCheck;
 //import cn.atsoft.dasheng.sendTemplate.pojo.RedisTemplatePrefixEnum;
+import cn.atsoft.dasheng.outStock.entity.RestOutStockCart;
 import cn.atsoft.dasheng.outStock.entity.RestOutStockOrder;
+import cn.atsoft.dasheng.outStock.model.params.RestOutStockOrderDetailParam;
 import cn.atsoft.dasheng.outStock.model.params.RestOutStockOrderParam;
 import cn.atsoft.dasheng.outStock.service.RestOutStockCartService;
 import cn.atsoft.dasheng.outStock.service.RestOutStockOrderDetailService;
@@ -50,6 +53,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -97,16 +101,31 @@ public class RestOutStockOrderController extends BaseController {
     @ApiOperation("出库")
     public ResponseData outStock(@RequestBody RestOutStockOrderParam productionPickListsParam) {
 //        inventoryService.staticState();
-        if (ToolUtil.isEmpty(productionPickListsParam)) {
-            productionPickListsParam = new RestOutStockOrderParam();
-        }
-        List<Object> list = redisSendCheck.getList(RestRedisTemplatePrefixEnum.LLM.getValue()+productionPickListsParam.getCode());
-        List<Long> cartIds = new ArrayList<>();
-        for (Object obj : list) {
-            cartIds.add((Long) obj);
-        }
+        List<Long> cartIdList = new ArrayList<>();
 
-        productionPickListsParam.setCartIds(cartIds);
+        try{
+            if (ToolUtil.isEmpty(productionPickListsParam)) {
+                productionPickListsParam = new RestOutStockOrderParam();
+            }
+            List<Object> list = redisSendCheck.getList(RestRedisTemplatePrefixEnum.LLM.getValue()+productionPickListsParam.getCode());
+            cartIdList = new ArrayList<>();
+            for (Object obj : list) {
+                RestOutStockOrderDetailParam rest = JSON.parseObject(JSON.toJSONString(obj), RestOutStockOrderDetailParam.class);
+                if (ToolUtil.isNotEmpty(rest.getCartIds())) {
+                    cartIdList.addAll(rest.getCartIds());
+                }
+            }
+
+
+        }catch (Exception e){
+            Long taskId = (Long)redisSendCheck.getObject(RestRedisTemplatePrefixEnum.LLM.getValue()+productionPickListsParam.getCode());
+            ActivitiProcessTask task = processTaskService.getById(taskId);
+            List<RestOutStockCart> cartList = productionPickListsCartService.lambdaQuery().eq(RestOutStockCart::getPickListsId, task.getFormId()).eq(RestOutStockCart::getStatus, 0).list();
+            cartIdList = cartList.stream().map(RestOutStockCart::getPickListsCart).distinct().collect(Collectors.toList());
+
+        }
+        productionPickListsParam.setCartIds(cartIdList);
+
         this.productionPickListsService.outStock(productionPickListsParam);
         redisSendCheck.deleteListOrObject(RestRedisTemplatePrefixEnum.LLM.getValue() + productionPickListsParam.getCode());
         redisSendCheck.deleteListOrObject(RestRedisTemplatePrefixEnum.LLJCM.getValue() + productionPickListsParam.getCode());

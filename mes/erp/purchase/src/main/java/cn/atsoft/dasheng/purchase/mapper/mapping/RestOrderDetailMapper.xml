@@ -70,7 +70,7 @@
             and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
         </if>
         <if test="paramCondition.orderId != null">
-            and order_id like CONCAT('%',#{paramCondition.orderId},'%')
+            and order_id = #{paramCondition.orderId}
         </if>
         <if test="paramCondition.skuId != null">
             and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
@@ -94,7 +94,7 @@
             and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
         </if>
         <if test="paramCondition.orderId != null">
-            and order_id like CONCAT('%',#{paramCondition.orderId},'%')
+            and order_id #{paramCondition.orderId}
         </if>
         <if test="paramCondition.skuId != null">
             and sku_id like CONCAT('%',#{paramCondition.skuId},'%')

@@ -27,10 +27,7 @@
             <version>1.5.20</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>cn.atsoft</groupId>
-            <artifactId>kernel-core</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>cn.atsoft</groupId>
             <artifactId>base</artifactId>
@@ -73,10 +70,15 @@
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
-
         <dependency>
             <groupId>cn.atsoft</groupId>
             <artifactId>erp-base</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>cn.atsoft</groupId>
+            <artifactId>qr-code</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>

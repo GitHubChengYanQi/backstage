@@ -770,7 +770,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Transactional
     public List<Long> inStock(InstockOrderParam param) {
 
-        boolean operat = activitiProcessLogService.canOperat(ProcessType.INSTOCK.name(), "直接入库", InStockActionEnum.performInstock.name());
+        boolean operat = activitiProcessLogService.canOperat(ProcessType.INSTOCK.name(), ProcessModuleEnum.createInstock.name(), InStockActionEnum.performInstock.name());
         if (!operat) {
             throw new ServiceException(500, "你没有入库权限");
         }
@@ -786,13 +786,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             skuId = listParam.getSkuId();
             InstockHandle instockHandle = new InstockHandle();    //添加入庫处理结果
             ToolUtil.copyProperties(listParam, instockHandle);
-            instockHandle.setInstockOrderId(param.getInstockOrderId());
-            instockHandle.setType("inStock");
-            instockHandle.setSource("inStockList");
-            instockHandle.setSourceId(listParam.getInstockListId());
-            instockHandles.add(instockHandle);
+
             listParam.setInstockOrderId(param.getInstockOrderId());
-            Integer number = stockDetailsService.getNumberByStock(listParam.getSkuId(), listParam.getBrandId(), null);//入库前的库存数
+            Integer number = stockDetailsService.getNumberByStock(listParam.getSkuId(), null, null);//入库前的库存数
             if (ToolUtil.isNotEmpty(listParam.getInkindIds())) {   //直接入库
                 handle(listParam, listParam.getInkindIds());
             } else {   //创建实物入库

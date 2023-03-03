@@ -1,0 +1,174 @@
+package cn.atsoft.dasheng.instockHandle.service.impl;
+
+
+import cn.atsoft.dasheng.base.pojo.page.PageFactory;
+import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.instockHandle.entity.InstockHandle;
+import cn.atsoft.dasheng.instockHandle.mapper.RestInstockHandleMapper;
+import cn.atsoft.dasheng.instockHandle.model.params.InstockHandleParam;
+import cn.atsoft.dasheng.instockHandle.model.result.InstockHandleResult;
+import cn.atsoft.dasheng.instockHandle.service.RestInstockHandleService;
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.stereotype.Service;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * <p>
+ * 入库操作结果 服务实现类
+ * </p>
+ *
+ * @author song
+ * @since 2022-07-08
+ */
+@Service
+public class RestInstockHandleServiceImpl extends ServiceImpl<RestInstockHandleMapper, InstockHandle> implements RestInstockHandleService {
+
+    @Override
+    public void add(InstockHandleParam param) {
+        InstockHandle entity = getEntity(param);
+        this.save(entity);
+    }
+
+    @Override
+    public void delete(InstockHandleParam param) {
+        this.removeById(getKey(param));
+    }
+
+    @Override
+    public void update(InstockHandleParam param) {
+        InstockHandle oldEntity = getOldEntity(param);
+        InstockHandle newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
+    }
+
+
+    @Override
+    public List<InstockHandleResult> detailByInStockOrder(Long instockOrderId) {
+        if (ToolUtil.isEmpty(instockOrderId)) {
+            return new ArrayList<>();
+        }
+
+        List<InstockHandle> instockHandles = this.query().eq("instock_order_id", instockOrderId).eq("display", 1).list();
+        List<InstockHandleResult> instockHandleResults = BeanUtil.copyToList(instockHandles, InstockHandleResult.class);
+        List<InstockHandleResult> detailTotalList = new ArrayList<>();
+
+        instockHandleResults.parallelStream().collect(Collectors.groupingBy(item -> item.getSkuId() + "_" + item.getBrandId() + "_" + item.getType() + "_" + item.getCustomerId(), Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> new InstockHandleResult() {{
+                        setNumber(a.getNumber() + b.getNumber());
+                        setSkuId(a.getSkuId());
+                        setBrandId(a.getBrandId());
+                        setType(a.getType());
+                        setCustomerId(a.getCustomerId());
+                        setCreateTime(a.getCreateTime());
+                        setInstockOrderId(a.getInstockOrderId());
+                        setInstockHandleId(a.getInstockHandleId());
+                        setInstockHandleId(a.getInstockListId());
+                    }}).ifPresent(detailTotalList::add);
+                }
+        );
+
+        /**
+         * 排序
+         */
+        List<InstockHandleResult> collect = detailTotalList.stream().sorted(Comparator.comparing(InstockHandleResult::getSkuId).reversed()).collect(Collectors.toList());
+        this.format(collect);
+        return collect;
+    }
+
+    @Override
+
+    public InstockHandleResult findBySpec(InstockHandleParam param) {
+        return null;
+    }
+
+    @Override
+    public List<InstockHandleResult> findListBySpec(InstockHandleParam param) {
+        return null;
+    }
+
+    @Override
+    public PageInfo<InstockHandleResult> findPageBySpec(InstockHandleParam param) {
+        Page<InstockHandleResult> pageContext = getPageContext();
+        IPage<InstockHandleResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+    }
+
+    private Serializable getKey(InstockHandleParam param) {
+        return param.getInstockHandleId();
+    }
+
+    private Page<InstockHandleResult> getPageContext() {
+        return PageFactory.defaultPage();
+    }
+
+    private InstockHandle getOldEntity(InstockHandleParam param) {
+        return this.getById(getKey(param));
+    }
+
+    private InstockHandle getEntity(InstockHandleParam param) {
+        InstockHandle entity = new InstockHandle();
+        ToolUtil.copyProperties(param, entity);
+        return entity;
+    }
+
+    @Override
+    public void format(List<InstockHandleResult> data) {
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        List<Long> customerIds = new ArrayList<>();
+
+        for (InstockHandleResult datum : data) {
+            skuIds.add(datum.getSkuId());
+            brandIds.add(datum.getBrandId());
+            customerIds.add(datum.getCustomerId());
+        }
+//        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+//        List<Brand> brands = brandIds.size() == 0 ? new ArrayList<>() : brandService.lambdaQuery().in(Brand::getBrandId, brandIds).list();
+//        List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
+//        List<CustomerResult> customerResults = BeanUtil.copyToList(customerList, CustomerResult.class, new CopyOptions());
+//        Map<Long, List<StorehousePositionsResult>> positionMap = positionsService.getMap(skuIds);
+//
+//        for (InstockHandleResult datum : data) {
+//            for (CustomerResult customerResult : customerResults) {
+//                if (ToolUtil.isNotEmpty(datum.getCustomerId()) && datum.getCustomerId().equals(customerResult.getCustomerId())) {
+//                    datum.setCustomerResult(customerResult);
+//                    break;
+//                }
+//            }
+//
+//
+//            for (SkuResult sku : skuResults) {
+//                List<StorehousePositionsResult> positionsResults = positionMap.get(sku.getPositionId());
+//                sku.setPositionsResult(positionsResults);
+//                if (datum.getSkuId() != null && sku.getSkuId().equals(datum.getSkuId())) {
+//                    datum.setSkuResult(sku);
+//                    break;
+//                }
+//            }
+//
+//            for (Brand brand : brands) {
+//                if (ToolUtil.isNotEmpty(datum.getBrandId()) && datum.getBrandId().equals(brand.getBrandId())) {
+//                    BrandResult brandResult = new BrandResult();
+//                    ToolUtil.copyProperties(brand, brandResult);
+//                    datum.setBrandResult(brandResult);
+//                    break;
+//                }
+//            }
+
+//        }
+
+    }
+
+}

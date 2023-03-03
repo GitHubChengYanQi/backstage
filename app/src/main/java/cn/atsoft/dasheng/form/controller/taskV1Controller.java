@@ -32,6 +32,7 @@ import cn.atsoft.dasheng.purchase.service.ProcurementOrderService;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
@@ -190,9 +191,9 @@ public class taskV1Controller {
                     ProductionPickListsResult pickListsRestult = pickListsService.detail(taskResult.getFormId());
 
                     taskResult.setReceipts(pickListsRestult);
-//                    taskService.format(new ArrayList<ActivitiProcessTaskResult>(){{
-//                        add(taskResult);
-//                    }});
+                    taskService.format(new ArrayList<ActivitiProcessTaskResult>(){{
+                        add(taskResult);
+                    }});
                     break;
                 case "MAINTENANCE":
                     MaintenanceResult maintenanceResult = maintenanceService.detail(taskResult.getFormId());
@@ -264,12 +265,13 @@ public class taskV1Controller {
         List comments = remarksService.getComments(taskId);
         taskResult.setRemarks(comments);
 
-//        if (ToolUtil.isNotEmpty(taskResult.getCreateUser())) {
-//            User user = userService.getById(taskResult.getCreateUser());
-//            String imgUrl = appStepService.imgUrl(user.getUserId().toString());
-//            user.setAvatar(imgUrl);
-//            taskResult.setUser(user);
-//        }
+        if (ToolUtil.isNotEmpty(taskResult.getCreateUser())) {
+            List<UserResult> userResultsByIds = userService.getUserResultsByIds(new ArrayList<Long>() {{
+                add(taskResult.getCreateUser());
+            }});
+
+            taskResult.setUser(userResultsByIds.get(0));
+        }
         if (ToolUtil.isNotEmpty(taskResult.getOrigin())) {
             taskResult.setThemeAndOrigin(getOrigin.getOrigin(JSON.parseObject(taskResult.getOrigin(), ThemeAndOrigin.class)));
         }

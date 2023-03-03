@@ -27,6 +27,7 @@ public class RestOutStockOrderDetailParam implements Serializable, BaseValidatin
 
     private Long storehousePositionsId;
     private List<Long> storehousePositionsIds;
+    private List<Long> cartIds;
     private Long storehouseId;
     private Long cartId;
     private Long pickListsCart;

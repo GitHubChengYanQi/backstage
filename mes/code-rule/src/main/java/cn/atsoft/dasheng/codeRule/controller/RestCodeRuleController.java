@@ -189,9 +189,10 @@ public class RestCodeRuleController extends BaseController {
     @RequestMapping(value = "/getRule", method = RequestMethod.GET)
     public ResponseData getRule() {
         List<RestCodeRulesCategory> restCodeRulesCategories = codeRuleCategoryService.get();
+
         Map<String,Object> result = new HashMap<>();
         result.put("generalRuleList", CodingRuleFiledEnum.listByModel(CodingRuleFiledEnum.modelEnum.general));
-        result.put("modelRuleList", CodingRuleFiledEnum.modelList());
+        result.put("modelRuleList", restCodeRulesCategories);
         return ResponseData.success(result);
     }
 

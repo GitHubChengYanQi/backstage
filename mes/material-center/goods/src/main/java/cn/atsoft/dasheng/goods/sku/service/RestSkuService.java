@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.goods.sku.service;
 import cn.atsoft.dasheng.goods.sku.entity.RestSku;
 import cn.atsoft.dasheng.goods.sku.model.params.RestSkuParam;
 import cn.atsoft.dasheng.goods.sku.model.result.RestSkuResult;
+import cn.atsoft.dasheng.goods.sku.model.result.SkuListResult;
 import cn.atsoft.dasheng.goods.spu.model.result.RestSpuResult;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -122,7 +123,7 @@ public interface RestSkuService extends IService<RestSku> {
 //
 //    String skuMessage(Long skuId);
 //
-//    List<RestSkuResult> formatSkuResult(List<Long> skuIds);
+    List<RestSkuResult> formatSkuResult(List<Long> skuIds);
 //
 //    RestSkuResult getDetail(Long skuId);
 //
@@ -130,4 +131,6 @@ public interface RestSkuService extends IService<RestSku> {
     List<RestSku> skuResultBySpuId(Long spuId);
 
     List<RestSku> getByIds(List<Long> skuIds);
+
+    List<SkuListResult> viewResultsByIds(List<Long> ids);
 }

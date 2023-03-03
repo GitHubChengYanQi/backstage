@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.atsoft.dasheng.stockDetail.mapper.RestStockDetailMapper">
+<mapper namespace="cn.atsoft.dasheng.stockDetail.mapper.RestStockDetailsMapper">
+
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.stockDetail.entity.RestStockDetails">
@@ -529,5 +530,12 @@
 <!--        GROUP BY detail.sku_id-->
 <!--        ORDER BY sum( detail.number )-->
 <!--    </select>-->
-
+    <select id="getNumberCountBySkuId" resultType="Long" parameterType="Long">
+        SELECT SUM(number) AS number  FROM `daoxin_erp_stock_details`
+        WHERE
+            1 = 1
+            and display = 1
+            and stage = 1
+            and sku_id = #{skuId}
+    </select>
 </mapper>

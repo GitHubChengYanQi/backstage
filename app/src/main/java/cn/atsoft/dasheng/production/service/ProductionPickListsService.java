@@ -86,7 +86,7 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
 
     String addByProductionTask(Object param);
 
-    void sendPersonPick(ProductionPickListsParam param);
+    String sendPersonPick(ProductionPickListsParam param);
 
     void warning(ProductionPickListsParam param);
 

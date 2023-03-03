@@ -2,7 +2,6 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.app.model.params.Values;
-import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -28,9 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class SkuListServiceImpl extends ServiceImpl<SkuListMapper, SkuList> implements SkuListService {
@@ -49,12 +46,17 @@ public class SkuListServiceImpl extends ServiceImpl<SkuListMapper, SkuList> impl
     @Autowired
     private ItemAttributeService itemAttributeService;
     @Override
-    public PageInfo listByKeyWord(SkuListParam skuListParam) {
+    public PageInfo pageListByKeyWord(SkuListParam skuListParam) {
         Page<SkuListResult> pageContext = getPageContext();
-        IPage<SkuListResult> page = this.baseMapper.customListBySkuView(pageContext, skuListParam);
+        IPage<SkuListResult> page = this.baseMapper.customPageListBySkuView(pageContext, skuListParam);
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
-
+    }
+    @Override
+    public List<SkuListResult> listByKeyWord(SkuListParam skuListParam) {
+        List<SkuListResult> list = this.baseMapper.customListBySkuView(skuListParam);
+        this.format(list);
+        return list;
     }
 
     public void format(List<SkuListResult> dataList){
@@ -105,11 +107,7 @@ public class SkuListServiceImpl extends ServiceImpl<SkuListMapper, SkuList> impl
     public List<SkuListResult> resultByIds(List<Long> ids) {
         List<SkuListResult> skuListResults = BeanUtil.copyToList(this.listByIds(ids), SkuListResult.class);
 
-//        for (SkuListResult skuListResult : skuListResults) {
-//            if (ToolUtil.isNotEmpty(skuListResult.getImages())) {
-//              skuListResult.setImgResults( skuService.strToMediaResults(skuListResult.getImages()));
-//            }
-//        }
+        format(skuListResults);
 
 
         return skuListResults;

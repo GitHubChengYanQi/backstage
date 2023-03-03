@@ -20,6 +20,7 @@ import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
+import cn.atsoft.dasheng.erp.model.result.AnnouncementsResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
@@ -454,13 +455,13 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             userIds.add(result.getUserId());
             userIds.add(result.getCreateUser());
 
-//            if (ToolUtil.isNotEmpty(result.getRemarks())) {
-//                announcementsIds.addAll(Arrays.stream(result.getRemarks().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
-//            }
+            if (ToolUtil.isNotEmpty(result.getRemarks())) {
+                announcementsIds.addAll(Arrays.stream(result.getRemarks().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
+            }
         }
-//        announcementsIds = announcementsIds.stream().distinct().collect(Collectors.toList());
-//        List<Announcements> announcements = announcementsIds.size() == 0 ? new ArrayList<>() : announcementsService.listByIds(announcementsIds);
-//        List<AnnouncementsResult> announcementsResults = BeanUtil.copyToList(announcements, AnnouncementsResult.class, new CopyOptions());
+        announcementsIds = announcementsIds.stream().distinct().collect(Collectors.toList());
+        List<Announcements> announcements = announcementsIds.size() == 0 ? new ArrayList<>() : announcementsService.listByIds(announcementsIds);
+        List<AnnouncementsResult> announcementsResults = BeanUtil.copyToList(announcements, AnnouncementsResult.class, new CopyOptions());
         List<UserResult> userResultsByIds = userIds.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(userIds);
         /**
          * 查询备料单与领料单
@@ -491,19 +492,19 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 //            positionIds = positionIds.stream().distinct().collect(Collectors.toList());
 //            result.setPositionIds(positionIds);
 //            result.setDetailResults(detailResultList);
-//            if (ToolUtil.isNotEmpty(result.getRemarks())) {
-//                List<AnnouncementsResult> announcementsResultList = new ArrayList<>();
-//                List<Long> collect = Arrays.stream(result.getRemarks().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-//                collect = collect.stream().distinct().collect(Collectors.toList());
-//                for (Long aLong : collect) {
-//                    for (AnnouncementsResult announcementsResult : announcementsResults) {
-//                        if (announcementsResult.getNoticeId().equals(aLong)) {
-//                            announcementsResultList.add(announcementsResult);
-//                        }
-//                    }
-//                }
-//                result.setAnnouncementsResults(announcementsResultList);
-//            }
+            if (ToolUtil.isNotEmpty(result.getRemarks())) {
+                List<AnnouncementsResult> announcementsResultList = new ArrayList<>();
+                List<Long> collect = Arrays.stream(result.getRemarks().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+                collect = collect.stream().distinct().collect(Collectors.toList());
+                for (Long aLong : collect) {
+                    for (AnnouncementsResult announcementsResult : announcementsResults) {
+                        if (announcementsResult.getNoticeId().equals(aLong)) {
+                            announcementsResultList.add(announcementsResult);
+                        }
+                    }
+                }
+                result.setAnnouncementsResults(announcementsResultList);
+            }
         }
 
     }
@@ -596,24 +597,39 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
 
     @Override
-    public void sendPersonPick(ProductionPickListsParam param) {
+    public String sendPersonPick(ProductionPickListsParam param) {
+        //TODO 校验数据；、
+        ActivitiProcessTask processTask = activitiProcessTaskService.getById(param.getTaskId());
+        if (ToolUtil.isEmpty(processTask)){
+            throw new ServiceException(500,"出库任务未找到");
+        }
+        String code= RandomUtil.randomNumbers(4);
+        String pickCode = RedisTemplatePrefixEnum.LLM.getValue() + code;
+        String checkCode = RedisTemplatePrefixEnum.LLJCM.getValue() + code;
+        redisSendCheck.pushObject(pickCode,param.getTaskId(),86400000L);
+        redisSendCheck.pushObject(checkCode,param.getTaskId(),86400000L);
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
             setItems("领料通知");
             setUrl(mobileService.getMobileConfig().getUrl() + "/#/ReceiptsDetail?id=" + param.getTaskId());
-            setDescription("库管那里有新的物料待领取");
+            setDescription("库管那里有新的物料待领取 领料码："+code);
             setFunction(MarkDownTemplateTypeEnum.pickSend);
             setType(0);
             setUserId(LoginContextHolder.getContext().getUserId());
             setCreateUser(LoginContextHolder.getContext().getUserId());
             setSource("processTask");
             setSourceId(param.getTaskId());
-            setUserIds(Arrays.stream(param.getUserIds().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
+//            setUserIds(Arrays.stream(param.getUserIds().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
+            setUserIds(new ArrayList<Long>(){{
+                add(processTask.getUserId());
+            }});
         }});
         if (ToolUtil.isNotEmpty(param.getPickListsIds())) {
             for (Long pickListsId : param.getPickListsIds()) {
                 shopCartService.addDynamic(pickListsId, null, "通知领料人进行领料");
             }
         }
+
+        return code;
     }
 
     private Serializable getKey(ProductionPickListsParam param) {
@@ -1618,11 +1634,20 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
     @Override
     public List<ProductionPickListsCartResult> listByCode(String code) {
-        List<Object> list = redisSendCheck.getList(RedisTemplatePrefixEnum.LLM.getValue() + code);
-        if (ToolUtil.isEmpty(list)) {
-            throw new ServiceException(500, "领料码已失效");
+        List<ProductionPickListsCartResult> cartResults = new ArrayList<>();
+        try{
+            List<Object> list =  redisSendCheck.getList(RedisTemplatePrefixEnum.LLM.getValue() + code);
+            if (ToolUtil.isEmpty(list)) {
+                throw new ServiceException(500, "领料码已失效");
+            }
+            cartResults = BeanUtil.copyToList(list, ProductionPickListsCartResult.class);
+
+        }catch (Exception e){
+            Long taskId = (Long) redisSendCheck.getObject(RedisTemplatePrefixEnum.LLM.getValue() + code);
+            ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
+            cartResults =  BeanUtil.copyToList(pickListsCartService.lambdaQuery().eq(ProductionPickListsCart::getPickListsId, task.getFormId()).eq(ProductionPickListsCart::getStatus,0).list(), ProductionPickListsCartResult.class);
+
         }
-        List<ProductionPickListsCartResult> cartResults = BeanUtil.copyToList(list, ProductionPickListsCartResult.class);
         if (ToolUtil.isNotEmpty(cartResults)) {
             pickListsCartService.format(cartResults);
         }

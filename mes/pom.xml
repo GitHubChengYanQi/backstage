@@ -21,6 +21,7 @@
         <module>make</module>
         <module>material-center</module>
         <module>traceability</module>
+        <module>qr-code</module>
     </modules>
 
 

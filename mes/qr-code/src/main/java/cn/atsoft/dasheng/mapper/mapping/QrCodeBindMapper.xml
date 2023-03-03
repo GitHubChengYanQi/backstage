@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.mapper.QrCodeBindMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.entity.QrCodeBind">
+        <id column="qr_code_bind_id" property="orCodeBindId"/>
+        <result column="qr_code_id" property="orCodeId"/>
+        <result column="source" property="source"/>
+        <result column="form_id" property="formId"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
+        <result column="type" property="type"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">type
+    AS "type",
+        qr_code_bind_id
+        AS "QrCodeBindId", qr_code_id AS "QrCodeId", source AS "source", form_id AS "formId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.model.result.QrCodeBindResult"
+            parameterType="cn.atsoft.dasheng.model.params.QrCodeBindParam">
+        select
+        <include refid="Base_Column_List"/>
+        from qr_code_bind where 1 = 1
+        <if test="paramCondition.QrCodeBindId != null">
+            and or_code_bind_id like CONCAT('%',#{paramCondition.QrCodeBindId},'%')
+        </if>
+        <if test="paramCondition.QrCodeId != null">
+            and or_code_id like CONCAT('%',#{paramCondition.QrCodeId},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''">
+            and source like CONCAT('%',#{paramCondition.source},'%')
+        </if>
+        <if test="paramCondition.formId != null">
+            and form_id like CONCAT('%',#{paramCondition.formId},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.model.params.QrCodeBindParam">
+        select
+        <include refid="Base_Column_List"/>
+        from qr_code_bind where 1 = 1
+        <if test="paramCondition.QrCodeBindId != null">
+            and or_code_bind_id like CONCAT('%',#{paramCondition.QrCodeBindId},'%')
+        </if>
+        <if test="paramCondition.QrCodeId != null">
+            and or_code_id like CONCAT('%',#{paramCondition.QrCodeId},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''">
+            and source like CONCAT('%',#{paramCondition.source},'%')
+        </if>
+        <if test="paramCondition.formId != null">
+            and form_id like CONCAT('%',#{paramCondition.formId},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.model.result.QrCodeBindResult"
+            parameterType="cn.atsoft.dasheng.model.params.QrCodeBindParam">
+        select
+        <include refid="Base_Column_List"/>
+        from qr_code_bind where 1 = 1
+        <if test="paramCondition.QrCodeBindId != null">
+            and or_code_bind_id like CONCAT('%',#{paramCondition.QrCodeBindId},'%')
+        </if>
+        <if test="paramCondition.QrCodeId != null">
+            and or_code_id like CONCAT('%',#{paramCondition.QrCodeId},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''">
+            and source like CONCAT('%',#{paramCondition.source},'%')
+        </if>
+        <if test="paramCondition.formId != null">
+            and form_id like CONCAT('%',#{paramCondition.formId},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.model.params.QrCodeBindParam">
+        select
+        <include refid="Base_Column_List"/>
+        from qr_code_bind where 1 = 1
+        <if test="paramCondition.QrCodeBindId != null">
+            and or_code_bind_id like CONCAT('%',#{paramCondition.QrCodeBindId},'%')
+        </if>
+        <if test="paramCondition.QrCodeId != null">
+            and or_code_id like CONCAT('%',#{paramCondition.QrCodeId},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''">
+            and source like CONCAT('%',#{paramCondition.source},'%')
+        </if>
+        <if test="paramCondition.formId != null">
+            and form_id like CONCAT('%',#{paramCondition.formId},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+</mapper>

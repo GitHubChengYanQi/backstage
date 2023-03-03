@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
 
-@Configuration
+//@Configuration
 public class RestDirectQueueConfig {
 
     protected static final Logger logger = LoggerFactory.getLogger(RestDirectQueueConfig.class);
@@ -77,7 +77,7 @@ public class RestDirectQueueConfig {
 
 
 
-    @Bean
+    //@Bean
     public void init() {
         mqPrefix = tmpPrefix;
     }
@@ -87,7 +87,7 @@ public class RestDirectQueueConfig {
      *
      * @return Queue
      */
-    @Bean
+    //@Bean
     public Queue messageQueue() {
         logger.info(mqPrefix);
         logger.info(getMessageRealQueue());
@@ -95,7 +95,7 @@ public class RestDirectQueueConfig {
     }
 
 
-    @Bean
+    //@Bean
     public Queue messageDelayQueue() {
 
         Map<String, Object> argsMap = Maps.newHashMap();
@@ -109,12 +109,12 @@ public class RestDirectQueueConfig {
      *
      * @return TopicExchange
      */
-    @Bean
+    //@Bean
     public TopicExchange topicExchange() {
         return new TopicExchange(getMessageRealExchange());
     }
 
-    @Bean
+    //@Bean
     public TopicExchange topicDelayExchange() {
         return new TopicExchange(getMessageDelayExchange());
     }
@@ -122,13 +122,13 @@ public class RestDirectQueueConfig {
     /**
      * 绑定交换机
      */
-    @Bean
+    //@Bean
     Binding bindingTopicExchange() {
         logger.info("绑定队列");
         return BindingBuilder.bind(messageQueue()).to(topicExchange()).with(getMessageRealRoute());
     }
 
-    @Bean
+    //@Bean
     Binding bindingTopicDelayExchange() {
         logger.info("绑定延迟队列");
         return BindingBuilder.bind(messageDelayQueue()).to(topicDelayExchange()).with(getMessageRealRoute());
@@ -165,7 +165,7 @@ public class RestDirectQueueConfig {
      *
      * @return Queue
      */
-    @Bean
+    //@Bean
     public Queue microServiceQueue() {
         logger.info(mqPrefix);
         logger.info(getMicroServiceRealQueue());
@@ -173,7 +173,7 @@ public class RestDirectQueueConfig {
     }
 
 
-    @Bean
+    //@Bean
     public Queue microServiceDelayQueue() {
 
         Map<String, Object> argsMap = Maps.newHashMap();
@@ -187,12 +187,12 @@ public class RestDirectQueueConfig {
      *
      * @return TopicExchange
      */
-    @Bean
+    //@Bean
     public TopicExchange microServiceExchange() {
         return new TopicExchange(getMicroServiceRealExchange());
     }
 
-    @Bean
+    //@Bean
     public TopicExchange microServiceDelayExchange() {
         return new TopicExchange(getMicroServiceDelayExchange());
     }
@@ -200,13 +200,13 @@ public class RestDirectQueueConfig {
     /**
      * 绑定交换机
      */
-    @Bean
+    //@Bean
     Binding microServiceTopicExchange() {
         logger.info("绑定队列");
         return BindingBuilder.bind(microServiceQueue()).to(microServiceExchange()).with(getMicroServiceRealRoute());
     }
 
-    @Bean
+    //@Bean
     Binding microServiceTopicDelayExchange() {
         logger.info("绑定延迟队列");
         return BindingBuilder.bind(microServiceDelayQueue()).to(microServiceDelayExchange()).with(getMicroServiceRealRoute());
@@ -245,7 +245,7 @@ public class RestDirectQueueConfig {
      *
      * @return Queue
      */
-    @Bean
+    //@Bean
     public Queue auditQueue() {
         logger.info(mqPrefix);
         logger.info(getAuditRealQueue());
@@ -253,7 +253,7 @@ public class RestDirectQueueConfig {
     }
 
 
-    @Bean
+    //@Bean
     public Queue auditDelayQueue() {
 
         Map<String, Object> argsMap = Maps.newHashMap();
@@ -267,12 +267,12 @@ public class RestDirectQueueConfig {
      *
      * @return TopicExchange
      */
-    @Bean
+    //@Bean
     public TopicExchange auditExchange() {
         return new TopicExchange(getAuditRealExchange());
     }
 
-    @Bean
+    //@Bean
     public TopicExchange auditDelayExchange() {
         return new TopicExchange(getAuditDelayExchange());
     }
@@ -280,13 +280,13 @@ public class RestDirectQueueConfig {
     /**
      * 绑定交换机
      */
-    @Bean
+    //@Bean
     Binding auditServiceTopicExchange() {
         logger.info("绑定队列");
         return BindingBuilder.bind(auditQueue()).to(auditExchange()).with(getAuditRealRoute());
     }
 
-    @Bean
+    //@Bean
     Binding auditServiceTopicDelayExchange() {
         logger.info("绑定延迟队列");
         return BindingBuilder.bind(auditDelayQueue()).to(auditDelayExchange()).with(getAuditRealRoute());
@@ -322,7 +322,7 @@ public class RestDirectQueueConfig {
 
     //=========================单据动态===========================
 
-    @Bean
+    //@Bean
     public Queue remarksQueue() {
         logger.info(mqPrefix);
         logger.info(getRemarksRealQueue());
@@ -330,7 +330,7 @@ public class RestDirectQueueConfig {
     }
 
 
-    @Bean
+    //@Bean
     public Queue remarksDelayQueue() {
 
         Map<String, Object> argsMap = Maps.newHashMap();
@@ -345,12 +345,12 @@ public class RestDirectQueueConfig {
      *
      * @return TopicExchange
      */
-    @Bean
+    //@Bean
     public TopicExchange remarksExchange() {
         return new TopicExchange(getRemarksRealExchange());
     }
 
-    @Bean
+    //@Bean
     public TopicExchange remarksDelayExchange() {
         return new TopicExchange(getRemarksDelayExchange());
     }
@@ -358,13 +358,13 @@ public class RestDirectQueueConfig {
     /**
      * 绑定交换机
      */
-    @Bean
+    //@Bean
     Binding remarksServiceTopicExchange() {
         logger.info("绑定队列");
         return BindingBuilder.bind(remarksQueue()).to(remarksExchange()).with(getRemarksRealRoute());
     }
 
-    @Bean
+    //@Bean
     Binding remarksServiceTopicDelayExchange() {
         logger.info("绑定延迟队列");
         return BindingBuilder.bind(remarksDelayQueue()).to(remarksDelayExchange()).with(getRemarksRealRoute());

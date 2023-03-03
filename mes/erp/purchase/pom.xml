@@ -67,12 +67,7 @@
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>cn.atsoft</groupId>
-            <artifactId>traceability</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
-        </dependency>
+
         <dependency>
             <groupId>cn.atsoft</groupId>
             <artifactId>message</artifactId>

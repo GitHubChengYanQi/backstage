@@ -125,14 +125,14 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     public Long addV2(ActivitiProcessTaskParam param) {
         ActivitiProcessTask entity = getEntity(param);
         this.save(entity);
-        String origin = this.getOrigin.newThemeAndOrigin("processTask", entity.getProcessTaskId(), ToolUtil.isEmpty(param.getSource()) ? null : param.getSource(), ToolUtil.isEmpty(param.getSourceId()) ? null : param.getSourceId());
-        entity.setOrigin(origin);
+//        String origin = this.getOrigin.newThemeAndOrigin("processTask", entity.getProcessTaskId(), ToolUtil.isEmpty(param.getSource()) ? null : param.getSource(), ToolUtil.isEmpty(param.getSourceId()) ? null : param.getSourceId());
+//        entity.setOrigin(origin);
 
-        List<Long> userIds = this.processAuditPersonV2(param.getProcessId());//取出执行节点执行人
-        entity.setUserIds(JSON.toJSONString(userIds));
+//        List<Long> userIds = this.processAuditPersonV2(param.getProcessId());//取出执行节点执行人
+//        entity.setUserIds(JSON.toJSONString(userIds));
 
 
-        this.updateById(entity);
+//        this.updateById(entity);
 
         return entity.getProcessTaskId();
     }

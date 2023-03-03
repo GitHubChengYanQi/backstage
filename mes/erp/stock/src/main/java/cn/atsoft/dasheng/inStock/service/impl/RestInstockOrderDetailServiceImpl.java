@@ -1,0 +1,346 @@
+package cn.atsoft.dasheng.inStock.service.impl;
+
+
+import cn.atsoft.dasheng.base.pojo.page.PageFactory;
+import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.inStock.entity.RestInstockOrderDetail;
+import cn.atsoft.dasheng.inStock.mapper.RestInstockOrderDetailMapper;
+import cn.atsoft.dasheng.inStock.model.params.RestInstockOrderDetailParam;
+import cn.atsoft.dasheng.inStock.service.RestInstockOrderDetailService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * <p>
+ * 入库清单 服务实现类
+ * </p>
+ *
+ * @author song
+ * @since 2021-10-06
+ */
+@Service
+public class RestInstockOrderDetailServiceImpl extends ServiceImpl<RestInstockOrderDetailMapper, RestInstockOrderDetail> implements RestInstockOrderDetailService {
+
+//    @Autowired
+//    private StockService stockService;
+//    @Autowired
+//    private StockDetailsService stockDetailsService;
+//    @Autowired
+//    private BrandService brandService;
+//    @Autowired
+//    private SkuService skuService;
+//    @Autowired
+//    private InstockOrderService orderService;
+//    @Autowired
+//    private OrCodeBindService codeBindService;
+//    @Autowired
+//    private InkindService inkindService;
+//    @Autowired
+//    private CustomerService customerService;
+//    @Autowired
+//    private StorehousePositionsService positionsService;
+//    @Autowired
+//    private StorehousePositionsBindService positionsBindService;
+//
+//    @Override
+//    public void add(RestInstockOrderDetailParam param) {
+//        RestInstockOrderDetail entity = getEntity(param);
+//        this.save(entity);
+//    }
+//
+//    @Override
+//
+//    public void delete(RestInstockOrderDetailParam param) {
+//        this.removeById(getKey(param));
+//    }
+//
+//    @Override
+//
+//    public void update(RestInstockOrderDetailParam param) {
+//        RestInstockOrderDetail oldEntity = getOldEntity(param);
+//        RestInstockOrderDetail newEntity = getEntity(param);
+//        if (oldEntity.getNumber() > param.getNumber()) {
+//            throw new ServiceException(500, "数量不符");
+//        }
+//        if (oldEntity.getNumber() > 0) {
+//            long l = oldEntity.getNumber() - param.getNum();
+//            newEntity.setNumber(l);
+//            ToolUtil.copyProperties(newEntity, oldEntity);
+//            this.updateById(newEntity);
+//
+//
+//            Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, newEntity.getStoreHouseId())
+//                    .and(i -> i.eq(Stock::getSkuId, newEntity.getSkuId()))
+//                    .eq(Stock::getBrandId, newEntity.getBrandId())
+//                    .one();
+//
+//            StockParam stockParam = new StockParam();
+//            Long stockId = null;
+//            if (ToolUtil.isNotEmpty(stock)) {    //库存有此物 合并库存数量
+//                long number = stock.getInventory() + param.getNum();
+//                stock.setInventory(number);
+//                ToolUtil.copyProperties(stock, stockParam);
+//                stockId = stockService.update(stockParam);
+//            } else {   //库存没有此物 新增此物
+//                stockParam.setInventory(param.getNum());
+//                stockParam.setBrandId(newEntity.getBrandId());
+//                stockParam.setSkuId(newEntity.getSkuId());
+//                stockParam.setStorehouseId(newEntity.getStoreHouseId());
+//                stockId = stockService.add(stockParam);
+//            }
+//            StockDetailsParam stockDetailsParam = new StockDetailsParam();
+//            stockDetailsParam.setStockId(stockId);
+//            stockDetailsParam.setNumber(param.getNum());
+//            if (ToolUtil.isNotEmpty(param.getCodeId())) {
+//                stockDetailsParam.setQrCodeid(param.getCodeId());
+//                stockDetailsParam.setInkindId(param.getInkindId());
+//            }
+//            stockDetailsParam.setStorehouseId(newEntity.getStoreHouseId());
+//            stockDetailsParam.setPrice(newEntity.getCostPrice());
+//            stockDetailsParam.setBrandId(newEntity.getBrandId());
+//            stockDetailsParam.setQrCodeid(param.getCodeId());
+//            stockDetailsParam.setSkuId(newEntity.getSkuId());
+//            stockDetailsParam.setStorehousePositionsId(newEntity.getStorehousePositionsId());
+//            stockDetailsService.add(stockDetailsParam);
+//
+//            //修改入库单状态
+//            updateOrderState(param.getInstockOrderId());
+//
+//        } else {
+//            throw new ServiceException(500, "已经入库成功");
+//        }
+//
+//    }
+//
+//    private Long getInkindId(Long qrcodeId) {
+//
+//        Long formId = codeBindService.getFormId(qrcodeId);
+//
+//        Inkind inkind = inkindService.getById(formId);
+//        if (ToolUtil.isEmpty(inkind)) {
+//            throw new ServiceException(500, "二维码不正确");
+//        }
+//        return inkind.getInkindId();
+//    }
+//
+//    /**
+//     * 修改入库单状态
+//     *
+//     * @param instockOrderId
+//     */
+//    private void updateOrderState(Long instockOrderId) {
+//        InstockOrder instockOrder = new InstockOrder();
+//        instockOrder.setInstockOrderId(instockOrderId);
+//        instockOrder.setState(1);
+//        boolean t = true;
+//        List<RestInstockOrderDetail> RestInstockOrderDetails = this.query().eq("instock_order_id", instockOrderId).list();
+//        for (RestInstockOrderDetail RestInstockOrderDetail : RestInstockOrderDetails) {
+//            if (RestInstockOrderDetail.getNumber() != 0) {
+//                t = false;
+//                break;
+//            }
+//        }
+//        if (t) {
+//            instockOrder.setState(2);
+//        }
+//        orderService.updateById(instockOrder);
+//    }
+//
+//
+//    @Override
+//    public RestInstockOrderDetailResult findBySpec(RestInstockOrderDetailParam param) {
+//        return null;
+//    }
+//
+//    @Override
+//    public List<RestInstockOrderDetailResult> findListBySpec(RestInstockOrderDetailParam param) {
+//        return null;
+//    }
+//
+//    @Override
+//    public PageInfo<RestInstockOrderDetailResult> findPageBySpec(RestInstockOrderDetailParam param) {
+//        Page<RestInstockOrderDetailResult> pageContext = getPageContext();
+//        IPage<RestInstockOrderDetailResult> page = this.baseMapper.customPageList(pageContext, param);
+//        format(page.getRecords());
+//        return PageFactory.createPageInfo(page);
+//    }
+//
+//    @Override
+//    public RestInstockOrderDetailResult detail(Long id) {
+//        RestInstockOrderDetail RestInstockOrderDetail = this.getById(id);
+//        RestInstockOrderDetailResult RestInstockOrderDetailResult = new RestInstockOrderDetailResult();
+//        ToolUtil.copyProperties(RestInstockOrderDetail, RestInstockOrderDetailResult);
+//        format(new ArrayList<RestInstockOrderDetailResult>() {{
+//            add(RestInstockOrderDetailResult);
+//        }});
+//
+//        return RestInstockOrderDetailResult;
+//    }
+//
+//    @Override
+//    @Transactional
+//    public void batchInstock(RestInstockOrderDetailParam param) {
+//        RestInstockOrderDetail RestInstockOrderDetail = this.getById(param.getRestInstockOrderDetailId()); //判断清单
+//        Long number = 0L;
+//        if (RestInstockOrderDetail.getNumber() == 0) {
+//            throw new ServiceException(500, "已经全部入库");
+//        }
+//        for (RestInstockOrderDetailRequest request : param.getRequests()) {  //获取入库的总数量
+//            number = number + request.getInkind().getNumber();
+//        }
+//        //判断清单数量
+//        if (RestInstockOrderDetail.getNumber() < number) {   //判断清单数量
+//            throw new ServiceException(500, "数量不符");
+//        }
+//        //修改清单数量
+//        RestInstockOrderDetail.setNumber(RestInstockOrderDetail.getNumber() - number);
+//        this.updateById(RestInstockOrderDetail);
+//
+//        Stock stock = stockService.query().eq("brand_id", RestInstockOrderDetail.getBrandId())   //判断库存
+//                .eq("sku_id", RestInstockOrderDetail.getSkuId())
+//                .eq("storehouse_id", RestInstockOrderDetail.getStoreHouseId())
+//                .one();
+//        Long stockId = null;
+//        if (ToolUtil.isNotEmpty(stock)) {   //相同合并数量
+//            long addNumber = stock.getInventory() + number;
+//            stock.setInventory(addNumber);
+//            stockService.updateById(stock);
+//            stockId = stock.getStockId();
+//        } else {   //不相同 新建
+//            Stock newStock = new Stock();
+//            newStock.setInventory(number);
+//            newStock.setBrandId(RestInstockOrderDetail.getBrandId());
+//            newStock.setSkuId(RestInstockOrderDetail.getSkuId());
+//            newStock.setStorehouseId(RestInstockOrderDetail.getStoreHouseId());
+//            stockService.save(newStock);
+//            stockId = newStock.getStockId();
+//        }
+//        List<StockDetails> stockDetailsList = new ArrayList<>();
+//
+//        for (RestInstockOrderDetailRequest request : param.getRequests()) {
+//
+//            Inkind inkind = request.getInkind();
+//            if (!RestInstockOrderDetail.getSkuId().equals(inkind.getInkindId()) && !RestInstockOrderDetail.getBrandId().equals(inkind.getBrandId())) {
+//                throw new ServiceException(500, "物料与入库单不符");
+//            }
+//
+//            StockDetails stockDetail = new StockDetails();
+//            stockDetail.setNumber(request.getInkind().getNumber());
+//            stockDetail.setSkuId(request.getInkind().getSkuId());
+//            stockDetail.setBrandId(request.getInkind().getBrandId());
+//            stockDetail.setStockId(stockId);
+//            stockDetail.setQrCodeId(request.getCodeId());
+//            stockDetail.setStorehouseId(param.getStoreHouseId());
+//            stockDetail.setStorehousePositionsId(param.getStorehousePositionsId());
+//            Long inkindId = getInkindId(request.getCodeId());
+//            stockDetail.setInkindId(inkindId);
+//            stockDetailsList.add(stockDetail);
+//
+//        }
+//        stockDetailsService.saveBatch(stockDetailsList);
+//
+//        //修改入库单状态
+//        updateOrderState(param.getInstockOrderId());
+//    }
+//
+//    @Override
+//    public List<RestInstockOrderDetailResult> getListByOrderIds(List<Long> orderIds) {
+//        if (ToolUtil.isEmpty(orderIds)) {
+//            return new ArrayList<>();
+//        }
+//        List<RestInstockOrderDetail> RestInstockOrderDetailList = this.query().in("instock_order_id", orderIds).eq("display", 1).list();
+//        List<RestInstockOrderDetailResult> results = BeanUtil.copyToList(RestInstockOrderDetailList, RestInstockOrderDetailResult.class, new CopyOptions());
+//        format(results);
+//        return results;
+//    }
+//
+//    private Serializable getKey(RestInstockOrderDetailParam param) {
+//        return param.getRestInstockOrderDetailId();
+//    }
+//
+//    private Page<RestInstockOrderDetailResult> getPageContext() {
+//        return PageFactory.defaultPage();
+//    }
+//
+//    private RestInstockOrderDetail getOldEntity(RestInstockOrderDetailParam param) {
+//        return this.getById(getKey(param));
+//    }
+//
+//    @Override
+//    public RestInstockOrderDetail getEntity(RestInstockOrderDetailParam param) {
+//        RestInstockOrderDetail entity = new RestInstockOrderDetail();
+//        ToolUtil.copyProperties(param, entity);
+//        return entity;
+//    }
+//
+//    @Override
+//    public void format(List<RestInstockOrderDetailResult> data) {
+//
+//        List<Long> skuIds = new ArrayList<>();
+//        List<Long> brandIds = new ArrayList<>();
+//        List<Long> customerIds = new ArrayList<>();
+//
+//        for (RestInstockOrderDetailResult datum : data) {
+//            skuIds.add(datum.getSkuId());
+//            brandIds.add(datum.getBrandId());
+//            customerIds.add(datum.getCustomerId());
+//        }
+//        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+//        List<Brand> brands = brandIds.size() == 0 ? new ArrayList<>() : brandService.lambdaQuery().in(Brand::getBrandId, brandIds).list();
+//        List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
+//        List<CustomerResult> customerResults = BeanUtil.copyToList(customerList, CustomerResult.class, new CopyOptions());
+//        Map<Long, List<StorehousePositionsResult>> positionMap = positionsService.getMap(skuIds);
+//        List<StorehousePositionsBind> storehousePositionsBinds = skuIds.size() == 0 ? new ArrayList<>() : positionsBindService.query().in("sku_id", skuIds).eq("display", 1).list();
+//
+//
+//        for (RestInstockOrderDetailResult datum : data) {
+//            int positionNum = 0;
+//            for (StorehousePositionsBind storehousePositionsBind : storehousePositionsBinds) {
+//                if (storehousePositionsBind.getSkuId().equals(datum.getSkuId())) {
+//                    positionNum = positionNum + 1;
+//                }
+//            }
+//            datum.setPositionNum(positionNum);
+//            for (CustomerResult customerResult : customerResults) {
+//                if (ToolUtil.isNotEmpty(datum.getCustomerId()) && datum.getCustomerId().equals(customerResult.getCustomerId())) {
+//                    datum.setCustomerResult(customerResult);
+//                    break;
+//                }
+//            }
+//
+//
+//            for (SkuResult sku : skuResults) {
+//                List<StorehousePositionsResult> positionsResults = positionMap.get(sku.getPositionId());
+//                sku.setPositionsResult(positionsResults);
+//                if (datum.getSkuId() != null && sku.getSkuId().equals(datum.getSkuId())) {
+//                    datum.setSkuResult(sku);
+//                    break;
+//                }
+//            }
+//
+//            for (Brand brand : brands) {
+//                if (ToolUtil.isNotEmpty(datum.getBrandId()) && datum.getBrandId().equals(brand.getBrandId())) {
+//                    BrandResult brandResult = new BrandResult();
+//                    ToolUtil.copyProperties(brand, brandResult);
+//                    datum.setBrandResult(brandResult);
+//                    break;
+//                }
+//            }
+//
+//        }
+//    }
+
+}

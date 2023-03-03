@@ -3,7 +3,9 @@ package cn.atsoft.dasheng.goods.sku.mapper;
 
 import cn.atsoft.dasheng.goods.sku.entity.RestSku;
 import cn.atsoft.dasheng.goods.sku.model.params.RestSkuParam;
+import cn.atsoft.dasheng.goods.sku.model.params.SkuListParam;
 import cn.atsoft.dasheng.goods.sku.model.result.RestSkuResult;
+import cn.atsoft.dasheng.goods.sku.model.result.SkuListResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -73,4 +75,10 @@ public interface RestSkuMapper extends BaseMapper<RestSku> {
     List<RestSku> restSkuResultBySpuId(@Param("spuId") Long spuId);
 
     List<RestSku> getByIds(@Param("skuIds") List<Long> skuIds);
+
+
+    Page<SkuListResult> customPageListBySkuView(@Param("page") Page page , @Param("params") SkuListParam skuListParam);
+
+    List<SkuListResult> customListBySkuView(@Param("params") SkuListParam skuListParam);
+
 }

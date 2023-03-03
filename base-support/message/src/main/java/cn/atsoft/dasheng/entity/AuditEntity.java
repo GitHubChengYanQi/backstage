@@ -2,7 +2,6 @@ package cn.atsoft.dasheng.entity;
 
 import cn.atsoft.dasheng.enmu.AuditEnum;
 import cn.atsoft.dasheng.enmu.AuditMessageType;
-import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -53,10 +52,10 @@ public class AuditEntity {
      */
     @NotNull
     private AuditMessageType messageType;
-    /**
-     * 审批流程
-     */
-    ActivitiProcess activitiProcess;
+//    /**
+//     * 审批流程
+//     */
+//    ActivitiProcess activitiProcess;
 
     /**
      * 延迟时间

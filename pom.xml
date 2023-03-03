@@ -25,10 +25,6 @@
         <module>dasheng-core</module>
         <module>app</module>
         <module>mes</module>
-        <module>mes/erp/stock</module>
-        <module>mes/erp/purchase</module>
-        <module>mes/erp/erp-base</module>
-        <module>mes/crm</module>
     </modules>
 
     <properties>

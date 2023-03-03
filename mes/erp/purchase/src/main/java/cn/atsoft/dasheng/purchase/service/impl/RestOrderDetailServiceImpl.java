@@ -6,9 +6,12 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 
+import cn.atsoft.dasheng.entity.RestOrder;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
-import cn.atsoft.dasheng.model.exception.ServiceException;
 
+import cn.atsoft.dasheng.goods.sku.model.result.RestSkuResult;
+import cn.atsoft.dasheng.goods.sku.model.result.SkuListResult;
+import cn.atsoft.dasheng.goods.sku.service.RestSkuService;
 import cn.atsoft.dasheng.purchase.entity.RestOrderDetail;
 import cn.atsoft.dasheng.purchase.mapper.RestOrderDetailMapper;
 import cn.atsoft.dasheng.purchase.model.params.RestOrderDetailParam;
@@ -16,9 +19,6 @@ import cn.atsoft.dasheng.purchase.model.result.RestOrderDetailResult;
 import cn.atsoft.dasheng.purchase.service.RestOrderDetailService;
 import cn.atsoft.dasheng.service.IErpBase;
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
-import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -45,6 +46,9 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
     private ActivitiProcessService processService;
     @Autowired
     private RestOrderDetailService detailService;
+    @Autowired
+    private RestSkuService skuService;
+
 
     @Override
     public void add(RestOrderDetailParam param) {
@@ -73,7 +77,9 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
 
     @Override
     public List<RestOrderDetailResult> findListBySpec(RestOrderDetailParam param) {
-        return null;
+        List<RestOrderDetailResult> page = this.baseMapper.customList( param);
+        format(page);
+        return page;
     }
 
     @Override
@@ -86,6 +92,16 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
 
     @Override
     public void format(List<RestOrderDetailResult> param) {
+        List<Long> skuIds = param.stream().map(RestOrderDetailResult::getSkuId).distinct().collect(Collectors.toList());
+        List<SkuListResult> restSkuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.viewResultsByIds(skuIds);
+        for (RestOrderDetailResult datum : param) {
+            for (SkuListResult restSkuResult : restSkuResults) {
+                if (datum.getSkuId().equals(restSkuResult.getSkuId())){
+                    datum.setSkuResult(restSkuResult);
+                    break;
+                }
+            }
+        }
 
     }
 
@@ -114,9 +130,29 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
     }
 
     @Override
-    public PageInfo getOrderDetailList(Map<String, Object> param) {
+    public List<cn.atsoft.dasheng.model.result.RestOrderDetailResult> getOrderDetailList(Map<String, Object> param) {
         RestOrderDetailParam restOrderDetailParam = BeanUtil.mapToBean(param, RestOrderDetailParam.class, true);
-
-        return this.findPageBySpec(restOrderDetailParam);
+        List<RestOrderDetailResult> pageBySpec = this.findListBySpec(restOrderDetailParam);
+        return BeanUtil.copyToList(pageBySpec,cn.atsoft.dasheng.model.result.RestOrderDetailResult.class);
     }
+    @Override
+    public List<cn.atsoft.dasheng.entity.RestOrderDetail> getDetailListByOrderId(Long orderId) {
+        List<RestOrderDetail> list = this.lambdaQuery().eq(RestOrderDetail::getOrderId, orderId).eq(RestOrderDetail::getDisplay, 1).list();
+        return BeanUtil.copyToList(list, cn.atsoft.dasheng.entity.RestOrderDetail.class);
+    }
+
+    @Override
+    public List<cn.atsoft.dasheng.entity.RestOrderDetail> getDetailListByOrderDetailIds(List<Long> detailIds) {
+        if (ToolUtil.isEmpty(detailIds) || detailIds.size() == 0){
+            return new ArrayList<>();
+        }
+        return BeanUtil.copyToList(this.listByIds(detailIds), cn.atsoft.dasheng.entity.RestOrderDetail.class);
+    }
+
+    @Override
+    public RestOrder getOrderById(Long orderId) {
+        return null;
+    }
+
+
 }

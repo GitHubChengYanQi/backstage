@@ -839,4 +839,14 @@ public class RestStockDetailsServiceImpl extends ServiceImpl<RestStockDetailsMap
         }
         return this.lambdaQuery().in(RestStockDetails::getInkindId,ids).list();
     }
+
+    @Override
+    public Long getNumberCountBySkuId(Long skuId) {
+        return this.baseMapper.getNumberCountBySkuId(skuId);
+    }
+
+    @Override
+    public Long getNumberCountBySkuIdAndBrandId(Long skuId) {
+        return null;
+    }
 }

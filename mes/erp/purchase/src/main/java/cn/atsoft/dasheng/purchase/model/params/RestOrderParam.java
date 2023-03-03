@@ -24,6 +24,8 @@ public class RestOrderParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private String keywords;
+
     private String fileId;
 
     private String leadTime;

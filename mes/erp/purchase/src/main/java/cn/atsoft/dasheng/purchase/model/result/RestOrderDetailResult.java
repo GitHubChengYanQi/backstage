@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
+import cn.atsoft.dasheng.goods.sku.model.result.RestSkuResult;
+import cn.atsoft.dasheng.goods.sku.model.result.SkuListResult;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -22,11 +24,17 @@ public class RestOrderDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private SkuListResult skuResult;
     /**
      * 订单id
      */
     @ApiModelProperty("订单id")
     private Long orderId;
+    /**
+     * 订单详情id
+     */
+    @ApiModelProperty("订单id")
+    private Long detailId;
 
     @ApiModelProperty("")
     private Long skuId;

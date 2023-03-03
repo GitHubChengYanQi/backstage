@@ -1,28 +1,24 @@
-package cn.atsoft.dasheng.outStock.config;
+package cn.atsoft.dasheng.inStock.config;
 
 import cn.atsoft.dasheng.form.model.ModelProcessDao;
 import cn.atsoft.dasheng.form.model.ModelType;
 import cn.atsoft.dasheng.form.model.ProcessStepTypeDao;
-import cn.atsoft.dasheng.form.model.enums.ModelEnum;
 import cn.atsoft.dasheng.form.model.enums.ProcessStepTypeEnum;
 import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
 import cn.atsoft.dasheng.form.service.ModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
 @Configuration
-public class ProcessConfig {
+public class InStockProcessConfig {
     @Autowired
     private ModelService modelService;
 
     @Bean
-    public void routeRegister() {
+    public void inStockRouteRegister() {
         modelService.register(new ModelProcessDao(){{
             setModel("OutStock");
             setModelName("出库单");

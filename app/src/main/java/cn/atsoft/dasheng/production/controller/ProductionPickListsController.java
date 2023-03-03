@@ -290,8 +290,7 @@ public class ProductionPickListsController extends BaseController {
     @RequestMapping(value = "/sendPersonPick", method = RequestMethod.POST)
     @ApiOperation("通知领料")
     public ResponseData sendPersonPick(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
-        this.productionPickListsService.sendPersonPick(productionPickListsParam);
-        return ResponseData.success();
+         return ResponseData.success(this.productionPickListsService.sendPersonPick(productionPickListsParam));
     }
 
     /**

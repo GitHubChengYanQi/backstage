@@ -13,11 +13,6 @@
     <artifactId>erp</artifactId>
     <packaging>pom</packaging>
 
-    <modules>
-        <module>stock</module>
-        <module>purchase</module>
-        <module>erp-base</module>
-    </modules>
 
     <dependencies>
         <dependency>
@@ -87,5 +82,10 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <modules>
+        <module>stock</module>
+        <module>purchase</module>
+        <module>erp-base</module>
+    </modules>
 
 </project>

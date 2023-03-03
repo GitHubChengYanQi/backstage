@@ -738,4 +738,7 @@ public interface RestStockDetailsService extends IService<RestStockDetails> {
 //
 //    List<StockDetailView> stockDetailViews();
 
+    Long getNumberCountBySkuId(Long skuId);
+    Long getNumberCountBySkuIdAndBrandId(Long skuId);
+
 }

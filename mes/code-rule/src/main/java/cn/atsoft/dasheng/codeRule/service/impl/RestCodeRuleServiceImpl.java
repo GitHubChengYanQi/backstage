@@ -262,7 +262,7 @@ public class RestCodeRuleServiceImpl extends ServiceImpl<RestCodeRuleMapper, Res
             stringBuffer.append(quarter);
         }
 
-        Pattern compile = Pattern.compile("\\$\\{(serial.*?(\\[(\\d[0-9]?)\\]))\\}");
+        Pattern compile = Pattern.compile("\\$\\{(serial(\\[(\\d[0-9]?)\\]))\\}");
         Matcher matcher = compile.matcher(rules);
 
         if (matcher.find()) {
