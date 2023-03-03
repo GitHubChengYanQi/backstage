@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.purchase.mapper.RestOrderDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.purchase.entity.RestOrderDetail">
+        <id column="detail_id" property="detailId"/>
+        <result column="order_id" property="orderId"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="preorde_number" property="preordeNumber"/>
+        <result column="purchase_number" property="purchaseNumber"/>
+        <result column="unit_id" property="unitId"/>
+        <result column="one_price" property="onePrice"/>
+        <result column="total_price" property="totalPrice"/>
+        <result column="paper_type" property="paperType"/>
+        <result column="rate" property="rate"/>
+        <result column="delivery_date" property="deliveryDate"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
+        <result column="remark" property="remark"/>
+        <result column="arrival_number" property="arrivalNumber"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">remark
+    AS "remark",
+        detail_id
+        AS "detailId", order_id AS "orderId", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", preorde_number AS "preordeNumber", purchase_number AS "purchaseNumber", unit_id AS "unitId", one_price AS "onePrice", total_price AS "totalPrice", paper_type AS "paperType", rate AS "rate", delivery_date AS "deliveryDate", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+    </sql>
+    <!-- 查询未被加入生产计划的销售订单 -->
+    <sql id="ProductionPlanByOrder">
+        orderDetail
+        .
+        detail_id
+        AS "detailId",
+	    orderDetail.order_id AS "orderId",
+	    orderDetail.sku_id AS "skuId",
+	    orderDetail.brand_id AS "brandId",
+	    orderDetail.customer_id AS "customerId",
+	    orderDetail.preorde_number AS "preordeNumber",
+	    orderDetail.purchase_number AS "purchaseNumber",
+	    orderDetail.unit_id AS "unitId",
+        orderDetail.one_price AS "onePrice",
+        orderDetail.total_price AS "totalPrice",
+        orderDetail.paper_type AS "paperType",
+        orderDetail.rate AS "rate",
+        orderDetail.delivery_date AS "deliveryDate",
+        orderDetail.create_user AS "createUser",
+        orderDetail.update_user AS "updateUser",
+        orderDetail.create_time AS "createTime",
+        orderDetail.update_time AS "updateTime",
+        orderDetail.display AS "display",
+        orderDetail.deptId AS "deptId" ,
+        planDetail.production_plan_detail_id AS "planDetailId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.purchase.model.result.RestOrderDetailResult"
+            parameterType="cn.atsoft.dasheng.purchase.model.params.RestOrderDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_order_detail where 1 = 1
+        <if test="paramCondition.detailId != null">
+            and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+        </if>
+        <if test="paramCondition.orderId != null">
+            and order_id = #{paramCondition.orderId}
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.paperType != null">
+            and paper_type like CONCAT('%',#{paramCondition.paperType},'%')
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.purchase.model.params.RestOrderDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_order_detail where 1 = 1
+        <if test="paramCondition.detailId != null">
+            and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+        </if>
+        <if test="paramCondition.orderId != null">
+            and order_id #{paramCondition.orderId}
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.paperType != null">
+            and paper_type like CONCAT('%',#{paramCondition.paperType},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.purchase.model.result.RestOrderDetailResult"
+            parameterType="cn.atsoft.dasheng.purchase.model.params.RestOrderDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_order_detail where 1 = 1
+        <if test="paramCondition.detailId != null">
+            and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+        </if>
+        <if test="paramCondition.orderId != null">
+            and order_id like CONCAT('%',#{paramCondition.orderId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.paperType != null">
+            and paper_type like CONCAT('%',#{paramCondition.paperType},'%')
+        </if>
+    </select>
+    <select id="pendingProductionPlanByOrder" resultType="cn.atsoft.dasheng.purchase.model.result.RestOrderDetailResult"
+            parameterType="cn.atsoft.dasheng.purchase.model.params.RestOrderDetailParam">
+        select
+        <include refid="ProductionPlanByOrder"/>
+        from
+        daoxin_crm_order_detail orderDetail
+        LEFT JOIN daoxin_production_plan_detail planDetail on planDetail.order_detail_id = orderDetail.detail_id
+        LEFT JOIN daoxin_crm_order orders on orderDetail.order_id = orders.order_id
+        WHERE ISNULL(planDetail.production_plan_detail_id)
+        <if test="paramCondition.type != null">
+            and orders.type = #{paramCondition.type}
+        </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.purchase.model.params.RestOrderDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_order_detail where 1 = 1
+        <if test="paramCondition.detailId != null">
+            and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+        </if>
+        <if test="paramCondition.orderId != null">
+            and order_id like CONCAT('%',#{paramCondition.orderId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.paperType != null">
+            and paper_type like CONCAT('%',#{paramCondition.paperType},'%')
+        </if>
+    </select>
+
+</mapper>

@@ -24,7 +24,7 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.Remarks;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
-import cn.atsoft.dasheng.form.service.ActivitiAuditService;
+import cn.atsoft.dasheng.audit.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.RemarksService;
 import cn.atsoft.dasheng.message.enmu.OperationType;

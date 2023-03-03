@@ -842,4 +842,17 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     public List<StockDetailView> stockDetailViews(){
         return this.baseMapper.stockDetailView();
     }
+
+    @Override
+    public Long getNumberCountBySkuId(Long skuId) {
+        return this.baseMapper.getNumberCountBySkuId(skuId);
+    }
+    @Override
+    public List<StockDetails> getNumberCountEntityBySkuIds(List<Long> skuIds) {
+        if (ToolUtil.isEmpty(skuIds) || skuIds.size() == 0){
+            return new ArrayList<>();
+        }
+        return this.baseMapper.getNumberCountEntityBySkuId(skuIds);
+    }
+
 }

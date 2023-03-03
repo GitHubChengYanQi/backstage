@@ -1,0 +1,908 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.goods.sku.mapper.RestSkuMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.goods.sku.entity.RestSku">
+        <id column="sku_id" property="skuId"/>
+        <result column="sku_name" property="skuName"/>
+        <result column="sku_value" property="skuValue"/>
+        <result column="is_ban" property="isBan"/>
+        <result column="sku_value_md5" property="skuValueMd5"/>
+        <result column="spu_id" property="spuId"/>
+        <result column="standard" property="standard"/>
+        <result column="add_method" property="addMethod"/>
+        <result column="specifications" property="specifications"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="display" property="display"/>
+        <result column="remarks" property="remarks"/>
+        <result column="enclosure" property="enclosure"/>
+        <result column="type" property="type"/>
+        <result column="coding" property="coding"/>
+        <result column="batch" property="batch"/>
+        <result column="quality_plan_id" property="qualityPlanId"/>
+        <result column="file_id" property="fileId"/>
+        <result column="images" property="images"/>
+        <result column="drawing" property="drawing"/>
+        <result column="maintenance_period" property="maintenancePeriod"/>
+        <result column="level" property="level"/>
+        <result column="color" property="color"/>
+        <result column="sku_size" property="skuSize"/>
+        <result column="weight" property="weight"/>
+        <result column="material_id" property="materialId"/>
+        <result column="part_no" property="partNo"/>
+        <result column="national_standard" property="nationalStandard"/>
+        <result column="heat_treatment" property="heatTreatment"/>
+        <result column="packaging" property="packaging"/>
+        <result column="view_frame" property="viewFrame"/>
+        <result column="model" property="model"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        level
+        AS "level",
+            color AS "color",
+            sku_size AS "skuSize",
+            weight AS "weight",
+            material_id AS "materialId",
+            part_no AS "partNo",
+            national_standard AS "nationalStandard",
+            heat_treatment AS "heatTreatment",
+            packaging AS "packaging",
+            view_frame AS "viewFrame",
+            model AS "model",
+
+type
+    AS "type",enclosure AS "enclosure",images AS "images",maintenance_period AS "maintenancePeriod",drawing AS "drawing",coding AS "coding",quality_plan_id AS "qualityPlanId",file_id AS "fileId", add_method AS "addMethod" ,
+        sku_id
+        AS "skuId",batch AS "batch", sku_name AS "skuName",remarks AS "remarks",standard AS standard,specifications AS "specifications",is_ban AS "isBan",sku_value_md5 AS "skuValueMd5", spu_id AS "spuId", sku_value AS "skuValue",create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+    </sql>
+    <!-- sku,spu,spu_class查询结果列 -->
+    <sql id="Left_Join_List">
+        goods_spu.name AS "spuName",
+        goods_sku.add_method AS "addMethod",
+        goods_sku.images AS "images",
+        goods_sku.standard AS "standard",
+        goods_sku.type AS "type",
+        goods_sku.coding AS "coding",
+        goods_sku.quality_plan_id AS "qualityPlanId",
+        goods_sku.file_id AS "fileId",
+        goods_sku.sku_id AS "skuId",
+        goods_sku.batch AS "batch",
+        goods_sku.sku_name AS "skuName",
+        goods_sku.remarks AS "remarks",
+        goods_sku.specifications AS "specifications",
+        goods_sku.is_ban AS "isBan",
+        goods_sku.sku_value_md5 AS "skuValueMd5",
+        goods_sku.spu_id AS "spuId",
+        goods_sku.sku_value AS "skuValue",
+        goods_sku.create_time AS "createTime",
+        goods_sku.create_user AS "createUser",
+        goods_sku.update_time AS "updateTime",
+        goods_sku.update_user AS "updateUser",
+        goods_sku.display AS "display",
+        goods_sku.level AS "level",
+        goods_sku.color AS "color",
+        goods_sku.sku_size AS "skuSize",
+        goods_sku.weight AS "weight",
+        goods_sku.material_id AS "materialId",
+        goods_sku.part_no AS "partNo",
+        goods_sku.national_standard AS "nationalStandard",
+        goods_sku.packaging AS "packaging",
+        goods_sku.view_frame AS "viewFrame",
+        goods_sku.model AS "model",
+        goods_sku.heat_treatment AS "heatTreatment",
+        goods_sku.maintenance_period AS "maintenancePeriod",
+        goods_spu_class.name AS "className"
+    </sql>
+
+    <sql id="View_Column_List">
+        sku_id AS "skuId",
+        standard AS "standard",
+        sku_name AS "skuName",
+        price AS "price",
+	    brand_name AS "brandName",
+        customer_name AS "customerName",
+        sku_value AS "skuValue",
+        spu_id AS "spuId",
+	    spu_name AS "spuName",
+	    category_id AS "categoryId",
+	    category_name AS "categoryName",
+        material_id AS "materialId",
+        material_name AS "materialName",
+	    bom_num AS "bomNum",
+	    ship_Num AS "shipNum",
+	    stock_num AS "stockNum",
+        store_name AS "storeName",
+        unit_id AS "unitId",
+        unit_name AS "unitName",
+        stock_warning_min AS "stockWarningMin",
+        stock_warning_max AS "stockwarningMax",
+        store_pos_name AS "storePosName",
+	    remarks AS "remarks",
+	    coding AS "coding",
+	    model_coding AS "modelCoding",
+	    view_frame AS "viewFrame",
+	    model AS "model",
+	    packaging AS "packaging",
+	    heat_treatment AS "heatTreatment",
+	    `LEVEL` AS "LEVEL",
+	    sku_size AS "skuSize",
+	    color AS "color",
+	    weight AS "weight",
+        part_no AS "partNo",
+        national_standard AS "nationalStandard",
+	    maintenance_period AS "maintenancePeriod",
+	    add_method AS "addMethod",
+	    enclosure AS "enclosure",
+	    drawing AS "drawing",
+	    images AS "images",
+	    file_id AS "fileId",
+	    batch AS "batch",
+	    quality_plan_id AS "qualityPlanId",
+	    type AS "type",
+	    specifications AS "specifications",
+	    is_ban AS "isBan",
+	    sku_value_md5 AS "skuValueMd5",
+        create_time AS "createTime"
+    </sql>
+
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.goods.sku.model.result.RestSkuResult"
+            parameterType="cn.atsoft.dasheng.goods.sku.model.params.RestSkuParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_sku where 1 = 1 and display = 1
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+        </if>
+        <if test="paramCondition.spuId != null">
+            and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
+        </if>
+
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.goods.sku.model.params.RestSkuParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_sku where 1 = 1 and display = 1
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+        </if>
+        <if test="paramCondition.spuId != null">
+            and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.goods.sku.model.result.RestSkuResult"
+            parameterType="cn.atsoft.dasheng.goods.sku.model.params.RestSkuParam">
+        select
+        <include refid="Left_Join_List"/>
+        from goods_sku
+        LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
+        LEFT JOIN goods_spu_class ON goods_spu_class.spu_classification_id =goods_spu.spu_classification_id
+        WHERE 1=1 and goods_sku.display = 1
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and (goods_spu.name like CONCAT ('%',#{paramCondition.skuName},'%')
+            or sku_name like CONCAT ('%',#{paramCondition.skuName},'%')
+            or standard like CONCAT ('%',#{paramCondition.skuName},'%'))
+
+            <if test="paramCondition.skuId != null">
+                AND goods_sku.sku_id = #{paramCondition.skuId}
+            </if>
+            <if test="paramCondition.spuId != null">
+                and goods_sku.spu_id = #{paramCondition.spuId}
+            </if>
+            <if test="paramCondition.spuClass != null">
+                and goods_spu.spu_classification_id like CONCAT('%',#{paramCondition.spuClass},'%')
+            </if>
+        </if>
+        <if test="paramCondition.addMethod != null">
+            AND goods_sku.add_method = #{paramCondition.addMethod}
+        </if>
+        <if test="paramCondition.skuName == null or paramCondition.skuName == ''">
+
+            <if test="paramCondition.skuId != null">
+                AND goods_sku.sku_id = #{paramCondition.skuId}
+            </if>
+            <if test="paramCondition.name != null">
+                AND goods_sku.sku_name like CONCAT('%',#{paramCondition.name},'%')
+            </if>
+            <if test="paramCondition.coding != null">
+                and goods_sku.coding like CONCAT('%',#{paramCondition.coding},'%')
+            </if>
+            <if test="paramCondition.standard != null">
+                and goods_sku.standard like CONCAT('%',#{paramCondition.standard},'%')
+            </if>
+            <if test="paramCondition.type != null">
+                and goods_sku.type = #{paramCondition.type}
+            </if>
+            <if test="paramCondition.spuId != null">
+                and goods_sku.spu_id = #{paramCondition.spuId}
+            </if>
+            <if test="paramCondition.spuName != null">
+                and goods_spu.name like CONCAT('%',#{paramCondition.spuName},'%')
+            </if>
+            <if test="paramCondition.spuClassName != null">
+                and goods_spu_class.name like CONCAT('%',#{paramCondition.spuClassName},'%')
+            </if>
+            <if test="paramCondition.spuClass != null">
+                and goods_spu.spu_classification_id like CONCAT('%',#{paramCondition.spuClass},'%')
+            </if>
+        </if>
+
+        <if test="spuIds != null  and spuIds.size > 0 ">
+            and goods_sku.spu_id in
+            <foreach collection="spuIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+
+        </if>
+        <if test="paramCondition.skuIds != null  and paramCondition.skuIds.size > 0 ">
+            and goods_sku.sku_id in
+            <foreach collection="paramCondition.skuIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.noSkuIds != null  and paramCondition.noSkuIds.size > 0 ">
+            and goods_sku.sku_id not in
+            <foreach collection="paramCondition.noSkuIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+    </select>
+    <select id="changeCustomPageList" resultType="cn.atsoft.dasheng.goods.sku.model.result.RestSkuResult"
+            parameterType="cn.atsoft.dasheng.goods.sku.model.params.RestSkuParam">
+        select
+        <include refid="Left_Join_List"/>
+        ,goods_spu.spu_id
+        ,goods_spu_class.spu_classification_id
+        ,ifNULL(daoxin_erp_stock_details.number,0) as stockNumber
+        ,goods_spu.display
+        from goods_sku
+        LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
+        LEFT JOIN goods_spu_class ON goods_spu_class.spu_classification_id = goods_spu.spu_classification_id
+        LEFT JOIN
+        (select sku_id,sum(number) as number from daoxin_erp_stock_details where display = 1 group by sku_id) as
+        daoxin_erp_stock_details ON goods_sku.sku_id = daoxin_erp_stock_details.sku_id
+        WHERE 1=1 and goods_sku.display = 1 and goods_spu.display = 1
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and (goods_spu.name like CONCAT ('%',#{paramCondition.skuName},'%')
+            or sku_name like CONCAT ('%',#{paramCondition.skuName},'%')
+            or standard like CONCAT ('%',#{paramCondition.skuName},'%')
+            or goods_sku.model like CONCAT ('%',#{paramCondition.skuName},'%'))
+
+            <if test="paramCondition.skuId != null">
+                AND goods_sku.sku_id = #{paramCondition.skuId}
+            </if>
+            <if test="paramCondition.spuId != null">
+                and goods_sku.spu_id = #{paramCondition.spuId}
+            </if>
+            <if test="paramCondition.spuClass != null">
+                and goods_spu.spu_classification_id like CONCAT('%',#{paramCondition.spuClass},'%')
+            </if>
+
+        </if>
+
+        <if test="paramCondition.addMethod != null">
+            AND goods_sku.add_method = #{paramCondition.addMethod}
+        </if>
+        <if test="paramCondition.storehouseId">
+            and storehouse_id = #{paramCondition.storehouseId}
+        </if>
+
+        <if test="paramCondition.skuId != null">
+            AND goods_sku.sku_id = #{paramCondition.skuId}
+        </if>
+        <if test="paramCondition.name != null">
+            AND goods_sku.sku_name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.coding != null">
+            and goods_sku.coding like CONCAT('%',#{paramCondition.coding},'%')
+        </if>
+        <if test="paramCondition.standard != null">
+            and goods_sku.standard like CONCAT('%',#{paramCondition.standard},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and goods_sku.create_user = #{paramCondition.createUser}
+        </if>
+        <if test="paramCondition.type != null">
+            and goods_sku.type = #{paramCondition.type}
+        </if>
+        <if test="paramCondition.spuId != null">
+            and goods_sku.spu_id = #{paramCondition.spuId}
+        </if>
+        <if test="paramCondition.spuName != null">
+            and goods_spu.name like CONCAT('%',#{paramCondition.spuName},'%')
+        </if>
+        <if test="paramCondition.spuClassName != null">
+            and goods_spu_class.name like CONCAT('%',#{paramCondition.spuClassName},'%')
+        </if>
+        <if test="paramCondition.spuClass != null">
+            and goods_spu.spu_classification_id like CONCAT('%',#{paramCondition.spuClass},'%')
+        </if>
+
+        <!--查询时间内-->
+        <if test="paramCondition.timeWithin != null and paramCondition.timeWithin!= '' ">
+            and DATE_SUB(CURDATE(), INTERVAL #{paramCondition.timeWithin} DAY) <![CDATA[<=date(goods_sku.create_time)]]>
+        </if>
+        <!--本月内-->
+        <if test="paramCondition.thisMonth != null">
+            and DATE_FORMAT(goods_sku.create_time,'%Y%m') = DATE_FORMAT(CURDATE(),'%Y%m')
+        </if>
+        <!--开始时间-->
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        <if test="spuIds != null  and spuIds.size > 0 ">
+            and goods_sku.spu_id in
+            <foreach collection="spuIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+
+        </if>
+        <if test="paramCondition.skuIds != null  and paramCondition.skuIds.size > 0 ">
+            and goods_sku.sku_id in
+            <foreach collection="paramCondition.skuIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+
+        <if test="paramCondition.anomalySkuIds != null  and paramCondition.anomalySkuIds.size > 0 ">
+            and goods_sku.sku_id in
+            <foreach collection="paramCondition.anomalySkuIds" index="index" item="state" separator="," close=")"
+                     open="(">
+                #{state}
+            </foreach>
+        </if>
+
+        <if test="paramCondition.noSkuIds != null  and paramCondition.noSkuIds.size > 0 ">
+            and goods_sku.sku_id not in
+            <foreach collection="paramCondition.noSkuIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.customerName != null">
+            and goods_sku.sku_id in (
+            SELECT sku_id FROM daoxin_supply WHERE customer_id IN ( SELECT customer_id FROM daoxin_crm_customer
+            WHERE supply = 1 AND display = 1 and customer_name LIKE CONCAT('%',#{paramCondition.customerName},'%' )
+            ))
+        </if>
+        <if test="paramCondition.spuClassIds !=null and paramCondition.spuClassIds.size>0">
+            and goods_spu_class.spu_classification_id in
+            <foreach collection="paramCondition.spuClassIds" index="index" item="state" separator="," close=")"
+                     open="(">
+                #{state}
+            </foreach>
+        </if>
+
+        <if test="paramCondition.brandIds !=null and paramCondition.brandIds.size>0">
+            and goods_sku.sku_id in
+            (select sku_id from daoxin_supply where brand_id in
+            <foreach collection="paramCondition.brandIds" index="index" item="state" separator="," close=")"
+                     open="(">
+                #{state}
+            </foreach>
+            )
+        </if>
+        <if test="paramCondition.customerIds !=null and paramCondition.customerIds.size>0">
+            and goods_sku.sku_id in
+            (select sku_id from daoxin_supply where customer_id in
+            <foreach collection="paramCondition.customerIds" index="index" item="state" separator="," close=")"
+                     open="(">
+                #{state}
+            </foreach>
+            )
+        </if>
+        <if test="paramCondition.storehousePositionsIds !=null and paramCondition.storehousePositionsIds.size>0">
+            and goods_sku.sku_id in
+            (select sku_id from daoxin_erp_storehouse_positions_bind where position_id in
+            <foreach collection="paramCondition.storehousePositionsIds" index="index" item="state" separator=","
+                     close=")"
+                     open="(">
+                #{state}
+            </foreach>
+            )
+        </if>
+
+        <!--       <if test="paramCondition.mixNum != null-->
+        <!--and paramCondition.maxNum != null">-->
+        <!--            and  daoxin_erp_stock_details.number BETWEEN #{paramCondition.mixNum} and #{paramCondition.maxNum}-->
+        <!--        </if>-->
+        <if test="paramCondition.mixNum != null">
+            and daoxin_erp_stock_details.number &gt;= #{paramCondition.mixNum}
+        </if>
+        <if test="paramCondition.maxNum != null">
+            and daoxin_erp_stock_details.number &lt;= #{paramCondition.maxNum}
+        </if>
+        <if test="paramCondition.sortMap != null and paramCondition.sortMap.size>0">
+            order by
+            <foreach collection="paramCondition.sortMap" item="value" index="key" separator=",">
+                ${key} ${value}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.goods.sku.model.params.RestSkuParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_sku where 1 = 1 and display = 1
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+        </if>
+        <if test="paramCondition.spuId != null">
+            and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
+        </if>
+    </select>
+
+
+    <select id="allList" resultType="cn.atsoft.dasheng.goods.sku.model.result.RestSkuResult"
+            parameterType="cn.atsoft.dasheng.goods.sku.model.params.RestSkuParam">
+        select
+        <include refid="Left_Join_List"/>
+        ,goods_spu.spu_id
+        ,goods_spu_class.spu_classification_id
+        ,daoxin_erp_stock_details.number as stockNumber
+        ,goods_spu.display
+        from goods_sku
+        LEFT JOIN goods_spu ON goods_sku.spu_id = goods_spu.spu_id
+        LEFT JOIN goods_spu_class ON goods_spu_class.spu_classification_id = goods_spu.spu_classification_id
+        LEFT JOIN
+        (select sku_id,sum(number) as number from daoxin_erp_stock_details where display = 1 group by sku_id) as
+        daoxin_erp_stock_details ON goods_sku.sku_id = daoxin_erp_stock_details.sku_id
+        WHERE 1=1 and goods_sku.display = 1 and goods_spu.display = 1
+        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
+            and (goods_spu.name like CONCAT ('%',#{paramCondition.skuName},'%')
+            or sku_name like CONCAT ('%',#{paramCondition.skuName},'%')
+            or standard like CONCAT ('%',#{paramCondition.skuName},'%')
+            or goods_sku.model like CONCAT ('%',#{paramCondition.skuName},'%'))
+
+            <if test="paramCondition.skuId != null">
+                AND goods_sku.sku_id = #{paramCondition.skuId}
+            </if>
+            <if test="paramCondition.spuId != null">
+                and goods_sku.spu_id = #{paramCondition.spuId}
+            </if>
+            <if test="paramCondition.spuClass != null">
+                and goods_spu.spu_classification_id like CONCAT('%',#{paramCondition.spuClass},'%')
+            </if>
+
+        </if>
+
+        <if test="paramCondition.addMethod != null">
+            AND goods_sku.add_method = #{paramCondition.addMethod}
+        </if>
+        <if test="paramCondition.storehouseId">
+            and storehouse_id = #{paramCondition.storehouseId}
+        </if>
+        <if test="paramCondition.createUser != null">
+            and goods_sku.create_user = #{paramCondition.createUser}
+        </if>
+        <if test="paramCondition.skuId != null">
+            AND goods_sku.sku_id = #{paramCondition.skuId}
+        </if>
+        <if test="paramCondition.name != null">
+            AND goods_sku.sku_name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.coding != null">
+            and goods_sku.coding like CONCAT('%',#{paramCondition.coding},'%')
+        </if>
+        <if test="paramCondition.standard != null">
+            and goods_sku.standard like CONCAT('%',#{paramCondition.standard},'%')
+        </if>
+        <if test="paramCondition.type != null">
+            and goods_sku.type = #{paramCondition.type}
+        </if>
+        <if test="paramCondition.spuId != null">
+            and goods_sku.spu_id = #{paramCondition.spuId}
+        </if>
+        <if test="paramCondition.spuName != null">
+            and goods_spu.name like CONCAT('%',#{paramCondition.spuName},'%')
+        </if>
+        <if test="paramCondition.spuClassName != null">
+            and goods_spu_class.name like CONCAT('%',#{paramCondition.spuClassName},'%')
+        </if>
+        <if test="paramCondition.spuClass != null">
+            and goods_spu.spu_classification_id like CONCAT('%',#{paramCondition.spuClass},'%')
+        </if>
+
+        <if test="spuIds != null  and spuIds.size > 0 ">
+            and goods_sku.spu_id in
+            <foreach collection="spuIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+
+        </if>
+        <!--查询时间内-->
+        <if test="paramCondition.timeWithin != null and paramCondition.timeWithin!= '' ">
+            and DATE_SUB(CURDATE(), INTERVAL #{paramCondition.timeWithin} DAY) <![CDATA[<=date(goods_sku.create_time)]]>
+        </if>
+        <!--本月内-->
+        <if test="paramCondition.thisMonth != null">
+            and DATE_FORMAT(goods_sku.create_time,'%Y%m') = DATE_FORMAT(CURDATE(),'%Y%m')
+        </if>
+        <!--开始时间-->
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(goods_sku.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+
+        <if test="paramCondition.skuIds != null  and paramCondition.skuIds.size > 0 ">
+            and goods_sku.sku_id in
+            <foreach collection="paramCondition.skuIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+
+        <if test="paramCondition.anomalySkuIds != null  and paramCondition.anomalySkuIds.size > 0 ">
+            and goods_sku.sku_id in
+            <foreach collection="paramCondition.anomalySkuIds" index="index" item="state" separator="," close=")"
+                     open="(">
+                #{state}
+            </foreach>
+        </if>
+
+        <if test="paramCondition.noSkuIds != null  and paramCondition.noSkuIds.size > 0 ">
+            and goods_sku.sku_id not in
+            <foreach collection="paramCondition.noSkuIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.customerName != null">
+            and goods_sku.sku_id in (
+            SELECT sku_id FROM daoxin_supply WHERE customer_id IN ( SELECT customer_id FROM daoxin_crm_customer
+            WHERE supply = 1 AND display = 1 and customer_name LIKE CONCAT('%',#{paramCondition.customerName},'%' )
+            ))
+        </if>
+        <if test="paramCondition.spuClassIds !=null and paramCondition.spuClassIds.size>0">
+            and goods_spu_class.spu_classification_id in
+            <foreach collection="paramCondition.spuClassIds" index="index" item="state" separator="," close=")"
+                     open="(">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.brandIds !=null and paramCondition.brandIds.size>0">
+            and goods_sku.sku_id in
+            (select sku_id from daoxin_supply where brand_id in
+            <foreach collection="paramCondition.brandIds" index="index" item="state" separator="," close=")"
+                     open="(">
+                #{state}
+            </foreach>
+            )
+        </if>
+        <if test="paramCondition.customerIds !=null and paramCondition.customerIds.size>0">
+            and goods_sku.sku_id in
+            (select sku_id from daoxin_supply where customer_id in
+            <foreach collection="paramCondition.customerIds" index="index" item="state" separator="," close=")"
+                     open="(">
+                #{state}
+            </foreach>
+            )
+        </if>
+        <if test="paramCondition.storehousePositionsIds !=null and paramCondition.storehousePositionsIds.size>0">
+            and goods_sku.sku_id in
+            (select sku_id from daoxin_erp_storehouse_positions_bind where position_id in
+            <foreach collection="paramCondition.storehousePositionsIds" index="index" item="state" separator=","
+                     close=")"
+                     open="(">
+                #{state}
+            </foreach>
+            )
+        </if>
+        <!--        <if test="paramCondition.mixNum != null-->
+        <!--           and paramCondition.maxNum != null">-->
+        <!--            and  daoxin_erp_stock_details.number BETWEEN #{paramCondition.mixNum} and #{paramCondition.maxNum}-->
+        <!--        </if>-->
+        <if test="paramCondition.mixNum != null">
+            and daoxin_erp_stock_details.number &gt;= #{paramCondition.mixNum}
+        </if>
+        <if test="paramCondition.maxNum != null">
+            and daoxin_erp_stock_details.number &lt;= #{paramCondition.maxNum}
+        </if>
+
+    </select>
+
+<!--    <select id="skuBindList" resultType="cn.atsoft.dasheng.goods.sku.pojo.SkuBind"-->
+<!--            parameterType="cn.atsoft.dasheng.goods.sku.pojo.SkuBindParam">-->
+<!--        select goods_sku.sku_id as skuId,-->
+<!--        goods_spu.spu_id as spuId,-->
+<!--        goods_spu_class.spu_classification_id as spuClassId,-->
+<!--        goods_sku_brand_bind.brand_id as brandId,-->
+<!--        daoxin_erp_storehouse_positions_bind.position_id as positionId-->
+<!--        FROM goods_sku-->
+<!--        LEFT JOIN (SELECT * FROM goods_spu WHERE display = 1) AS goods_spu-->
+<!--        ON goods_sku.spu_id = goods_spu.spu_id-->
+<!--        LEFT JOIN (SELECT * FROM goods_spu_class WHERE display = 1) AS goods_spu_class-->
+<!--        ON goods_spu_class.spu_classification_id = goods_spu.spu_classification_id-->
+<!--        LEFT JOIN (SELECT * FROM goods_sku_brand_bind WHERE display = 1 AND brand_id IN ( SELECT brand_id FROM-->
+<!--        daoxin_erp_brand WHERE display = 1 )) AS goods_sku_brand_bind-->
+<!--        ON goods_sku_brand_bind.sku_id = goods_sku.sku_id-->
+<!--        LEFT JOIN (SELECT * FROM daoxin_erp_storehouse_positions_bind WHERE display = 1 AND position_id IN ( SELECT-->
+<!--        storehouse_positions_id FROM daoxin_erp_storehouse_positions WHERE display = 1 )) AS-->
+<!--        daoxin_erp_storehouse_positions_bind-->
+<!--        ON daoxin_erp_storehouse_positions_bind.sku_id = goods_sku.sku_id-->
+<!--        WHERE 1 = 1-->
+<!--        AND goods_sku.display = 1-->
+
+<!--        <if test="SkuBindParam.skuIds != null and SkuBindParam.skuIds.size >0">-->
+<!--            and goods_sku.sku_id in-->
+<!--            <foreach collection="SkuBindParam.skuIds" separator="," open="(" close=")" index="index" item="status">-->
+<!--                #{status}-->
+<!--            </foreach>-->
+<!--        </if>-->
+
+<!--        <if test="SkuBindParam.brandIds != null and SkuBindParam.brandIds.size >0">-->
+<!--            and goods_sku_brand_bind.brand_id in-->
+<!--            <foreach collection="SkuBindParam.brandIds" separator="," open="(" close=")" index="index" item="status">-->
+<!--                #{status}-->
+<!--            </foreach>-->
+<!--        </if>-->
+
+<!--        <if test="SkuBindParam.positionIds != null and SkuBindParam.positionIds.size >0">-->
+<!--            and daoxin_erp_storehouse_positions_bind.position_id in-->
+<!--            <foreach collection="SkuBindParam.positionIds" separator="," open="(" close=")" index="index" item="status">-->
+<!--                #{status}-->
+<!--            </foreach>-->
+<!--        </if>-->
+
+<!--        <if test="SkuBindParam.spuIds != null and SkuBindParam.spuIds.size >0">-->
+<!--            and goods_spu.spu_id in-->
+<!--            <foreach collection="SkuBindParam.spuIds" separator="," open="(" close=")" index="index" item="status">-->
+<!--                #{status}-->
+<!--            </foreach>-->
+<!--        </if>-->
+
+<!--        <if test="SkuBindParam.classIds != null and SkuBindParam.classIds.size >0">-->
+<!--            and goods_spu_class.spu_classification_id in-->
+<!--            <foreach collection="SkuBindParam.classIds" separator="," open="(" close=")" index="index" item="status">-->
+<!--                #{status}-->
+<!--            </foreach>-->
+<!--        </if>-->
+<!--    </select>           -->
+    <select id="restSkuResultBySpuId" parameterType="Long" resultType="cn.atsoft.dasheng.goods.sku.entity.RestSku">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+            goods_sku
+        WHERE
+            display = 1
+          <if test="spuId != null">
+              AND spu_id = #{spuId}
+          </if>
+    </select>
+    <select id="getByIds" resultType="cn.atsoft.dasheng.goods.sku.entity.RestSku">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+            goods_sku
+        WHERE 1 = 1
+                and sku_id in (
+                    <foreach collection="skuIds" index="index" item="skuIds" separator=",">
+                        #{skuIds}
+                    </foreach>
+                )
+    </select>
+
+
+    <select id="customListBySkuView" resultType="cn.atsoft.dasheng.goods.sku.model.result.SkuListResult">
+        SELECT
+        <include refid="View_Column_List"/>
+        FROM
+        view_sku
+        WHERE 1=1
+        <if test="params.keyWord != null and params.keyWord != '' ">
+            AND (sku_id like CONCAT('%',#{params.keyWord},'%')
+            OR standard like CONCAT('%',#{params.keyWord},'%')
+            OR sku_name like CONCAT('%',#{params.keyWord},'%')
+            OR customer_name like CONCAT('%',#{params.keyWord},'%')
+            OR brand_name like CONCAT('%',#{params.keyWord},'%')
+            OR spu_name like CONCAT('%',#{params.keyWord},'%')
+            OR category_name like CONCAT('%',#{params.keyWord},'%')
+            OR remarks like CONCAT('%',#{params.keyWord},'%')
+            OR model_coding like CONCAT('%',#{params.keyWord},'%')
+            OR `model` like CONCAT('%',#{params.keyWord},'%')
+            OR packaging like CONCAT('%',#{params.keyWord},'%')
+            OR heat_treatment like CONCAT('%',#{params.keyWord},'%')
+            OR sku_size like CONCAT('%',#{params.keyWord},'%')
+            OR color like CONCAT('%',#{params.keyWord},'%')
+            OR weight like CONCAT('%',#{params.keyWord},'%')
+            OR part_no like CONCAT('%',#{params.keyWord},'%')
+            OR `type` like CONCAT('%',#{params.keyWord},'%')
+            OR specifications like CONCAT('%',#{params.keyWord},'%')
+            OR unit_name like CONCAT('%',#{params.keyWord},'%')
+            OR view_frame like CONCAT('%',#{params.keyWord},'%')
+            )
+        </if>
+        <if test="params.partsId != null">
+            and sku_id in(
+            select sku_id from daoxin_erp_parts_detail where parts_id = #{params.partsId}
+            )
+        </if>
+        <if test="params.brandIds != null and params.brandIds.size > 0 ">
+            and sku_id in(
+            select sku_id from goods_sku_brand_bind where brand_id in(
+            <foreach collection="params.brandIds" index="index" item="brandIds" separator=",">
+                #{brandIds}
+            </foreach>
+            )
+            )
+        </if>
+        <if test="params.customerIds != null and params.customerIds.size > 0 ">
+            and sku_id in(
+            select sku_id from daoxin_supply where customer_id in(
+            <foreach collection="params.customerIds" index="index" item="customerIds" separator=",">
+                #{customerIds}
+            </foreach>
+            )
+            )
+        </if>
+        <if test="params.materialIds != null and params.materialIds.size > 0 ">
+            and material_id in(
+            <foreach collection="params.materialIds" index="index" item="materialIds" separator=",">
+                #{materialIds}
+            </foreach>)
+        </if>
+        <if test="params.positionIds != null and params.positionIds.size > 0 ">
+            and sku_id in(
+            select sku_id from view_sku_store_pos_all where position_id in(
+            <foreach collection="params.positionIds" index="index" item="positionIds" separator=",">
+                #{positionIds}
+            </foreach>
+            )
+            )
+        </if>
+        <if test="params.storeIds != null and params.storeIds.size > 0 ">
+            and sku_id in(
+            select sku_id from view_sku_store_pos_all where store_id in(
+            <foreach collection="params.storeIds" index="index" item="storeId" separator=",">
+                #{storeId}
+            </foreach>
+            )
+            )
+        </if>
+
+        <if test="params.minimumInventory != null">
+            and stock_num &gt; #{params.minimumInventory}
+        </if>
+        <if test="params.maximumInventory != null ">
+            and stock_num &lt; #{params.maximumInventory}
+        </if>
+        <if test="params.categoryId != null">
+            and category_id like CONCAT('%',#{params.categoryId},'%')
+        </if>
+        <if test="params.bomNum != null">
+            and bom_num &gt; 0
+        </if>
+        <if test="params.shipNum != null">
+            and ship_num &gt; 0
+        </if>
+    </select>
+    <select id="customPageListBySkuView" resultType="cn.atsoft.dasheng.goods.sku.model.result.SkuListResult">
+        SELECT
+        <include refid="View_Column_List"/>
+        FROM
+        view_sku
+        WHERE 1=1
+        <if test="params.keyWord != null and params.keyWord != '' ">
+            AND (sku_id like CONCAT('%',#{params.keyWord},'%')
+            OR standard like CONCAT('%',#{params.keyWord},'%')
+            OR sku_name like CONCAT('%',#{params.keyWord},'%')
+            OR customer_name like CONCAT('%',#{params.keyWord},'%')
+            OR brand_name like CONCAT('%',#{params.keyWord},'%')
+            OR spu_name like CONCAT('%',#{params.keyWord},'%')
+            OR category_name like CONCAT('%',#{params.keyWord},'%')
+            OR remarks like CONCAT('%',#{params.keyWord},'%')
+            OR model_coding like CONCAT('%',#{params.keyWord},'%')
+            OR `model` like CONCAT('%',#{params.keyWord},'%')
+            OR packaging like CONCAT('%',#{params.keyWord},'%')
+            OR heat_treatment like CONCAT('%',#{params.keyWord},'%')
+            OR sku_size like CONCAT('%',#{params.keyWord},'%')
+            OR color like CONCAT('%',#{params.keyWord},'%')
+            OR weight like CONCAT('%',#{params.keyWord},'%')
+            OR part_no like CONCAT('%',#{params.keyWord},'%')
+            OR `type` like CONCAT('%',#{params.keyWord},'%')
+            OR specifications like CONCAT('%',#{params.keyWord},'%')
+            OR unit_name like CONCAT('%',#{params.keyWord},'%')
+            OR view_frame like CONCAT('%',#{params.keyWord},'%')
+            )
+        </if>
+        <if test="params.partsId != null">
+            and sku_id in(
+            select sku_id from daoxin_erp_parts_detail where parts_id = #{params.partsId}
+            )
+        </if>
+        <if test="params.brandIds != null and params.brandIds.size > 0 ">
+            and sku_id in(
+            select sku_id from goods_sku_brand_bind where brand_id in(
+            <foreach collection="params.brandIds" index="index" item="brandIds" separator=",">
+                #{brandIds}
+            </foreach>
+            )
+            )
+        </if>
+        <if test="params.customerIds != null and params.customerIds.size > 0 ">
+            and sku_id in(
+            select sku_id from daoxin_supply where customer_id in(
+            <foreach collection="params.customerIds" index="index" item="customerIds" separator=",">
+                #{customerIds}
+            </foreach>
+            )
+            )
+        </if>
+        <if test="params.materialIds != null and params.materialIds.size > 0 ">
+            and material_id in(
+            <foreach collection="params.materialIds" index="index" item="materialIds" separator=",">
+                #{materialIds}
+            </foreach>)
+        </if>
+        <if test="params.positionIds != null and params.positionIds.size > 0 ">
+            and sku_id in(
+            select sku_id from view_sku_store_pos_all where position_id in(
+            <foreach collection="params.positionIds" index="index" item="positionIds" separator=",">
+                #{positionIds}
+            </foreach>
+            )
+            )
+        </if>
+        <if test="params.storeIds != null and params.storeIds.size > 0 ">
+            and sku_id in(
+            select sku_id from view_sku_store_pos_all where store_id in(
+            <foreach collection="params.storeIds" index="index" item="storeId" separator=",">
+                #{storeId}
+            </foreach>
+            )
+            )
+        </if>
+        <if test="params.skuIds != null and params.skuIds.size > 0 ">
+            and sku_id in(
+            <foreach collection="params.skuIds" index="index" item="skuId" separator=",">
+                #{skuId}
+            </foreach>
+            )
+        </if>
+
+        <if test="params.minimumInventory != null">
+            and stock_num &gt; #{params.minimumInventory}
+        </if>
+        <if test="params.maximumInventory != null ">
+            and stock_num &lt; #{params.maximumInventory}
+        </if>
+        <if test="params.categoryId != null">
+            and category_id like CONCAT('%',#{params.categoryId},'%')
+        </if>
+        <if test="params.bomNum != null">
+            and bom_num &gt; 0
+        </if>
+        <if test="params.shipNum != null">
+            and ship_num &gt; 0
+        </if>
+    </select>
+    
+</mapper>

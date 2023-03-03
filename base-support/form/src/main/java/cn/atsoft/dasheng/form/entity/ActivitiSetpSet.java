@@ -28,7 +28,7 @@ public class ActivitiSetpSet implements Serializable {
     /**
      * 主键
      */
-    @TableId(value = "set_id", type = IdType.AUTO)
+    @TableId(value = "set_id", type = IdType.ID_WORKER)
     private Long setId;
     /**
      * 类型

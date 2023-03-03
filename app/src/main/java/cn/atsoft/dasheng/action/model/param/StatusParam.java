@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class StatusParam {
 
-    private ReceiptsEnum receiptsEnum;
+    ReceiptsEnum receiptsEnum;
 
     @NotNull
     private DocumentsStatusParam param;

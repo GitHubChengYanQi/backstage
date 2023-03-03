@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.goods.category.mapper.RestCategoryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.goods.category.entity.RestCategory">
+        <id column="spu_classification_id" property="spuClassificationId"/>
+        <result column="name" property="name"/>
+        <result column="type" property="type"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
+        <result column="pid" property="pid"/>
+        <result column="type" property="type"/>
+        <result column="sort" property="sort"/>
+        <result column="coding_class" property="codingClass"/>
+        <result column="children" property="children"/>
+        <result column="childrens" property="childrens"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">pid
+    AS "pid",sort AS "sort",coding_class AS "codingClass", children AS "children",childrens AS "childrens",type AS "type",
+        spu_classification_id
+        AS "spuClassificationId", type AS "type",name AS "name", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.goods.category.model.result.RestCategoryResult"
+            parameterType="cn.atsoft.dasheng.goods.category.model.params.RestCategoryParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_spu_class where 1 = 1 and display = 1
+        <if test="paramCondition.spuClassificationId != null">
+            and spu_classification_id like CONCAT('%',#{paramCondition.spuClassificationId},'%')
+        </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.goods.category.model.params.RestCategoryParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_spu_class where 1 = 1 and display = 1
+        <if test="paramCondition.spuClassificationId != null">
+            and spu_classification_id like CONCAT('%',#{paramCondition.spuClassificationId},'%')
+        </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.goods.category.model.result.RestCategoryResult"
+            parameterType="cn.atsoft.dasheng.goods.category.model.params.RestCategoryParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_spu_class where display = 1
+        <if test="paramCondition.spuClassificationId != null">
+            and spu_classification_id like CONCAT('%',#{paramCondition.spuClassificationId},'%')
+        </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.codingClass != null">
+            and coding_class like CONCAT('%',#{paramCondition.codingClass},'%')
+        </if>
+        order by sort desc
+    </select>
+
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.goods.category.model.params.RestCategoryParam">
+        select
+        <include refid="Base_Column_List"/>
+        from goods_spu_class where 1 = 1 and display = 1
+        <if test="paramCondition.spuClassificationId != null">
+            and spu_classification_id like CONCAT('%',#{paramCondition.spuClassificationId},'%')
+        </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+</mapper>

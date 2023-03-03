@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.action.Enum.AllocationActionEnum;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.audit.service.ActivitiAuditService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;

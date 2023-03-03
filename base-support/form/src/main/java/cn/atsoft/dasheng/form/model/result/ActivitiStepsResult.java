@@ -1,13 +1,14 @@
 package cn.atsoft.dasheng.form.model.result;
 
+import cn.atsoft.dasheng.audit.model.result.ActivitiAuditResult;
+import cn.atsoft.dasheng.audit.model.result.ActivitiProcessLogResult;
+import cn.atsoft.dasheng.form.model.FormFieldParam;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
-import cn.atsoft.dasheng.form.pojo.QualityRules;
 import cn.atsoft.dasheng.form.pojo.StepsType;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.io.Serializable;
 

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.auditView.service.impl;
 
 
+import cn.atsoft.dasheng.audit.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -12,7 +13,6 @@ import cn.atsoft.dasheng.auditView.model.result.AuditViewResult;
 import cn.atsoft.dasheng.auditView.service.AuditViewService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
-import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogV1Service;

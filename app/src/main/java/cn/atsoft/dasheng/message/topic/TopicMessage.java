@@ -52,7 +52,6 @@ public class TopicMessage {
      */
     @RabbitListener(queues = "${spring.rabbitmq.prefix}" + MESSAGE_REAL_QUEUE)
     public void readMessage(Message message, Channel channel) throws IOException {
-        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
 //        logger.info(new String(message.getBody()));
         MessageEntity messageEntity = JSON.parseObject(message.getBody(), MessageEntity.class);
         switch (messageEntity.getType()) {
@@ -81,6 +80,8 @@ public class TopicMessage {
                 break;
             default:
         }
+        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+
     }
 
     /**

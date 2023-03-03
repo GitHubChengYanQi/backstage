@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.production.model.result.ProductionPickListsResult;
 import cn.atsoft.dasheng.production.pojo.LockedStockDetails;
 import cn.atsoft.dasheng.production.pojo.QuerryLockedParam;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -110,4 +111,8 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
     List<PickListsStorehouseResult> listPickListsStorehouse(ProductionPickListsParam param);
 
     List<StockDetailsResult> getCartInkindByLists(ProductionPickListsCartParam param);
+
+
+
+
 }

@@ -11,5 +11,6 @@ import java.util.List;
 
 
 public interface SkuListMapper extends BaseMapper<SkuList> {
-    Page<SkuListResult> customListBySkuView(@Param("page") Page page , @Param("params") SkuListParam skuListParam);
+    Page<SkuListResult> customPageListBySkuView(@Param("page") Page page , @Param("params") SkuListParam skuListParam);
+    List<SkuListResult> customListBySkuView(@Param("params") SkuListParam skuListParam);
 }

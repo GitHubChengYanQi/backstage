@@ -61,6 +61,8 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
 
     String createCode(ProductionPickListsParam param);
 
+    String createCodeV2(ProductionPickListsParam param);
+
     /**
      * 查询列表，Specification模式
      *
@@ -84,7 +86,7 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
 
     String addByProductionTask(Object param);
 
-    void sendPersonPick(ProductionPickListsParam param);
+    String sendPersonPick(ProductionPickListsParam param);
 
     void warning(ProductionPickListsParam param);
 
@@ -98,6 +100,8 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
 
     String outStock(ProductionPickListsParam param);
 
+
+    String outStockV2(ProductionPickListsParam param);
 
     void outStockBySku(ProductionPickListsParam param);
 

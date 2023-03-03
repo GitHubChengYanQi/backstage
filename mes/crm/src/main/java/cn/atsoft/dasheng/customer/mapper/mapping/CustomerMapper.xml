@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.customer.mapper.CustomerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.customer.entity.Customer">
+        <id column="customer_id" property="customerId"/>
+        <result column="customer_name" property="customerName"/>
+        <result column="setup" property="setup"/>
+        <result column="legal" property="legal"/>
+        <result column="utscc" property="utscc"/>
+        <result column="company_type" property="companyType"/>
+        <result column="business_term" property="businessTerm"/>
+        <result column="sign_in" property="signIn"/>
+        <result column="introduction" property="introduction"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="abbreviation" property="abbreviation"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="default_contacts" property="defaultContacts"/>
+        <result column="default_address" property="defaultAddress"/>
+        <result column="customer_level_id" property="customerLevelId"/>
+        <result column="status" property="status"/>
+        <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
+        <result column="origin_id" property="originId"/>
+        <result column="note" property="note"/>
+        <result column="user_id" property="userId"/>
+        <result column="status" property="status"/>
+        <result column="emall" property="emall"/>
+        <result column="agent" property="agent"/>
+        <result column="url" property="url"/>
+        <result column="sort" property="sort"/>
+        <result column="avatar" property="avatar"/>
+        <result column="region" property="region"/>
+        <result column="blacklist" property="blacklist"/>
+        <result column="classification" property="classification"/>
+        <result column="industry_id" property="industryId"/>
+        <result column="supply" property="supply"/>
+        <result column="invoice_id" property="invoiceId"/>
+        <result column="registered_capital" property="registeredCapital"/>
+        <result column="fax" property="fax"/>
+        <result column="telephone" property="telephone"/>
+        <result column="zipCode" property="zipCode"/>
+
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        registered_capital AS "registeredCapital",
+        fax AS "fax",
+        telephone AS "telephone",
+        zipCode AS "zipCode",
+    region AS "region",supply AS "supply",blacklist AS "blacklist",invoice_id AS "invoiceId",
+        industry_id AS "industryId" ,agent AS "agent",avatar AS "avatar",sort AS "sort" , classification AS "classification",
+        customer_level_id AS "customerLevelId" ,status AS "status", origin_id AS "originId" , note AS "note" , user_id AS "userId" , emall AS "emall" ,url AS "url" ,
+        customer_id
+        AS "customerId", customer_name AS "customerName",abbreviation AS "abbreviation",default_contacts AS "defaultContacts",default_address AS "defaultAddress", setup AS "setup", legal AS "legal", utscc AS "utscc", company_type AS "companyType", business_term AS "businessTerm", sign_in AS "signIn", introduction AS "introduction", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.customer.model.result.CustomerResult"
+            parameterType="cn.atsoft.dasheng.customer.model.params.CustomerParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_customer where display = 1 and blacklist = 0
+        <if test="paramCondition.customerName != null and paramCondition.customerName != ''">
+            and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
+        </if>
+        <if test="paramCondition.companyType != null and paramCondition.companyType != ''">
+            and company_type = #{paramCondition.companyType}
+        </if>
+        <if test="paramCondition.customerId !=null and paramCondition.customerId != '' ">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.customerName !=null  and paramCondition.customerName != '' ">
+            and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
+        </if>
+
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.customer.model.params.CustomerParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_customer where display = 1 and blacklist = 0
+        <if test="paramCondition.customerName != null and paramCondition.customerName != ''">
+            and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
+        </if>
+        <if test="paramCondition.contactsId != null">
+            and contacts_id = #{paramCondition.contactsId}
+        </if>
+        <if test="paramCondition.companyType != null and paramCondition.companyType != ''">
+            and company_type = #{paramCondition.companyType}
+        </if>
+        <if test="paramCondition.customerId !=null  and paramCondition.customerId != '' ">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.customerName !=null  and paramCondition.customerName != '' ">
+            and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
+        </if>
+
+
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.customer.model.result.CustomerResult"
+            parameterType="cn.atsoft.dasheng.customer.model.params.CustomerParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_customer where display = 1 and blacklist = 0
+        <if test="paramCondition.customerName != null">
+            and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
+        </if>
+        <if test="paramCondition.customerId !=null and paramCondition.customerId != '' ">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.companyType !=null and paramCondition.companyType != '' ">
+            and company_type like CONCAT('%',#{paramCondition.companyType},'%')
+        </if>
+        <if test="paramCondition.status == null">
+            and status != 99
+        </if>
+        <if test="paramCondition.status != null">
+            and status = #{paramCondition.status}
+        </if>
+        <if test="paramCondition.classification !=null  ">
+            and classification = #{paramCondition.classification}
+        </if>
+        <if test="paramCondition.customerLevelId !=null and paramCondition.customerLevelId != '' ">
+            and customer_level_id = #{paramCondition.customerLevelId}
+        </if>
+        <if test="paramCondition.industryId !=null and paramCondition.industryId != '' ">
+            and industry_id = #{paramCondition.industryId}
+        </if>
+        <if test="paramCondition.originId !=null and paramCondition.originId != '' ">
+            and origin_id = #{paramCondition.originId}
+        </if>
+        <if test="paramCondition.customerName !=null  and paramCondition.customerName != '' ">
+            and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
+        </if>
+        <if test="paramCondition.userId !=null  and paramCondition.userId != '' ">
+            and user_id = #{paramCondition.userId}
+        </if>
+        <if test="paramCondition.abbreviation !=null and paramCondition.abbreviation != '' ">
+            and abbreviation like CONCAT('%',#{paramCondition.abbreviation},'%')
+        </if>
+        <if test="paramCondition.supply !=null ">
+            and supply = #{paramCondition.supply}
+        </if>
+
+        <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
+            and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
+            CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
+        </if>
+         order by sort desc
+
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.customer.model.params.CustomerParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_customer where display = 1 and blacklist = 0
+        <if test="paramCondition.customerName != null and paramCondition.customerName != ''">
+            and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
+        </if>
+
+        <if test="paramCondition.companyType != null and paramCondition.companyType != ''">
+            and company_type = #{paramCondition.companyType}
+        </if>
+        <if test="paramCondition.customerId !=null  and paramCondition.customerId != '' ">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+
+
+    </select>
+
+
+
+</mapper>

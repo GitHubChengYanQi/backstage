@@ -11,7 +11,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 public interface SkuListService  extends IService<SkuList> {
-    PageInfo<SkuListResult> listByKeyWord(SkuListParam skuListParam);
+    PageInfo<SkuListResult> pageListByKeyWord(SkuListParam skuListParam);
+
+    List<SkuListResult> listByKeyWord(SkuListParam skuListParam);
 
     List<SkuListResult> resultByIds(List<Long> ids);
 }

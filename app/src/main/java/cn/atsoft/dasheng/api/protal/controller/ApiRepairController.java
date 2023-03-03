@@ -446,7 +446,9 @@ public class ApiRepairController {
     @RequestMapping(value = "/getToken", method = RequestMethod.GET)
     @ApiOperation("获取阿里云OSS临时上传token")
     public ResponseData getToken(@Param("type") String type) {
-
+        if(ToolUtil.isEmpty(type)){
+            throw new ServiceException(500,"请传入文件名称");
+        }
         Long userId = getWxUser(UserUtils.getUserId());
         Media media = mediaService.getMediaId(type, userId);
 

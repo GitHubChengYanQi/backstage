@@ -13,7 +13,7 @@ import cn.atsoft.dasheng.erp.model.result.TaskCount;
 import cn.atsoft.dasheng.erp.pojo.FormDataRequest;
 import cn.atsoft.dasheng.erp.pojo.QualityTaskChild;
 import cn.atsoft.dasheng.erp.pojo.TaskComplete;
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.audit.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;

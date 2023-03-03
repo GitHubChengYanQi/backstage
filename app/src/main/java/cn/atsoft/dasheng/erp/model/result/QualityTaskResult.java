@@ -2,10 +2,10 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.audit.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
-import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
+import cn.atsoft.dasheng.audit.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;

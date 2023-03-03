@@ -2,9 +2,9 @@ package cn.atsoft.dasheng.form.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.Remarks;
-import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
+import cn.atsoft.dasheng.audit.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
-import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
+import cn.atsoft.dasheng.audit.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.RemarksResult;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogV1Service;

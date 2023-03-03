@@ -46,6 +46,12 @@
             <artifactId>generator</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <!-- 消息 -->
+        <dependency>
+            <groupId>cn.atsoft</groupId>
+            <artifactId>message</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
         <!-- 数据源容器 -->
         <dependency>
@@ -67,9 +73,40 @@
         </dependency>
         <dependency>
             <groupId>cn.atsoft</groupId>
+            <artifactId>goods</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.atsoft</groupId>
+            <artifactId>bom</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.atsoft</groupId>
             <artifactId>form</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>cn.atsoft</groupId>
+            <artifactId>erp</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.atsoft</groupId>
+            <artifactId>purchase</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.atsoft</groupId>
+            <artifactId>stock</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.atsoft</groupId>
+            <artifactId>make</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

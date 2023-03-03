@@ -1,17 +1,18 @@
 package cn.atsoft.dasheng.form.controller;
 
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
+import cn.atsoft.dasheng.audit.service.ActivitiAuditService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.audit.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessParam;
-import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
+import cn.atsoft.dasheng.audit.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.pojo.AuditParam;
@@ -32,6 +33,7 @@ import cn.atsoft.dasheng.purchase.service.ProcurementOrderService;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
@@ -190,9 +192,6 @@ public class taskV1Controller {
                     ProductionPickListsResult pickListsRestult = pickListsService.detail(taskResult.getFormId());
 
                     taskResult.setReceipts(pickListsRestult);
-//                    taskService.format(new ArrayList<ActivitiProcessTaskResult>(){{
-//                        add(taskResult);
-//                    }});
                     break;
                 case "MAINTENANCE":
                     MaintenanceResult maintenanceResult = maintenanceService.detail(taskResult.getFormId());
@@ -264,18 +263,20 @@ public class taskV1Controller {
         List comments = remarksService.getComments(taskId);
         taskResult.setRemarks(comments);
 
-//        if (ToolUtil.isNotEmpty(taskResult.getCreateUser())) {
-//            User user = userService.getById(taskResult.getCreateUser());
-//            String imgUrl = appStepService.imgUrl(user.getUserId().toString());
-//            user.setAvatar(imgUrl);
-//            taskResult.setUser(user);
-//        }
+        if (ToolUtil.isNotEmpty(taskResult.getCreateUser())) {
+            List<UserResult> userResultsByIds = userService.getUserResultsByIds(new ArrayList<Long>() {{
+                add(taskResult.getCreateUser());
+            }});
+
+            taskResult.setUser(userResultsByIds.get(0));
+        }
         if (ToolUtil.isNotEmpty(taskResult.getOrigin())) {
             taskResult.setThemeAndOrigin(getOrigin.getOrigin(JSON.parseObject(taskResult.getOrigin(), ThemeAndOrigin.class)));
         }
         return ResponseData.success(taskResult);
 
     }
+
 
 
     private ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
