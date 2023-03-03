@@ -88,11 +88,6 @@
         </dependency>
         <dependency>
             <groupId>cn.atsoft</groupId>
-            <artifactId>erp</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>cn.atsoft</groupId>
             <artifactId>purchase</artifactId>
             <version>1.0.0</version>
         </dependency>
