@@ -326,6 +326,9 @@
         </if>
         <if test="paramCondition.status !=null and paramCondition.status !=''">
             <choose>
+                <when test="paramCondition.status ==7">
+                    and task.status = 0
+                </when>
                 <when test="paramCondition.status ==1">
                     and steps.step_type = "audit"
                     and log.status = 3
@@ -493,6 +496,9 @@
         </if>
         <if test="paramCondition.status !=null and paramCondition.status !=''">
             <choose>
+                <when test="paramCondition.status ==7">
+                    and task.status = 0
+                </when>
                 <when test="paramCondition.status ==1">
                     and steps.step_type = "audit"
                     and log.status = 3
@@ -635,6 +641,9 @@
         </if>
         <if test="paramCondition.status !=null and paramCondition.status !=''">
             <choose>
+                <when test="paramCondition.status ==7">
+                    and task.status = 0
+                </when>
                 <when test="paramCondition.status ==1">
                     and steps.step_type = "audit"
                     and log.status = 3
@@ -763,6 +772,9 @@
         </if>
         <if test="paramCondition.status !=null and paramCondition.status !=''">
             <choose>
+                <when test="paramCondition.status ==7">
+                    and task.status = 0
+                </when>
                 <when test="paramCondition.status ==1">
                     and steps.step_type = "audit"
                     and log.status = 3
@@ -888,6 +900,9 @@
         </if>
         <if test="paramCondition.status !=null and paramCondition.status !=''">
             <choose>
+                <when test="paramCondition.status ==7">
+                    and task.status = 0
+                </when>
                 <when test="paramCondition.status ==1">
                     and steps.step_type = "audit"
                     and log.status = 3
@@ -1009,6 +1024,10 @@
         </if>
         <if test="paramCondition.status !=null and paramCondition.status !=''">
             <choose>
+                <when test="paramCondition.status ==7">
+                    and task.status = 0
+                    and (inventory.user_id = #{paramCondition.userId} or inventory.participants like CONCAT('%',#{paramCondition.userId},'%'))
+                </when>
                 <when test="paramCondition.status ==1">
                     and steps.step_type = "audit"
                     and log.status = 3
@@ -1046,10 +1065,9 @@
                 <when test=" paramCondition.status ==6">
                     and task.status = 49
                     and (inventory.user_id = #{paramCondition.userId} or inventory.participants like CONCAT('%',#{paramCondition.userId},'%') or task.user_id = #{paramCondition.userId} or  participant.user_id = #{paramCondition.userId})
-
-
                 </when>
             </choose>
+
         </if>
         <if test="paramCondition.skuName != null and  paramCondition.skuName != ''">
             and (
@@ -1149,6 +1167,9 @@
         </if>
         <if test="paramCondition.status !=null and paramCondition.status !=''">
             <choose>
+                <when test="paramCondition.status ==7">
+                    and task.status = 0
+                </when>
                 <when test="paramCondition.status ==1">
                     and steps.step_type = "audit"
                     and log.status = 3

@@ -59,7 +59,7 @@ public class PermissionAop {
         if (permissions.length == 0) {
 
             //检查全体角色
-            boolean result = authService.checkAll();
+            boolean result = authService.checkAll(permission.length());
             if (result) {
                 return point.proceed();
             } else {

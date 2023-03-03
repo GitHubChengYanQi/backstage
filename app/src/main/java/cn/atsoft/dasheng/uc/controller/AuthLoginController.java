@@ -231,12 +231,12 @@ public class AuthLoginController extends BaseController {
     public ResponseData cpLoginByCode(@RequestParam("code") String code) {
         String token = ucMemberAuth.cpLogin(code);
         UcJwtPayLoad jwtPayLoad = UcJwtTokenUtil.getJwtPayLoad(token);
-        Long memberId = jwtPayLoad.getUserId();
+        Long memberId = jwtPayLoad.getMemberId();
 
         if (ToolUtil.isNotEmpty(memberId)) {
             QueryWrapper<WxuserInfo> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("member_id", memberId);
-            queryWrapper.in("source", "wxCp");
+//            queryWrapper.in("source", "wxCp");
             queryWrapper.isNotNull("user_id");
             queryWrapper.eq("display", 1);
             queryWrapper.last("limit 1");
@@ -317,20 +317,24 @@ public class AuthLoginController extends BaseController {
             JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
             Long userId = jwtPayLoad.getUserId();//userId
             Long memberId = ucJwtPayLoad.getMemberId();//memberId
-            if (ToolUtil.isNotEmpty(ucJwtPayLoad.getType())
-//                    && ucJwtPayLoad.getType().equals("wxCp")
-                   && ToolUtil.isNotEmpty(userId)) {
+            if (ToolUtil.isNotEmpty(ucJwtPayLoad.getType()) && ToolUtil.isNotEmpty(userId)) {
                 WxuserInfo wxuserInfo = new WxuserInfo();
                 wxuserInfo.setMemberId(memberId);
                 wxuserInfo.setUserId(userId);
-//                wxuserInfo.setSource("wxCp");
-                QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-                wxuserInfoQueryWrapper.eq("user_id", userId);
-//                wxuserInfoQueryWrapper.eq("source", ucJwtPayLoad.getType());
-                wxuserInfoQueryWrapper.eq("display", 1);
-                wxuserInfoService.saveOrUpdate(wxuserInfo, wxuserInfoQueryWrapper);
+
+
+                wxuserInfoService.update(new WxuserInfo() {{
+                    setDisplay(0);
+                }}, new QueryWrapper<WxuserInfo>() {{
+                    eq("user_id", userId);
+                    eq("display", 1);
+                }});
+                wxuserInfoService.update(new WxuserInfo() {{
+                    setDisplay(0);
+                }}, new QueryWrapper<WxuserInfo>(){{isNull("user_id");}});
+                wxuserInfoService.save(wxuserInfo);
             }
-            logger.info("account"+username+"_"+"userId"+userId+"_"+"ucJwtPayLoad"+ JSON.toJSONString(ucJwtPayLoad));
+            logger.info("account" + username + "_" + "userId" + userId + "_" + "ucJwtPayLoad" + JSON.toJSONString(ucJwtPayLoad));
             return ResponseData.success(token);
         } catch (Exception ignored) {
             ignored.printStackTrace();
@@ -339,6 +343,7 @@ public class AuthLoginController extends BaseController {
 //        String token = authService.login(username, password);
         throw new AuthException(AuthExceptionEnum.USERNAME_PWD_ERROR);
     }
+
     /**
      * 企业微信退出 删除绑定关系
      */
@@ -357,7 +362,7 @@ public class AuthLoginController extends BaseController {
                 wxuserInfo.setDisplay(0);
                 QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
                 wxuserInfoQueryWrapper.eq("user_id", userId);
-                wxuserInfoQueryWrapper.eq("source", "wxCp");
+//                wxuserInfoQueryWrapper.eq("source", "wxCp");
                 wxuserInfoQueryWrapper.eq("display", 1);
                 wxuserInfoService.update(wxuserInfo, wxuserInfoQueryWrapper);
             }

@@ -216,7 +216,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     @Override
     public void checkCart(Long allocation) {
         DocumentsAction action = documentsActionService.query().eq("action", AllocationActionEnum.assign.name()).eq("display", 1).one();
-        activitiProcessLogService.checkAction(allocation, "ALLOCATION", action.getDocumentsActionId(), LoginContextHolder.getContext().getUserId());
+        activitiProcessLogService.checkAction(allocation, "ALLOCATION", AllocationActionEnum.assign.name(), LoginContextHolder.getContext().getUserId());
     }
 
     @Override
@@ -225,7 +225,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
         entity.setStatus(99L);
         this.updateById(entity);
         DocumentsAction action = documentsActionService.query().eq("action", AllocationActionEnum.carryAllocation.name()).eq("display", 1).one();
-        activitiProcessLogService.checkAction(allocation, "ALLOCATION", action.getDocumentsActionId(), LoginContextHolder.getContext().getUserId());
+        activitiProcessLogService.checkAction(allocation, "ALLOCATION", AllocationActionEnum.carryAllocation.name(), LoginContextHolder.getContext().getUserId());
     }
 
     /**

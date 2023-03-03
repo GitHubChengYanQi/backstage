@@ -1530,7 +1530,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         ActivitiProcessTask task = activitiProcessTaskService.query().eq("type", "OUTSTOCK").eq("form_id", id).one();
         if (ToolUtil.isNotEmpty(task)) {
             DocumentsAction action = actionService.query().eq("action", OutStockActionEnum.outStock.name()).eq("display", 1).one();
-            activitiProcessLogService.checkAction(task.getFormId(), task.getType(), action.getDocumentsActionId(), LoginContextHolder.getContext().getUserId());
+            activitiProcessLogService.checkAction(task.getFormId(), task.getType(), OutStockActionEnum.outStock.name(), LoginContextHolder.getContext().getUserId());
         }
 
     }

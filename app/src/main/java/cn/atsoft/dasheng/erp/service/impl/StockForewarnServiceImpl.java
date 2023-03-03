@@ -103,7 +103,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
 
         List<Long> skuIds = params.stream().map(StockForewarnParam::getFormId).collect(Collectors.toList());
          //TODO 如果物料有bom 将bom中的物品一并进行预警添加
-        List<Parts> parts = partsService.lambdaQuery().in(Parts::getSkuId, skuIds).orderByDesc(Parts::getCreateTime).groupBy(Parts::getSkuId).list();
+        List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.lambdaQuery().in(Parts::getSkuId, skuIds).orderByDesc(Parts::getCreateTime).groupBy(Parts::getSkuId).list();
         if (parts.size()>0){
 
             List<ErpPartsDetail> partsDetails = partsDetailService.listByPartIds(parts.stream().map(Parts::getPartsId).collect(Collectors.toList()));

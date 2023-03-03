@@ -134,12 +134,14 @@ public class UcMemberController extends BaseController {
         try {
             WxCpUser wxCpUser = wxCpService.getWxCpClient().getUserService().getById(CpUserId);
             if (ToolUtil.isNotEmpty(wxCpUser) && ToolUtil.isNotEmpty(wxCpUser.getUserId())) {
-                OpenUserInfo openUserInfo = ToolUtil.isEmpty(wxCpUser.getUserId()) ? new OpenUserInfo() : openUserInfoService.query().eq("uuid", wxCpUser.getUserId()).eq("source", "wxCp").one();
+//                OpenUserInfo openUserInfo = ToolUtil.isEmpty(wxCpUser.getUserId()) ? new OpenUserInfo() : openUserInfoService.query().eq("uuid", wxCpUser.getUserId()).eq("source", "wxCp").one();
+                OpenUserInfo openUserInfo = ToolUtil.isEmpty(wxCpUser.getUserId()) ? new OpenUserInfo() : openUserInfoService.query().eq("uuid", wxCpUser.getUserId()).one();
                 if (ToolUtil.isEmpty(openUserInfo)) {
                     openUserInfo = new OpenUserInfo();
                 }
                 Long memberId = openUserInfo.getMemberId();
-                WxuserInfo wxuserInfo = ToolUtil.isEmpty(memberId) ? new WxuserInfo() : wxuserInfoService.query().eq("member_id", memberId).eq("source", "wxCp").isNotNull("user_id").one();
+//                WxuserInfo wxuserInfo = ToolUtil.isEmpty(memberId) ? new WxuserInfo() : wxuserInfoService.query().eq("member_id", memberId).eq("source", "wxCp").isNotNull("user_id").one();
+                WxuserInfo wxuserInfo = ToolUtil.isEmpty(memberId) ? new WxuserInfo() : wxuserInfoService.query().eq("member_id", memberId).isNotNull("user_id").one();
                 if (ToolUtil.isEmpty(wxuserInfo)) {
                     wxuserInfo = new WxuserInfo();
                 }
@@ -159,13 +161,15 @@ public class UcMemberController extends BaseController {
             try {
                 WxCpUser wxCpUser = wxCpService.getWxCpClient().getUserService().getById(cpUserId);
                 if (ToolUtil.isNotEmpty(wxCpUser) && ToolUtil.isNotEmpty(wxCpUser.getUserId())) {
-                    OpenUserInfo openUserInfo = ToolUtil.isEmpty(wxCpUser.getUserId()) ? new OpenUserInfo() : openUserInfoService.query().eq("uuid", wxCpUser.getUserId()).eq("source", "wxCp").one();
+//                    OpenUserInfo openUserInfo = ToolUtil.isEmpty(wxCpUser.getUserId()) ? new OpenUserInfo() : openUserInfoService.query().eq("uuid", wxCpUser.getUserId()).eq("source", "wxCp").one();
+                    OpenUserInfo openUserInfo = ToolUtil.isEmpty(wxCpUser.getUserId()) ? new OpenUserInfo() : openUserInfoService.query().eq("uuid", wxCpUser.getUserId()).one();
                     if (ToolUtil.isEmpty(openUserInfo)) {
                         openUserInfo = new OpenUserInfo();
                     }
                     Long memberId = openUserInfo.getMemberId();
                     if (ToolUtil.isNotEmpty(memberId)) {
-                        WxuserInfo wxuserInfo =  wxuserInfoService.query().eq("member_id", memberId).eq("source", "wxCp").isNotNull("user_id").orderByDesc("create_time").last(" limit 1").one();
+//                        WxuserInfo wxuserInfo =  wxuserInfoService.query().eq("member_id", memberId).eq("source", "wxCp").isNotNull("user_id").orderByDesc("create_time").last(" limit 1").one();
+                        WxuserInfo wxuserInfo =  wxuserInfoService.query().eq("member_id", memberId).isNotNull("user_id").orderByDesc("create_time").last(" limit 1").one();
                         if (ToolUtil.isNotEmpty(wxuserInfo)) {
                             User user = userService.getById(wxuserInfo.getUserId());
                             if (ToolUtil.isNotEmpty(user)) {

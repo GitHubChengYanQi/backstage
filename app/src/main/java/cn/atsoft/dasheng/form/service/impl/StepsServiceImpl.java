@@ -663,9 +663,11 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         if (ToolUtil.isEmpty(userId)) {
             return null;
         }
-        WxuserInfo infoList = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").orderByDesc("create_time").last("limit 1").one();
+//        WxuserInfo infoList = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").orderByDesc("create_time").last("limit 1").one();
+        WxuserInfo infoList = wxuserInfoService.query().eq("user_id", userId).orderByDesc("create_time").last("limit 1").one();
         if (ToolUtil.isNotEmpty(infoList)) {
-            UcOpenUserInfo userInfo = openUserInfoService.query().eq("member_id", infoList.getMemberId()).eq("source", "wxCp").one();
+//            UcOpenUserInfo userInfo = openUserInfoService.query().eq("member_id", infoList.getMemberId()).eq("source", "wxCp").one();
+            UcOpenUserInfo userInfo = openUserInfoService.query().eq("member_id", infoList.getMemberId()).orderByDesc("create_time").groupBy("member_id").one();
             if (ToolUtil.isNotEmpty(userInfo)) {
                 return userInfo.getAvatar();
             }

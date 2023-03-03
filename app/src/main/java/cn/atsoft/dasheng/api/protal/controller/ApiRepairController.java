@@ -93,7 +93,8 @@ public class ApiRepairController {
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
 
         if (ToolUtil.isEmpty(type)) {
-            wxuserInfoQueryWrapper.in("source", "wxCp").in("user_id", memberId);
+//            wxuserInfoQueryWrapper.in("source", "wxCp").in("user_id", memberId);
+            wxuserInfoQueryWrapper.in("user_id", memberId);
         } else {
             wxuserInfoQueryWrapper.in("source", "wxMp").in("member_id", memberId);
         }
