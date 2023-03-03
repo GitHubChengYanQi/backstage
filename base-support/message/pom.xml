@@ -9,7 +9,7 @@
         <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-
+    <packaging>jar</packaging>
     <artifactId>message</artifactId>
     <dependencies>
         <dependency>
