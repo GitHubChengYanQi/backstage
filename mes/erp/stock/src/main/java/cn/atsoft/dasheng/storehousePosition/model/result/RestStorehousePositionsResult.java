@@ -31,10 +31,12 @@ public class RestStorehousePositionsResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
 //    private List<SkuResult> skuResultList;
+@JSONField(serialize = false)
     private Object object;
 
 //    private User user;
 
+    @JSONField(serialize = false)
     private Long brandId;
 
     private RestStorehouseResult storehouseResult;
@@ -42,12 +44,13 @@ public class RestStorehousePositionsResult implements Serializable {
     @JSONField(serialize = false)
     private RestStorehousePositionsResult storehousePositionsResult;
 
+    @JSONField(serialize = false)
     private RestStorehousePositionsResult supper;
 
 //    @JSONField(serialize = false)
 //    private SkuResult skuResult;
 
-//    @JSONField(serialize = false)
+    @JSONField(serialize = false)
     private Integer skuNumber;
 
     private Integer num;
@@ -58,10 +61,13 @@ public class RestStorehousePositionsResult implements Serializable {
     //    @JSONField(serialize = false)
 //    private List<SkuSimpleResult> skuResults;
 
+    @JSONField(serialize = false)
     private List<String> skuIds;
+    @JSONField(serialize = false)
     private List<RestStorehousePositionsResult> storehousePositionsResults;
 
 //    private List<BrandResult> brandResults;
+@JSONField(serialize = false)
     private Boolean LowestLevel;  //最下级
     /**
      * 仓库库位id

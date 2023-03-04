@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.storehousePositionBind.service.impl;
 
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.goods.sku.model.result.RestSkuResult;
+import cn.atsoft.dasheng.goods.sku.model.result.SkuListResult;
 import cn.atsoft.dasheng.goods.sku.service.RestSkuService;
 import cn.atsoft.dasheng.storehousePosition.entity.RestStorehousePositions;
 import cn.atsoft.dasheng.storehousePosition.model.result.RestStorehousePositionsResult;
@@ -435,7 +436,6 @@ public class RestRestStorehousePositionsBindServiceImpl extends ServiceImpl<Rest
             positionIds.add(bindResult.getPositionId());
         }
 
-        List<RestSkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.formatSkuResult(skuIds);
         List<RestStorehousePositions> storehousePositions = positionIds.size() == 0 ? new ArrayList<>() : positionsService.listByIds(positionIds);
         List<RestStorehousePositionsResult> storehousePositionsResults = new ArrayList<>();
         for (RestStorehousePositions storehousePosition : storehousePositions) {
@@ -445,11 +445,6 @@ public class RestRestStorehousePositionsBindServiceImpl extends ServiceImpl<Rest
         }
 
         for (StorehousePositionsBindResult storehousePositionsBindResult : param) {
-            for (RestSkuResult skuResult : skuResults) {
-                if (storehousePositionsBindResult.getSkuId().equals(skuResult.getSkuId())) {
-                    storehousePositionsBindResult.setSkuResult(skuResult);
-                }
-            }
             for (RestStorehousePositionsResult storehousePositionResult : storehousePositionsResults) {
                 if (storehousePositionsBindResult.getPositionId().equals(storehousePositionResult.getStorehousePositionsId())) {
                     storehousePositionsBindResult.setStorehousePositionsResult(storehousePositionResult);

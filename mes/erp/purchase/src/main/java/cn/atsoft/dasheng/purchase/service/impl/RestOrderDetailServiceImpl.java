@@ -91,7 +91,7 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
     }
 
     @Override
-    public void format(List<RestOrderDetailResult> param) {
+    public void  format(List<RestOrderDetailResult> param) {
         List<Long> skuIds = param.stream().map(RestOrderDetailResult::getSkuId).distinct().collect(Collectors.toList());
         List<SkuListResult> restSkuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.viewResultsByIds(skuIds);
         for (RestOrderDetailResult datum : param) {
