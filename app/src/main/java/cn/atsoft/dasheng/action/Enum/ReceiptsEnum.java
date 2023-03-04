@@ -9,8 +9,7 @@ public enum ReceiptsEnum {
     ,
     INSTOCK("入库单")
     ,
-    INSTOCKERROR("入库异常"),
-    PURCHASEASK("入库异常123")
+    INSTOCKERROR("入库异常")
     ,
     OUTSTOCK("出库单")
     ,

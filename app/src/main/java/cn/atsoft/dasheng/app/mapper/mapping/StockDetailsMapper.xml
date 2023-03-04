@@ -530,7 +530,7 @@ stage
         ORDER BY sum( detail.number )
     </select>
     <select id="getNumberCountBySkuId" resultType="Long" parameterType="Long">
-        SELECT SUM(number) AS number  FROM `daoxin_erp_stock_details`
+        SELECT IF(SUM(number) is null , 0 , SUM(number)) AS number  FROM `daoxin_erp_stock_details`
         WHERE
             1 = 1
           and display = 1
@@ -538,7 +538,7 @@ stage
           and sku_id = #{skuId}
     </select>
     <select id="getNumberCountEntityBySkuId" resultType="cn.atsoft.dasheng.app.entity.StockDetails" parameterType="Long">
-        SELECT SUM(number) AS number,sku_id AS "skuId"  FROM `daoxin_erp_stock_details`
+        SELECT IF(SUM(number) is null , 0 , SUM(number)) AS number,sku_id AS "skuId"  FROM `daoxin_erp_stock_details`
         WHERE
             1 = 1
           and display = 1

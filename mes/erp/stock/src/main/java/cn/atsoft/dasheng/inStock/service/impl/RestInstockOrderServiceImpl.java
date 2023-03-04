@@ -158,7 +158,7 @@ public class RestInstockOrderServiceImpl extends ServiceImpl<RestInstockOrderMap
 
     public Long autoInStock(RestInstockOrderParam param) {
         if (ToolUtil.isEmpty( param.getDetailParams())) {
-            throw new ServiceException(500,"没有选物料你点什么？\n嗯\n？点什么？\n嗯？\n我问你点什么？");
+            throw new ServiceException(500,"请选择物料进行入库");
         }
         param.getDetailParams().removeIf(i->i.getNumber()<=0);
 

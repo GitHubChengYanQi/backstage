@@ -1168,10 +1168,12 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     @Override
     public String outStockV2(ProductionPickListsParam param) {
         List<Long> cartIds = param.getCartIds();
+
+        List<ProductionPickListsCart> listsCarts = cartIds.size() == 0 ? new ArrayList<>() : pickListsCartService.lambdaQuery().in(ProductionPickListsCart::getPickListsCart,cartIds).eq(ProductionPickListsCart::getStatus,0).list();   ;
+
         if (cartIds.size() == 0){
             throw new ServiceException(500,"物料已出库完成");
         }
-        List<ProductionPickListsCart> listsCarts = cartIds.size() == 0 ? new ArrayList<>() : pickListsCartService.listByIds(cartIds);
         List<Long> detailIds = listsCarts.stream().map(ProductionPickListsCart::getPickListsDetailId).collect(Collectors.toList());
         List<Long> pickListsIds = listsCarts.stream().map(ProductionPickListsCart::getPickListsId).collect(Collectors.toList());
 
