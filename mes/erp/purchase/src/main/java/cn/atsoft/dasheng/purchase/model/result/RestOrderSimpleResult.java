@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
+import cn.atsoft.dasheng.customer.model.result.CustomerResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModel;
@@ -27,6 +28,14 @@ public class RestOrderSimpleResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
+    /**
+     * 卖方id
+     */
+    @JSONField(serialize = false)
+    @ApiModelProperty("卖方id")
+    private Long sellerId;
+
+    private CustomerResult sellerResult;
     /**
      * 订单编号
      */

@@ -366,6 +366,16 @@ public class RestInstockOrderServiceImpl extends ServiceImpl<RestInstockOrderMap
 
         stockDetailsService.saveBatch(stockDetailsList);
         stockLogService.addBatch(stockDetailsList,"increase","inStock");
+
+
+        for (RestOrderDetail orderDetail : orderDetails) {
+            for (RestInstockOrderDetailParam detailParam : param.getDetailParams()) {
+                if (detailParam.getDetailId().equals(orderDetail.getDetailId())){
+                    orderDetail.setArrivalNumber((int) (orderDetail.getArrivalNumber()+detailParam.getNumber()));
+                }
+            }
+        }
+        orderDetailService.updateDetailList(orderDetails);
         return taskId;
 
     }

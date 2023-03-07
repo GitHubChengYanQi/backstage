@@ -46,7 +46,11 @@ public class RestOrderDetailResult implements Serializable {
      */
     @ApiModelProperty("采购数量")
     private Integer purchaseNumber;
-
+    /**
+     * 到货数量
+     */
+    @ApiModelProperty("到货数量")
+    private Integer arrivalNumber;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

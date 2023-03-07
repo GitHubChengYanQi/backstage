@@ -9,11 +9,11 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.entity.RestOrder;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 
-import cn.atsoft.dasheng.goods.sku.model.result.RestSkuResult;
 import cn.atsoft.dasheng.goods.sku.model.result.SkuListResult;
 import cn.atsoft.dasheng.goods.sku.service.RestSkuService;
 import cn.atsoft.dasheng.purchase.entity.RestOrderDetail;
 import cn.atsoft.dasheng.purchase.mapper.RestOrderDetailMapper;
+import cn.atsoft.dasheng.purchase.model.params.RestOrderDetailHistory;
 import cn.atsoft.dasheng.purchase.model.params.RestOrderDetailParam;
 import cn.atsoft.dasheng.purchase.model.result.RestOrderDetailResult;
 import cn.atsoft.dasheng.purchase.service.RestOrderDetailService;
@@ -81,6 +81,23 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
         format(page);
         return page;
     }
+    @Override
+    public List<RestOrderDetailResult> historyList(RestOrderDetailParam param) {
+        List<RestOrderDetailResult> list = this.baseMapper.historyList( param);
+        List<RestOrderDetailResult> result = new ArrayList<>();
+        for (RestOrderDetailHistory history : param.getHistoryParam()) {
+            for (RestOrderDetailResult detailResult : list) {
+                if (history.getSkuId().equals(detailResult.getSkuId()) && history.getCustomerId().equals(detailResult.getCustomerId())) {
+                    if (ToolUtil.isEmpty(history.getBrandId()) || history.getBrandId().equals(detailResult.getBrandId())){
+                        result.add(detailResult);
+                        break;
+                    }
+                }
+            }
+        }
+        format(result);
+        return result;
+    }
 
     @Override
     public PageInfo<RestOrderDetailResult> findPageBySpec(RestOrderDetailParam param) {
@@ -147,6 +164,12 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
             return new ArrayList<>();
         }
         return BeanUtil.copyToList(this.listByIds(detailIds), cn.atsoft.dasheng.entity.RestOrderDetail.class);
+    }
+
+    @Override
+    public void updateDetailList(List<cn.atsoft.dasheng.entity.RestOrderDetail> dataList) {
+        List<RestOrderDetail> restOrderDetails = BeanUtil.copyToList(dataList, RestOrderDetail.class);
+        this.updateBatchById(restOrderDetails);
     }
 
     @Override

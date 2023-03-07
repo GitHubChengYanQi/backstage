@@ -31,7 +31,7 @@
     <sql id="Base_Column_List">remark
     AS "remark",
         detail_id
-        AS "detailId", order_id AS "orderId", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", preorde_number AS "preordeNumber", purchase_number AS "purchaseNumber", unit_id AS "unitId", one_price AS "onePrice", total_price AS "totalPrice", paper_type AS "paperType", rate AS "rate", delivery_date AS "deliveryDate", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        AS "detailId", order_id AS "orderId", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", preorde_number AS "preordeNumber", purchase_number AS "purchaseNumber", unit_id AS "unitId", one_price AS "onePrice", total_price AS "totalPrice", paper_type AS "paperType", rate AS "rate", delivery_date AS "deliveryDate", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId",arrival_number AS "arrivalNumber"
     </sql>
     <!-- 查询未被加入生产计划的销售订单 -->
     <sql id="ProductionPlanByOrder">
@@ -170,6 +170,71 @@
         <if test="paramCondition.paperType != null">
             and paper_type like CONCAT('%',#{paramCondition.paperType},'%')
         </if>
+    </select>
+    <select id="historyList" resultType="cn.atsoft.dasheng.purchase.model.result.RestOrderDetailResult"
+            parameterType="cn.atsoft.dasheng.purchase.model.params.RestOrderDetailParam">
+        select  * from (
+        SELECT
+        remark AS "remark",
+        detail_id AS "detailId",
+        order_id AS "orderId",
+        sku_id AS "skuId",
+        brand_id AS "brandId",
+        customer_id AS "customerId",
+        preorde_number AS "preordeNumber",
+        purchase_number AS "purchaseNumber",
+        unit_id AS "unitId",
+        one_price AS "onePrice",
+        total_price AS "totalPrice",
+        paper_type AS "paperType",
+        rate AS "rate",
+        delivery_date AS "deliveryDate",
+        create_user AS "createUser",
+        update_user AS "updateUser",
+        create_time AS "createTime",
+        update_time AS "updateTime",
+        display AS "display",
+        deptId AS "deptId",
+        arrival_number AS "arrivalNumber"
+        FROM
+        daoxin_crm_order_detail
+
+        where 1 = 1
+        <if test="paramCondition.historyParam != null and paramCondition.historyParam.size>0">
+            and
+            <foreach collection="paramCondition.historyParam" index="index" item="item" open="(" close=")"
+                     separator=" or ">
+                (
+                sku_id = #{item.skuId}
+                and customer_id = #{item.customerId}
+                <if test="item.brandId != null">
+                    and brand_id = #{item.brandId}
+                </if>
+                )
+            </foreach>
+        </if>
+        <if test="paramCondition.detailId != null">
+            and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+        </if>
+        <if test="paramCondition.orderId != null">
+            and order_id like CONCAT('%',#{paramCondition.orderId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id = #{paramCondition.skuId}
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id = #{paramCondition.customerId}
+        </if>
+        ORDER BY create_time DESC
+        limit 5000
+                       ) tmp
+        GROUP BY
+        tmp.skuId,
+        tmp.brandId
+        order by tmp.createTime DESC
     </select>
 
 </mapper>

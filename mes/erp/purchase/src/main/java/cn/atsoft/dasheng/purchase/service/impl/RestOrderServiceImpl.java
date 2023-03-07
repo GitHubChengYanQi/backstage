@@ -4,6 +4,9 @@ package cn.atsoft.dasheng.purchase.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.customer.entity.Customer;
+import cn.atsoft.dasheng.customer.model.result.CustomerResult;
+import cn.atsoft.dasheng.customer.service.RestCustomerService;
 import cn.atsoft.dasheng.entity.RestOrderDetail;
 import cn.atsoft.dasheng.model.result.RestOrderDetailResult;
 import cn.atsoft.dasheng.purchase.entity.RestOrder;
@@ -39,6 +42,10 @@ import java.util.stream.Collectors;
 public class RestOrderServiceImpl extends ServiceImpl<RestOrderMapper, RestOrder> implements RestOrderService, IErpBase {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RestCustomerService customerService;
+
 
     @Override
     @Transactional
@@ -110,12 +117,20 @@ public class RestOrderServiceImpl extends ServiceImpl<RestOrderMapper, RestOrder
         Page<RestOrderResult> pageContext = getPageContext();
         IPage<RestOrderSimpleResult> page = this.baseMapper.orderList(pageContext, restOrderParam);
         List<Long> userIds = page.getRecords().stream().map(RestOrderSimpleResult::getCreateUser).collect(Collectors.toList());
+        List<Long> customerIds = page.getRecords().stream().map(RestOrderSimpleResult::getSellerId).collect(Collectors.toList());
         List<UserResult> userResultsByIds = userIds.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(userIds);
-
+        List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
+        List<CustomerResult> customerResults = BeanUtil.copyToList(customers, CustomerResult.class);
         for (RestOrderSimpleResult record : page.getRecords()) {
             for (UserResult userResultsById : userResultsByIds) {
                 if (record.getCreateUser().equals(userResultsById.getUserId())){
                     record.setCreateUserResult(userResultsById);
+                    break;
+                }
+            }
+            for (CustomerResult customerResult : customerResults) {
+                if (record.getSellerId().equals(customerResult.getCustomerId())) {
+                    record.setSellerResult(customerResult);
                     break;
                 }
             }
@@ -135,6 +150,11 @@ public class RestOrderServiceImpl extends ServiceImpl<RestOrderMapper, RestOrder
     @Override
     public List<RestOrderDetail> getDetailListByOrderDetailIds(List<Long> detailIds) {
         return null;
+    }
+
+    @Override
+    public void updateDetailList(List<RestOrderDetail> dataList) {
+
     }
 
     @Override

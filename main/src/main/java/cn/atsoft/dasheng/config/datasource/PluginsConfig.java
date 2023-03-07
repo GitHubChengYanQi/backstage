@@ -29,7 +29,7 @@ import static cn.atsoft.dasheng.message.enmu.MicroServiceType.DYNAMIC;
  */
 @Configuration
 @MapperScan(basePackages = {"cn.atsoft.**.mapper"})
-public class PluginsConfig {
+public class  PluginsConfig {
     @Autowired
     private MessageProducer messageProducer;
 

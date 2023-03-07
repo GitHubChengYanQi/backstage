@@ -20,6 +20,7 @@ import cn.atsoft.dasheng.erp.entity.CodingRules;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.purchase.service.PurchaseListService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -60,6 +61,8 @@ public class OrderVersionController extends BaseController {
 
     @Autowired
     private ContractService contractService;
+    @Autowired
+    private PurchaseListService purchaseListService;
 
 
     /**
@@ -109,6 +112,9 @@ public class OrderVersionController extends BaseController {
 
         }
         Order order = this.orderService.add(orderParam);
+        if (ToolUtil.isNotEmpty(orderParam.getPurchaseListIds())){
+            purchaseListService.updateStatusByIds(orderParam.getPurchaseListIds());
+        }
         return ResponseData.success(order);
     }
 

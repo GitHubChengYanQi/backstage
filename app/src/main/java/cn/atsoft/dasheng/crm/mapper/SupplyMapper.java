@@ -43,6 +43,8 @@ public interface SupplyMapper extends BaseMapper<Supply> {
      * @Date 2021-12-20
      */
     Page<SupplyResult> customPageList(@Param("page") Page page, @Param("paramCondition") SupplyParam paramCondition);
+    List<SupplyResult> listBySkuIds(@Param("paramCondition") SupplyParam param);
+    List<SupplyResult> listByPurchase(@Param("paramCondition") SupplyParam param);
 
     /**
      * 获取分页map列表

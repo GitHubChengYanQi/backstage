@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.params.SupplyParam;
 import cn.atsoft.dasheng.crm.model.result.SupplyResult;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.swagger.models.auth.In;
 import org.aspectj.apache.bcel.generic.LineNumberGen;
@@ -104,6 +105,10 @@ public interface SupplyService extends IService<Supply> {
     void OrdersBackFill(Long customerId, List<OrderDetailParam> params);
 
     List<CustomerResult> getCustomerBySkuIds(List<Long> skuIds);
+
+    List<SupplyResult> listByPurchase(SupplyParam param);
+
+    List<SupplyResult> listBySkuIds(SupplyParam param);
 
     List<BrandResult> getBrandBySkuIds(List<Long> skuIds);
 }

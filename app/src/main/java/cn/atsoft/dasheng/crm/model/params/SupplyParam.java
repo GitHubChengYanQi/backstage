@@ -48,7 +48,7 @@ public class SupplyParam implements Serializable, BaseValidatingParam {
     private List<BrandParam> brandParams;
 
     private List<Long> skuIds;
-
+    private String customerName;
     private List<Long> noSkuIds;
     private List<Long> noBrandIds;
     private List<Long> noCustomerIds;

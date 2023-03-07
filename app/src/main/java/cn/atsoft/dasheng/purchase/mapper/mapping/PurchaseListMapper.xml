@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.purchase.mapper.PurchaseListMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.purchase.entity.PurchaseList">
+        <id column="purchase_list_id" property="purchaseListId" />
+        <result column="sku_id" property="skuId" />
+        <result column="brand_id" property="brandId" />
+        <result column="customer_id" property="customerId" />
+        <result column="number" property="number" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+        <result column="display" property="display" />
+        <result column="deptId" property="deptId" />
+        <result column="status" property="status" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        purchase_list_id AS "purchaseListId", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", status AS "status"
+    </sql>
+
+    <sql id="Left_Column_List">
+        list.purchase_list_id AS "purchaseListId",
+        list.sku_id AS "skuId",
+        list.brand_id AS "brandId",
+        list.customer_id AS "customerId",
+        list.number AS "number",
+        list.create_time AS "createTime",
+        list.update_time AS "updateTime",
+        list.create_user AS "createUser",
+        list.update_user AS "updateUser",
+        list.display AS "display",
+        list.deptId AS "deptId",
+        list.STATUS AS "status"
+    </sql>
+    <select id="leftJoinList" resultType="cn.atsoft.dasheng.purchase.model.result.PurchaseListResult" parameterType="cn.atsoft.dasheng.purchase.model.params.PurchaseListParam">
+        select * from (
+        select
+        <include refid="Left_Column_List"/>
+        from daoxin_purchase_list list
+        LEFT JOIN goods_sku_brand_bind brandBind ON list.sku_id = brandBind.sku_id
+        LEFT JOIN daoxin_supply supply ON supply.sku_brand_bind = brandBind.sku_brand_bind
+        WHERE
+        1 = 1
+        and list.status = 0
+        <if test="paramCondition.customerId != null">
+            and supply.customer_id = #{paramCondition.customerId} and list.customer_id is null
+        </if>
+        union ALL
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_purchase_list list
+        WHERE
+        1 = 1
+        and list.status = 0
+        <if test="paramCondition.customerId != null">
+            and list.customer_id = #{paramCondition.customerId}
+        </if>
+        ) tmp
+        group by tmp.purchaseListId
+        order by tmp.createTime desc
+    </select>
+    <select id="customList" resultType="cn.atsoft.dasheng.purchase.model.result.PurchaseListResult" parameterType="cn.atsoft.dasheng.purchase.model.params.PurchaseListParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_purchase_list list
+        WHERE
+        1 = 1
+        and status = 0
+        order by create_time desc
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.purchase.model.params.PurchaseListParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_purchase_list where 1 = 1
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.purchase.model.result.PurchaseListResult" parameterType="cn.atsoft.dasheng.purchase.model.params.PurchaseListParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_purchase_list
+        where 1 = 1
+        and status = 0
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.purchase.model.params.PurchaseListParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_purchase_list where 1 = 1
+    </select>
+
+</mapper>

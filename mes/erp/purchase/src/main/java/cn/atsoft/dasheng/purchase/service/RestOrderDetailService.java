@@ -58,6 +58,8 @@ public interface RestOrderDetailService extends IService<RestOrderDetail> {
      */
     List<RestOrderDetailResult> findListBySpec(RestOrderDetailParam param);
 
+    List<RestOrderDetailResult> historyList(RestOrderDetailParam param);
+
     /**
      * 查询分页数据，Specification模式
      *

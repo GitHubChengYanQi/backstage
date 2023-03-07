@@ -619,6 +619,32 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     }
 
     /**
+     * 通过物料查询供应商
+     *
+     * @param skuIds
+     * @return
+     */
+    @Override
+    public List<SupplyResult> listByPurchase(SupplyParam param) {
+        List<SupplyResult> supplyResultPage = this.baseMapper.listByPurchase( param);
+        this.format(supplyResultPage);
+        return supplyResultPage;
+    }
+
+    /**
+     * 通过物料查询供应商
+     *
+     * @param skuIds
+     * @return
+     */
+    @Override
+    public List<SupplyResult> listBySkuIds(SupplyParam param) {
+        List<SupplyResult> supplyResultPage = this.baseMapper.listBySkuIds(param);
+        this.format(supplyResultPage);
+        return supplyResultPage;
+    }
+
+    /**
      * 获取物料绑定的品牌
      *
      * @param skuIds

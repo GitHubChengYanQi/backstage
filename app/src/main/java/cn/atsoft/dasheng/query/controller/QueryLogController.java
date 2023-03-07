@@ -58,18 +58,18 @@ public class QueryLogController extends BaseController {
 //        return ResponseData.success();
 //    }
 //
-//    /**
-//     * 删除接口
-//     *
-//     * @author song
-//     * @Date 2022-05-19
-//     */
-//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-//    @ApiOperation("删除")
-//    public ResponseData delete(@RequestBody QueryLogParam queryLogParam)  {
-//        this.queryLogService.delete(queryLogParam);
-//        return ResponseData.success();
-//    }
+    /**
+     * 删除接口
+     *
+     * @author song
+     * @Date 2022-05-19
+     */
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData delete(@RequestBody QueryLogParam queryLogParam)  {
+        this.queryLogService.delete(queryLogParam);
+        return ResponseData.success();
+    }
 //
 //    /**
 //     * 查看详情接口
@@ -95,7 +95,7 @@ public class QueryLogController extends BaseController {
      //     */
     @RequestMapping(value = "/deleteBatch", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody QueryLogParam queryLogParam)  {
+    public ResponseData deleteBatch(@RequestBody QueryLogParam queryLogParam)  {
         this.queryLogService.deleteBatch(queryLogParam);
         return ResponseData.success();
     }
