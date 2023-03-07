@@ -1,14 +1,7 @@
 package cn.atsoft.dasheng.customer.service;
 
-import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.customer.entity.Customer;
-import cn.atsoft.dasheng.customer.model.params.CustomerParam;
-import cn.atsoft.dasheng.customer.model.result.CustomerResult;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.List;
 
 /**
  * <p>
@@ -18,7 +11,7 @@ import java.util.List;
  * @author
  * @since 2021-07-23
  */
-public interface CustomerService extends IService<Customer> {
+public interface RestCustomerService extends IService<Customer> {
 
 //    /**
 //     * 新增

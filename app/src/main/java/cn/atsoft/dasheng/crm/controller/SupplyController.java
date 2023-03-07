@@ -221,6 +221,26 @@ public class SupplyController extends BaseController {
         return ResponseData.success(supplyByCustomerIds);
     }
 
+    @RequestMapping(value = "/getSupplyBySkuIds", method = RequestMethod.POST)
+    public ResponseData getSupplyBySkuIds(@RequestBody SupplyParam param) {
+        List<Long> skuIds = new ArrayList<>();
+        if (ToolUtil.isEmpty(param.getSkuIds())){
+            param.setSkuIds(new ArrayList<>());
+        }
+        skuIds.addAll(param.getSkuIds());
+        if (ToolUtil.isNotEmpty(param.getSkuId())){
+            skuIds.add(param.getSkuId());
+        }
+        param.setSkuIds(skuIds);
+        return ResponseData.success(this.supplyService.listBySkuIds(param));
+    }
+    @RequestMapping(value = "/listByPurchase", method = RequestMethod.POST)
+    public ResponseData listByPurchase(@RequestBody SupplyParam param) {
+        return ResponseData.success(this.supplyService.listByPurchase(param));
+    }
+
+
+
 }
 
 

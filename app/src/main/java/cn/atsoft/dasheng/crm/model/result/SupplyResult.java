@@ -28,6 +28,7 @@ public class SupplyResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String supplierModel;
+    private Integer skuCount;
 
     private CustomerResult customerResult;
 

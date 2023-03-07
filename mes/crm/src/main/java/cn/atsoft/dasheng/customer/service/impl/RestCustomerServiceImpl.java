@@ -1,33 +1,11 @@
 package cn.atsoft.dasheng.customer.service.impl;
 
 
-import cn.atsoft.dasheng.base.log.FreedLog;
-import cn.atsoft.dasheng.base.pojo.page.PageFactory;
-import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.core.datascope.DataScope;
-import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.customer.entity.Customer;
-import cn.atsoft.dasheng.customer.mapper.CustomerMapper;
-import cn.atsoft.dasheng.customer.model.params.CustomerParam;
-import cn.atsoft.dasheng.customer.service.CustomerService;
-import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
-import cn.atsoft.dasheng.sys.modular.system.service.UserService;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import cn.atsoft.dasheng.customer.mapper.RestCustomerMapper;
+import cn.atsoft.dasheng.customer.service.RestCustomerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -38,7 +16,7 @@ import java.util.stream.Collectors;
  * @since 2021-07-23
  */
 @Service
-public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> implements CustomerService {
+public class RestCustomerServiceImpl extends ServiceImpl<RestCustomerMapper, Customer> implements RestCustomerService {
 
 
 

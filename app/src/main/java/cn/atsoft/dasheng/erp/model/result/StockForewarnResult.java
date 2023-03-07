@@ -33,6 +33,7 @@ public class StockForewarnResult implements Serializable {
 
     private SkuSimpleResult skuResult;
     private Integer number;
+    private Integer purchaseNumber;
 
     private SpuClassificationResult spuClassificationResult;
 

@@ -19,9 +19,9 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-brand_id AS "brandId",
-        supplier_model AS "supplierModel",
-        supply_id AS "supplyId",
+    brand_id AS "brandId",
+    supplier_model AS "supplierModel",
+    supply_id AS "supplyId",
     sku_id AS "skuId",
     customer_id AS "customerId",
     display AS "display",
@@ -162,6 +162,64 @@ brand_id AS "brandId",
         </choose>
         ORDER BY daoxin_crm_order_detail.create_time desc
     </select>
+    <select id="listBySkuIds" resultType="cn.atsoft.dasheng.crm.model.result.SupplyResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.SupplyParam">
+        SELECT
+            supply.brand_id AS "brandId",
+            supply.supplier_model AS "supplierModel",
+            supply.supply_id AS "supplyId",
+            supply.sku_id AS "skuId",
+            supply.customer_id AS "customerId",
+            supply.display AS "display",
+            supply.create_user AS "createUser",
+            supply.update_user AS "updateUser",
+            supply.create_time AS "createTime",
+            supply.update_time AS "updateTime",
+            supply.sku_brand_bind AS "skuBrandBind"
+        FROM
+            daoxin_supply supply
+                LEFT JOIN goods_sku_brand_bind brandBind on supply.sku_brand_bind = brandBind.sku_brand_bind
+        WHERE 1 = 1  and supply.sku_brand_bind is not null
+        <if test="paramCondition.skuIds != null and paramCondition.skuIds.size >0">
+            and brandBind.sku_id in
+            <foreach collection="paramCondition.skuIds" separator="," open="(" item="state" index="index"
+                     close=")">
+                #{state}
+            </foreach>
+        </if>
+        <if test="paramCondition.customerName != null and paramCondition.customerName!=''">
+            and supply.customer_id in (select customer_id from daoxin_crm_customer WHERE 1 = 1 and display = 1 and customer_name like CONCAT('%',#{paramCondition.customerName},'%'))
+        </if>
+
+
+    </select>
+    <select id="listByPurchase" resultType="cn.atsoft.dasheng.crm.model.result.SupplyResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.SupplyParam">
+        SELECT
+            supply.brand_id AS "brandId",
+            supply.supplier_model AS "supplierModel",
+            supply.supply_id AS "supplyId",
+            count(DISTINCT brandBind.sku_id) AS skuCount,
+            supply.sku_id AS "skuId",
+            supply.customer_id AS "customerId",
+            supply.display AS "display",
+            supply.create_user AS "createUser",
+            supply.update_user AS "updateUser",
+            supply.create_time AS "createTime",
+            supply.update_time AS "updateTime",
+            supply.sku_brand_bind AS "skuBrandBind"
+        FROM
+            daoxin_supply supply
+                LEFT JOIN goods_sku_brand_bind brandBind on supply.sku_brand_bind = brandBind.sku_brand_bind
+        WHERE 1 = 1  and supply.sku_brand_bind is not null
+            and brandBind.sku_id in (select  sku_id from daoxin_purchase_list where 1 = 1 and display = 1 and  status = 0)
+
+        <if test="paramCondition.customerName != null and paramCondition.customerName!=''">
+            and supply.customer_id in (select customer_id from daoxin_crm_customer WHERE 1 = 1 and display = 1 and customer_name like CONCAT('%',#{paramCondition.customerName},'%'))
+        </if>
+        group by supply.customer_id
+
+    </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.SupplyParam">
         select
@@ -180,5 +238,35 @@ brand_id AS "brandId",
             and display like CONCAT('%',#{paramCondition.display},'%')
         </if>
     </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.SupplyParam">
+        select
+        supply.brand_id AS "brandId",
+        supply.supplier_model AS "supplierModel",
+        supply.supply_id AS "supplyId",
+        supply.sku_id AS "skuId",
+        supply.customer_id AS "customerId",
+        supply.display AS "display",
+        supply.create_user AS "createUser",
+        supply.update_user AS "updateUser",
+        supply.create_time AS "createTime",
+        supply.update_time AS "updateTime",
+        supply.sku_brand_bind AS "skuBrandBind"
+        from daoxin_supply supply where 1 = 1
+        <if test="paramCondition.supplyId != null">
+            and supply_id like CONCAT('%',#{paramCondition.supplyId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+    </select>
+
+
 
 </mapper>

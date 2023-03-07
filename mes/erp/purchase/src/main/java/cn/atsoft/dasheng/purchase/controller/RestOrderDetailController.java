@@ -67,6 +67,22 @@ public class RestOrderDetailController extends BaseController {
         return this.orderDetailService.findPageBySpec(orderDetailParam);
     }
 
+    /**
+     * 查询列表
+     *
+     * @author song
+     * @Date 2022-02-23
+     */
+    @RequestMapping(value = "/historyList", method = RequestMethod.POST)
+    @ApiOperation("历史记录")
+    public ResponseData historyList(@RequestBody(required = false) RestOrderDetailParam orderDetailParam) {
+        if (ToolUtil.isEmpty(orderDetailParam)) {
+            orderDetailParam = new RestOrderDetailParam();
+        }
+
+        return ResponseData.success( this.orderDetailService.historyList(orderDetailParam) ) ;
+    }
+
 
 }
 

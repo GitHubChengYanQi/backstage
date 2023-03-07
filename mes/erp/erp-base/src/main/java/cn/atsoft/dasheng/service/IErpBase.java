@@ -13,6 +13,7 @@ public interface IErpBase {
     List<RestOrderDetailResult> getOrderDetailList(Map<String, Object> param);
     List<RestOrderDetail> getDetailListByOrderId(Long orderId);
     List<RestOrderDetail> getDetailListByOrderDetailIds(List<Long> detailIds);
+    void updateDetailList(List<RestOrderDetail> dataList);
     RestOrder getOrderById(Long orderId);
 
 

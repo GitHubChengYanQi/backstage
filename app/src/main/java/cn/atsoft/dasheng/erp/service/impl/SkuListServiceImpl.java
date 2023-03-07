@@ -105,6 +105,9 @@ public class SkuListServiceImpl extends ServiceImpl<SkuListMapper, SkuList> impl
     }
     @Override
     public List<SkuListResult> resultByIds(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids) || ids.size()== 0){
+            return new ArrayList<>();
+        }
         List<SkuListResult> skuListResults = BeanUtil.copyToList(this.listByIds(ids), SkuListResult.class);
 
         format(skuListResults);

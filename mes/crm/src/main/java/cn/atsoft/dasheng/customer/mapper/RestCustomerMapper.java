@@ -19,7 +19,7 @@ import java.util.Map;
  * @author 
  * @since 2021-07-23
  */
-public interface CustomerMapper extends BaseMapper<Customer> {
+public interface RestCustomerMapper extends BaseMapper<Customer> {
 
     /**
      * 获取列表

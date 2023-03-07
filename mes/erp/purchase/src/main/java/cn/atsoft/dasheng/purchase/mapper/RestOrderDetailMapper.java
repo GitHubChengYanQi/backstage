@@ -50,6 +50,7 @@ public interface RestOrderDetailMapper extends BaseMapper<RestOrderDetail> {
      * @Date 2022-02-23
      */
     Page<RestOrderDetailResult> customPageList(@Param("page") Page page, @Param("paramCondition") RestOrderDetailParam paramCondition);
+    List<RestOrderDetailResult> historyList(@Param("paramCondition") RestOrderDetailParam paramCondition);
 
     /**
      * 获取分页map列表
