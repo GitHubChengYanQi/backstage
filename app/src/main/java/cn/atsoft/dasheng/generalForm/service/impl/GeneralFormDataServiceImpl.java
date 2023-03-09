@@ -43,7 +43,7 @@ public class GeneralFormDataServiceImpl extends ServiceImpl<GeneralFormDataMappe
             entityList.add(getEntity(param));
         }
 
-        List<GeneralFormData> list = this.lambdaQuery().in(GeneralFormData::getValue, entityList.stream().map(GeneralFormData::getValue).collect(Collectors.toList())).list();
+        List<GeneralFormData> list = entityList.size()== 0 ? new ArrayList<>() : this.lambdaQuery().in(GeneralFormData::getValue, entityList.stream().map(GeneralFormData::getValue).collect(Collectors.toList())).list();
         for (GeneralFormData generalFormData : list) {
             entityList.removeIf(i->i.getValue().equals(generalFormData.getValue()) && i.getFieldName().equals(generalFormData.getFieldName()));
         }
