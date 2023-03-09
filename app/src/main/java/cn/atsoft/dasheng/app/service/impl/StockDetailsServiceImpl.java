@@ -828,15 +828,26 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
                 queryWrapper.eq("storehouse_positions_id", cartParam.getStorehousePositionsId());
                 queryWrapper.eq("display", 1);
                 queryWrapper.eq("stage", 1);
+                queryWrapper.orderByDesc("create_time");
 
                 list.addAll(this.list(queryWrapper));
             }
         }
-        list = list.stream().distinct().collect(Collectors.toList());
         for (Long inkindId : cartInkindIds) {
             list.removeIf(i -> i.getInkindId().equals(inkindId));
         }
-        return list;
+        /**
+         * 数据组合
+         */
+        List<StockDetails> totalList = new ArrayList<>();
+        list.parallelStream().collect(Collectors.groupingBy(StockDetails::getStockItemId, Collectors.toList())).forEach(
+                (id, transfer) -> {
+                    transfer.stream().reduce((a, b) -> a).ifPresent(totalList::add);
+                }
+        );
+
+
+        return totalList;
     }
     @Override
     public List<StockDetailView> stockDetailViews(){

@@ -945,7 +945,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
     }
 
     @Override
-    public void deleteBatchByIds(List<ProductionPickListsCartParam> cartParams) {
+    public void  deleteBatchByIds(List<ProductionPickListsCartParam> cartParams) {
         List<Long> pickListsIds = new ArrayList<>();
 
 
@@ -966,7 +966,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
             }
         }
         List<StockDetails> stockDetails = inkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("inkind_id", inkindIds).eq("display", 1).list();
-        List<StockDetails> parentStockDetails = parentInkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("inkind_id", parentInkindIds).eq("display", 1).list();
+        List<StockDetails> parentStockDetails = parentInkindIds.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("inkind_id", parentInkindIds).list();
 
 
 
@@ -986,7 +986,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                                         if (parentStockDetail.getDisplay().equals(0) && parentStockDetail.getStage().equals(2)){
                                             parentStockDetail.setDisplay(1);
                                             parentStockDetail.setStage(1);
-                                            parentStockDetail.setNumber(stockDetail.getNumber());
+//                                            parentStockDetail.setNumber(stockDetail.getNumber());
                                         }
                                         stockDetail.setNumber(0L);
                                         stockDetail.setDisplay(0);
