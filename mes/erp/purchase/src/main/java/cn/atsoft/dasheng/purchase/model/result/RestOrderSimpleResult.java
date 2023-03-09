@@ -27,6 +27,8 @@ public class RestOrderSimpleResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Integer arrivalNumber;
+    private Integer purchaseNumber;
 
     /**
      * 卖方id

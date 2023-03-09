@@ -56,12 +56,12 @@ public class TopicMessage {
         MessageEntity messageEntity = JSON.parseObject(message.getBody(), MessageEntity.class);
         switch (messageEntity.getType()) {
             case CP:
-                try {
-                    wxCpService.getWxCpClient().getMessageService().send(messageEntity.getCpData());
+//                try {
+//                    wxCpService.getWxCpClient().getMessageService().send(messageEntity.getCpData());
                     logger.info("接收" + JSON.toJSONString(messageEntity.getCpData().getContent()));
-                } catch (WxErrorException e) {
-                    e.printStackTrace();
-                }
+//                } catch (WxErrorException e) {
+//                    e.printStackTrace();
+//                }
                 break;
 
             case MP:
@@ -74,7 +74,7 @@ public class TopicMessage {
 
             case MESSAGE:
                 if (ToolUtil.isNotEmpty(messageEntity.getMessage().getSource()) && ToolUtil.isNotEmpty(messageEntity.getMessage().getSourceId())) {
-                    messageService.save(messageEntity.getMessage());
+//                    messageService.save(messageEntity.getMessage());
                     logger.info("小铃铛保存" + JSON.toJSONString(messageEntity.getCpData().getContent()));
                 }
                 break;

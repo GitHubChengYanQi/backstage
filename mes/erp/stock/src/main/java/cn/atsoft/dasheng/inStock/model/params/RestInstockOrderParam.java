@@ -31,6 +31,11 @@ public class RestInstockOrderParam extends AbstractDictMap implements Serializab
 
     private Long orderId;
 
+    private Long bomId;
+
+    private Integer number;
+
+
     @Override
     public void init() {
 

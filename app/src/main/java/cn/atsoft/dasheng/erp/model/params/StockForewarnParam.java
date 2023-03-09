@@ -65,12 +65,78 @@ public class StockForewarnParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("库存下限")
     private Integer inventoryFloor;
+    /**
+     * 库存下限
+     */
+    @ApiModelProperty("库存下限")
+    private Integer inventoryFloorMax;
+    /**
+     * 库存下限
+     */
+    @ApiModelProperty("库存下限")
+    private Integer inventoryFloorMin;
 
     /**
      * 库存上限
      */
     @ApiModelProperty("库存上限")
     private Integer inventoryCeiling;
+
+
+    /**
+     * 库存上限
+     */
+    @ApiModelProperty("库存上限")
+    private Integer inventoryCeilingMax;
+
+
+    /**
+     * 库存上限
+     */
+    @ApiModelProperty("库存上限")
+    private Integer inventoryCeilingMin;
+
+
+
+    /**
+     * 库存数量
+     */
+    @ApiModelProperty("库存数量")
+    private Integer numberMax;
+
+
+    /**
+     * 库存数量
+     */
+    @ApiModelProperty("库存数量")
+    private Integer numberMin;
+
+
+
+    /**
+     * 库存上限
+     */
+    @ApiModelProperty("在途数量")
+    private Integer floatingCargoNumberMax;
+
+
+    /**
+     * 库存上限
+     */
+    @ApiModelProperty("在途数量")
+    private Integer floatingCargoNumberMin;
+
+    /**
+     * 待采数量
+     */
+    @ApiModelProperty("待采数量")
+    private Integer purchaseNumberMax;
+
+    /**
+     * 待采数量
+     */
+    @ApiModelProperty("待采数量")
+    private Integer purchaseNumberMin;
 
     /**
      * 删除状态

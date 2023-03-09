@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
+import cn.atsoft.dasheng.app.model.request.InStockByBom;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.pojo.AllBomParam;
 import cn.atsoft.dasheng.app.pojo.AsyncMethod;
@@ -1011,6 +1012,72 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             }
         }
     }
+    @Override
+    public  List<InStockByBom> getByBomId(Long bomId, Integer number){
+        List<InStockByBom> result = new ArrayList<>();
+        loopGetByBomId(bomId,number,result);
+        List<Long> skuIds = result.stream().map(InStockByBom::getSkuId).distinct().collect(Collectors.toList());
+        List<SkuSimpleResult> skuSimpleResults = skuService.simpleFormatSkuResult(skuIds);
+        for (InStockByBom inStockByBom : result) {
+            for (SkuSimpleResult skuSimpleResult : skuSimpleResults) {
+                if (inStockByBom.getSkuId().equals(skuSimpleResult.getSkuId())){
+                    inStockByBom.setSkuResult(skuSimpleResult);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+    public void loopGetByBomId(Long bomId, Integer number, List<InStockByBom> result){
+        Parts bom = this.getById(bomId);
 
+        List<ErpPartsDetail> details = erpPartsDetailService.lambdaQuery().eq(ErpPartsDetail::getPartsId, bom.getPartsId()).eq(ErpPartsDetail::getDisplay, 1).list();
+
+        List<Long> skuIds = details.stream().map(ErpPartsDetail::getSkuId).distinct().collect(Collectors.toList());
+        for (InStockByBom inStockByBom : result) {
+            skuIds.removeIf(i->i.equals(inStockByBom.getSkuId()));
+        }
+        skuIds.removeIf(i->i.equals(bom.getSkuId()));
+        List<Parts> childrenList = skuIds.size() == 0 ? new ArrayList<>() : this.lambdaQuery().eq(Parts::getStatus, 99).eq(Parts::getDisplay, 1).in(Parts::getSkuId, skuIds).groupBy(Parts::getSkuId).list();
+
+
+        Map<Long,Integer > childrenAndNumber = new HashMap<>();
+        if (ToolUtil.isNotEmpty(childrenList)){
+
+            for (Parts parts : childrenList) {
+                for (ErpPartsDetail detail : details) {
+                    if (parts.getSkuId().equals(detail.getSkuId())){
+                        childrenAndNumber.put(parts.getPartsId(), (int) (detail.getNumber()*number));
+                        break;
+                    }
+                }
+            }
+            for (Parts parts : childrenList) {
+                details.removeIf(i->i.getSkuId().equals(parts.getSkuId()));
+            }
+        }
+
+        for (ErpPartsDetail detail : details) {
+            detail.setNumber(detail.getNumber()*number);
+        }
+
+        List<ErpPartsDetailResult> erpPartsDetailResults = BeanUtil.copyToList(details, ErpPartsDetailResult.class);
+        erpPartsDetailService.format(erpPartsDetailResults);
+        if (erpPartsDetailResults.size()>0){
+            result.add(new InStockByBom(){{
+                setBomId(bom.getPartsId());
+                setNumber(Double.valueOf(number));
+                setSkuId(bom.getSkuId());
+                setDetailList(erpPartsDetailResults);
+            }});
+        }
+
+        for (Parts parts : childrenList) {
+            loopGetByBomId(parts.getPartsId(),childrenAndNumber.get(parts.getPartsId()),  result);
+        }
+
+
+
+    }
 
 }
