@@ -243,7 +243,9 @@ public class RestInstockOrderServiceImpl extends ServiceImpl<RestInstockOrderMap
                         setCustomerId(order.getSellerId());
                         setSkuId(orderDetail.getSkuId());
                         setCustomerId(orderDetail.getCustomerId());
-                        setInstockNumber(detailParam.getNumber());
+                        setInStockNumber(detailParam.getNumber());
+                        setArrivalNumber(detailParam.getNumber());
+                        setNumber(detailParam.getNumber());
                         setNumber(detailParam.getNumber());
                     }});
                     break;
