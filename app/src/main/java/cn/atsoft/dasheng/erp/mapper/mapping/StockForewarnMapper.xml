@@ -256,34 +256,40 @@
             )
         </if>
         <if test="paramCondition.numberMax!=null">
-            and number &lt; #{paramCondition.numberMax}
+            and number &lt;= #{paramCondition.numberMax}
         </if>
         <if test="paramCondition.numberMin!=null">
-            and number &gt; #{paramCondition.numberMin}
+            and number &gt;= #{paramCondition.numberMin}
         </if>
         <if test="paramCondition.floatingCargoNumberMax!=null">
-            and floatingCargoNumber &lt; #{paramCondition.floatingCargoNumberMax}
+            and floatingCargoNumber &lt;= #{paramCondition.floatingCargoNumberMax}
         </if>
         <if test="paramCondition.floatingCargoNumberMin!=null">
-            and floatingCargoNumber &gt; #{paramCondition.floatingCargoNumberMin}
+            and floatingCargoNumber &gt;= #{paramCondition.floatingCargoNumberMin}
         </if>
         <if test="paramCondition.purchaseNumberMax!=null">
-            and purchaseNumber &lt; #{paramCondition.purchaseNumberMax}
+            and purchaseNumber &lt;= #{paramCondition.purchaseNumberMax}
         </if>
         <if test="paramCondition.purchaseNumberMin!=null">
-            and purchaseNumber &gt; #{paramCondition.purchaseNumberMin}
+            and purchaseNumber &gt;= #{paramCondition.purchaseNumberMin}
         </if>
         <if test="paramCondition.inventoryFloorMax!=null">
-            and inventoryFloor &lt; #{paramCondition.inventoryFloorMax}
+            and inventoryFloor &lt;= #{paramCondition.inventoryFloorMax}
         </if>
         <if test="paramCondition.inventoryFloorMin!=null">
-            and inventoryFloor &gt; #{paramCondition.inventoryFloorMin}
+            and inventoryFloor &gt;= #{paramCondition.inventoryFloorMin}
         </if>
         <if test="paramCondition.inventoryCeilingMax!=null">
-            and inventoryCeiling &lt; #{paramCondition.inventoryCeilingMax}
+            and inventoryCeiling &lt;= #{paramCondition.inventoryCeilingMax}
         </if>
         <if test="paramCondition.inventoryCeilingMin!=null">
-            and inventoryCeiling &gt; #{paramCondition.inventoryCeilingMin}
+            and inventoryCeiling &gt;= #{paramCondition.inventoryCeilingMin}
+        </if>
+        <if test="paramCondition.storageMax!=null">
+            and storage &lt;= #{paramCondition.storageMax}
+        </if>
+        <if test="paramCondition.storageMin!=null">
+            and storage &gt;= #{paramCondition.storageMin}
         </if>
         <if test="paramCondition.classId!=null">
             and spuClassId = #{paramCondition.classId}

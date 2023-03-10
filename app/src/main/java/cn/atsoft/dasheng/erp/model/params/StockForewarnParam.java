@@ -35,6 +35,8 @@ public class StockForewarnParam implements Serializable, BaseValidatingParam {
     private String keyWords;
 //    spuClassId
     private Long classId;
+    private Integer storageMax;
+    private Integer storageMin;
 
     // spuClassIds
     private List<Long> classIds;
