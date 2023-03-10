@@ -301,7 +301,8 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
             add("inventoryCeiling");
             add("inventoryFloor");
             add("floatingCargoNumber");
-
+            add("purchaseNumber");
+            add("storage");
             add("className");
             add("skuName");
             add("spuName");
