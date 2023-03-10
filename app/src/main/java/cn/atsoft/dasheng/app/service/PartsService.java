@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.app.model.request.InStockByBom;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Parts;
@@ -109,4 +110,6 @@ public interface PartsService extends IService<Parts> {
     List<PartsResult> getdetails(List<Long> partIds);
 
     void format(List<PartsResult> data);
+
+    List<InStockByBom> getByBomId(Long bomId, Integer number);
 }

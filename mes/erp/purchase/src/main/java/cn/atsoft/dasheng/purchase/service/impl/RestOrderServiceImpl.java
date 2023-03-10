@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.purchase.mapper.RestOrderMapper;
 import cn.atsoft.dasheng.purchase.model.params.RestOrderParam;
 import cn.atsoft.dasheng.purchase.model.result.RestOrderResult;
 import cn.atsoft.dasheng.purchase.model.result.RestOrderSimpleResult;
+import cn.atsoft.dasheng.purchase.service.RestOrderDetailService;
 import cn.atsoft.dasheng.purchase.service.RestOrderService;
 import cn.atsoft.dasheng.service.IErpBase;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -45,6 +46,9 @@ public class RestOrderServiceImpl extends ServiceImpl<RestOrderMapper, RestOrder
 
     @Autowired
     private RestCustomerService customerService;
+
+    @Autowired
+    private RestOrderDetailService orderDetailService;
 
 
     @Override
@@ -93,7 +97,7 @@ public class RestOrderServiceImpl extends ServiceImpl<RestOrderMapper, RestOrder
 
     }
 
-    private Serializable getKey(RestOrderParam param) {
+     private Serializable getKey(RestOrderParam param) {
         return param.getOrderId();
     }
 
@@ -121,6 +125,8 @@ public class RestOrderServiceImpl extends ServiceImpl<RestOrderMapper, RestOrder
         List<UserResult> userResultsByIds = userIds.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(userIds);
         List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         List<CustomerResult> customerResults = BeanUtil.copyToList(customers, CustomerResult.class);
+        List<Long> orderIds = page.getRecords().stream().map(RestOrderSimpleResult::getOrderId).distinct().collect(Collectors.toList());
+        List<cn.atsoft.dasheng.purchase.entity.RestOrderDetail> detailList =orderIds.size() == 0 ? new ArrayList<>() : orderDetailService.lambdaQuery().in(cn.atsoft.dasheng.purchase.entity.RestOrderDetail::getOrderId, orderIds).list();
         for (RestOrderSimpleResult record : page.getRecords()) {
             for (UserResult userResultsById : userResultsByIds) {
                 if (record.getCreateUser().equals(userResultsById.getUserId())){
@@ -128,6 +134,22 @@ public class RestOrderServiceImpl extends ServiceImpl<RestOrderMapper, RestOrder
                     break;
                 }
             }
+
+
+            int arrivalNumber = 0;
+            int purchaseNumber = 0;
+            List<cn.atsoft.dasheng.purchase.entity.RestOrderDetail> details = new ArrayList<>();
+            for (cn.atsoft.dasheng.purchase.entity.RestOrderDetail restOrderDetail : detailList) {
+                if (record.getOrderId().equals(restOrderDetail.getOrderId())){
+                    details.add(restOrderDetail);
+                }
+            }
+            for (cn.atsoft.dasheng.purchase.entity.RestOrderDetail detail : details) {
+                arrivalNumber+=detail.getArrivalNumber();
+                purchaseNumber+=detail.getPurchaseNumber();
+            }
+            record.setArrivalNumber(arrivalNumber);
+            record.setPurchaseNumber(purchaseNumber);
             for (CustomerResult customerResult : customerResults) {
                 if (record.getSellerId().equals(customerResult.getCustomerId())) {
                     record.setSellerResult(customerResult);

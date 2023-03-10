@@ -122,6 +122,19 @@ public class RestInstockOrderController extends BaseController {
 //        return ResponseData.success();
 //    }
 
+    /**
+     * 订单详情查询接口
+     *
+     * @author Captain_Jazz
+     * @Date 2023-02-28
+     */
+    @RequestMapping(value = "/countByBomId", method = RequestMethod.POST)
+    @ApiOperation("订单详情查询接口")
+    public ResponseData countByBomId(RestInstockOrderParam param){
+
+        return ResponseData.success();
+    }
+
 
 
 }

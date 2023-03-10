@@ -225,6 +225,12 @@ public class PartsController extends BaseController {
         return ResponseData.success(results);
     }
 
+    @RequestMapping(value = "/getByBomId", method = RequestMethod.POST)
+    public ResponseData getByBomId(@RequestBody PartsParam param) {
+
+        return ResponseData.success(this.partsService.getByBomId(param.getPartsId(),param.getNumber()));
+    }
+
     /**
      * 查询列表
      *
