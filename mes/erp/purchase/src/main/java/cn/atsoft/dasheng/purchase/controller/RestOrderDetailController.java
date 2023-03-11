@@ -7,8 +7,10 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.purchase.entity.RestOrderDetail;
 import cn.atsoft.dasheng.purchase.model.params.RestOrderDetailParam;
+import cn.atsoft.dasheng.purchase.model.params.ViewParam;
 import cn.atsoft.dasheng.purchase.model.result.RestOrderDetailResult;
 import cn.atsoft.dasheng.purchase.service.RestOrderDetailService;
+import cn.hutool.core.date.DateUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +83,57 @@ public class RestOrderDetailController extends BaseController {
         }
 
         return ResponseData.success( this.orderDetailService.historyList(orderDetailParam) ) ;
+    }
+    /**
+     * 查询列表
+     *
+     * @author song
+     * @Date 2022-02-23
+     */
+    @RequestMapping(value = "/viewOrderDetail", method = RequestMethod.POST)
+    @ApiOperation("历史记录")
+    public ResponseData viewOrderDetail(@RequestBody(required = false) ViewParam param) {
+        if (ToolUtil.isEmpty(param)) {
+            param = new ViewParam();
+        }
+        if(ToolUtil.isEmpty(param.getYear())){
+            param.setYear(String.valueOf(DateUtil.thisYear()));
+        }
+        return ResponseData.success( this.orderDetailService.viewOrderDetail(param) ) ;
+    }
+    /**
+     * 查询列表
+     *
+     * @author song
+     * @Date 2022-02-23
+     */
+    @RequestMapping(value = "/view", method = RequestMethod.POST)
+    @ApiOperation("历史记录")
+    public ResponseData view(@RequestBody(required = false) ViewParam param) {
+        if (ToolUtil.isEmpty(param)) {
+            param = new ViewParam();
+        }
+        if(ToolUtil.isEmpty(param.getYear())){
+            param.setYear(String.valueOf(DateUtil.thisYear()));
+        }
+        return ResponseData.success( this.orderDetailService.view(param) ) ;
+    }
+    /**
+     * 查询列表
+     *
+     * @author song
+     * @Date 2022-02-23
+     */
+    @RequestMapping(value = "/orderView", method = RequestMethod.POST)
+    @ApiOperation("历史记录")
+    public ResponseData orderView(@RequestBody(required = false) ViewParam param) {
+        if (ToolUtil.isEmpty(param)) {
+            param = new ViewParam();
+        }
+        if(ToolUtil.isEmpty(param.getYear())){
+            param.setYear(String.valueOf(DateUtil.thisYear()));
+        }
+        return ResponseData.success( this.orderDetailService.orderView(param) ) ;
     }
 
 

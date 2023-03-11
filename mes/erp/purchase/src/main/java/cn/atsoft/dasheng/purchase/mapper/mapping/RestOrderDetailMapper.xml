@@ -31,7 +31,17 @@
     <sql id="Base_Column_List">remark
     AS "remark",
         detail_id
-        AS "detailId", order_id AS "orderId", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", preorde_number AS "preordeNumber", purchase_number AS "purchaseNumber", unit_id AS "unitId", one_price AS "onePrice", total_price AS "totalPrice", paper_type AS "paperType", rate AS "rate", delivery_date AS "deliveryDate", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId",arrival_number AS "arrivalNumber"
+        AS "detailId", order_id AS "orderId", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", preorde_number AS "preordeNumber", purchase_number AS "purchaseNumber", unit_id AS "unitId", one_price AS "onePrice", total_price AS "totalPrice", paper_type AS "paperType", rate AS "rate", delivery_date AS "deliveryDate", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId",arrival_number AS "arrivalNumber",inStock_Number AS "inStockNumber"
+    </sql>
+    <!-- 汇总统计查询结果列 -->
+    <sql id="View_Column_List">
+        DATE_FORMAT( create_time, '%Y-%m' )  AS "month",
+		DATE_FORMAT( create_time, '%Y' )  AS "year",
+		COUNT(DISTINCT seller_id) AS "sellerCount",
+		COUNT(DISTINCT sku_id) AS "skuCount",
+		SUM(purchase_number) AS "purchaseNumber",
+		sum(total_price)AS "totalPrice",
+		create_time AS "craeteTime"
     </sql>
     <!-- 查询未被加入生产计划的销售订单 -->
     <sql id="ProductionPlanByOrder">
@@ -85,6 +95,74 @@
             and paper_type like CONCAT('%',#{paramCondition.paperType},'%')
         </if>
     </select>
+    <select id="viewOrderDetail" resultType="cn.atsoft.dasheng.purchase.model.result.ViewResult"
+            parameterType="cn.atsoft.dasheng.purchase.model.params.ViewParam">
+        select
+        <include refid="View_Column_List"/>
+        from view_order_detail where 1 = 1
+        <if test="paramCondition.year != null and paramCondition.year!= ''">
+            and year = #{paramCondition.year}
+        </if>
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY month
+    </select>
+    <select id="view" resultType="cn.atsoft.dasheng.purchase.model.result.ViewResult"
+            parameterType="cn.atsoft.dasheng.purchase.model.params.ViewParam">
+        select
+        <include refid="View_Column_List"/>
+        from view_order_detail where 1 = 1
+        <if test="paramCondition.year != null and paramCondition.year!= ''">
+            and year = #{paramCondition.year}
+        </if>
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        GROUP BY year
+    </select>
+    <select id="orderView" resultType="cn.atsoft.dasheng.purchase.model.result.ViewResult"
+            parameterType="cn.atsoft.dasheng.purchase.model.params.ViewParam">
+        select
+        <include refid="View_Column_List"/>
+        from view_order_detail where 1 = 1
+        <if test="paramCondition.year != null and paramCondition.year!= ''">
+            and year = #{paramCondition.year}
+        </if>
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        <if test="paramCondition.theme !=null and paramCondition.theme !=''">
+            and theme like CONCAT('%',#{paramCondition.theme},'%')
+        </if>
+        <if test="paramCondition.coding !=null and paramCondition.coding !=''">
+            and coding like CONCAT('%',#{paramCondition.coding},'%')
+        </if>
+        <if test="paramCondition.sellerId !=null">
+            and seller_id = #{paramCondition.sellerId}
+        </if>
+</select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.purchase.model.params.RestOrderDetailParam">
         select
@@ -132,6 +210,16 @@
         </if>
         <if test="paramCondition.paperType != null">
             and paper_type like CONCAT('%',#{paramCondition.paperType},'%')
+        </if>
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
     </select>
     <select id="pendingProductionPlanByOrder" resultType="cn.atsoft.dasheng.purchase.model.result.RestOrderDetailResult"

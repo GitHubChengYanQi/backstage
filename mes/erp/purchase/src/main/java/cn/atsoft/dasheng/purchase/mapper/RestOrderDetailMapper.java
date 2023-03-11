@@ -2,7 +2,9 @@ package cn.atsoft.dasheng.purchase.mapper;
 
 import cn.atsoft.dasheng.purchase.entity.RestOrderDetail;
 import cn.atsoft.dasheng.purchase.model.params.RestOrderDetailParam;
+import cn.atsoft.dasheng.purchase.model.params.ViewParam;
 import cn.atsoft.dasheng.purchase.model.result.RestOrderDetailResult;
+import cn.atsoft.dasheng.purchase.model.result.ViewResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -34,6 +36,9 @@ public interface RestOrderDetailMapper extends BaseMapper<RestOrderDetail> {
      * @return
      */
     List<RestOrderDetailResult> pendingProductionPlanByOrder(@Param("paramCondition") RestOrderDetailParam paramCondition);
+    List<ViewResult> viewOrderDetail(@Param("paramCondition") ViewParam paramCondition);
+    ViewResult view(@Param("paramCondition") ViewParam paramCondition);
+    ViewResult orderView(@Param("paramCondition") ViewParam paramCondition);
 
     /**
      * 获取map列表
