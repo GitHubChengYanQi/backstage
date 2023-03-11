@@ -15,7 +15,9 @@ import cn.atsoft.dasheng.purchase.entity.RestOrderDetail;
 import cn.atsoft.dasheng.purchase.mapper.RestOrderDetailMapper;
 import cn.atsoft.dasheng.purchase.model.params.RestOrderDetailHistory;
 import cn.atsoft.dasheng.purchase.model.params.RestOrderDetailParam;
+import cn.atsoft.dasheng.purchase.model.params.ViewParam;
 import cn.atsoft.dasheng.purchase.model.result.RestOrderDetailResult;
+import cn.atsoft.dasheng.purchase.model.result.ViewResult;
 import cn.atsoft.dasheng.purchase.service.RestOrderDetailService;
 import cn.atsoft.dasheng.service.IErpBase;
 import cn.hutool.core.bean.BeanUtil;
@@ -97,6 +99,13 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
         }
         format(result);
         return result;
+    }
+    @Override
+    public List<ViewResult> view(ViewParam param) {
+        List<ViewResult> list = this.baseMapper.view( param);
+
+//        format(result);
+        return list;
     }
 
     @Override
