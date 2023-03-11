@@ -62,7 +62,9 @@ public interface RestOrderDetailService extends IService<RestOrderDetail> {
 
     List<RestOrderDetailResult> historyList(RestOrderDetailParam param);
 
-    List<ViewResult> view(ViewParam param);
+    List<ViewResult> viewOrderDetail(ViewParam param);
+
+    ViewResult view(ViewParam param);
 
     /**
      * 查询分页数据，Specification模式

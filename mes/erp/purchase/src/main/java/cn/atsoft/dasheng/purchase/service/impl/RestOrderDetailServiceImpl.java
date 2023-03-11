@@ -101,11 +101,17 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
         return result;
     }
     @Override
-    public List<ViewResult> view(ViewParam param) {
-        List<ViewResult> list = this.baseMapper.view( param);
+    public List<ViewResult> viewOrderDetail(ViewParam param) {
+        List<ViewResult> list = this.baseMapper.viewOrderDetail( param);
 
 //        format(result);
         return list;
+    }
+    @Override
+    public ViewResult view(ViewParam param) {
+
+//        format(result);
+        return this.baseMapper.view( param);
     }
 
     @Override
