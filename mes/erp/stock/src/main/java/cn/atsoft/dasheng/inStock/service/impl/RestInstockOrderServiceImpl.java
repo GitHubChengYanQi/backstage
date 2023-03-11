@@ -169,10 +169,13 @@ public class RestInstockOrderServiceImpl extends ServiceImpl<RestInstockOrderMap
         IErpBase orderDetailService = SpringContextHolder.getBean("RestOrderDetailService");
         IErpBase orderService = SpringContextHolder.getBean("RestOrderService");
 
-
         RestOrder order = orderService.getOrderById(param.getOrderId());
         if (ToolUtil.isEmpty(order)) {
             throw new ServiceException(500, "未找到订单");
+        }
+        List<RestInstockOrder> instockOrderList = this.lambdaQuery().eq(RestInstockOrder::getSource, "order").eq(RestInstockOrder::getSourceId, order.getOrderId()).list();
+        if (instockOrderList.size()>0){
+            throw new ServiceException(500,"此订单已存在入库单,不可直接入库");
         }
 
 
@@ -243,9 +246,7 @@ public class RestInstockOrderServiceImpl extends ServiceImpl<RestInstockOrderMap
                         setCustomerId(order.getSellerId());
                         setSkuId(orderDetail.getSkuId());
                         setCustomerId(orderDetail.getCustomerId());
-                        setInStockNumber(detailParam.getNumber());
-                        setArrivalNumber(detailParam.getNumber());
-                        setNumber(detailParam.getNumber());
+                        setInstockNumber(detailParam.getNumber());
                         setNumber(detailParam.getNumber());
                     }});
                     break;
@@ -375,6 +376,7 @@ public class RestInstockOrderServiceImpl extends ServiceImpl<RestInstockOrderMap
             for (RestInstockOrderDetailParam detailParam : param.getDetailParams()) {
                 if (detailParam.getDetailId().equals(orderDetail.getDetailId())){
                     orderDetail.setArrivalNumber((int) (orderDetail.getArrivalNumber()+detailParam.getNumber()));
+                    orderDetail.setInStockNumber((int) (orderDetail.getInStockNumber()+detailParam.getNumber()));
                 }
             }
         }

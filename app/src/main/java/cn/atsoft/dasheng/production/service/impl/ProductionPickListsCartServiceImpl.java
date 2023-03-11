@@ -14,12 +14,10 @@ import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Anomaly;
 import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.model.result.*;
-import cn.atsoft.dasheng.erp.service.InkindService;
-import cn.atsoft.dasheng.erp.service.ShopCartService;
-import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
@@ -96,6 +94,8 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
     private StorehousePositionsService storehousePositionsService;
     @Autowired
     private InkindService inkindService;
+    @Autowired
+    private AnomalyService anomalyService;
 
 
     @Override
@@ -1150,5 +1150,16 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
         List<StockDetailsResult> stockDetailsResults = BeanUtil.copyToList(list, StockDetailsResult.class);
         stockDetailsService.format(stockDetailsResults);
         return stockDetailsResults;
+    }
+    @Override
+    public Boolean inCart(List<Long> orderIds) {
+        List<Anomaly> anomalies = anomalyService.listByIds(orderIds);
+        for (Anomaly anomaly : anomalies) {
+            Integer count = this.query().eq("sku_id", anomaly.getSkuId()).eq("brand_id", anomaly.getBrandId()).eq("display", 1).eq("status", 0).count();
+            if (count>0){
+                return false;
+            }
+        }
+        return true;
     }
 }

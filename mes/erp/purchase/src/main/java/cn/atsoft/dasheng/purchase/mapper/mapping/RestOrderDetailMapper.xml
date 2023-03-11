@@ -135,6 +135,34 @@
         </if>
         GROUP BY year
     </select>
+    <select id="orderView" resultType="cn.atsoft.dasheng.purchase.model.result.ViewResult"
+            parameterType="cn.atsoft.dasheng.purchase.model.params.ViewParam">
+        select
+        <include refid="View_Column_List"/>
+        from view_order_detail where 1 = 1
+        <if test="paramCondition.year != null and paramCondition.year!= ''">
+            and year = #{paramCondition.year}
+        </if>
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        <if test="paramCondition.theme !=null and paramCondition.theme !=''">
+            and theme like CONCAT('%',#{paramCondition.theme},'%')
+        </if>
+        <if test="paramCondition.coding !=null and paramCondition.coding !=''">
+            and coding like CONCAT('%',#{paramCondition.coding},'%')
+        </if>
+        <if test="paramCondition.sellerId !=null">
+            and seller_id = #{paramCondition.sellerId}
+        </if>
+</select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.purchase.model.params.RestOrderDetailParam">
         select
@@ -182,6 +210,16 @@
         </if>
         <if test="paramCondition.paperType != null">
             and paper_type like CONCAT('%',#{paramCondition.paperType},'%')
+        </if>
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
     </select>
     <select id="pendingProductionPlanByOrder" resultType="cn.atsoft.dasheng.purchase.model.result.RestOrderDetailResult"

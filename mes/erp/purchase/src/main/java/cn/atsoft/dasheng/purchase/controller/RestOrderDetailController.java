@@ -118,6 +118,23 @@ public class RestOrderDetailController extends BaseController {
         }
         return ResponseData.success( this.orderDetailService.view(param) ) ;
     }
+    /**
+     * 查询列表
+     *
+     * @author song
+     * @Date 2022-02-23
+     */
+    @RequestMapping(value = "/orderView", method = RequestMethod.POST)
+    @ApiOperation("历史记录")
+    public ResponseData orderView(@RequestBody(required = false) ViewParam param) {
+        if (ToolUtil.isEmpty(param)) {
+            param = new ViewParam();
+        }
+        if(ToolUtil.isEmpty(param.getYear())){
+            param.setYear(String.valueOf(DateUtil.thisYear()));
+        }
+        return ResponseData.success( this.orderDetailService.orderView(param) ) ;
+    }
 
 
 }
