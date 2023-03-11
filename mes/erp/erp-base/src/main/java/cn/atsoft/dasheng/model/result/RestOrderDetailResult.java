@@ -30,6 +30,8 @@ public class RestOrderDetailResult implements Serializable {
     List<Map<String,Object>> bindPositions;
 
     private SkuListResult skuResult;
+
+    private Integer inStockNumber;
     /**
      * 订单id
      */

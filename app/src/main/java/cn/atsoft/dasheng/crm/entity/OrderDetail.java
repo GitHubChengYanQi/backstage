@@ -85,6 +85,12 @@ public class OrderDetail implements Serializable {
     private Integer paperType;
 
     /**
+     * 票据类型
+     */
+    @TableField("inStock_number")
+    private Integer inStockNumber;
+
+    /**
      * 锐率
      */
     @TableField("rate")
@@ -172,6 +178,14 @@ public class OrderDetail implements Serializable {
 
     public Long getSkuId() {
         return skuId;
+    }
+
+    public Integer getInStockNumber() {
+        return inStockNumber;
+    }
+
+    public void setInStockNumber(Integer inStockNumber) {
+        this.inStockNumber = inStockNumber;
     }
 
     public void setSkuId(Long skuId) {

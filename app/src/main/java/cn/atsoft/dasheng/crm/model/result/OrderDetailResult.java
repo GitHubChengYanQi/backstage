@@ -37,6 +37,7 @@ public class OrderDetailResult implements Serializable {
     private SkuResult skuResult;
     private BrandResult brandResult;
     private CustomerResult customerResult;
+    private Integer inStockNumber;
     private Unit unit;
     private TaxRate taxRate;
     private String remark;

@@ -256,6 +256,19 @@ public class ProductionPickListsCartController extends BaseController {
         return ResponseData.success(this.productionPickListsCartService.getCartInkindByLists(param));
     }
 
+    /* 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-25
+     */
+    @RequestMapping(value = "/inCartCheck", method = RequestMethod.POST)
+    public ResponseData inCartCheck(@RequestBody(required = false) ProductionPickListsCartParam param) {
+        if (ToolUtil.isEmpty(param)) {
+            param = new ProductionPickListsCartParam();
+        }
+        return ResponseData.success(this.productionPickListsCartService.inCart(param.getAnomalyIds()));
+    }
+
 
 
 }
