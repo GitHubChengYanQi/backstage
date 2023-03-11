@@ -131,6 +131,19 @@ public class RestOrderDetail implements Serializable {
      */
     @TableField("arrival_number")
     private Integer arrivalNumber;
+    /**
+     * 入库数量
+     */
+    @TableField("inStock_number")
+    private Integer inStockNumber;
+
+    public Integer getInStockNumber() {
+        return inStockNumber;
+    }
+
+    public void setInStockNumber(Integer inStockNumber) {
+        this.inStockNumber = inStockNumber;
+    }
 
     public Integer getArrivalNumber() {
         return arrivalNumber;

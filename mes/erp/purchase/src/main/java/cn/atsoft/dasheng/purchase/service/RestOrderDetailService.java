@@ -3,7 +3,9 @@ package cn.atsoft.dasheng.purchase.service;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.purchase.entity.RestOrderDetail;
 import cn.atsoft.dasheng.purchase.model.params.RestOrderDetailParam;
+import cn.atsoft.dasheng.purchase.model.params.ViewParam;
 import cn.atsoft.dasheng.purchase.model.result.RestOrderDetailResult;
+import cn.atsoft.dasheng.purchase.model.result.ViewResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -59,6 +61,8 @@ public interface RestOrderDetailService extends IService<RestOrderDetail> {
     List<RestOrderDetailResult> findListBySpec(RestOrderDetailParam param);
 
     List<RestOrderDetailResult> historyList(RestOrderDetailParam param);
+
+    List<ViewResult> view(ViewParam param);
 
     /**
      * 查询分页数据，Specification模式

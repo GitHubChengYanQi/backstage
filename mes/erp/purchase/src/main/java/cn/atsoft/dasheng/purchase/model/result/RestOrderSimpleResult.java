@@ -29,6 +29,7 @@ public class RestOrderSimpleResult implements Serializable {
 
     private Integer arrivalNumber;
     private Integer purchaseNumber;
+    private Integer inStockNumber;
 
     /**
      * 卖方id

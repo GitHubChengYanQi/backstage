@@ -394,6 +394,15 @@ public class RestOutStockOrderController extends BaseController {
 //        return ResponseData.success(productionPickListsService.listByCode(code));
 //    }
 
+    @RequestMapping(value = "/addByProduction", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public ResponseData addByProduction(@RequestBody RestOutStockOrderParam productionPickListsParam) {
+//        List<Map<String, Object>> maps = productionPickListsService.listByUser(productionPickListsParam);
+//        return ResponseData.success(maps);
+        return ResponseData.success();
+    }
+
+
 
 }
 

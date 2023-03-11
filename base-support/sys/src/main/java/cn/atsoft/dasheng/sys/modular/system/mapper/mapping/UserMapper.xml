@@ -472,6 +472,9 @@
         <if test="paramCondition.userId!=null and paramCondition.userId!= ''">
             and users.user_id = #{paramCondition.userName}
         </if>
+          <if test="paramCondition.deptId!=null">
+            and users.dept_id = #{paramCondition.deptId}
+        </if>
         <if test="paramCondition.userIds!=null and paramCondition.userId.size >0">
             and user_id in
             <foreach collection="paramCondition.userIds" index="index" item="userId" separator="," open="(" close=")" >

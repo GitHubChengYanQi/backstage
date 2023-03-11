@@ -138,6 +138,7 @@ public class RestOrderServiceImpl extends ServiceImpl<RestOrderMapper, RestOrder
 
             int arrivalNumber = 0;
             int purchaseNumber = 0;
+            int inStockNumber = 0;
             List<cn.atsoft.dasheng.purchase.entity.RestOrderDetail> details = new ArrayList<>();
             for (cn.atsoft.dasheng.purchase.entity.RestOrderDetail restOrderDetail : detailList) {
                 if (record.getOrderId().equals(restOrderDetail.getOrderId())){
@@ -147,7 +148,9 @@ public class RestOrderServiceImpl extends ServiceImpl<RestOrderMapper, RestOrder
             for (cn.atsoft.dasheng.purchase.entity.RestOrderDetail detail : details) {
                 arrivalNumber+=detail.getArrivalNumber();
                 purchaseNumber+=detail.getPurchaseNumber();
+                inStockNumber += detail.getInStockNumber();
             }
+            record.setInStockNumber(inStockNumber);
             record.setArrivalNumber(arrivalNumber);
             record.setPurchaseNumber(purchaseNumber);
             for (CustomerResult customerResult : customerResults) {

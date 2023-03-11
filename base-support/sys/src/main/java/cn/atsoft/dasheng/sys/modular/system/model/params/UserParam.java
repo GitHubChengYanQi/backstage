@@ -13,5 +13,7 @@ public class UserParam implements Serializable, BaseValidatingParam {
 
     private Long userId;
 
+    private Long deptId;
+
     private List<Long> userIds;
 }
