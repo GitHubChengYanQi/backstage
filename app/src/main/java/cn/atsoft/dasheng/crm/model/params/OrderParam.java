@@ -34,6 +34,9 @@ public class OrderParam implements Serializable, BaseValidatingParam {
     private String leadTime;
 
     private String skuName;
+    private String startTime;
+
+    private String endTime;
     private List<Long> purchaseListIds;
 
     private String customerName;

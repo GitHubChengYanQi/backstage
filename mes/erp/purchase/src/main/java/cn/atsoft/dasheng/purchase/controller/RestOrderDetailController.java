@@ -130,9 +130,9 @@ public class RestOrderDetailController extends BaseController {
         if (ToolUtil.isEmpty(param)) {
             param = new ViewParam();
         }
-        if(ToolUtil.isEmpty(param.getYear())){
-            param.setYear(String.valueOf(DateUtil.thisYear()));
-        }
+//        if(ToolUtil.isEmpty(param.getYear())){
+//            param.setYear(String.valueOf(DateUtil.thisYear()));
+//        }
         return ResponseData.success( this.orderDetailService.orderView(param) ) ;
     }
 
