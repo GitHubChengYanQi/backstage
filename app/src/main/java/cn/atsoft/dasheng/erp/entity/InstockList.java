@@ -144,6 +144,20 @@ public class InstockList implements Serializable {
     @TableField("instock_order_id")
     private Long instockOrderId;
 
+    /**
+     * 订单id
+     */
+    @TableField("detail_id")
+    private Long detailId;
+
+
+    public Long getDetailId() {
+        return detailId;
+    }
+
+    public void setDetailId(Long detailId) {
+        this.detailId = detailId;
+    }
 
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;

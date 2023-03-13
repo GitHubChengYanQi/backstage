@@ -202,8 +202,9 @@ public class RestInstockOrderServiceImpl extends ServiceImpl<RestInstockOrderMap
         if (ToolUtil.isNotEmpty(order.getRemark())) {
             entity.setRemark(order.getRemark());
         }
+        entity.setOrderId(order.getOrderId());
         entity.setSource("order");
-        entity.setSourceId(param.getOrderId());
+        entity.setSourceId(order.getOrderId());
         entity.setStatus(99L);
         this.save(entity);
 

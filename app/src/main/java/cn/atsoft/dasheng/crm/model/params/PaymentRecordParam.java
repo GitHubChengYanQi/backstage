@@ -106,6 +106,12 @@ public class PaymentRecordParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("状态")
     private Integer status;
 
+    /**
+     * 付款日期
+     */
+    @ApiModelProperty("付款日期")
+    private Date paymentDate;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 

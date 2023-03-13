@@ -163,14 +163,11 @@ public class RestInstockOrder implements Serializable {
      */
     @TableField("origin")
     private String origin;
-
-
     /**
      * 来源
      */
     @TableField("order_id")
     private Long orderId;
-
 
     /**
      * 入库类型

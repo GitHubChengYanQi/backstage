@@ -1783,10 +1783,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     public SkuResult getSku(Long id) {
         Sku sku = this.getById(id);
-        SkuResult skuResult = BeanUtil.copyProperties(sku, SkuResult.class);
         if (ToolUtil.isEmpty(sku)) {
-            return skuResult;
+           throw new ServiceException(500,"信息未找到");
         }
+        SkuResult skuResult = BeanUtil.copyProperties(sku, SkuResult.class);
+
         this.format(new ArrayList<SkuResult>() {{
             add(skuResult);
         }});

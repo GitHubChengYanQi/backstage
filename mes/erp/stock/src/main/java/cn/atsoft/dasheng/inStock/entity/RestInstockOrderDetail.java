@@ -138,6 +138,11 @@ public class RestInstockOrderDetail implements Serializable {
     @TableField("instock_order_id")
     private Long instockOrderId;
 
+    /**
+     * 订单id
+     */
+    @TableField("detail_id")
+    private Long detailId;
 
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
@@ -159,6 +164,15 @@ public class RestInstockOrderDetail implements Serializable {
      */
     @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
+
+
+    public Long getDetailId() {
+        return detailId;
+    }
+
+    public void setDetailId(Long detailId) {
+        this.detailId = detailId;
+    }
 
     public String getAnomalyHandle() {
         return anomalyHandle;

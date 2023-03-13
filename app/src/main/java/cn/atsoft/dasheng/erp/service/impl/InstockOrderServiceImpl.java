@@ -321,6 +321,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 instockList.setRealNumber(instockRequest.getNumber());
                 instockList.setInstockOrderId(entity.getInstockOrderId());
                 instockList.setInstockNumber(0L);
+                instockList.setDetailId(instockRequest.getOrderDetailId());
                 instockList.setBrandId(instockRequest.getBrandId());
                 instockList.setCustomerId(instockRequest.getCustomerId());
                 instockList.setLotNumber(instockRequest.getLotNumber());
@@ -992,11 +993,17 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
 
         InstockList instockList = instockListService.getById(listParam.getInstockListId());
+
         if (ToolUtil.isEmpty(instockList)) {
             throw new ServiceException(500, "参数不正确");
         }
         instockList.setRealNumber(instockList.getRealNumber() - listParam.getNumber());
         instockList.setInstockNumber(instockList.getInstockNumber() + listParam.getNumber());
+        if (ToolUtil.isNotEmpty(instockList.getDetailId())) {
+            OrderDetail orderDetail = orderDetailService.getById(instockList.getDetailId());
+            orderDetail.setInStockNumber(orderDetail.getInStockNumber()+Math.toIntExact(instockList.getInstockNumber()));
+            orderDetailService.updateById(orderDetail);
+        }
         if (instockList.getRealNumber() < 0) {
             throw new ServiceException(500, "当前入库数量与单据数量不符");
         }
