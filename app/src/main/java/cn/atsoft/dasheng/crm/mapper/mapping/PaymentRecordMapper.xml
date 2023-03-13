@@ -25,167 +25,176 @@
         record_id AS "recordId", detail_id AS "detailId", payment_date AS "paymentDate",payment_id AS "paymentId", payment_amount AS "paymentAmount", remark AS "remark", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", order_id AS "orderId", status AS "status"
     </sql>
     <sql id="List">
-     o.coding AS "Coding", p.record_id AS "recordId", p.detail_id AS "detailId", p.payment_id AS "paymentId", p.payment_amount AS "paymentAmount", p.remark AS "remark", p.create_user AS "createUser", p.update_user AS "updateUser", p.create_time AS "createTime", p.update_time AS "updateTime", p.display AS "display", p.deptId AS "deptId", p.order_id AS "orderId", p.status AS "status"
+        o
+        .
+        coding
+        AS "Coding", p.record_id AS "recordId", p.detail_id AS "detailId", p.payment_id AS "paymentId", p.payment_amount AS "paymentAmount", p.remark AS "remark", p.create_user AS "createUser", p.update_user AS "updateUser", p.create_time AS "createTime", p.update_time AS "updateTime", p.display AS "display", p.deptId AS "deptId", p.order_id AS "orderId", p.status AS "status"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.PaymentRecordResult" parameterType="cn.atsoft.dasheng.crm.model.params.PaymentRecordParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.PaymentRecordResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.PaymentRecordParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_payment_record where 1 = 1
-            <if test="paramCondition.recordId != null">
-                and record_id like CONCAT('%',#{paramCondition.recordId},'%')
-            </if>
-            <if test="paramCondition.detailId != null">
-                and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
-            </if>
-            <if test="paramCondition.paymentId != null">
-                and payment_id like CONCAT('%',#{paramCondition.paymentId},'%')
-            </if>
-            <if test="paramCondition.paymentAmount != null">
-                and payment_amount like CONCAT('%',#{paramCondition.paymentAmount},'%')
-            </if>
-            <if test="paramCondition.remark != null and paramCondition.remark != ''">
-                and remark like CONCAT('%',#{paramCondition.remark},'%')
-            </if>
-            <if test="paramCondition.createUser != null">
-                and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-            </if>
-            <if test="paramCondition.updateUser != null">
-                and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-            </if>
-            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-            </if>
-            <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-            </if>
-            <if test="paramCondition.display != null">
-                and display like CONCAT('%',#{paramCondition.display},'%')
-            </if>
-            <if test="paramCondition.deptId != null">
-                and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-            </if>
+        <if test="paramCondition.recordId != null">
+            and record_id like CONCAT('%',#{paramCondition.recordId},'%')
+        </if>
+        <if test="paramCondition.detailId != null">
+            and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+        </if>
+        <if test="paramCondition.paymentId != null">
+            and payment_id like CONCAT('%',#{paramCondition.paymentId},'%')
+        </if>
+        <if test="paramCondition.paymentAmount != null">
+            and payment_amount like CONCAT('%',#{paramCondition.paymentAmount},'%')
+        </if>
+        <if test="paramCondition.remark != null and paramCondition.remark != ''">
+            and remark like CONCAT('%',#{paramCondition.remark},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.PaymentRecordParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_payment_record where 1 = 1
-                <if test="paramCondition.recordId != null">
-                        and record_id like CONCAT('%',#{paramCondition.recordId},'%')
-                </if>
-                <if test="paramCondition.detailId != null">
-                        and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
-                </if>
-                <if test="paramCondition.paymentId != null">
-                        and payment_id like CONCAT('%',#{paramCondition.paymentId},'%')
-                </if>
-                <if test="paramCondition.paymentAmount != null">
-                        and payment_amount like CONCAT('%',#{paramCondition.paymentAmount},'%')
-                </if>
-                <if test="paramCondition.remark != null and paramCondition.remark != ''">
-                        and remark like CONCAT('%',#{paramCondition.remark},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
+        <if test="paramCondition.recordId != null">
+            and record_id like CONCAT('%',#{paramCondition.recordId},'%')
+        </if>
+        <if test="paramCondition.detailId != null">
+            and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+        </if>
+        <if test="paramCondition.paymentId != null">
+            and payment_id like CONCAT('%',#{paramCondition.paymentId},'%')
+        </if>
+        <if test="paramCondition.paymentAmount != null">
+            and payment_amount like CONCAT('%',#{paramCondition.paymentAmount},'%')
+        </if>
+        <if test="paramCondition.remark != null and paramCondition.remark != ''">
+            and remark like CONCAT('%',#{paramCondition.remark},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.PaymentRecordResult" parameterType="cn.atsoft.dasheng.crm.model.params.PaymentRecordParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.PaymentRecordResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.PaymentRecordParam">
         select
         <include refid="List"/>
         from daoxin_crm_payment_record p LEFT JOIN daoxin_crm_order o ON p.order_id = o.order_id where 1 = 1
-                <if test="paramCondition.recordId != null">
-                        and record_id like CONCAT('%',#{paramCondition.recordId},'%')
-                </if>
-                <if test="paramCondition.detailId != null">
-                        and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
-                </if>
-                <if test="paramCondition.paymentId != null">
-                        and payment_id like CONCAT('%',#{paramCondition.paymentId},'%')
-                </if>
-                <if test="paramCondition.money != null and paramCondition.money.min != null and paramCondition.money.max !=null">
-                        and p.payment_Amount  between  #{paramCondition.money.min} AND #{paramCondition.money.max}
-                </if>
-                <if test="paramCondition.remark != null and paramCondition.remark != ''">
-                        and remark like CONCAT('%',#{paramCondition.remark},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
-                <if test="paramCondition.status != null">
-                        and p.status = #{paramCondition.status}
-                </if>
+        <if test="paramCondition.recordId != null">
+            and record_id like CONCAT('%',#{paramCondition.recordId},'%')
+        </if>
+        <if test="paramCondition.detailId != null">
+            and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+        </if>
+        <if test="paramCondition.paymentId != null">
+            and payment_id like CONCAT('%',#{paramCondition.paymentId},'%')
+        </if>
+        <if test="paramCondition.money != null and paramCondition.money.min != null and paramCondition.money.max !=null">
+            and p.payment_Amount between #{paramCondition.money.min} AND #{paramCondition.money.max}
+        </if>
+        <if test="paramCondition.remark != null and paramCondition.remark != ''">
+            and remark like CONCAT('%',#{paramCondition.remark},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.orderId != null">
+            and p.order_id = #{paramCondition.orderId}
+        </if>
+        <if test="paramCondition.status != null">
+            and p.status = #{paramCondition.status}
+        </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.PaymentRecordParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.crm.model.params.PaymentRecordParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_payment_record where 1 = 1
-                <if test="paramCondition.recordId != null">
-                        and record_id like CONCAT('%',#{paramCondition.recordId},'%')
-                </if>
-                <if test="paramCondition.detailId != null">
-                        and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
-                </if>
-                <if test="paramCondition.paymentId != null">
-                        and payment_id like CONCAT('%',#{paramCondition.paymentId},'%')
-                </if>
-                <if test="paramCondition.paymentAmount != null">
-                        and payment_amount like CONCAT('%',#{paramCondition.paymentAmount},'%')
-                </if>
-                <if test="paramCondition.remark != null and paramCondition.remark != ''">
-                        and remark like CONCAT('%',#{paramCondition.remark},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
+        <if test="paramCondition.recordId != null">
+            and record_id like CONCAT('%',#{paramCondition.recordId},'%')
+        </if>
+        <if test="paramCondition.detailId != null">
+            and detail_id like CONCAT('%',#{paramCondition.detailId},'%')
+        </if>
+        <if test="paramCondition.paymentId != null">
+            and payment_id like CONCAT('%',#{paramCondition.paymentId},'%')
+        </if>
+        <if test="paramCondition.paymentAmount != null">
+            and payment_amount like CONCAT('%',#{paramCondition.paymentAmount},'%')
+        </if>
+        <if test="paramCondition.remark != null and paramCondition.remark != ''">
+            and remark like CONCAT('%',#{paramCondition.remark},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
     </select>
 
 </mapper>
