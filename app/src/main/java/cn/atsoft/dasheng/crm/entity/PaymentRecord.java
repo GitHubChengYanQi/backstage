@@ -72,6 +72,13 @@ public class PaymentRecord implements Serializable {
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
+
+    /**
+     * 创建时间
+     */
+    @TableField(value = "payment_date")
+    private Date paymentDate;
+
     /**
      * 修改时间
      */
@@ -101,6 +108,14 @@ public class PaymentRecord implements Serializable {
      */
     @TableField("status")
     private Integer status;
+
+    public Date getPaymentDate() {
+        return paymentDate;
+    }
+
+    public void setPaymentDate(Date paymentDate) {
+        this.paymentDate = paymentDate;
+    }
 
     public Integer getStatus() {
         return status;

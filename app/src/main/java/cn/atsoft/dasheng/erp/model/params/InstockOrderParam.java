@@ -184,7 +184,7 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
      * 订单id
      */
     @ApiModelProperty("订单id")
-    private String orderId;
+    private Long orderId;
 
     /**
      * 到货数量

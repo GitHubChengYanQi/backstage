@@ -112,4 +112,9 @@ public class RestOrderDetail implements Serializable {
      */
     private Integer arrivalNumber;
 
+    /**
+     * 到货数量
+     */
+    private Integer inStockNumber;
+
 }

@@ -163,7 +163,11 @@ public class RestInstockOrder implements Serializable {
      */
     @TableField("origin")
     private String origin;
-
+    /**
+     * 来源
+     */
+    @TableField("order_id")
+    private Long orderId;
 
     /**
      * 入库类型
@@ -361,6 +365,14 @@ public class RestInstockOrder implements Serializable {
 
     public void setStorehousePositionsId(Long storehousePositionsId) {
         this.storehousePositionsId = storehousePositionsId;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 
     public String getNoticeId() {

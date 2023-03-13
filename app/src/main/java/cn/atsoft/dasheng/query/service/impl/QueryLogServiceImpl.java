@@ -38,14 +38,14 @@ public class QueryLogServiceImpl extends ServiceImpl<QueryLogMapper, QueryLog> i
             queryLogQueryWrapper.eq("record", param.getRecord());
             queryLogQueryWrapper.eq("form_type", param.getFormType());
             queryLogQueryWrapper.last("limit 1");
-            queryLogQueryWrapper.eq("display",1);
+            queryLogQueryWrapper.eq("display", 1);
             QueryLog queryLog = this.getOne(queryLogQueryWrapper);
             if (ToolUtil.isNotEmpty(queryLog)) {
-                return;
-            } else {
-                QueryLog entity = getEntity(param);
-                this.save(entity);
+                queryLog.setDisplay(0);
+                this.updateById(queryLog);
             }
+            QueryLog entity = getEntity(param);
+            this.save(entity);
         }
 
 

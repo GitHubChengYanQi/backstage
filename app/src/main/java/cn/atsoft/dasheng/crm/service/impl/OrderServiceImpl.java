@@ -779,7 +779,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<OrderDetailResult> detailResults = BeanUtil.copyToList(orderDetails, OrderDetailResult.class, new CopyOptions());
         detailService.format(detailResults);
         for (OrderResult datum : data) {
-                        List<OrderDetailResult> orderDetailResults = new ArrayList<>();
+            List<OrderDetailResult> orderDetailResults = new ArrayList<>();
             for (OrderDetailResult detailResult : detailResults) {
                 if (detailResult.getOrderId().equals(datum.getOrderId())) {
                     orderDetailResults.add(detailResult);

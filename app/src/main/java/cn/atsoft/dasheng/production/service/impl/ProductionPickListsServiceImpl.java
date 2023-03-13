@@ -638,7 +638,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         wxCpSendTemplate.sendMarkDownTemplate(new MarkDownTemplate() {{
             setItems("领料通知");
             setUrl(mobileService.getMobileConfig().getUrl() + "/#/ReceiptsDetail?id=" + param.getTaskId());
-            setDescription("库管那里有新的物料待领取 \n 领料码："+"<font color = \"info\">"+code+"");
+            setDescription("库管那里有新的物料待领取 \n 领料码："+code);
             setFunction(MarkDownTemplateTypeEnum.pickSend);
             setType(0);
             setUserId(LoginContextHolder.getContext().getUserId());

@@ -38,6 +38,7 @@ public interface RestOrderDetailMapper extends BaseMapper<RestOrderDetail> {
     List<RestOrderDetailResult> pendingProductionPlanByOrder(@Param("paramCondition") RestOrderDetailParam paramCondition);
     List<ViewResult> viewOrderDetail(@Param("paramCondition") ViewParam paramCondition);
     ViewResult view(@Param("paramCondition") ViewParam paramCondition);
+    ViewResult orderView(@Param("paramCondition") ViewParam paramCondition);
 
     /**
      * 获取map列表

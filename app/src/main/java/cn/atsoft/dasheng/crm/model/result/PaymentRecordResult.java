@@ -101,6 +101,12 @@ public class PaymentRecordResult implements Serializable {
     private Long status;
 
     /**
+     * 付款日期
+     */
+    @ApiModelProperty("付款日期")
+    private Date paymentDate;
+
+    /**
      * 编码
      */
     @ApiModelProperty("编码")

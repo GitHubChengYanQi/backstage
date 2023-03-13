@@ -113,6 +113,12 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
 //        format(result);
         return this.baseMapper.view( param);
     }
+    @Override
+    public ViewResult orderView(ViewParam param) {
+
+//        format(result);
+        return this.baseMapper.orderView( param);
+    }
 
     @Override
     public PageInfo<RestOrderDetailResult> findPageBySpec(RestOrderDetailParam param) {

@@ -42,8 +42,8 @@ public class RestInstockOrderDetail implements Serializable {
     /**
      * 入库数量
      */
-    @TableField("inStock_number")
-    private Long inStockNumber;
+    @TableField("instock_number")
+    private Long instockNumber;
 
 
     /**
@@ -138,6 +138,11 @@ public class RestInstockOrderDetail implements Serializable {
     @TableField("instock_order_id")
     private Long instockOrderId;
 
+    /**
+     * 订单id
+     */
+    @TableField("detail_id")
+    private Long detailId;
 
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
@@ -154,9 +159,6 @@ public class RestInstockOrderDetail implements Serializable {
     @TableField("display")
     private Integer display;
 
-    @TableField("arrival_number")
-    private Long arrivalNumber;
-
     /**
      * 部门编号
      */
@@ -164,12 +166,12 @@ public class RestInstockOrderDetail implements Serializable {
     private Long deptId;
 
 
-    public Long getArrivalNumber() {
-        return arrivalNumber;
+    public Long getDetailId() {
+        return detailId;
     }
 
-    public void setArrivalNumber(Long arrivalNumber) {
-        this.arrivalNumber = arrivalNumber;
+    public void setDetailId(Long detailId) {
+        this.detailId = detailId;
     }
 
     public String getAnomalyHandle() {
@@ -350,11 +352,11 @@ public class RestInstockOrderDetail implements Serializable {
 
 
     public Long getInstockNumber() {
-        return inStockNumber;
+        return instockNumber;
     }
 
-    public void setInStockNumber(Long inStockNumber) {
-        this.inStockNumber = inStockNumber;
+    public void setInstockNumber(Long instockNumber) {
+        this.instockNumber = instockNumber;
     }
 
     public Long getRealNumber() {

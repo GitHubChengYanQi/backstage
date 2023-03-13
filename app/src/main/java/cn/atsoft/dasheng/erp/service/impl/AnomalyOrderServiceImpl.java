@@ -144,6 +144,9 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     @Autowired
     private SkuHandleRecordService skuHandleRecordService;
 
+    @Autowired
+    private ProductionPickListsCartService pickListsCartService;
+
 
     @Override
     @Transactional
@@ -151,6 +154,11 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
 
         if (ToolUtil.isEmpty(param.getAnomalyParams()) && param.getAnomalyParams().size() == 0) {
             throw new ServiceException(500, "没有异常件");
+        }
+        List<Long> anomalyIds = param.getAnomalyParams().stream().map(AnomalyParam::getAnomalyId).distinct().collect(Collectors.toList());
+
+        if (anomalyIds.size() >0 && pickListsCartService.inCart(anomalyIds)) {
+            throw new ServiceException(500, "备料区存在此物料,不可盘点");
         }
 
         if (ToolUtil.isEmpty(param.getCoding())) {
@@ -166,8 +174,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         AnomalyOrder entity = getEntity(param);
         this.save(entity);
 
-
-        List<Long> anomalyIds = new ArrayList<>();
+        anomalyIds = new ArrayList<>();
         for (AnomalyParam anomalyParam : param.getAnomalyParams()) {
             if (ToolUtil.isEmpty(anomalyParam.getAnomalyId())) {
                 throw new ServiceException(500, "缺少 异常id");
@@ -208,8 +215,9 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
         ShopCart shopCart = new ShopCart();
         shopCart.setStatus(99);
         if (ToolUtil.isNotEmpty(anomalyIds)) {
+            List<Long> finalAnomalyIds = anomalyIds;
             shopCartService.update(shopCart, new QueryWrapper<ShopCart>() {{
-                in("form_id", anomalyIds);
+                in("form_id", finalAnomalyIds);
             }});
         }
 

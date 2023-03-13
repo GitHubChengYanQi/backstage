@@ -174,10 +174,26 @@ public class InstockOrder implements Serializable {
 
 
     /**
+     * 来源
+     */
+    @TableField("order_id")
+    private Long orderId;
+
+
+    /**
      * 入库类型
      */
     @TableField("instock_type")
     private String instockType;
+
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
+    }
 
     public String getInstockType() {
         return instockType;

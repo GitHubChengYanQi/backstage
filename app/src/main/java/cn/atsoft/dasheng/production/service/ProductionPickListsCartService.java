@@ -113,6 +113,5 @@ public interface ProductionPickListsCartService extends IService<ProductionPickL
     List<StockDetailsResult> getCartInkindByLists(ProductionPickListsCartParam param);
 
 
-
-
+    Boolean inCart(List<Long> orderIds);
 }

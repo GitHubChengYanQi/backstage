@@ -25,6 +25,8 @@ public class RestOrderDetailResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private SkuListResult skuResult;
+
+    private Integer inStockNumber;
     /**
      * 订单id
      */
