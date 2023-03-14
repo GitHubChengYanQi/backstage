@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.appBase.model.params;
 
+import cn.atsoft.dasheng.appBase.model.enums.OssEnums;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -26,6 +27,7 @@ public class MediaParam implements Serializable, BaseValidatingParam {
     private List<Long> mediaIds;
     private String option;
     private String fieldName;
+    private OssEnums model;
 
     /**
      * 媒体ID

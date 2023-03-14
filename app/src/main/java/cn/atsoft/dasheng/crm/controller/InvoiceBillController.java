@@ -59,18 +59,18 @@ public class InvoiceBillController extends BaseController {
         return ResponseData.success();
     }
 
-    /**
-     * 删除接口
-     *
-     * @author song
-     * @Date 2022-04-22
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody InvoiceBillParam invoiceBillParam)  {
-        this.invoiceBillService.delete(invoiceBillParam);
-        return ResponseData.success();
-    }
+//    /**
+//     * 删除接口
+//     *
+//     * @author song
+//     * @Date 2022-04-22
+//     */
+//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+//    @ApiOperation("删除")
+//    public ResponseData delete(@RequestBody InvoiceBillParam invoiceBillParam)  {
+//        this.invoiceBillService.delete(invoiceBillParam);
+//        return ResponseData.success();
+//    }
 
     /**
      * 查看详情接口

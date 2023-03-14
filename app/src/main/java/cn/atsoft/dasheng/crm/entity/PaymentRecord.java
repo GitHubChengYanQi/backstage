@@ -46,7 +46,7 @@ public class PaymentRecord implements Serializable {
      * 付款金额
      */
     @TableField("payment_amount")
-    private Integer paymentAmount;
+    private Long paymentAmount;
 
     /**
      * 备注
@@ -109,6 +109,21 @@ public class PaymentRecord implements Serializable {
     @TableField("status")
     private Integer status;
 
+    /**
+     * 附件
+     */
+    @TableField("field")
+    private String field;
+
+
+    public String getField() {
+        return field;
+    }
+
+    public void setField(String field) {
+        this.field = field;
+    }
+
     public Date getPaymentDate() {
         return paymentDate;
     }
@@ -157,11 +172,11 @@ public class PaymentRecord implements Serializable {
         this.paymentId = paymentId;
     }
 
-    public Integer getPaymentAmount() {
+    public Long getPaymentAmount() {
         return paymentAmount;
     }
 
-    public void setPaymentAmount(Integer paymentAmount) {
+    public void setPaymentAmount(Long paymentAmount) {
         this.paymentAmount = paymentAmount;
     }
 

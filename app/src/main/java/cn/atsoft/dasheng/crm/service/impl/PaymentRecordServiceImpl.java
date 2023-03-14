@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
+import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
+import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -27,7 +29,9 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -47,7 +51,7 @@ public class PaymentRecordServiceImpl extends ServiceImpl<PaymentRecordMapper, P
     @Autowired
     private OrderService orderService;
     @Autowired
-    private PaymentRecordService paymentRecordService;
+    private MediaService mediaService;
 
     @Override
     @Transactional
@@ -56,7 +60,13 @@ public class PaymentRecordServiceImpl extends ServiceImpl<PaymentRecordMapper, P
         this.save(entity);
         return entity;
     }
-
+    @Override
+    public List<PaymentRecord> listByOrderIds(List<Long> orderIds){
+        if (ToolUtil.isEmpty(orderIds) || orderIds.size() == 0){
+            return new ArrayList<>();
+        }
+        return this.lambdaQuery().in(PaymentRecord::getOrderId,orderIds).list();
+    }
 
     @Override
     public void delete(PaymentRecordParam param) {
@@ -107,6 +117,7 @@ public class PaymentRecordServiceImpl extends ServiceImpl<PaymentRecordMapper, P
     public PageInfo<PaymentRecordResult> findPageBySpec(PaymentRecordParam param) {
         Page<PaymentRecordResult> pageContext = getPageContext();
         IPage<PaymentRecordResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -132,12 +143,12 @@ public class PaymentRecordServiceImpl extends ServiceImpl<PaymentRecordMapper, P
         PaymentDetail detail = detailService.getById(detailId);
 
         List<PaymentRecord> records = this.query().eq("detail_id", detailId).list();
-        int money = 0;
+        Long money = 0L;
         for (PaymentRecord record : records) {
             money = money + record.getPaymentAmount();
         }
         detail.setRealPay(money);
-        if (money == detail.getMoney()) {
+        if (money.equals(detail.getMoney())) {
             detail.setStatus(99);
         }
         detailService.updateById(detail);  //更新详情状态
@@ -150,10 +161,31 @@ public class PaymentRecordServiceImpl extends ServiceImpl<PaymentRecordMapper, P
         for (PaymentRecordResult paymentRecordResult : results) {
             orderIds.add(paymentRecordResult.getOrderId());
         }
+        List<Long>mediaIds = new ArrayList<>();
+        for (PaymentRecordResult result : results) {
+            if (ToolUtil.isNotEmpty(result.getField())){
+                mediaIds.addAll(Arrays.stream(result.getField().split(",")).map(Long::parseLong).collect(Collectors.toList()));
+            }
+        }
+        List<MediaUrlResult> mediaUrlResults = mediaService.getMediaUrlResults(mediaIds);
         List<Order> orderList = orderIds.size() == 0 ? new ArrayList<>() : orderService.listByIds(orderIds);
         List<OrderResult> orderResults = BeanUtil.copyToList(orderList,OrderResult.class, new CopyOptions());
         orderService.format(orderResults);
         for (PaymentRecordResult recordResult : results) {
+            if (ToolUtil.isNotEmpty(recordResult.getField())) {
+                List<Long> mediaIdList = Arrays.stream(recordResult.getField().split(",")).map(Long::parseLong).collect(Collectors.toList());
+                List<MediaUrlResult> mediaUrlResultList = new ArrayList<>();
+                for (MediaUrlResult media : mediaUrlResults) {
+                    for (Long mediaId : mediaIdList) {
+                        if (mediaId.equals(media.getMediaId())) {
+                            mediaUrlResultList.add(media);
+                            break;
+                        }
+                    }
+
+                }
+                recordResult.setMediaUrlResults(mediaUrlResultList);
+            }
             if (ToolUtil.isNotEmpty(recordResult.getRecordId())) {
                 for (OrderResult orderResult : orderResults) {
                     if (recordResult.getOrderId().equals(orderResult.getOrderId())) {

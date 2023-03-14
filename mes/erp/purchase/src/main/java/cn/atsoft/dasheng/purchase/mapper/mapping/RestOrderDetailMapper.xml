@@ -43,6 +43,20 @@
 		sum(total_price)AS "totalPrice",
 		create_time AS "craeteTime"
     </sql>
+    <!-- 汇总统计查询结果列 -->
+    <sql id="Left_View_Column_List">
+        DATE_FORMAT( detail.create_time, '%Y-%m' )  AS "month",
+		DATE_FORMAT( detail.create_time, '%Y' )  AS "year",
+		COUNT(DISTINCT detail.seller_id) AS "sellerCount",
+		COUNT(DISTINCT detail.sku_id) AS "skuCount",
+		SUM(detail.purchase_number) AS "purchaseNumber",
+		sum(detail.total_price)AS "totalPrice",
+		detail.create_time AS "craeteTime",
+        ( detail.total_price - payment.payment_amount ) AS "deficientPrice",
+         payment.payment_amount  AS "paymentPrice",
+        SUM(detail.inStock_number) AS "inStockCount",
+        if(SUM(detail.purchase_number) is null or round(SUM(detail.inStock_number)) is null ,0,round(SUM(detail.inStock_number)/SUM(detail.purchase_number)*100)) AS "inStockRate"
+    </sql>
     <!-- 查询未被加入生产计划的销售订单 -->
     <sql id="ProductionPlanByOrder">
         orderDetail
@@ -98,19 +112,37 @@
     <select id="viewOrderDetail" resultType="cn.atsoft.dasheng.purchase.model.result.ViewResult"
             parameterType="cn.atsoft.dasheng.purchase.model.params.ViewParam">
         select
-        <include refid="View_Column_List"/>
-        from view_order_detail where 1 = 1
+        <include refid="Left_View_Column_List"/>
+        from  view_order_detail detail
+        LEFT JOIN (
+        SELECT
+        DATE_FORMAT( orders.create_time, '%Y-%m' ) MONTH,
+        DATE_FORMAT( orders.create_time, '%Y' ) YEAR,
+        sum( record.payment_amount ) AS payment_amount
+        FROM
+        daoxin_crm_payment_record record
+        LEFT JOIN daoxin_crm_order orders ON record.order_id = orders.order_id
+        AND orders.display = 1
+        WHERE
+        1 = 1
+        AND record.display = 1
+        GROUP BY
+        MONTH
+        ) payment ON detail.`MONTH` = payment.`MONTH`
+        AND detail.`YEAR` = payment.`YEAR`
+
+        where  1 = 1
         <if test="paramCondition.year != null and paramCondition.year!= ''">
-            and year = #{paramCondition.year}
+            and detail.year = #{paramCondition.year}
         </if>
         <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
-            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            and date_format(detail.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
             str_to_date(#{paramCondition.startTime},'%Y/%m/%d
             %H:%i:%s')
         </if>
         <!--结束时间-->
         <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
-            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            and date_format(detail.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
             str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
         GROUP BY month
@@ -118,19 +150,35 @@
     <select id="view" resultType="cn.atsoft.dasheng.purchase.model.result.ViewResult"
             parameterType="cn.atsoft.dasheng.purchase.model.params.ViewParam">
         select
-        <include refid="View_Column_List"/>
-        from view_order_detail where 1 = 1
+        <include refid="Left_View_Column_List"/>
+        from  view_order_detail detail
+        LEFT JOIN (
+        SELECT
+        DATE_FORMAT( orders.create_time, '%Y-%m' ) MONTH,
+        DATE_FORMAT( orders.create_time, '%Y' ) YEAR,
+        sum( record.payment_amount ) AS payment_amount
+        FROM
+        daoxin_crm_payment_record record
+        LEFT JOIN daoxin_crm_order orders ON record.order_id = orders.order_id
+        AND orders.display = 1
+        WHERE
+        1 = 1
+        AND record.display = 1
+        GROUP BY
+        YEAR
+        ) payment ON detail.`YEAR` = payment.`YEAR`
+                         where 1 = 1
         <if test="paramCondition.year != null and paramCondition.year!= ''">
-            and year = #{paramCondition.year}
+            and detail.year = #{paramCondition.year}
         </if>
         <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
-            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            and date_format(detail.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
             str_to_date(#{paramCondition.startTime},'%Y/%m/%d
             %H:%i:%s')
         </if>
         <!--结束时间-->
         <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
-            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            and date_format(detail.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
             str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
         GROUP BY year
@@ -138,29 +186,60 @@
     <select id="orderView" resultType="cn.atsoft.dasheng.purchase.model.result.ViewResult"
             parameterType="cn.atsoft.dasheng.purchase.model.params.ViewParam">
         select
-        <include refid="View_Column_List"/>
-        from view_order_detail where 1 = 1
+        <include refid="Left_View_Column_List"/>
+        from  view_order_detail detail
+        LEFT JOIN (
+        SELECT
+        DATE_FORMAT( orders.create_time, '%Y-%m' ) MONTH,
+        DATE_FORMAT( orders.create_time, '%Y' ) YEAR,
+        sum( record.payment_amount ) AS payment_amount
+        FROM
+        daoxin_crm_payment_record record
+        LEFT JOIN daoxin_crm_order orders ON record.order_id = orders.order_id
+        AND orders.display = 1
+        WHERE
+        1 = 1
+        AND record.display = 1
+        <if test="paramCondition.theme !=null and paramCondition.theme !=''">
+            and orders.theme like CONCAT('%',#{paramCondition.theme},'%')
+        </if>
+        <if test="paramCondition.coding !=null and paramCondition.coding !=''">
+            and orders.coding like CONCAT('%',#{paramCondition.coding},'%')
+        </if>
+        <if test="paramCondition.sellerId !=null">
+            and orders.seller_id = #{paramCondition.sellerId}
+        </if>
+
+        <if test="paramCondition.status != null">
+            and orders.status = #{paramCondition.status}
+        </if>
+        ) payment ON detail.`YEAR` = payment.`YEAR`
+        WHERE 1 = 1
         <if test="paramCondition.year != null and paramCondition.year!= ''">
-            and year = #{paramCondition.year}
+            and detail.year = #{paramCondition.year}
         </if>
         <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
-            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            and date_format(detail.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
             str_to_date(#{paramCondition.startTime},'%Y/%m/%d
             %H:%i:%s')
         </if>
         <!--结束时间-->
         <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
-            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            and date_format(detail.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
             str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
         <if test="paramCondition.theme !=null and paramCondition.theme !=''">
-            and theme like CONCAT('%',#{paramCondition.theme},'%')
+            and detail.theme like CONCAT('%',#{paramCondition.theme},'%')
         </if>
         <if test="paramCondition.coding !=null and paramCondition.coding !=''">
-            and coding like CONCAT('%',#{paramCondition.coding},'%')
+            and detail.coding like CONCAT('%',#{paramCondition.coding},'%')
         </if>
         <if test="paramCondition.sellerId !=null">
-            and seller_id = #{paramCondition.sellerId}
+            and detail.seller_id = #{paramCondition.sellerId}
+        </if>
+
+        <if test="paramCondition.status != null">
+            and detail.status = #{paramCondition.status}
         </if>
 </select>
 

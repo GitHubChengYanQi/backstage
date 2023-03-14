@@ -25,7 +25,9 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -92,7 +94,7 @@ public class InvoiceBillServiceImpl extends ServiceImpl<InvoiceBillMapper, Invoi
         List<Long> orderIds = new ArrayList<>();
         for (InvoiceBillResult invoiceBillResult : param) {
             if (ToolUtil.isNotEmpty(invoiceBillResult.getEnclosureId())){
-                mediaIds.add(invoiceBillResult.getEnclosureId());
+                mediaIds.addAll(Arrays.stream(invoiceBillResult.getEnclosureId().split(",")).map(Long::parseLong).collect(Collectors.toList()));
                 orderIds.add(invoiceBillResult.getOrderId());
             }
             List<MediaUrlResult> mediaList = mediaIds.size() == 0 ? new ArrayList<>() : mediaService.getMediaUrlResults(mediaIds);
@@ -101,12 +103,18 @@ public class InvoiceBillServiceImpl extends ServiceImpl<InvoiceBillMapper, Invoi
             orderService.format(orderResults);
             for (InvoiceBillResult billResult : param) {
                 if (ToolUtil.isNotEmpty(billResult.getEnclosureId())) {
+                    List<Long> mediaIdList = Arrays.stream(invoiceBillResult.getEnclosureId().split(",")).map(Long::parseLong).collect(Collectors.toList());
+                    List<MediaUrlResult> results = new ArrayList<>();
                     for (MediaUrlResult media : mediaList) {
-                        if (billResult.getEnclosureId().equals(media.getMediaId())) {
-                            billResult.setMediaUrlResult(media);
-                            break;
+                        for (Long mediaId : mediaIdList) {
+                            if (mediaId.equals(media.getMediaId())) {
+                                results.add(media);
+                                break;
+                            }
                         }
+
                     }
+                    billResult.setMediaUrlResults(results);
                 }
                 if (ToolUtil.isNotEmpty(billResult.getOrderId())) {
                     for (OrderResult orderResult : orderResults) {

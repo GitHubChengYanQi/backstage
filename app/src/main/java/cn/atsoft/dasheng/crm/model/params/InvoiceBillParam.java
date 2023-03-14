@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.model.params;
 
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -7,6 +8,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -35,13 +37,13 @@ public class InvoiceBillParam implements Serializable, BaseValidatingParam {
      * 金额
      */
     @ApiModelProperty("金额")
-    private Integer money;
+    private Double money;
 
     /**
      * 附件
      */
     @ApiModelProperty("附件")
-    private Long enclosureId;
+    private String enclosureId;
 
     /**
      * 发票名称
@@ -85,6 +87,17 @@ public class InvoiceBillParam implements Serializable, BaseValidatingParam {
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    public Long getMoney() {
+        if (ToolUtil.isEmpty(money)){
+            return null;
+        }
+        return BigDecimal.valueOf(money).multiply(BigDecimal.valueOf(100)).longValue();
+    }
+
+    public void setMoney(Double money) {
+        this.money = money;
+    }
 
     @Override
     public String checkParam() {

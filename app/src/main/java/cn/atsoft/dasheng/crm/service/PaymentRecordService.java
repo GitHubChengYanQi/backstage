@@ -26,6 +26,8 @@ public interface PaymentRecordService extends IService<PaymentRecord> {
      */
     PaymentRecord add(PaymentRecordParam param);
 
+    List<PaymentRecord> listByOrderIds(List<Long> orderIds);
+
     /**
      * 删除
      *

@@ -16,12 +16,14 @@ import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.OrderDetailResult;
 import cn.atsoft.dasheng.crm.model.result.OrderResult;
+import cn.atsoft.dasheng.crm.model.result.PaymentRecordResult;
 import cn.atsoft.dasheng.crm.model.result.PaymentResult;
 import cn.atsoft.dasheng.crm.pojo.ContractEnum;
 import cn.atsoft.dasheng.crm.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -78,8 +80,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private BrandService brandService;
     @Autowired
     private InvoiceService invoiceService;
+
     @Autowired
-    private OrderService orderService;
+    private PaymentRecordService paymentRecordService;
 
     @Override
     @Transactional
@@ -740,7 +743,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
 
         List<Contract> contractList = contractIds.size() == 0 ? new ArrayList<>() : contractService.listByIds(contractIds);
-
+        List<PaymentRecord> paymentRecords = paymentRecordService.listByOrderIds(orderIds);
+        List<PaymentRecordResult> paymentRecordResultList = BeanUtil.copyToList(paymentRecords, PaymentRecordResult.class);
 
 
         for (OrderResult datum : data) {
@@ -770,6 +774,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     }
                 }
             }
+            List<PaymentRecordResult> paymentList = new ArrayList<>();
+            for (PaymentRecordResult paymentRecordResult : paymentRecordResultList) {
+                if (paymentRecordResult.getOrderId().equals(datum.getOrderId())){
+                    paymentList.add(paymentRecordResult);
+                }
+            }
+            datum.setPaymentRecordResults(paymentList);
         }
     }
     @Override
@@ -778,6 +789,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         List<OrderDetail> orderDetails = data.size() == 0 ? new ArrayList<>() : detailService.query().in("order_id", data.stream().map(OrderResult::getOrderId).distinct().collect(Collectors.toList())).eq("display", 1).list();
         List<OrderDetailResult> detailResults = BeanUtil.copyToList(orderDetails, OrderDetailResult.class, new CopyOptions());
         detailService.format(detailResults);
+
         for (OrderResult datum : data) {
             List<OrderDetailResult> orderDetailResults = new ArrayList<>();
             for (OrderDetailResult detailResult : detailResults) {
@@ -790,6 +802,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 
     }
-
+    @Override
+    public void checkStatus(Long orderId){
+        Order order = this.getById(orderId);
+        if (ToolUtil.isEmpty(order)) {
+            throw new ServiceException(500,"参数错误");
+        }
+        List<OrderDetail> orderDetailList = detailService.lambdaQuery().eq(OrderDetail::getOrderId, order.getOrderId()).eq(OrderDetail::getDisplay, 1).list();
+        int doneNum = 0;
+        for (OrderDetail orderDetail : orderDetailList) {
+            if (orderDetail.getPurchaseNumber()<= orderDetail.getInStockNumber()){
+                doneNum++;
+            }
+        }
+        if (doneNum == orderDetailList.size()){
+            order.setStatus(99);
+            this.updateById(order);
+        }
+    }
 
 }

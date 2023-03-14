@@ -102,7 +102,7 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
     }
     @Override
     public List<ViewResult> viewOrderDetail(ViewParam param) {
-        List<ViewResult> list = this.baseMapper.viewOrderDetail( param);
+            List<ViewResult> list = this.baseMapper.viewOrderDetail( param);
 
 //        format(result);
         return list;
@@ -115,9 +115,9 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
     }
     @Override
     public ViewResult orderView(ViewParam param) {
-
+        ViewResult viewResult = this.baseMapper.orderView(param);
 //        format(result);
-        return this.baseMapper.orderView( param);
+        return viewResult;
     }
 
     @Override
@@ -196,6 +196,11 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
     @Override
     public RestOrder getOrderById(Long orderId) {
         return null;
+    }
+
+    @Override
+    public void checkStatus(Long orderId) {
+
     }
 
 

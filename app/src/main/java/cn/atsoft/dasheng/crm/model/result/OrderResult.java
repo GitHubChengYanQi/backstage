@@ -37,6 +37,8 @@ public class OrderResult implements Serializable {
 
     private PaymentResult paymentResult;
 
+    private List<PaymentRecordResult> paymentRecordResults;
+
     private List<OrderDetailResult> detailResults;
 
     private Date date;

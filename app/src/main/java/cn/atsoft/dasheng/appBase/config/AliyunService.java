@@ -34,6 +34,14 @@ public class AliyunService {
 //        }
 //        return ossClient;
     }
+    public OSS getPrivateOssClient() {
+//        if (ToolUtil.isEmpty(ossClient)){
+            ClientBuilderConfiguration clientBuilderConfiguration = new ClientBuilderConfiguration();
+            clientBuilderConfiguration.setProtocol(Protocol.HTTPS);
+            return new OSSClientBuilder().build(configuration.getOss2().getEndpoint(), configuration.getAccessId(), configuration.getAccessKey(),clientBuilderConfiguration);
+//        }
+//        return ossClient;
+    }
 
     public com.aliyun.dysmsapi20170525.Client getSmsClient() throws Exception {
         Config config = new Config()

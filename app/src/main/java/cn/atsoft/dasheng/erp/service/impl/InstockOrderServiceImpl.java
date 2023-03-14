@@ -851,7 +851,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             shopCartService.addDynamic(param.getInstockOrderId(), null, "完成任务");
 
         }
-
+        InstockOrder instockOrder = this.getById(param.getInstockOrderId());
+        if (ToolUtil.isNotEmpty(instockOrder.getOrderId())) {
+            orderService.checkStatus(instockOrder.getOrderId());
+        }
         return null;
     }
 
