@@ -3,6 +3,9 @@ package cn.atsoft.dasheng.crm.model.result;
 import cn.atsoft.dasheng.appBase.entity.Media;
 import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
 import lombok.Data;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
@@ -33,15 +36,17 @@ public class InvoiceBillResult implements Serializable {
      * 金额
      */
     @ApiModelProperty("金额")
-    private Integer money;
+    private Long money;
 
     /**
      * 附件
      */
     @ApiModelProperty("附件")
-    private Long enclosureId;
+    private String enclosureId;
 
     private MediaUrlResult mediaUrlResult;
+
+    private List<MediaUrlResult> mediaUrlResults;
 
     private OrderResult orderResult;
 
@@ -71,6 +76,9 @@ public class InvoiceBillResult implements Serializable {
 
     @ApiModelProperty("")
     private Integer display;
+    public Double getMoney() {
+        return BigDecimal.valueOf(money).divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP).doubleValue();
+    }
 
     /**
      * 部门编号

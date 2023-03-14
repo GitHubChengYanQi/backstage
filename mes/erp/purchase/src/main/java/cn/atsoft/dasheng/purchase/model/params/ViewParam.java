@@ -12,5 +12,6 @@ public class ViewParam {
     private String coding;
     private String theme;
     private Long sellerId;
+    private Integer status;
 
 }

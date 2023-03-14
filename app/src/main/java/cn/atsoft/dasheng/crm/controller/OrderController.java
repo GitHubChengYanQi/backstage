@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -118,6 +119,27 @@ public class OrderController extends BaseController {
             orderParam = new OrderParam();
         }
         return ResponseData.success(this.orderService.pendingProductionPlan(orderParam));
+    }
+
+    /**
+     * 查询列表
+     *
+     * @author song
+     * @Date 2022-02-23
+     */
+    @RequestMapping(value = "/doneOrder", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData doneOrder(@RequestBody(required = false) OrderParam orderParam) {
+        if (ToolUtil.isEmpty(orderParam)) {
+            orderParam = new OrderParam();
+        }
+        if (ToolUtil.isEmpty(orderParam.getOrderId())){
+            throw new ServiceException(500,"参数错误");
+        }
+        orderService.update(new Order(){{
+            setStatus(99);
+        }},new QueryWrapper<Order>().eq("order_id",orderParam.getOrderId()));
+        return ResponseData.success();
     }
 
     /**

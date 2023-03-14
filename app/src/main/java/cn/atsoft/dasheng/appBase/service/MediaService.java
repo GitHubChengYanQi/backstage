@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.appBase.service;
 
 import cn.atsoft.dasheng.appBase.entity.Media;
+import cn.atsoft.dasheng.appBase.model.enums.OssEnums;
 import cn.atsoft.dasheng.appBase.model.params.MediaParam;
 import cn.atsoft.dasheng.appBase.model.result.MediaResult;
 import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
@@ -19,6 +20,8 @@ import java.util.Map;
  * @since 2021-04-21
  */
 public interface MediaService extends IService<Media> {
+
+    Media getMediaId(String type, Long userId, OssEnums model);
 
     Map<String,Object> getOssToken(Media media);
     /**
@@ -73,7 +76,11 @@ public interface MediaService extends IService<Media> {
 
     Media getMediaId(String type);
 
-    Media getMediaId(String type ,Long userId);
+    Media getMediaId(String type, OssEnums model);
+
+    Media getMediaId(String type , Long userId);
+
+    Map<String, Object> getOssToken(Media media, OssEnums enums);
 
     List<String> getMediaUrls(List<Long> mediaIds, Long userId);
 
@@ -84,6 +91,7 @@ public interface MediaService extends IService<Media> {
     String getMediaUrlAddUseData(Long mediaId, Long userId, String useData);
 
 
+    String getPrivateMediaUrlAddUseData(Long mediaId, Long userId, String useData);
 
     String getMediaPathPublic(Long mediaId, Long userId);
 

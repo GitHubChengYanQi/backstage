@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.model.params;
 
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.hutool.core.math.Money;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -10,6 +11,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +36,8 @@ public class PaymentRecordParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("付款记录id")
     private Long recordId;
 
+    private String field;
+
     /**
      * 付款详情id
      */
@@ -50,7 +54,7 @@ public class PaymentRecordParam implements Serializable, BaseValidatingParam {
      * 付款金额
      */
     @ApiModelProperty("付款金额")
-    private Integer paymentAmount;
+    private Double paymentAmount;
 
     /**
      * 备注
@@ -119,6 +123,15 @@ public class PaymentRecordParam implements Serializable, BaseValidatingParam {
     public String checkParam() {
         return null;
     }
+
+    public Long getPaymentAmount() {
+        if (ToolUtil.isEmpty(paymentAmount)){
+            return null;
+        }
+        return BigDecimal.valueOf(paymentAmount).multiply(BigDecimal.valueOf(100)).longValue();
+    }
+
+
     @Data
     public static class Money{
         private int max;

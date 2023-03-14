@@ -28,7 +28,7 @@ public class PaymentDetail implements Serializable {
      * 实付
      */
     @TableField("real_pay")
-    private Integer realPay;
+    private Long realPay;
     /**
      * 状态
      */
@@ -45,7 +45,7 @@ public class PaymentDetail implements Serializable {
      * 金额
      */
     @TableField("money")
-    private Integer money;
+    private Long money;
 
     /**
      * 百分比
@@ -123,11 +123,11 @@ public class PaymentDetail implements Serializable {
         return status;
     }
 
-    public Integer getRealPay() {
+    public Long getRealPay() {
         return realPay;
     }
 
-    public void setRealPay(Integer realPay) {
+    public void setRealPay(Long realPay) {
         this.realPay = realPay;
     }
 
@@ -151,11 +151,11 @@ public class PaymentDetail implements Serializable {
         this.paymentId = paymentId;
     }
 
-    public Integer getMoney() {
+    public Long getMoney() {
         return money;
     }
 
-    public void setMoney(Integer money) {
+    public void setMoney(Long money) {
         this.money = money;
     }
 

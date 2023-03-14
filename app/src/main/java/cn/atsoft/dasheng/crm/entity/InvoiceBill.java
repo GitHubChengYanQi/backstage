@@ -34,7 +34,7 @@ public class InvoiceBill implements Serializable {
      * 金额
      */
     @TableField("money")
-    private Integer money;
+    private Long money;
 
     /**
      * 附件
@@ -97,11 +97,11 @@ public class InvoiceBill implements Serializable {
         this.invoiceBillId = invoiceBillId;
     }
 
-    public Integer getMoney() {
+    public Long getMoney() {
         return money;
     }
 
-    public void setMoney(Integer money) {
+    public void setMoney(Long money) {
         this.money = money;
     }
 

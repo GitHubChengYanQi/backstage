@@ -3,15 +3,18 @@ package cn.atsoft.dasheng.appBase.controller;
 import cn.atsoft.dasheng.appBase.config.AliConfiguration;
 import cn.atsoft.dasheng.appBase.config.AliyunService;
 import cn.atsoft.dasheng.appBase.entity.Media;
+import cn.atsoft.dasheng.appBase.model.enums.OssEnums;
 import cn.atsoft.dasheng.appBase.model.params.MediaParam;
 import cn.atsoft.dasheng.appBase.model.result.MediaObjectResult;
 import cn.atsoft.dasheng.appBase.model.result.MediaResult;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.uc.utils.UserUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.common.utils.BinaryUtil;
@@ -115,7 +118,17 @@ public class MediaController extends BaseController {
 
         return ResponseData.success(mediaService.getOssToken(media));
     }
+    @RequestMapping(value = "/{version}/getToken", method = RequestMethod.GET)
+    @ApiOperation("获取阿里云OSS临时上传token")
+    @ApiVersion("1.2")
+    public ResponseData getToken(@Param("type") String type, @Param("model") OssEnums model) {
+        if(ToolUtil.isEmpty(type)){
+            throw new ServiceException(500,"请传入文件名称");
+        }
+        Media media = mediaService.getMediaId(type,model);
 
+        return ResponseData.success(mediaService.getOssToken(media,model));
+    }
     @RequestMapping(value = "/callback", method = RequestMethod.POST)
     @ApiOperation("OSS异步通知")
     public String callback() {
@@ -145,11 +158,45 @@ public class MediaController extends BaseController {
         }
         List<MediaResult> results = new ArrayList<>();
         for (Long mediaId : param.getMediaIds()) {
+            Media media = mediaService.getById(mediaId);
             MediaResult mediaResult = new MediaResult();
+            ToolUtil.copyProperties(media,mediaResult);
             mediaResult.setMediaId(mediaId);
             mediaResult.setUrl(mediaService.getMediaUrlAddUseData(mediaId, 0L, null));
             if (ToolUtil.isNotEmpty(param.getOption())) {
                 mediaResult.setThumbUrl(mediaService.getMediaUrlAddUseData(mediaId, 0L,param.getOption()));
+            }
+            results.add(mediaResult);
+        }
+        return ResponseData.success(results);
+    }
+    @RequestMapping(value = "{version}/getMediaUrls" , method = RequestMethod.POST)
+    @ApiOperation("获取浏览地址")
+    @ApiVersion("1.2")
+    public ResponseData getMediaUrlsV12(@RequestBody MediaParam param) {
+//        String url = mediaService.getMediaUrl(mediaId, 0L);
+        if (ToolUtil.isEmpty(param.getMediaIds())){
+            return ResponseData.success(new ArrayList<>());
+        }
+        List<MediaResult> results = new ArrayList<>();
+        for (Long mediaId : param.getMediaIds()) {
+            Media media = mediaService.getById(mediaId);
+            MediaResult mediaResult = new MediaResult();
+            ToolUtil.copyProperties(media,mediaResult);
+            mediaResult.setMediaId(mediaId);
+            switch (param.getModel()){
+                case PRI:
+                    mediaResult.setUrl(mediaService.getPrivateMediaUrlAddUseData(mediaId, 0L, null));
+                    if (ToolUtil.isNotEmpty(param.getOption())) {
+                        mediaResult.setThumbUrl(mediaService.getPrivateMediaUrlAddUseData(mediaId, 0L,param.getOption()));
+                    }
+                    break;
+                case PUB:
+                    mediaResult.setUrl(mediaService.getMediaUrlAddUseData(mediaId, 0L, null));
+                    if (ToolUtil.isNotEmpty(param.getOption())) {
+                        mediaResult.setThumbUrl(mediaService.getMediaUrlAddUseData(mediaId, 0L,param.getOption()));
+                    }
+                    break;
             }
             results.add(mediaResult);
         }

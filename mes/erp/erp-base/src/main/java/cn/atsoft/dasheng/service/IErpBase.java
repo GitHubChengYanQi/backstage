@@ -17,4 +17,5 @@ public interface IErpBase {
     RestOrder getOrderById(Long orderId);
 
 
+    void checkStatus(Long orderId);
 }

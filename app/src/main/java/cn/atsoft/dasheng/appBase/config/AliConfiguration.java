@@ -13,6 +13,8 @@ public class AliConfiguration {
 
     private OSS oss;
 
+    private OSS oss2;
+
     private Sms sms;
 
     @Data

@@ -1,6 +1,10 @@
 package cn.atsoft.dasheng.crm.model.result;
 
+import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
 import lombok.Data;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
@@ -19,7 +23,7 @@ import java.util.List;
 public class PaymentRecordResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private List<MediaUrlResult> mediaUrlResults;
     private OrderResult orderResult;
 
     /**
@@ -34,6 +38,9 @@ public class PaymentRecordResult implements Serializable {
     @ApiModelProperty("付款详情id")
     private Long detailId;
 
+    private String field;
+
+
     /**
      * 付款主表id
      */
@@ -44,7 +51,7 @@ public class PaymentRecordResult implements Serializable {
      * 付款金额
      */
     @ApiModelProperty("付款金额")
-    private Integer paymentAmount;
+    private Double paymentAmount;
 
     /**
      * 备注
@@ -111,6 +118,12 @@ public class PaymentRecordResult implements Serializable {
      */
     @ApiModelProperty("编码")
     private String Coding;
+
+    public Double getPaymentAmount() {
+        return BigDecimal.valueOf(paymentAmount).divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP).doubleValue();
+    }
+
+
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

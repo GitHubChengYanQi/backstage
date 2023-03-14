@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.appBase.service.impl;
 import cn.atsoft.dasheng.appBase.config.AliConfiguration;
 import cn.atsoft.dasheng.appBase.entity.Media;
 import cn.atsoft.dasheng.appBase.mapper.MediaMapper;
+import cn.atsoft.dasheng.appBase.model.enums.OssEnums;
 import cn.atsoft.dasheng.appBase.model.params.MediaParam;
 import cn.atsoft.dasheng.appBase.model.result.MediaResult;
 import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
@@ -33,6 +34,9 @@ import java.io.*;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static cn.atsoft.dasheng.appBase.model.enums.OssEnums.PRI;
+import static cn.atsoft.dasheng.appBase.model.enums.OssEnums.PUB;
 
 /**
  * <p>
@@ -106,6 +110,10 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
     public Media getMediaId(String type) {
         return getMediaId(type, 0L);
     }
+    @Override
+    public Media getMediaId(String type, OssEnums model) {
+        return getMediaId(type, 0L,model);
+    }
 
     @Override
     public Media getMediaId(String type, Long userId) {
@@ -133,6 +141,52 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
         media.setFiledName(fileName);
         media.setType(sname);
         media.setPath(path);
+        media.setFiledName(fileName);
+        media.setEndpoint(endpoint);
+        media.setBucket(bucket);
+        media.setStatus(0);
+        media.setUserId(userId);
+
+        this.getBaseMapper().insert(media);
+        return media;
+    }
+    @Override
+    public Media getMediaId(String type, Long userId, OssEnums model) {
+
+        List<String> collect = Arrays.stream(type.split("\\.(?=[^\\.]+$)")).collect(Collectors.toList());
+        String fileName = type;
+        if (ToolUtil.isEmpty(collect.get(1))){
+            throw new ServiceException(500,"传入参数格式错误");
+        }
+        String sname = collect.get(1);
+
+        if (!userId.equals(0L) && ToolUtil.isNotEmpty(sname)) {
+            List<String> types = Arrays.asList("png", "jpg", "jpeg", "gif", "mp4", "mp3", "flac", "aac");
+            if (!types.contains(sname)) {
+                throw new ServiceException(500, "数据类型错误");
+            }
+        }
+
+        String date = DateUtil.format(DateUtil.date(), "yyyyMMdd");
+        String path = "";
+        String endpoint = "";
+        String bucket = "";
+        switch (model){
+            case PUB:
+                 path = aliyunService.getConfig().getOss().getPath() + sname + "/" + date + "/" + date + RandomUtil.randomNumbers(6) + "." + sname;
+                 endpoint = aliyunService.getConfig().getOss().getEndpoint();
+                 bucket = aliyunService.getConfig().getOss().getBucket();
+                break;
+            case PRI:
+                path = aliyunService.getConfig().getOss2().getPath() + sname + "/" + date + "/" + date + RandomUtil.randomNumbers(6) + "." + sname;
+                endpoint = aliyunService.getConfig().getOss2().getEndpoint();
+                bucket = aliyunService.getConfig().getOss2().getBucket();
+                break;
+        }
+        Media media = new Media();
+        media.setFiledName(fileName);
+        media.setType(sname);
+        media.setPath(path);
         media.setEndpoint(endpoint);
         media.setBucket(bucket);
         media.setStatus(0);
@@ -144,15 +198,36 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
 
     @Override
     public Map<String, Object> getOssToken(Media media) {
+         return this.getOssToken(media,PUB);
+    }
+    @Override
+    public Map<String, Object> getOssToken(Media media, OssEnums enums) {
 
         AliConfiguration aliConfiguration = aliyunService.getConfiguration();
-        OSS ossClient = aliyunService.getOssClient();
+        OSS ossClient = null;
+        if (enums.equals(PUB)){
+            ossClient = aliyunService.getOssClient();
+        }else if (enums.equals(PRI)){
+            ossClient = aliyunService.getPrivateOssClient();
+        }
+
         try {
 
             String accessId = aliConfiguration.getAccessId();
-            String host = "https://" + aliConfiguration.getOss().getBucket() + "." + aliConfiguration.getOss().getEndpoint();
+            String host = "";
+            String callBackUrl = "";
+                    switch (enums){
+                case PUB:
+                    host = "https://" + aliConfiguration.getOss().getBucket() + "." + aliConfiguration.getOss().getEndpoint();
+                    callBackUrl = aliConfiguration.getOss().getCallbackUrl() + "/media/callback";
+                    break;
+                case PRI:
+                    host = "https://" + aliConfiguration.getOss2().getBucket() + "." + aliConfiguration.getOss2().getEndpoint();
+                    callBackUrl = aliConfiguration.getOss2().getCallbackUrl() + "/media/callback";
+                    break;
+            }
             String dir = media.getPath();
-            String callBackUrl = aliConfiguration.getOss().getCallbackUrl() + "/media/callback";
+
 
 
             long expireTime = 30;
@@ -245,6 +320,32 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
 //            throw new ServiceException(500, "媒体信息错误");
 //        }
         OSS ossClient = aliyunService.getOssClient();
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(result.getBucket(), result.getPath(), HttpMethod.GET);
+        long expireTime = 86400 * 15;
+        long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
+        Date expiration = new Date(expireEndTime);
+        generatePresignedUrlRequest.setExpiration(expiration);
+        if (ToolUtil.isNotEmpty(useData)) {
+            generatePresignedUrlRequest.setQueryParameter(new HashMap<String, String>() {{
+                put("x-oss-process", useData);
+            }});
+        }
+
+        URL url = ossClient.generatePresignedUrl(generatePresignedUrlRequest);
+        ossClient.shutdown();
+        return url.toString();
+    }
+    @Override
+    public String getPrivateMediaUrlAddUseData(Long mediaId, Long userId, String useData) {
+        if (ToolUtil.isEmpty(mediaId) || mediaId <= 0) {
+            return null;
+        }
+        Media result = this.getById(mediaId);
+        if (ToolUtil.isEmpty(result)) {
+            throw new ServiceException(500, "媒体不存在");
+        }
+
+        OSS ossClient = aliyunService.getPrivateOssClient();
         GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(result.getBucket(), result.getPath(), HttpMethod.GET);
         long expireTime = 86400 * 15;
         long expireEndTime = System.currentTimeMillis() + expireTime * 1000;

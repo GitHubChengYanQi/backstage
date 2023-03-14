@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.appBase.entity.Media;
+import cn.atsoft.dasheng.appBase.model.enums.OssEnums;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContext;
@@ -13,6 +14,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.commonArea.entity.CommonArea;
 import cn.atsoft.dasheng.commonArea.model.result.CommonAreaResult;
 import cn.atsoft.dasheng.commonArea.service.CommonAreaService;
+import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.DataClassification;
@@ -453,5 +455,17 @@ public class ApiRepairController {
         Media media = mediaService.getMediaId(type, userId);
 
         return ResponseData.success(mediaService.getOssToken(media));
+    }
+    @RequestMapping(value = "/{version}/getToken", method = RequestMethod.GET)
+    @ApiOperation("获取阿里云OSS临时上传token")
+    @ApiVersion("1.2")
+    public ResponseData getToken(@Param("type") String type, @Param("model")OssEnums model) {
+        if(ToolUtil.isEmpty(type)){
+            throw new ServiceException(500,"请传入文件名称");
+        }
+        Long userId = getWxUser(UserUtils.getUserId());
+        Media media = mediaService.getMediaId(type, userId);
+
+        return ResponseData.success(mediaService.getOssToken(media,model));
     }
 }

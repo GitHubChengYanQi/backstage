@@ -382,6 +382,9 @@ public class RestInstockOrderServiceImpl extends ServiceImpl<RestInstockOrderMap
             }
         }
         orderDetailService.updateDetailList(orderDetails);
+        if (ToolUtil.isNotEmpty(param.getOrderId())) {
+            orderService.checkStatus(param.getOrderId());
+        }
         return taskId;
 
     }

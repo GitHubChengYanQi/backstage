@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.customer.entity.Customer;
 import cn.atsoft.dasheng.customer.model.result.CustomerResult;
 import cn.atsoft.dasheng.customer.service.RestCustomerService;
 import cn.atsoft.dasheng.entity.RestOrderDetail;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.result.RestOrderDetailResult;
 import cn.atsoft.dasheng.purchase.entity.RestOrder;
 import cn.atsoft.dasheng.purchase.mapper.RestOrderMapper;
@@ -191,5 +192,22 @@ public class RestOrderServiceImpl extends ServiceImpl<RestOrderMapper, RestOrder
         return null;
     }
 
-
+    @Override
+    public void checkStatus(Long orderId){
+        RestOrder order = this.getById(orderId);
+        if (ToolUtil.isEmpty(order)) {
+            throw new ServiceException(500,"参数错误");
+        }
+        List<cn.atsoft.dasheng.purchase.entity.RestOrderDetail> orderDetailList = orderDetailService.lambdaQuery().eq(cn.atsoft.dasheng.purchase.entity.RestOrderDetail::getOrderId, order.getOrderId()).eq(cn.atsoft.dasheng.purchase.entity.RestOrderDetail::getDisplay, 1).list();
+        int doneNum = 0;
+        for (cn.atsoft.dasheng.purchase.entity.RestOrderDetail orderDetail : orderDetailList) {
+            if (orderDetail.getPurchaseNumber()<= orderDetail.getInStockNumber()){
+                doneNum++;
+            }
+        }
+        if (doneNum == orderDetailList.size()){
+            order.setStatus(99);
+            this.updateById(order);
+        }
+    }
 }
