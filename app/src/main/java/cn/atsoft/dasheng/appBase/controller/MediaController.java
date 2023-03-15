@@ -159,6 +159,9 @@ public class MediaController extends BaseController {
         List<MediaResult> results = new ArrayList<>();
         for (Long mediaId : param.getMediaIds()) {
             Media media = mediaService.getById(mediaId);
+            if (ToolUtil.isEmpty(media)){
+                continue;
+            }
             MediaResult mediaResult = new MediaResult();
             ToolUtil.copyProperties(media,mediaResult);
             mediaResult.setMediaId(mediaId);
