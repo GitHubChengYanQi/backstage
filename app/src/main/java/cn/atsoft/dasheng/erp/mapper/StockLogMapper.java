@@ -58,4 +58,8 @@ public interface StockLogMapper extends BaseMapper<StockLog> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") StockLogParam paramCondition);
 
+    Integer todayInStockNumber();
+    Integer todayOutStockNumber();
+
+
 }

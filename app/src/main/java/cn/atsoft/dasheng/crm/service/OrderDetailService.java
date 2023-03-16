@@ -29,7 +29,7 @@ public interface OrderDetailService extends IService<OrderDetail> {
 
     OrderDetailResult record(OrderDetailParam param);
 
-    Integer addList(Long orderId, Long customerId, List<OrderDetailParam> params);
+    Long addList(Long orderId, Long customerId, List<OrderDetailParam> params);
 
     /**
      * 删除

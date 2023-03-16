@@ -109,9 +109,9 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
 
     @Override
 
-    public Integer addList(Long orderId, Long customerId, List<OrderDetailParam> params) {
+    public Long addList(Long orderId, Long customerId, List<OrderDetailParam> params) {
         List<OrderDetail> details = new ArrayList<>();
-        int totalAmount = 0;   //所有物料总价
+        long totalAmount = 0;   //所有物料总价
         if (ToolUtil.isEmpty(params)) {
             return totalAmount;
         }
