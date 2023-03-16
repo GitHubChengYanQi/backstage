@@ -537,6 +537,13 @@ stage
           and stage = 1
           and sku_id = #{skuId}
     </select>
+    <select id="getAllStockNumber" resultType="Integer">
+        SELECT IF(SUM(number) is null , 0 , SUM(number)) AS number  FROM `daoxin_erp_stock_details`
+        WHERE
+            1 = 1
+          and display = 1
+          and stage = 1
+    </select>
     <select id="getNumberCountEntityBySkuId" resultType="cn.atsoft.dasheng.app.entity.StockDetails" parameterType="Long">
         SELECT IF(SUM(number) is null , 0 , SUM(number)) AS number,sku_id AS "skuId"  FROM `daoxin_erp_stock_details`
         WHERE

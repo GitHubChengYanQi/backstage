@@ -19,6 +19,7 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.AllBomService;
+import cn.atsoft.dasheng.erp.service.StockLogService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.production.model.request.StockSkuTotal;
 import cn.hutool.core.bean.BeanUtil;
@@ -27,10 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -50,6 +48,9 @@ public class StockDetailsController extends BaseController {
     private StockDetailsService stockDetailsService;
     @Autowired
     private StorehouseService storehouseService;
+
+    @Autowired
+    private StockLogService stockLogService;
 
 
     @RequestMapping(value = "/getDetailsBySkuId", method = RequestMethod.POST)
@@ -214,6 +215,23 @@ public class StockDetailsController extends BaseController {
 
         List<StockDetailsResult> stockNumberBySkuId = this.stockDetailsService.getStockNumberBySkuId(stockDetailsParam);
         return ResponseData.success(stockNumberBySkuId);
+    }
+
+    /**
+     * 根据skuId返回仓库
+     *
+     * @author
+     * @Date 2021-07-15
+     */
+    @RequestMapping(value = "/view", method = RequestMethod.POST)
+    @ApiOperation("编辑")
+    public ResponseData view() {
+        Integer allStockNumber = stockDetailsService.getAllStockNumber();
+        Map<String,Object> result = new HashMap<>();
+        result.put("stockNumber",allStockNumber);
+        result.put("outNumber",stockLogService.todayOutStockNumber());
+        result.put("inNumber",stockLogService.todayInStockNumber());
+        return ResponseData.success(result);
     }
 
     /**

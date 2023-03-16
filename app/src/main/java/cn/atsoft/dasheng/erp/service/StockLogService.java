@@ -73,4 +73,7 @@ public interface StockLogService extends IService<StockLog> {
      */
      PageInfo<StockLogResult> findPageBySpec(StockLogParam param);
 
+    Integer todayInStockNumber();
+
+    Integer todayOutStockNumber();
 }

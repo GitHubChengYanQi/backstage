@@ -164,6 +164,16 @@ public class StockLogServiceImpl extends ServiceImpl<StockLogMapper, StockLog> i
         return PageFactory.createPageInfo(page);
     }
 
+    @Override
+    public Integer todayInStockNumber(){
+        return this.baseMapper.todayInStockNumber();
+    }
+
+    @Override
+    public Integer todayOutStockNumber(){
+        return this.baseMapper.todayOutStockNumber();
+    }
+
     private Serializable getKey(StockLogParam param){
         return param.getStockLogId();
     }

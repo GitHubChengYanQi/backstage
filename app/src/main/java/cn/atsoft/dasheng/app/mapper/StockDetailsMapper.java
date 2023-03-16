@@ -78,5 +78,6 @@ public interface StockDetailsMapper extends BaseMapper<StockDetails> {
     List<StockDetailView> stockNumberCycleDetail(@Param("paramCondition") DataStatisticsViewParam paramCondition);
 
     Long getNumberCountBySkuId(@Param("skuId") Long skuId);
+    Integer getAllStockNumber();
     List<StockDetails> getNumberCountEntityBySkuId(@Param("skuIds") List<Long> skuIds);
 }

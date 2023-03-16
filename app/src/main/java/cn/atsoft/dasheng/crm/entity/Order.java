@@ -28,7 +28,7 @@ public class Order implements Serializable {
      * 订单总金额
      */
     @TableField("total_amount")
-    private Integer totalAmount;
+    private Long totalAmount;
 
     /**
      * 交货周期
@@ -679,11 +679,11 @@ public class Order implements Serializable {
         this.leadTime = leadTime;
     }
 
-    public Integer getTotalAmount() {
+    public Long getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(Integer totalAmount) {
+    public void setTotalAmount(Long totalAmount) {
         this.totalAmount = totalAmount;
     }
 

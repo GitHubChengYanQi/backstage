@@ -318,5 +318,11 @@
         log.sku_id,
         log.customer_id
     </select>
+    <select id="todayInStockNumber" resultType="Integer" >
+        select  sum(number) from daoxin_erp_stock_log where  1 = 1 and type = 'increase' and create_time like CONCAT('%',DATE_FORMAT(NOW(),'%Y-%m-%d'),'%')
+    </select>
+    <select id="todayOutStockNumber" resultType="Integer" >
+        select  sum(number) from daoxin_erp_stock_log where  1 = 1 and type = 'reduce' and create_time like CONCAT('%',DATE_FORMAT(NOW(),'%Y-%m-%d'),'%')
+    </select>
 
 </mapper>

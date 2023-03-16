@@ -56,6 +56,19 @@ public class PaymentRecordServiceImpl extends ServiceImpl<PaymentRecordMapper, P
     @Override
     @Transactional
     public PaymentRecord add(PaymentRecordParam param) {
+        Long orderId = param.getOrderId();
+        Order order = orderService.getById(orderId);
+        Long price = order.getTotalAmount();
+
+        List<PaymentRecord> list = this.lambdaQuery().eq(PaymentRecord::getOrderId, orderId).eq(PaymentRecord::getDisplay, 1).eq(PaymentRecord::getStatus,0).list();
+        long payPrice = 0l;
+        for (PaymentRecord paymentRecord : list) {
+            payPrice+=paymentRecord.getPaymentAmount();
+        }
+        if (payPrice+param.getPaymentAmount()>price){
+            throw new ServiceException(500,"累计付款金额不得超过订单总金额");
+        }
+
         PaymentRecord entity = getEntity(param);
         this.save(entity);
         return entity;
@@ -65,7 +78,7 @@ public class PaymentRecordServiceImpl extends ServiceImpl<PaymentRecordMapper, P
         if (ToolUtil.isEmpty(orderIds) || orderIds.size() == 0){
             return new ArrayList<>();
         }
-        return this.lambdaQuery().in(PaymentRecord::getOrderId,orderIds).list();
+        return this.lambdaQuery().in(PaymentRecord::getOrderId,orderIds).eq(PaymentRecord::getStatus,0).eq(PaymentRecord::getDisplay,1).list();
     }
 
     @Override

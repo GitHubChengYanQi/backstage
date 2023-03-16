@@ -144,4 +144,6 @@ public interface StockDetailsService extends IService<StockDetails> {
     Long getNumberCountBySkuId(Long skuId);
 
     List<StockDetails> getNumberCountEntityBySkuIds(List<Long> skuIds);
+
+    Integer getAllStockNumber();
 }
