@@ -190,7 +190,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     private Page<OrderResult> getPageContext() {
-        return PageFactory.defaultPage();
+        return PageFactory.defaultPage(new ArrayList<String>(){{
+            add("coding");
+            add("inStockRate");
+            add("paymentRate");
+        }});
     }
 
     private Order getOldEntity(OrderParam param) {
@@ -788,7 +792,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         this.formatOrders(data);
         List<OrderDetail> orderDetails = data.size() == 0 ? new ArrayList<>() : detailService.query().in("order_id", data.stream().map(OrderResult::getOrderId).distinct().collect(Collectors.toList())).eq("display", 1).list();
         List<OrderDetailResult> detailResults = BeanUtil.copyToList(orderDetails, OrderDetailResult.class, new CopyOptions());
-        detailService.format(detailResults);
+//        detailService.format(detailResults);
 
         for (OrderResult datum : data) {
             List<OrderDetailResult> orderDetailResults = new ArrayList<>();

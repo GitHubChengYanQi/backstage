@@ -113,7 +113,7 @@
             parameterType="cn.atsoft.dasheng.crm.model.params.PaymentRecordParam">
         select
         <include refid="List"/>
-        from daoxin_crm_payment_record p LEFT JOIN daoxin_crm_order o ON p.order_id = o.order_id where 1 = 1
+        from daoxin_crm_payment_record p LEFT JOIN daoxin_crm_order o ON p.order_id = o.order_id where 1 = 1 and p.display = 1
         <if test="paramCondition.recordId != null">
             and record_id like CONCAT('%',#{paramCondition.recordId},'%')
         </if>

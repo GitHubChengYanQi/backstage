@@ -63,6 +63,57 @@
         order_id
         AS "orderId", contract_id AS "contractId",party_a_bank_no AS "partyABankNo",party_b_bank_no AS "partyBBankNo", price AS "price", buyer_id AS "buyerId", seller_id AS "sellerId", theme AS "theme", origin AS "origin", type AS "type", generate_contract AS "generateContract", delivery_date AS "deliveryDate", remark AS "remark", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser", coding AS "coding", date AS "date", currency AS "currency", party_a_contacts_id AS "partyAContactsId", party_a_adress_id AS "partyAAdressId", party_a_phone AS "partyAPhone", party_a_client_id AS "partyAClientId", party_b_contacts_id AS "partyBContactsId", party_b_adress_id AS "partyBAdressId", party_b_phone AS "partyBPhone", party_b_client_id AS "partyBClientId", party_b_bank_id AS "partyBBankId", party_b_bank_account AS "partyBBankAccount", party_b_legal_person AS "partyBLegalPerson", party_b_company_phone AS "partyBCompanyPhone", party_b_fax AS "partyBFax", party_b_zipCode AS "partyBZipcode", party_a_bank_id AS "partyABankId", party_a_bank_account AS "partyABankAccount", party_a_legal_person AS "partyALegalPerson", party_a_company_phone AS "partyACompanyPhone", party_a_fax AS "partyAFax", party_a_zipCode AS "partyAZipcode"
     </sql>
+    <sql id="Purchase_Column_List">
+        o.status AS "status",
+	o.coding AS "coding",
+	o.user_id AS "userId",
+	o.file_id AS "fileId",
+	o.lead_time AS "leadTime",
+	o.total_amount AS "totalAmount",
+	o.order_id AS "orderId",
+	o.contract_id AS "contractId",
+	o.party_a_bank_no AS "partyABankNo",
+	o.party_b_bank_no AS "partyBBankNo",
+	o.price AS "price",
+	o.buyer_id AS "buyerId",
+	o.seller_id AS "sellerId",
+	o.theme AS "theme",
+	o.origin AS "origin",
+	o.type AS "type",
+	o.generate_contract AS "generateContract",
+	o.delivery_date AS "deliveryDate",
+	o.remark AS "remark",
+	o.create_user AS "createUser",
+	o.deptId AS "deptId",
+	o.display AS "display",
+	o.update_time AS "updateTime",
+	o.create_time AS "createTime",
+	o.update_user AS "updateUser",
+	o.DATE AS "date",
+	o.currency AS "currency",
+	o.party_a_contacts_id AS "partyAContactsId",
+	o.party_a_adress_id AS "partyAAdressId",
+	o.party_a_phone AS "partyAPhone",
+	o.party_a_client_id AS "partyAClientId",
+	o.party_b_contacts_id AS "partyBContactsId",
+	o.party_b_adress_id AS "partyBAdressId",
+	o.party_b_phone AS "partyBPhone",
+	o.party_b_client_id AS "partyBClientId",
+	o.party_b_bank_id AS "partyBBankId",
+	o.party_b_bank_account AS "partyBBankAccount",
+	o.party_b_legal_person AS "partyBLegalPerson",
+	o.party_b_company_phone AS "partyBCompanyPhone",
+	o.party_b_fax AS "partyBFax",
+	o.party_b_zipCode AS "partyBZipcode",
+	o.party_a_bank_id AS "partyABankId",
+	o.party_a_bank_account AS "partyABankAccount",
+	o.party_a_legal_person AS "partyALegalPerson",
+	o.party_a_company_phone AS "partyACompanyPhone",
+	o.party_a_fax AS "partyAFax",
+	o.party_a_zipCode AS "partyAZipcode" ,
+	ROUND(d.inStock_number/d.purchase_number*100) AS inStockRate,
+	FLOOR(p.total_amount/o.total_amount*100) AS paymentRate
+    </sql>
 
 
     <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.OrderResult"
@@ -144,52 +195,55 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.OrderResult"
             parameterType="cn.atsoft.dasheng.crm.model.params.OrderParam">
         select
-        <include refid="Base_Column_List"/>
-        from daoxin_crm_order where 1 = 1 and display = 1
+        <include refid="Purchase_Column_List"/>
+        from daoxin_crm_order o
+        LEFT JOIN (SELECT order_id ,sum(inStock_number) as inStock_number,SUM(purchase_number) as purchase_number from daoxin_crm_order_detail WHERE display = 1 GROUP BY order_id) d on d.order_id = o.order_id
+        LEFT JOIN (SELECT order_id , sum(payment_amount) AS total_amount from daoxin_crm_payment_record WHERE 1 = 1  and display = 1 and `status` = 0 GROUP BY order_id) p ON p.order_id = o.order_id
+        WHERE 1 = 1 and o.display = 1
         <if test="paramCondition.orderId != null">
-            and order_id like CONCAT('%',#{paramCondition.orderId},'%')
+            and o.order_id like CONCAT('%',#{paramCondition.orderId},'%')
         </if>
         <if test="paramCondition.contractId != null">
-            and contract_id like CONCAT('%',#{paramCondition.contractId},'%')
+            and o.contract_id like CONCAT('%',#{paramCondition.contractId},'%')
         </if>
         <if test="paramCondition.price != null">
-            and price like CONCAT('%',#{paramCondition.price},'%')
+            and o.price like CONCAT('%',#{paramCondition.price},'%')
         </if>
         <if test="paramCondition.buyerId != null">
-            and buyer_id like CONCAT('%',#{paramCondition.buyerId},'%')
+            and o.buyer_id like CONCAT('%',#{paramCondition.buyerId},'%')
         </if>
         <if test="paramCondition.sellerId != null">
-            and seller_id like CONCAT('%',#{paramCondition.sellerId},'%')
+            and o.seller_id like CONCAT('%',#{paramCondition.sellerId},'%')
         </if>
         <if test="paramCondition.theme != null and paramCondition.theme != ''">
-            and theme like CONCAT('%',#{paramCondition.theme},'%')
+            and o.theme like CONCAT('%',#{paramCondition.theme},'%')
         </if>
         <if test="paramCondition.origin != null and paramCondition.origin != ''">
-            and origin like CONCAT('%',#{paramCondition.origin},'%')
+            and o.origin like CONCAT('%',#{paramCondition.origin},'%')
         </if>
         <if test="paramCondition.type != null">
-            and type like CONCAT('%',#{paramCondition.type},'%')
+            and o.type like CONCAT('%',#{paramCondition.type},'%')
         </if>
         <if test="paramCondition.generateContract != null">
-            and generate_contract like CONCAT('%',#{paramCondition.generateContract},'%')
+            and o.generate_contract like CONCAT('%',#{paramCondition.generateContract},'%')
         </if>
         <if test="paramCondition.status != null">
-            and status = #{paramCondition.status}
+            and o.status = #{paramCondition.status}
         </if>
         <if test="paramCondition.deliveryDate != null and paramCondition.deliveryDate != ''">
-            and delivery_date like CONCAT('%',#{paramCondition.deliveryDate},'%')
+            and o.delivery_date like CONCAT('%',#{paramCondition.deliveryDate},'%')
         </if>
         <if test="paramCondition.coding != null and paramCondition.coding != ''">
-            and coding like CONCAT('%',#{paramCondition.coding},'%')
+            and o.coding like CONCAT('%',#{paramCondition.coding},'%')
         </if>
         <if test="paramCondition.customerName != null and paramCondition.customerName!= ''">
-            and seller_id in (
+            and o.seller_id in (
             select customer_id from daoxin_crm_customer where customer_name like
             CONCAT('%',#{paramCondition.customerName},'%')
             )
         </if>
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
-            and order_id in (
+            and o.order_id in (
             select order_id from daoxin_crm_order_detail where sku_id in (
             select sku_id from goods_sku where sku_name like CONCAT('%',#{paramCondition.skuName},'%')
             union
@@ -198,20 +252,22 @@
             select sku_id from goods_sku where spu_id in (select spu_id from goods_spu where name like
             CONCAT('%',#{paramCondition.skuName},'%') )
             )
-            ) or buyer_id in (select customer_id from daoxin_crm_customer where customer_name like
+            ) or o.buyer_id in (select customer_id from daoxin_crm_customer where customer_name like
             #{paramCondition.skuName} and display = 1
-            ) or coding like #{paramCondition.skuName}
+            ) or o.coding like #{paramCondition.skuName}
         </if>
         <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
-            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            and date_format(o.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
             str_to_date(#{paramCondition.startTime},'%Y/%m/%d
             %H:%i:%s')
         </if>
         <!--结束时间-->
         <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
-            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            and date_format(o.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
             str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
+        GROUP BY o.order_id
+
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.OrderParam">

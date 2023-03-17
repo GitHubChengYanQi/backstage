@@ -544,6 +544,15 @@ stage
           and display = 1
           and stage = 1
     </select>
+    <select id="getViewCount" resultType="cn.atsoft.dasheng.app.model.result.ViewCountResult">
+        SELECT
+            (select COUNT(DISTINCT sku_id) from daoxin_erp_stock_details WHERE 1 = 1  and display = 1  and stage = 1 ) AS "skuCount",
+            (select COUNT(DISTINCT customer_id) from daoxin_erp_stock_details WHERE 1 = 1  and display = 1  and stage = 1) AS "customerCount",
+            (select COUNT(DISTINCT brand_id) from daoxin_erp_stock_details WHERE 1 = 1  and display = 1  and stage = 1) AS "brandCount",
+            (select COUNT(DISTINCT storehouse_id) from daoxin_erp_stock_details WHERE 1 = 1  and display = 1  and stage = 1) AS "storeHouseCount",
+            (select COUNT(DISTINCT storehouse_positions_id) from daoxin_erp_stock_details WHERE 1 = 1  and display = 1  and stage = 1) AS "positionCount",
+            (SELECT COUNT( DISTINCT spu.spu_classification_id) FROM daoxin_erp_stock_details sd LEFT JOIN goods_sku sku on sd.sku_id = sku.sku_id LEFT JOIN goods_spu spu on sku.spu_id = spu.spu_id WHERE 1 = 1 AND sd.display = 1 AND sd.stage = 1) AS "classCount"
+    </select>
     <select id="getNumberCountEntityBySkuId" resultType="cn.atsoft.dasheng.app.entity.StockDetails" parameterType="Long">
         SELECT IF(SUM(number) is null , 0 , SUM(number)) AS number,sku_id AS "skuId"  FROM `daoxin_erp_stock_details`
         WHERE

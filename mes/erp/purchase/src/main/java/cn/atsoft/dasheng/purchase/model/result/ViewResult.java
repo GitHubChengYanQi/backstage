@@ -25,7 +25,7 @@ public class ViewResult {
 
 
     public Double getTotalPrice() {
-        if (totalPrice.equals(0L)){
+        if (ToolUtil.isEmpty(deficientPrice) || totalPrice.equals(0L)){
             return null;
         }
         return BigDecimal.valueOf(totalPrice).divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP).doubleValue();

@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.service;
 
 import cn.atsoft.dasheng.Excel.pojo.StockDetailExcel;
 import cn.atsoft.dasheng.app.model.request.StockDetailView;
+import cn.atsoft.dasheng.app.model.result.ViewCountResult;
 import cn.atsoft.dasheng.app.pojo.SpuClassDetail;
 import cn.atsoft.dasheng.app.pojo.StockCensus;
 import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
@@ -146,4 +147,6 @@ public interface StockDetailsService extends IService<StockDetails> {
     List<StockDetails> getNumberCountEntityBySkuIds(List<Long> skuIds);
 
     Integer getAllStockNumber();
+
+    ViewCountResult getViewCount();
 }

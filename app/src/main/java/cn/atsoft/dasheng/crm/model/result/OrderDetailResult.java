@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.taxRate.entity.TaxRate;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -86,6 +87,7 @@ public class OrderDetailResult implements Serializable {
      * 单位id
      */
     @ApiModelProperty("单位id")
+    @JSONField(serialize = false)
     private Long unitId;
 
     /**
@@ -122,12 +124,14 @@ public class OrderDetailResult implements Serializable {
      * 创建者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Long createUser;
 
     /**
      * 修改者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Long updateUser;
 
     /**
@@ -140,18 +144,21 @@ public class OrderDetailResult implements Serializable {
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Date updateTime;
 
     /**
      * 状态
      */
     @ApiModelProperty("状态")
+    @JSONField(serialize = false)
     private Integer display;
 
     /**
      * 部门id
      */
     @ApiModelProperty("部门id")
+    @JSONField(serialize = false)
     private Long deptId;
 
     /**
@@ -161,5 +168,6 @@ public class OrderDetailResult implements Serializable {
     private Integer arrivalNumber;
 
     @ApiModelProperty("父ID顺序数组")
+    @JSONField(serialize = false)
     private List<String> pidValue;
 }
