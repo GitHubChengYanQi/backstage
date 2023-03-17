@@ -2,9 +2,11 @@ package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Parts;
+import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.model.request.StoreHouseAndSkuNumber;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.model.result.ViewCountResult;
 import cn.atsoft.dasheng.app.pojo.*;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.app.service.PartsService;
@@ -18,8 +20,10 @@ import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.service.AllBomService;
 import cn.atsoft.dasheng.erp.service.StockLogService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.production.model.request.StockSkuTotal;
 import cn.hutool.core.bean.BeanUtil;
@@ -48,6 +52,8 @@ public class StockDetailsController extends BaseController {
     private StockDetailsService stockDetailsService;
     @Autowired
     private StorehouseService storehouseService;
+    @Autowired
+    private StorehousePositionsService positionsService;
 
     @Autowired
     private StockLogService stockLogService;
@@ -232,6 +238,18 @@ public class StockDetailsController extends BaseController {
         result.put("outNumber",stockLogService.todayOutStockNumber());
         result.put("inNumber",stockLogService.todayInStockNumber());
         return ResponseData.success(result);
+    }
+    /**
+     * 根据skuId返回仓库
+     *
+     * @author
+     * @Date 2021-07-15
+     */
+    @RequestMapping(value = "/viewTotal", method = RequestMethod.POST)
+    @ApiOperation("编辑")
+    public ResponseData viewTotal() {
+        ViewCountResult allStockNumber = stockDetailsService.getViewCount();
+        return ResponseData.success(allStockNumber);
     }
 
     /**

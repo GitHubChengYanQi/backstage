@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.model.result;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -106,36 +107,42 @@ public class PaymentResult implements Serializable {
      * 创建者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Long createUser;
 
     /**
      * 修改者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Long updateUser;
 
     /**
      * 创建时间
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Date createTime;
 
     /**
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Date updateTime;
 
     /**
      * 状态
      */
     @ApiModelProperty("状态")
+    @JSONField(serialize = false)
     private Integer display;
 
     /**
      * 部门编号
      */
     @ApiModelProperty("部门编号")
+    @JSONField(serialize = false)
     private Long deptId;
 
     /**

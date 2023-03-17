@@ -308,7 +308,7 @@
         LEFT JOIN daoxin_crm_order orders ON detail.order_id = orders.order_id
         WHERE
         1 = 1
-        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">-->
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
             and date_format(detail.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
             str_to_date(#{paramCondition.startTime},'%Y/%m/%d
             %H:%i:%s')

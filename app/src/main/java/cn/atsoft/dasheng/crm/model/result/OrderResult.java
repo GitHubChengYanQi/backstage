@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.crm.entity.Bank;
 import cn.atsoft.dasheng.crm.entity.OrderDetail;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -28,11 +29,18 @@ import java.util.List;
 @ApiModel
 public class OrderResult implements Serializable {
 
+    @ApiModelProperty("入库进度百分比")
+    private Integer inStockRate;
+
+    @ApiModelProperty("付款进度百分比")
+    private Integer paymentRate;
+
     private int totalNumber;
 
     private Long fileId;
 
     private String leadTime;
+
     private static final long serialVersionUID = 1L;
 
     private PaymentResult paymentResult;
@@ -125,6 +133,7 @@ public class OrderResult implements Serializable {
      * 来源Json字符串
      */
     @ApiModelProperty("来源Json字符串")
+    @JSONField(serialize = false)
     private String origin;
 
     /**
@@ -155,24 +164,28 @@ public class OrderResult implements Serializable {
      * 创建者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Long createUser;
 
     /**
      * 部门编号
      */
     @ApiModelProperty("部门编号")
+    @JSONField(serialize = false)
     private Long deptId;
 
     /**
      * 状态
      */
     @ApiModelProperty("状态")
+    @JSONField(serialize = false)
     private Integer display;
 
     /**
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Date updateTime;
 
     /**
@@ -185,6 +198,7 @@ public class OrderResult implements Serializable {
      * 修改者
      */
     @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Long updateUser;
 
     /**

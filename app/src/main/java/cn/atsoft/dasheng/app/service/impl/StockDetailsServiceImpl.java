@@ -869,5 +869,9 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     public Integer getAllStockNumber() {
         return this.baseMapper.getAllStockNumber();
     }
+    @Override
+    public ViewCountResult getViewCount() {
+        return this.baseMapper.getViewCount();
+    }
 
 }

@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.request.StockDetailView;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
+import cn.atsoft.dasheng.app.model.result.ViewCountResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -79,5 +80,6 @@ public interface StockDetailsMapper extends BaseMapper<StockDetails> {
 
     Long getNumberCountBySkuId(@Param("skuId") Long skuId);
     Integer getAllStockNumber();
+    ViewCountResult getViewCount();
     List<StockDetails> getNumberCountEntityBySkuId(@Param("skuIds") List<Long> skuIds);
 }
