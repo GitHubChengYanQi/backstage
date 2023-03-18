@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.model.params;
 
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -29,12 +30,13 @@ public class PaymentParam implements Serializable, BaseValidatingParam {
      * 浮动金额
      */
 
-    private Integer floatingAmount;
+    private Long floatingAmount;
+
 
     /**
      * 总金额
      */
-    private Integer totalAmount;
+    private Long totalAmount;
 
     /**
      * 票据类型
@@ -154,5 +156,21 @@ public class PaymentParam implements Serializable, BaseValidatingParam {
     public String checkParam() {
         return null;
     }
+
+
+    public Long getFloatingAmount() {
+        if(ToolUtil.isNotEmpty(floatingAmount)){
+            return floatingAmount*100;
+        }
+        return null;
+    }
+    public Long getTotalAmount() {
+        if(ToolUtil.isNotEmpty(totalAmount)){
+            return totalAmount*100;
+        }
+        return null;
+    }
+
+
 
 }

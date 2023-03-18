@@ -319,10 +319,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     }
                     break;
                 case TotalAmountInFigures:
-                    map.put(ContractEnum.TotalAmountInFigures.getDetail(), sign + ContractExcel.priceReplace(BigDecimal.valueOf(orderResult.getAllMoney()).divide(BigDecimal.valueOf(100)).doubleValue()));
+                    map.put(ContractEnum.TotalAmountInFigures.getDetail(), sign + ContractExcel.priceReplace(orderResult.getAllMoney()));
                     break;
                 case TotalAmountInWords:
-                    double money = BigDecimal.valueOf(orderResult.getAllMoney()).divide(BigDecimal.valueOf(100)).doubleValue();
+                    double money = orderResult.getAllMoney();
                     String format = NumberChineseFormatter.format(money, true, true);
                     format = format.replace("元", "圆");
                     map.put(ContractEnum.TotalAmountInWords.getDetail(), format);
@@ -449,7 +449,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     map.put(ContractEnum.DeliveryDate.getDetail(), DateUtil.format(orderResult.getDeliveryDate(),"yyyy年MM月dd日 "));
                     break;
                 case floatingAmount:
-                    Integer floatingAmount = paymentResult.getFloatingAmount();
+                    Double floatingAmount = paymentResult.getFloatingAmount();
                     if (ToolUtil.isEmpty(floatingAmount)) {
                         map.put(ContractEnum.floatingAmount.getDetail(), "");
                     } else {
@@ -457,7 +457,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     }
                     break;
                 case totalAmount:
-                    Integer totalAmount = paymentResult.getTotalAmount();
+                    Double totalAmount = paymentResult.getTotalAmount();
                     if (ToolUtil.isEmpty(totalAmount)) {
                         map.put(ContractEnum.totalAmount.getDetail(), "");
                     } else {
@@ -499,6 +499,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public OrderResult getDetail(Long id) {
         Order order = this.getById(id);
+        if(ToolUtil.isEmpty(order)){
+            return new OrderResult();
+        }
         OrderResult orderResult = new OrderResult();
         ToolUtil.copyProperties(order, orderResult);
         List<OrderDetailResult> details = new ArrayList<>();
