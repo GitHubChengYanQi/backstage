@@ -4,12 +4,14 @@ import cn.atsoft.dasheng.app.entity.Contract;
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.taxRate.entity.TaxRate;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.io.Serializable;
 
@@ -94,13 +96,13 @@ public class OrderDetailResult implements Serializable {
      * 单价
      */
     @ApiModelProperty("单价")
-    private Integer onePrice;
+    private Double onePrice;
 
     /**
      * 总价
      */
     @ApiModelProperty("总价")
-    private Integer totalPrice;
+    private Double totalPrice;
 
     /**
      * 票据类型
@@ -170,4 +172,18 @@ public class OrderDetailResult implements Serializable {
     @ApiModelProperty("父ID顺序数组")
     @JSONField(serialize = false)
     private List<String> pidValue;
+    public Double getOnePrice() {
+        if (ToolUtil.isEmpty(onePrice)){
+            return 0.0;
+        }
+        return BigDecimal.valueOf(onePrice).divide(BigDecimal.valueOf(100),2).doubleValue();
+    }
+
+
+    public Double getTotalPrice() {
+        if (ToolUtil.isEmpty(totalPrice)){
+            return 0.0;
+        }
+        return BigDecimal.valueOf(totalPrice).divide(BigDecimal.valueOf(100),2).doubleValue();
+    }
 }

@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.crm.model.params;
 
 import cn.atsoft.dasheng.app.pojo.CycleReplace;
+import cn.atsoft.dasheng.core.aop.MoneyMatrix;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import io.swagger.models.auth.In;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -79,13 +81,13 @@ public class OrderDetailParam implements Serializable, BaseValidatingParam {
      * 单价
      */
     @ApiModelProperty("单价")
-    private Integer onePrice;
+    private Long onePrice;
 
     /**
      * 总价
      */
     @ApiModelProperty("总价")
-    private Integer totalPrice;
+    private Long totalPrice;
 
     /**
      * 票据类型
@@ -170,6 +172,21 @@ public class OrderDetailParam implements Serializable, BaseValidatingParam {
 
     @Override
     public String checkParam() {
+        return null;
+    }
+
+    public Long getOnePrice() {
+        if(ToolUtil.isNotEmpty(onePrice)){
+            return onePrice*100;
+        }
+        return null;
+    }
+
+
+    public Long getTotalPrice() {
+        if(ToolUtil.isNotEmpty(totalPrice)){
+            return totalPrice*100;
+        }
         return null;
     }
 

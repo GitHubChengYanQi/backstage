@@ -1,8 +1,10 @@
 package cn.atsoft.dasheng.crm.model.result;
 
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.io.Serializable;
 
@@ -33,12 +35,12 @@ public class PaymentResult implements Serializable {
      * 浮动金额
      */
 
-    private Integer floatingAmount;
+    private Double floatingAmount;
 
     /**
      * 总金额
      */
-    private Integer totalAmount;
+    private Double totalAmount;
 
     /**
      * 票据类型
@@ -152,4 +154,19 @@ public class PaymentResult implements Serializable {
     private String remark;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+
+    public Double getFloatingAmount() {
+        if(ToolUtil.isNotEmpty(floatingAmount)){
+            return BigDecimal.valueOf(floatingAmount).divide(BigDecimal.valueOf(100),2).doubleValue();
+
+        }
+        return null;
+    }
+    public Double getTotalAmount() {
+        if(ToolUtil.isNotEmpty(totalAmount)){
+            return BigDecimal.valueOf(totalAmount).divide(BigDecimal.valueOf(100),2).doubleValue();
+        }
+        return null;
+    }
 }
