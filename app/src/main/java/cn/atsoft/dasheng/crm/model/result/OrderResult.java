@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.crm.model.result;
 
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.result.ContractResult;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.Bank;
 import cn.atsoft.dasheng.crm.entity.OrderDetail;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -9,6 +10,7 @@ import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.io.Serializable;
 
@@ -331,4 +333,11 @@ public class OrderResult implements Serializable {
     private String partyAZipcode;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    public Double getAllMoney() {
+        if(ToolUtil.isNotEmpty(allMoney)){
+            return BigDecimal.valueOf(allMoney).divide(BigDecimal.valueOf(100),2).doubleValue();
+        }
+        return null;
+    }
 }
