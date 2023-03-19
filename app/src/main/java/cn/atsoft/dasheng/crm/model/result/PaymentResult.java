@@ -52,7 +52,7 @@ public class PaymentResult implements Serializable {
      */
     private Long rate;
 
-    private Integer money;
+    private Double money;
     /**
      * 付款信息id
      */
@@ -166,6 +166,12 @@ public class PaymentResult implements Serializable {
     public Double getTotalAmount() {
         if(ToolUtil.isNotEmpty(totalAmount)){
             return BigDecimal.valueOf(totalAmount).divide(BigDecimal.valueOf(100),2).doubleValue();
+        }
+        return null;
+    }
+    public Double getMoney() {
+        if(ToolUtil.isNotEmpty(money)){
+            return BigDecimal.valueOf(money).divide(BigDecimal.valueOf(100),2).doubleValue();
         }
         return null;
     }

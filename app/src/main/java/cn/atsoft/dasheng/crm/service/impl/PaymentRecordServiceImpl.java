@@ -68,6 +68,9 @@ public class PaymentRecordServiceImpl extends ServiceImpl<PaymentRecordMapper, P
         if (payPrice+param.getPaymentAmount()>price){
             throw new ServiceException(500,"累计付款金额不得超过订单总金额");
         }
+        if (ToolUtil.isEmpty(param.getPaymentDate())){
+            throw new ServiceException(500,"付款日期不能为空");
+        }
 
         PaymentRecord entity = getEntity(param);
         this.save(entity);
