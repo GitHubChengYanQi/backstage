@@ -12,6 +12,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.io.Serializable;
 
@@ -19,6 +20,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
+
+import static java.math.BigDecimal.ROUND_DOWN;
 
 /**
  * <p>
@@ -176,7 +179,7 @@ public class OrderDetailResult implements Serializable {
         if (ToolUtil.isEmpty(onePrice)){
             return 0.0;
         }
-        return BigDecimal.valueOf(onePrice).divide(BigDecimal.valueOf(100),2).doubleValue();
+        return BigDecimal.valueOf(onePrice).divide(BigDecimal.valueOf(100),2, RoundingMode.DOWN).doubleValue();
     }
 
 
@@ -184,6 +187,6 @@ public class OrderDetailResult implements Serializable {
         if (ToolUtil.isEmpty(totalPrice)){
             return 0.0;
         }
-        return BigDecimal.valueOf(totalPrice).divide(BigDecimal.valueOf(100),2).doubleValue();
+        return BigDecimal.valueOf(totalPrice).divide(BigDecimal.valueOf(100),2, RoundingMode.DOWN).doubleValue();
     }
 }

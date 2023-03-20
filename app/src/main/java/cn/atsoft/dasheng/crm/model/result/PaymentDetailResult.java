@@ -1,7 +1,9 @@
 package cn.atsoft.dasheng.crm.model.result;
 
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.io.Serializable;
 
@@ -84,4 +86,5 @@ public class PaymentDetailResult implements Serializable {
     private String remark;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
 }

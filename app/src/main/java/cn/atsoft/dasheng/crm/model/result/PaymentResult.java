@@ -5,6 +5,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.io.Serializable;
 
@@ -52,7 +53,7 @@ public class PaymentResult implements Serializable {
      */
     private Long rate;
 
-    private Integer money;
+    private Double money;
     /**
      * 付款信息id
      */
@@ -158,14 +159,20 @@ public class PaymentResult implements Serializable {
 
     public Double getFloatingAmount() {
         if(ToolUtil.isNotEmpty(floatingAmount)){
-            return BigDecimal.valueOf(floatingAmount).divide(BigDecimal.valueOf(100),2).doubleValue();
+            return BigDecimal.valueOf(floatingAmount).divide(BigDecimal.valueOf(100),2, RoundingMode.DOWN).doubleValue();
 
         }
         return null;
     }
     public Double getTotalAmount() {
         if(ToolUtil.isNotEmpty(totalAmount)){
-            return BigDecimal.valueOf(totalAmount).divide(BigDecimal.valueOf(100),2).doubleValue();
+            return BigDecimal.valueOf(totalAmount).divide(BigDecimal.valueOf(100),2, RoundingMode.DOWN).doubleValue();
+        }
+        return null;
+    }
+    public Double getMoney() {
+        if(ToolUtil.isNotEmpty(money)){
+            return BigDecimal.valueOf(money).divide(BigDecimal.valueOf(100),2, RoundingMode.DOWN).doubleValue();
         }
         return null;
     }
