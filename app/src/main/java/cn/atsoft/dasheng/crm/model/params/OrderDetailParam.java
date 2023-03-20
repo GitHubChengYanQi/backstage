@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -81,13 +82,13 @@ public class OrderDetailParam implements Serializable, BaseValidatingParam {
      * 单价
      */
     @ApiModelProperty("单价")
-    private Long onePrice;
+    private Double onePrice;
 
     /**
      * 总价
      */
     @ApiModelProperty("总价")
-    private Long totalPrice;
+    private Double totalPrice;
 
     /**
      * 票据类型
@@ -177,7 +178,7 @@ public class OrderDetailParam implements Serializable, BaseValidatingParam {
 
     public Long getOnePrice() {
         if(ToolUtil.isNotEmpty(onePrice)){
-            return onePrice*100;
+           return BigDecimal.valueOf(onePrice).multiply(BigDecimal.valueOf(100)).longValue();
         }
         return null;
     }
@@ -185,7 +186,7 @@ public class OrderDetailParam implements Serializable, BaseValidatingParam {
 
     public Long getTotalPrice() {
         if(ToolUtil.isNotEmpty(totalPrice)){
-            return totalPrice*100;
+            return BigDecimal.valueOf(totalPrice).multiply(BigDecimal.valueOf(100)).longValue();
         }
         return null;
     }
