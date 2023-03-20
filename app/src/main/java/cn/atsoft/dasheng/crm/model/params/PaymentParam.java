@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -30,13 +31,13 @@ public class PaymentParam implements Serializable, BaseValidatingParam {
      * 浮动金额
      */
 
-    private Long floatingAmount;
+    private Double floatingAmount;
 
 
     /**
      * 总金额
      */
-    private Long totalAmount;
+    private Double totalAmount;
 
     /**
      * 票据类型
@@ -53,7 +54,7 @@ public class PaymentParam implements Serializable, BaseValidatingParam {
 
     private List<PaymentDetailParam> detailParams;
     @NotNull
-    private Long money;
+    private Double money;
 
     private Integer status;
 
@@ -160,19 +161,19 @@ public class PaymentParam implements Serializable, BaseValidatingParam {
 
     public Long getFloatingAmount() {
         if(ToolUtil.isNotEmpty(floatingAmount)){
-            return floatingAmount*100;
+            return BigDecimal.valueOf(floatingAmount).multiply(BigDecimal.valueOf(100)).longValue();
         }
         return null;
     }
     public Long getTotalAmount() {
         if(ToolUtil.isNotEmpty(totalAmount)){
-            return totalAmount*100;
+            return  BigDecimal.valueOf(totalAmount).multiply(BigDecimal.valueOf(100)).longValue();
         }
         return null;
     }
     public Long getMoney() {
         if(ToolUtil.isNotEmpty(money)){
-            return money*100;
+            return  BigDecimal.valueOf(money).multiply(BigDecimal.valueOf(100)).longValue();
         }
         return null;
     }

@@ -112,8 +112,8 @@
     <select id="viewOrderDetail" resultType="cn.atsoft.dasheng.purchase.model.result.ViewResult"
             parameterType="cn.atsoft.dasheng.purchase.model.params.ViewParam">
         SELECT
-        tableTmp.`YEAR`  AS "month",
-        tableTmp.`MONTH`  AS "year",
+        tableTmp.`YEAR`  AS "year",
+        tableTmp.`MONTH`  AS "month",
         pay.total_amount AS "totalPrice",
         pay.payment_amount AS "paymentPrice",
         pay.total_amount - pay.payment_amount AS "deficientPrice",
@@ -257,84 +257,227 @@
     </select>
     <select id="orderView" resultType="cn.atsoft.dasheng.purchase.model.result.ViewResult"
             parameterType="cn.atsoft.dasheng.purchase.model.params.ViewParam">
-        select
-        tmp.year,
-        tmp.month,
-        sum(tmp.sellerCount) AS "sellerCount",
-        sum(tmp.skuCount) AS "skuCount",
-        SUM(tmp.purchaseNumber) AS "purchaseNumber",
-        sum(tmp.totalPrice)AS "totalPrice",
-        tmp.createTime AS "craeteTime",
-        sum(tmp.deficientPrice) AS  "deficientPrice",
-        sum(paymentPrice) AS "paymentPrice",
-        SUM(tmp.inStockCount) AS "inStockCount",
-        round(SUM(tmp.inStockCount)/SUM(tmp.purchaseNumber)*100) AS inStockRate
-        from (
-        select
-        <include refid="Left_View_Column_List"/>
-        from  view_order_detail detail
-        LEFT JOIN (
         SELECT
-        record.order_id,
-        DATE_FORMAT( orders.create_time, '%Y-%m' ) MONTH,
-        DATE_FORMAT( orders.create_time, '%Y' ) YEAR,
-        sum( record.payment_amount ) AS payment_amount
-        FROM
-        (SELECT * from daoxin_crm_payment_record WHERE display = 1 and `status` = 0) record
-        LEFT JOIN daoxin_crm_order orders ON record.order_id = orders.order_id
-        AND orders.display = 1
-        WHERE
-        1 = 1
-        AND record.display = 1
+        sum(tableTmp.total_amount)  AS "totalPrice",
+        sum(tableTmp.payment_amount) AS "paymentPrice",
+        sum(tableTmp.deficientPrice) AS "deficientPrice",
+        ( SELECT COUNT( DISTINCT sku_id ) AS skuCount FROM view_order_detail
+        where 1 = 1
         <if test="paramCondition.theme !=null and paramCondition.theme !=''">
-            and orders.theme like CONCAT('%',#{paramCondition.theme},'%')
+            and theme like CONCAT('%',#{paramCondition.theme},'%')
         </if>
         <if test="paramCondition.coding !=null and paramCondition.coding !=''">
-            and orders.coding like CONCAT('%',#{paramCondition.coding},'%')
+            and coding like CONCAT('%',#{paramCondition.coding},'%')
         </if>
         <if test="paramCondition.sellerId !=null">
-            and orders.seller_id = #{paramCondition.sellerId}
+            and seller_id = #{paramCondition.sellerId}
         </if>
-
         <if test="paramCondition.status != null">
-            and orders.status = #{paramCondition.status}
-        </if>
-
-        GROUP BY
-        record.order_id
-        ) payment ON detail.order_id = payment.order_id
-        WHERE 1 = 1
-
-        <if test="paramCondition.year != null and paramCondition.year!= ''">
-            and detail.year = #{paramCondition.year}
+            and status = #{paramCondition.status}
         </if>
         <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
-            and date_format(detail.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
             str_to_date(#{paramCondition.startTime},'%Y/%m/%d
             %H:%i:%s')
         </if>
         <!--结束时间-->
         <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
-            and date_format(detail.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
             str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
+
+        ) AS skuCount,
+        ( SELECT sum( purchase_number ) AS purchaseNumber FROM view_order_detail
+        where 1 = 1
         <if test="paramCondition.theme !=null and paramCondition.theme !=''">
-            and detail.theme like CONCAT('%',#{paramCondition.theme},'%')
+            and theme like CONCAT('%',#{paramCondition.theme},'%')
         </if>
         <if test="paramCondition.coding !=null and paramCondition.coding !=''">
-            and detail.coding like CONCAT('%',#{paramCondition.coding},'%')
+            and coding like CONCAT('%',#{paramCondition.coding},'%')
         </if>
         <if test="paramCondition.sellerId !=null">
-            and detail.seller_id = #{paramCondition.sellerId}
+            and seller_id = #{paramCondition.sellerId}
+        </if>
+        <if test="paramCondition.status != null">
+            and status = #{paramCondition.status}
+        </if>
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
         </if>
 
+        ) AS purchaseNumber,
+            ( SELECT sum( inStock_number  ) AS inStock_number FROM view_order_detail
+        where 1 = 1
+        <if test="paramCondition.theme !=null and paramCondition.theme !=''">
+            and theme like CONCAT('%',#{paramCondition.theme},'%')
+        </if>
+        <if test="paramCondition.coding !=null and paramCondition.coding !=''">
+            and coding like CONCAT('%',#{paramCondition.coding},'%')
+        </if>
+        <if test="paramCondition.sellerId !=null">
+            and seller_id = #{paramCondition.sellerId}
+        </if>
         <if test="paramCondition.status != null">
-            and detail.status = #{paramCondition.status}
+            and status = #{paramCondition.status}
+        </if>
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+
+        ) AS inStockCount,
+
+
+        ROUND(( SELECT sum( inStock_number  ) AS inStock_number FROM view_order_detail
+        where 1 = 1
+        <if test="paramCondition.theme !=null and paramCondition.theme !=''">
+            and theme like CONCAT('%',#{paramCondition.theme},'%')
+        </if>
+        <if test="paramCondition.coding !=null and paramCondition.coding !=''">
+            and coding like CONCAT('%',#{paramCondition.coding},'%')
+        </if>
+        <if test="paramCondition.sellerId !=null">
+            and seller_id = #{paramCondition.sellerId}
+        </if>
+        <if test="paramCondition.status != null">
+            and status = #{paramCondition.status}
+        </if>
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+
+        ) /( SELECT sum( purchase_number ) AS purchaseNumber FROM view_order_detail
+        where 1 = 1
+        <if test="paramCondition.theme !=null and paramCondition.theme !=''">
+            and theme like CONCAT('%',#{paramCondition.theme},'%')
+        </if>
+        <if test="paramCondition.coding !=null and paramCondition.coding !=''">
+            and coding like CONCAT('%',#{paramCondition.coding},'%')
+        </if>
+        <if test="paramCondition.sellerId !=null">
+            and seller_id = #{paramCondition.sellerId}
+        </if>
+        <if test="paramCondition.status != null">
+            and status = #{paramCondition.status}
+        </if>
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+
+        )*100) AS inStockRate,
+
+
+
+
+
+        ( SELECT COUNT( DISTINCT customer_id ) AS customerCount FROM view_order_detail where 1 = 1
+        <if test="paramCondition.theme !=null and paramCondition.theme !=''">
+            and theme like CONCAT('%',#{paramCondition.theme},'%')
+        </if>
+        <if test="paramCondition.coding !=null and paramCondition.coding !=''">
+            and coding like CONCAT('%',#{paramCondition.coding},'%')
+        </if>
+        <if test="paramCondition.sellerId !=null">
+            and seller_id = #{paramCondition.sellerId}
+        </if>
+        <if test="paramCondition.status != null">
+            and status = #{paramCondition.status}
+        </if>
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>) AS "sellerCount"
+        FROM
+        (
+        SELECT
+        v.`year`,
+        v.`month`,
+        v.order_id,
+        v.total_amount,
+        p.payment_amount,
+        (total_amount -
+        IF
+        ( payment_amount IS NULL, 0, payment_amount ) )AS "deficientPrice"
+        FROM
+        view_order_detail v
+        LEFT JOIN (
+        SELECT
+        SUM( payment_amount ) AS payment_amount,
+        order_id AS order_id
+        FROM
+        daoxin_crm_payment_record
+        WHERE
+        1 = 1
+        AND display = 1
+        AND `status` = 0
+        GROUP BY
+        order_id
+        ) p ON v.order_id = p.order_id
+        where 1 = 1
+        <if test="paramCondition.theme !=null and paramCondition.theme !=''">
+            and v.theme like CONCAT('%',#{paramCondition.theme},'%')
+        </if>
+        <if test="paramCondition.coding !=null and paramCondition.coding !=''">
+            and v.coding like CONCAT('%',#{paramCondition.coding},'%')
+        </if>
+        <if test="paramCondition.sellerId !=null">
+            and v.seller_id = #{paramCondition.sellerId}
+        </if>
+        <if test="paramCondition.status != null">
+            and v.status = #{paramCondition.status}
+        </if>
+        <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
+            and date_format(v.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
+            str_to_date(#{paramCondition.startTime},'%Y/%m/%d
+            %H:%i:%s')
+        </if>
+        <!--结束时间-->
+        <if test="paramCondition.endTime!=null and paramCondition.endTime.trim() neq ''">
+            and date_format(v.create_time,'%Y/%m/%d %H:%i:%s') &lt;=
+            str_to_date(#{paramCondition.endTime},'%Y/%m/%d %H:%i:%s')
+        </if>
+        <if test="paramCondition.year != null and paramCondition.year!= ''">
+            and v.year = #{paramCondition.year}
         </if>
         GROUP BY
-        detail.order_id
-        ) tmp
-</select>
+        v.order_id
+        ORDER BY
+        v.create_time DESC
+        ) tableTmp
+    </select>
 <!--    <select id="orderView" resultType="cn.atsoft.dasheng.purchase.model.result.ViewResult"-->
 <!--            parameterType="cn.atsoft.dasheng.purchase.model.params.ViewParam">-->
 
