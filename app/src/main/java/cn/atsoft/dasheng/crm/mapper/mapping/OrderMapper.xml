@@ -117,7 +117,7 @@
 	ROUND(d.inStock_number/d.purchase_number*100) AS inStockRate,
 	FLOOR(p.total_amount/o.total_amount*100) AS paymentRate,
     p.total_amount AS "paymentPrice",
-    o.total_amount - p.total_amount AS "deficientPrice"
+    o.total_amount - if(p.total_amount is null ,0,p.total_amount) AS "deficientPrice"
     </sql>
 
 
