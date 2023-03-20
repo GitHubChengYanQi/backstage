@@ -53,7 +53,7 @@ public class PaymentParam implements Serializable, BaseValidatingParam {
 
     private List<PaymentDetailParam> detailParams;
     @NotNull
-    private Integer money;
+    private Long money;
 
     private Integer status;
 
@@ -167,6 +167,12 @@ public class PaymentParam implements Serializable, BaseValidatingParam {
     public Long getTotalAmount() {
         if(ToolUtil.isNotEmpty(totalAmount)){
             return totalAmount*100;
+        }
+        return null;
+    }
+    public Long getMoney() {
+        if(ToolUtil.isNotEmpty(money)){
+            return money*100;
         }
         return null;
     }

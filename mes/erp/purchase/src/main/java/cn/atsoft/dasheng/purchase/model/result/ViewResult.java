@@ -17,6 +17,7 @@ public class ViewResult {
     private Integer skuCount;
     private Long purchaseNumber;
     private Long totalPrice;
+    private Double totalAmount;
     private Date createTime;
     private Integer inStockCount;
     private Integer inStockRate;
@@ -42,6 +43,13 @@ public class ViewResult {
             return null;
         }
         return BigDecimal.valueOf(paymentPrice).divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP).doubleValue();
+    }
+
+    public Double getTotalAmount() {
+        if (ToolUtil.isEmpty(totalAmount) || totalAmount.equals(0L)){
+            return null;
+        }
+        return BigDecimal.valueOf(totalAmount).divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP).doubleValue();
     }
 
 }

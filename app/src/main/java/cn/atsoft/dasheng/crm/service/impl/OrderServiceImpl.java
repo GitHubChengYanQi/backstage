@@ -98,6 +98,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 orderType = "销售";
                 break;
         }
+        String coding = entity.getCoding();
+        String theme = entity.getTheme();
+
+
+        int codingCount = ToolUtil.isEmpty(coding) ? 0 :this.lambdaQuery().eq(Order::getCoding, coding).eq(Order::getDisplay, 1).count();
+        int themeCount = ToolUtil.isEmpty(theme) ? 0 : this.lambdaQuery().eq(Order::getTheme, theme).eq(Order::getDisplay, 1).count();
+
+        if (codingCount > 0) {
+            throw new ServiceException(500, "编码不可重复");
+        }
+        if (themeCount > 0) {
+            throw new ServiceException(500, "主题不可重复");
+        }
 
 
         this.save(entity);
@@ -112,7 +125,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         param.getPaymentParam().setOrderId(entity.getOrderId());
         supplyService.OrdersBackFill(param.getSellerId(), param.getDetailParams());  //回填
-        long  totalAmount = detailService.addList(entity.getOrderId(), param.getSellerId(), param.getDetailParams());    //返回添加所有物料总价
+        long totalAmount = detailService.addList(entity.getOrderId(), param.getSellerId(), param.getDetailParams());    //返回添加所有物料总价
         paymentService.add(param.getPaymentParam(), orderType);
         if (ToolUtil.isNotEmpty(param.getPaymentParam()) && ToolUtil.isNotEmpty(param.getPaymentParam().getFloatingAmount())) {
             totalAmount = totalAmount + param.getPaymentParam().getFloatingAmount();
@@ -190,7 +203,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     private Page<OrderResult> getPageContext() {
-        return PageFactory.defaultPage(new ArrayList<String>(){{
+        return PageFactory.defaultPage(new ArrayList<String>() {{
             add("coding");
             add("inStockRate");
             add("paymentRate");
@@ -446,7 +459,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                     if (orderResult.getDeliveryDate() == null) {
 
                     }
-                    map.put(ContractEnum.DeliveryDate.getDetail(), DateUtil.format(orderResult.getDeliveryDate(),"yyyy年MM月dd日 "));
+                    map.put(ContractEnum.DeliveryDate.getDetail(), DateUtil.format(orderResult.getDeliveryDate(), "yyyy年MM月dd日 "));
                     break;
                 case floatingAmount:
                     Double floatingAmount = paymentResult.getFloatingAmount();
@@ -499,7 +512,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public OrderResult getDetail(Long id) {
         Order order = this.getById(id);
-        if(ToolUtil.isEmpty(order)){
+        if (ToolUtil.isEmpty(order)) {
             return new OrderResult();
         }
         OrderResult orderResult = new OrderResult();
@@ -516,7 +529,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             allMoney = order.getTotalAmount();
         }
         for (OrderDetailResult detail : details) {
-            totalNumber+= detail.getPurchaseNumber();
+            totalNumber += detail.getPurchaseNumber();
         }
         orderResult.setTotalNumber(totalNumber);
         orderResult.setAllMoney(allMoney);
@@ -733,7 +746,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         return contractDetailSet;
     }
-    private void formatOrders(List<OrderResult> data){
+
+    private void formatOrders(List<OrderResult> data) {
         List<Long> customerIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         List<Long> orderIds = new ArrayList<>();
@@ -783,13 +797,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             }
             List<PaymentRecordResult> paymentList = new ArrayList<>();
             for (PaymentRecordResult paymentRecordResult : paymentRecordResultList) {
-                if (paymentRecordResult.getOrderId().equals(datum.getOrderId())){
+                if (paymentRecordResult.getOrderId().equals(datum.getOrderId())) {
                     paymentList.add(paymentRecordResult);
                 }
             }
             datum.setPaymentRecordResults(paymentList);
         }
     }
+
     @Override
     public void format(List<OrderResult> data) {
         this.formatOrders(data);
@@ -809,20 +824,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 
     }
+
     @Override
-    public void checkStatus(Long orderId){
+    public void checkStatus(Long orderId) {
         Order order = this.getById(orderId);
         if (ToolUtil.isEmpty(order)) {
-            throw new ServiceException(500,"参数错误");
+            throw new ServiceException(500, "参数错误");
         }
         List<OrderDetail> orderDetailList = detailService.lambdaQuery().eq(OrderDetail::getOrderId, order.getOrderId()).eq(OrderDetail::getDisplay, 1).list();
         int doneNum = 0;
         for (OrderDetail orderDetail : orderDetailList) {
-            if (orderDetail.getPurchaseNumber()<= orderDetail.getInStockNumber()){
+            if (orderDetail.getPurchaseNumber() <= orderDetail.getInStockNumber()) {
                 doneNum++;
             }
         }
-        if (doneNum == orderDetailList.size()){
+        if (doneNum == orderDetailList.size()) {
             order.setStatus(99);
             this.updateById(order);
         }

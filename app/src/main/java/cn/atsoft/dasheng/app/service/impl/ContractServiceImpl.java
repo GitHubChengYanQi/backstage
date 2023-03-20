@@ -961,7 +961,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             if (ToolUtil.isEmpty(orderParam.getPaymentParam().getMoney())) {
                 content = content.replace("${{合计金额大写}}", "");
             } else {
-                Integer money = orderParam.getPaymentParam().getMoney();
+                Long money = orderParam.getPaymentParam().getMoney();
                 String format = NumberChineseFormatter.format(money, true, true);
                 content = content.replace("${{合计金额大写}}", format);
             }
