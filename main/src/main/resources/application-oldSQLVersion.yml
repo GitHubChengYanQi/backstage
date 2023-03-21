@@ -37,16 +37,16 @@
 # Mysql数据库
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.2.239/daoxin?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
-    username: daoxin
-    password: 123qweasd
-    filters: wall,mergeStat
 #    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://192.168.2.239/hh-local?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
-#    username: hh-local
-#    password: CprNCmi2DDCzztWW
+#    url: jdbc:mysql://192.168.2.239/daoxin?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+#    username: daoxin
+#    password: 123qweasd
 #    filters: wall,mergeStat
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.2.239/hh-local?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+    username: hh-local
+    password: CprNCmi2DDCzztWW
+    filters: wall,mergeStat
 
     # 连接池大小根据实际情况调整
     max-active: 20
@@ -141,15 +141,20 @@ pay:
 pushPayInfo: false
 
 aliyun:
-  accessId: LTAIypr5IqQ1tvpM
-  accessKey: TKG3sSvijsG4sq0q1b7Y9aQVYtMk7b
+  accessId: LTAI5tRtx3bPozdsUhbF6PS1
+  accessKey: h7yO2s07LOseh8OONvDpJgPwHcBtIn
 
   Sms:
     SignName: 工业服务网
     templateCode: SMS_137360127
   oss:
     endpoint: oss-cn-beijing.aliyuncs.com
-    bucket: gpkx
+    bucket: hunts-cnc
+    callbackUrl: https://dasheng-soft.picp.vip/v1
+    path: upload/
+  oss2:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    bucket: hunts-file
     callbackUrl: https://dasheng-soft.picp.vip/v1
     path: upload/
 wxcp:

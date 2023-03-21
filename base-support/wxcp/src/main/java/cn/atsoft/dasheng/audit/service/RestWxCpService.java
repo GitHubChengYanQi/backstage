@@ -1,19 +1,19 @@
-package cn.atsoft.dasheng.service;
+package cn.atsoft.dasheng.audit.service;
 
-import cn.atsoft.dasheng.config.WxCpProperties;
+import cn.atsoft.dasheng.audit.config.RestWxCpProperties;
 import me.chanjar.weixin.cp.api.impl.WxCpServiceImpl;
 import me.chanjar.weixin.cp.config.impl.WxCpDefaultConfigImpl;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 @Service
-@EnableConfigurationProperties(WxCpProperties.class)
+@EnableConfigurationProperties(RestWxCpProperties.class)
 public class RestWxCpService {
 
-    private WxCpProperties config;
+    private RestWxCpProperties config;
 
-    public RestWxCpService(WxCpProperties wxCpProperties){
-        this.config = wxCpProperties;
+    public RestWxCpService(RestWxCpProperties restWxCpProperties){
+        this.config = restWxCpProperties;
     }
 
     public WxCpServiceImpl getWxCpClient(){
