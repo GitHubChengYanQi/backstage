@@ -150,7 +150,9 @@ public class RestClassController extends BaseController {
             }
         }
         result.setItemAttributeParams(itemAttributeParamList);
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         result.setRavAndRabByRestClass(categoryRequests);
         return ResponseData.success(result);
     }

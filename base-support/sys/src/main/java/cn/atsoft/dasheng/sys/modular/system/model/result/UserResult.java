@@ -35,6 +35,11 @@ public class UserResult implements Serializable {
      */
     private DeptDto deptResult;
     /**
+     * 微信openId
+     */
+    @JSONField(serialize = false)
+    private String  openId;
+    /**
      * 角色返回
      */
     private List<RoleDto> roleResults;

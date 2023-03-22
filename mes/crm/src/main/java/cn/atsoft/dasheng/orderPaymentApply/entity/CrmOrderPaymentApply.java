@@ -2,6 +2,8 @@ package cn.atsoft.dasheng.orderPaymentApply.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
@@ -21,14 +23,17 @@ public class CrmOrderPaymentApply implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableField("wx_audit_bind")
-    private Long wxAuditBind;
+    @TableId(value = "sp_no", type = IdType.NONE)
+    private String spNo;
 
     @TableField("order_id")
     private Long orderId;
 
     @TableField("new_money")
     private Long newMoney;
+
+    @TableField("filed")
+    private String filed;
 
     /**
      * 删除状态
@@ -48,20 +53,11 @@ public class CrmOrderPaymentApply implements Serializable {
       @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
-      @TableId(value = "sp_no", type = IdType.ID_WORKER)
-    private String spNo;
-
     @TableField("status")
-    private String status;
+    private Integer status;
 
-
-    public Long getWxAuditBind() {
-        return wxAuditBind;
-    }
-
-    public void setWxAuditBind(Long wxAuditBind) {
-        this.wxAuditBind = wxAuditBind;
-    }
+    @TableField(value = "done_time")
+    private Date doneTime;
 
     public Long getOrderId() {
         return orderId;
@@ -127,27 +123,44 @@ public class CrmOrderPaymentApply implements Serializable {
         this.spNo = spNo;
     }
 
-    public String getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Date getDoneTime() {
+        return doneTime;
+    }
+
+    public void setDoneTime(Date doneTime) {
+        this.doneTime = doneTime;
+    }
+
+    public String getFiled() {
+        return filed;
+    }
+
+    public void setFiled(String filed) {
+        this.filed = filed;
     }
 
     @Override
     public String toString() {
         return "CrmOrderPaymentApply{" +
-        "wxAuditBind=" + wxAuditBind +
-        ", orderId=" + orderId +
-        ", newMoney=" + newMoney +
-        ", display=" + display +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", spNo=" + spNo +
-        ", status=" + status +
-        "}";
+                "spNo='" + spNo + '\'' +
+                ", orderId=" + orderId +
+                ", newMoney=" + newMoney +
+                ", filed='" + filed + '\'' +
+                ", display=" + display +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", status=" + status +
+                ", doneTime=" + doneTime +
+                '}';
     }
 }

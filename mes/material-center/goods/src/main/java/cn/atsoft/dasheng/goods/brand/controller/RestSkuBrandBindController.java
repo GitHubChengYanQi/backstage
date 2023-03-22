@@ -84,7 +84,9 @@ public class RestSkuBrandBindController extends BaseController {
     public ResponseData detail(@RequestBody RestSkuBrandBindParam skuBrandBindParam) {
         RestSkuBrandBind detail = this.skuBrandBindService.getById(skuBrandBindParam.getSkuBrandBind());
         RestSkuBrandBindResult result = new RestSkuBrandBindResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

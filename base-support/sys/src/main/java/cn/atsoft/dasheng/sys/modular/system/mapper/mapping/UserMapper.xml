@@ -365,6 +365,7 @@
         SELECT
         users.user_id AS "userId",
         userInfo.avatar AS "avatar",
+        userInfo.uuid AS "openId",
         users.`name` AS "name",
         users.`role_id` AS "roleId",
         users.`dept_id` AS "deptId",
@@ -456,12 +457,11 @@
         WHERE
         a.user_id = b.user_id
         AND a.create_time = b.create_time
-        AND a.source = 'wxCp'
         GROUP BY
         a.user_id
         ) AS wxuserInfo ON users.user_id = wxuserInfo.user_id
         LEFT JOIN uc_open_user_info userInfo ON userInfo.member_id = wxuserInfo.member_id
-        AND userInfo.source = "WxCp"
+        AND userInfo.display = 1
         WHERE
         1 = 1
         and users.status = 'ENABLE'
@@ -481,6 +481,10 @@
                 #{userId}
             </foreach>
         </if>
+    </select>
+    <select id="getUserOpenId"  resultType="String"
+            parameterType="Long">
+        SELECT uuid from uc_open_user_info WHERE member_id = ( SELECT member_id FROM `daoxin_portal_wxuser_info` WHERE user_id = #{userId} and  display = 1 ) and source  = 'wxCp'
     </select>
 
 

@@ -25,6 +25,9 @@ public class WxAuditResult implements Serializable {
     private String spNo;
 
     @ApiModelProperty("")
+    private Date doneTime;
+
+    @ApiModelProperty("")
     private String templateId;
 
     /**

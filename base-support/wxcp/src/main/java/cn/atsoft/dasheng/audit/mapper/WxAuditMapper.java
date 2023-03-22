@@ -52,5 +52,6 @@ public interface WxAuditMapper extends BaseMapper<WxAudit> {
      * @Date 2023-03-18
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") WxAuditParam paramCondition);
+    Long unpaidMoney(@Param("orderId") Long orderId);
 
 }

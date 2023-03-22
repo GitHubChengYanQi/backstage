@@ -91,7 +91,9 @@ public class RestTextrueController extends BaseController {
     public ResponseData detail(@RequestBody RestTextrueParam restTextrueParam) {
         RestTextrue detail = this.restTextrueService.getById(restTextrueParam.getMaterialId());
         RestTextrueResult result = new RestTextrueResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 //
 //        result.setValue(parentValue);
         return ResponseData.success(result);

@@ -43,6 +43,18 @@
         </dependency>
         <dependency>
             <groupId>cn.atsoft</groupId>
+            <artifactId>base-auth</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>cn.atsoft</groupId>
+            <artifactId>crm</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>cn.atsoft</groupId>
             <artifactId>media-service</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>

@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.audit.controller;
 
+import cn.atsoft.dasheng.audit.config.TemplateConfig;
+import cn.atsoft.dasheng.audit.service.RestWxCpService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.audit.entity.WxAudit;
 import cn.atsoft.dasheng.audit.model.params.WxAuditParam;
@@ -10,7 +12,13 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.cp.api.impl.WxCpServiceImpl;
+import me.chanjar.weixin.cp.bean.message.WxCpXmlMessage;
+import me.chanjar.weixin.cp.bean.message.WxCpXmlOutMessage;
 import me.chanjar.weixin.cp.bean.oa.WxCpOaApplyEventRequest;
+import me.chanjar.weixin.cp.config.impl.WxCpDefaultConfigImpl;
+import org.mybatis.logging.Logger;
+import org.mybatis.logging.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -29,9 +37,15 @@ import java.io.IOException;
 @RequestMapping("/wxAudit")
 @Api(tags = "")
 public class WxAuditController extends BaseController {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private WxAuditService wxAuditService;
+
+    @Autowired
+    private RestWxCpService wxCpService;
+    @Autowired
+    private TemplateConfig templateConfig;
 
     /**
      * 新增接口
@@ -84,7 +98,9 @@ public class WxAuditController extends BaseController {
     public ResponseData<WxAuditResult> detail(@RequestBody WxAuditParam wxAuditParam) {
         WxAudit detail = this.wxAuditService.getById(wxAuditParam.getSpNo());
         WxAuditResult result = new WxAuditResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }
@@ -112,9 +128,9 @@ public class WxAuditController extends BaseController {
      */
     @RequestMapping(value = "/post", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public ResponseData post (@RequestBody(required = false) WxCpOaApplyEventRequest wxAuditParam) throws WxErrorException, IOException {
+    public ResponseData post (@RequestBody(required = false) WxAuditParam wxAuditParam) throws WxErrorException, IOException {
         if(ToolUtil.isEmpty(wxAuditParam)){
-            wxAuditParam = new WxCpOaApplyEventRequest();
+            wxAuditParam = new WxAuditParam();
         }
         return ResponseData.success(this.wxAuditService.post(wxAuditParam));
     }
@@ -130,8 +146,11 @@ public class WxAuditController extends BaseController {
         if(ToolUtil.isEmpty(wxAuditParam)){
             wxAuditParam = new WxAuditParam();
         }
-        return ResponseData.success(this.wxAuditService.getTemplate("3WLJEyiwiby2y4STpyuFXsTdTdM9ste9mAbUQBzT"));
+        return ResponseData.success(this.wxAuditService.getTemplate(templateConfig.getTemplateId()));
     }
+
+
+
 }
 
 

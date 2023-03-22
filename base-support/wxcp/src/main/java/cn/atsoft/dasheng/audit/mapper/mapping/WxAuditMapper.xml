@@ -15,12 +15,13 @@
         <result column="update_user" property="updateUser" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
+        <result column="done_time" property="doneTime" />
         <result column="use_template_approver" property="useTemplateApprover" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        sp_no AS "spNo", template_id AS "templateId", status AS "status", code AS "code", msg AS "msg", creator_user AS "creatorUser", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", use_template_approver AS "useTemplateApprover"
+        sp_no AS "spNo",done_time AS  doneTime,template_id AS "templateId", status AS "status", code AS "code", msg AS "msg", creator_user AS "creatorUser", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", use_template_approver AS "useTemplateApprover"
     </sql>
 
 
@@ -46,6 +47,9 @@
         select
         <include refid="Base_Column_List"/>
         from wx_audit where 1 = 1
+    </select>
+    <select id="unpaidMoney" resultType="Long" >
+        SELECT total_amount - (SELECT if(SUM(payment_amount) is null ,0 ,SUM(payment_amount)) from daoxin_crm_payment_record	WHERE order_id = #{orderId} and display = 1 and `status` = 0) from daoxin_crm_order WHERE order_id = #{orderId}
     </select>
 
 </mapper>

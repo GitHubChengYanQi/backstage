@@ -9,13 +9,21 @@ import cn.atsoft.dasheng.orderPaymentApply.model.params.CrmOrderPaymentApplyPara
 import cn.atsoft.dasheng.orderPaymentApply.model.result.CrmOrderPaymentApplyResult;
 import cn.atsoft.dasheng.orderPaymentApply.service.CrmOrderPaymentApplyService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import me.chanjar.weixin.cp.bean.oa.WxCpOaApplyEventRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -27,6 +35,9 @@ import java.util.List;
  */
 @Service
 public class CrmOrderPaymentApplyServiceImpl extends ServiceImpl<CrmOrderPaymentApplyMapper, CrmOrderPaymentApply> implements CrmOrderPaymentApplyService {
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public void add(CrmOrderPaymentApplyParam param){
@@ -61,9 +72,27 @@ public class CrmOrderPaymentApplyServiceImpl extends ServiceImpl<CrmOrderPayment
     public PageInfo<CrmOrderPaymentApplyResult> findPageBySpec(CrmOrderPaymentApplyParam param){
         Page<CrmOrderPaymentApplyResult> pageContext = getPageContext();
         IPage<CrmOrderPaymentApplyResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
+    public void format(List<CrmOrderPaymentApplyResult> dataList){
+        List<Long> userIdList = dataList.stream().map(CrmOrderPaymentApplyResult::getCreatorUser).distinct().collect(Collectors.toList());
+        List<Long> orderIdList = dataList.stream().map(CrmOrderPaymentApplyResult::getOrderId).distinct().collect(Collectors.toList());
 
+        List<UserResult> userList = userIdList.size()== 0 ? new ArrayList<>() : userService.getUserResultsByIds(userIdList);
+        for (CrmOrderPaymentApplyResult data : dataList) {
+            for (UserResult  user : userList) {
+                if (user.getUserId().equals(data.getCreatorUser())){
+                    data.setUserResult(user);
+                    break;
+                }
+            }
+            data.setApplyEventRequest(JSON.parseObject(data.getMsg(), WxCpOaApplyEventRequest.class));
+        }
+
+
+
+    }
     private Serializable getKey(CrmOrderPaymentApplyParam param){
         return param.getSpNo();
     }

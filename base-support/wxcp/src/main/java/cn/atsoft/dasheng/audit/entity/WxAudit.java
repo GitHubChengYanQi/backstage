@@ -21,7 +21,7 @@ public class WxAudit implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-      @TableId(value = "sp_no", type = IdType.ID_WORKER)
+      @TableId(value = "sp_no", type = IdType.NONE)
     private String spNo;
 
     @TableField("template_id")
@@ -62,6 +62,9 @@ public class WxAudit implements Serializable {
 
       @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
+
+      @TableField(value = "done_time")
+    private Date doneTime;
 
     /**
      * 审批人模式：0-通过接口指定审批人、抄送人（此时approver、notifyer等参数可用）; 1-使用此模板在管理后台设置的审批流程(需要保证审批流程中没有“申请人自选”节点)，支持条件审批。默认为0
@@ -164,6 +167,14 @@ public class WxAudit implements Serializable {
 
     public void setUseTemplateApprover(Integer useTemplateApprover) {
         this.useTemplateApprover = useTemplateApprover;
+    }
+
+    public Date getDoneTime() {
+        return doneTime;
+    }
+
+    public void setDoneTime(Date doneTime) {
+        this.doneTime = doneTime;
     }
 
     @Override

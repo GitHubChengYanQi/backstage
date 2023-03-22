@@ -101,7 +101,9 @@ public class RestCategoryController extends BaseController {
     public ResponseData detail(@RequestBody RestCategoryParam restCategoryParam) {
         RestCategory detail = this.restCategoryService.getById(restCategoryParam.getSpuClassificationId());
         RestCategoryResult result = new RestCategoryResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         if (ToolUtil.isNotEmpty(result.getFormStyleId())) {
             RestFormStyle formStyle = formStyleService.getById(result.getFormStyleId());
             result.setTypeSetting(formStyle.getTypeSetting());

@@ -1,11 +1,15 @@
-package cn.atsoft.dasheng.orderPaymentApply.model.result;
+package cn.atsoft.dasheng.orderPaymentApply.model.params;
 
 import lombok.Data;
-import java.util.Date;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.Date;
 import java.util.List;
+
 /**
  * <p>
  * 
@@ -16,13 +20,15 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class CrmOrderPaymentApplyResult implements Serializable {
+public class CrmOrderPaymentApplyParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty("单据编号")
+    private String coding;
 
-    @ApiModelProperty("")
-    private Long wxAuditBind;
+    @ApiModelProperty("单据主题")
+    private String theme;
 
     @ApiModelProperty("")
     private Long orderId;
@@ -53,6 +59,13 @@ public class CrmOrderPaymentApplyResult implements Serializable {
 
     @ApiModelProperty("")
     private String status;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    @Override
+    public String checkParam() {
+        return null;
+    }
+
 }

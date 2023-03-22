@@ -238,7 +238,9 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     public PurchaseAskResult detail(PurchaseAskParam param) {
         PurchaseAsk detail = this.getById(param.getPurchaseAskId());
         PurchaseAskResult result = new PurchaseAskResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         User user = userService.getById(result.getCreateUser());
         result.setUser(user);
         int number = 0;

@@ -453,4 +453,13 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         this.format(userResults);
         return userResults;
     }
+
+    public String getUserWechatOpenId(Long userId){
+        User user = this.getById(userId);
+        if (ToolUtil.isEmpty(user)){
+            return "";
+        }
+
+        return this.baseMapper.getUserOpenId(userId);
+    }
 }

@@ -105,7 +105,9 @@ public class RestAttributeController extends BaseController {
             }
         }
         RestAttributeResult result = new RestAttributeResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         result.setAttributeValuesResults(attributeValuesResults);
 
         return ResponseData.success(result);

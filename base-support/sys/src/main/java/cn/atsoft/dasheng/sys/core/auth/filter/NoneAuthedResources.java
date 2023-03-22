@@ -27,6 +27,8 @@ public class NoneAuthedResources {
     public static final String[] BACKEND_RESOURCES = {
 
             "/druid/**",
+            //微信回调
+            "/wx/**",
 
             //主页
             "/",

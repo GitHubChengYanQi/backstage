@@ -77,7 +77,9 @@ public class RestUnitController extends BaseController {
     public ResponseData detail(@RequestBody RestUnitParam restUnitParam) {
         RestUnit detail = this.restUnitService.getById(restUnitParam.getUnitId());
         RestUnitResult result = new RestUnitResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

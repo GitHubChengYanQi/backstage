@@ -47,7 +47,9 @@ public class RestOrderDetailController extends BaseController {
     public ResponseData detail(@RequestBody RestOrderDetailParam orderDetailParam) {
         RestOrderDetail detail = this.orderDetailService.getById(orderDetailParam.getDetailId());
         RestOrderDetailResult result = new RestOrderDetailResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

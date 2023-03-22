@@ -71,7 +71,7 @@ public interface WxAuditService extends IService<WxAudit> {
      */
      PageInfo<WxAuditResult> findPageBySpec(WxAuditParam param);
 
-    WxAuditPost post(WxCpOaApplyEventRequest param) throws WxErrorException, IOException;
+    String post(WxAuditParam param) throws WxErrorException, IOException;
 
     WxCpTemplateResult getTemplate(String templateId) throws WxErrorException;
 }
