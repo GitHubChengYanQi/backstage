@@ -47,78 +47,78 @@ public class WxAuditController extends BaseController {
     @Autowired
     private TemplateConfig templateConfig;
 
-    /**
-     * 新增接口
-     *
-     * @author Captain_Jazz
-     * @Date 2023-03-18
-     */
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody WxAuditParam wxAuditParam) {
-        this.wxAuditService.add(wxAuditParam);
-        return ResponseData.success();
-    }
+//    /**
+//     * 新增接口
+//     *
+//     * @author Captain_Jazz
+//     * @Date 2023-03-18
+//     */
+//    @RequestMapping(value = "/add", method = RequestMethod.POST)
+//    @ApiOperation("新增")
+//    public ResponseData addItem(@RequestBody WxAuditParam wxAuditParam) {
+//        this.wxAuditService.add(wxAuditParam);
+//        return ResponseData.success();
+//    }
+//
+//    /**
+//     * 编辑接口
+//     *
+//     * @author Captain_Jazz
+//     * @Date 2023-03-18
+//     */
+//    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+//    @ApiOperation("编辑")
+//    public ResponseData update(@RequestBody WxAuditParam wxAuditParam) {
+//
+//        this.wxAuditService.update(wxAuditParam);
+//        return ResponseData.success();
+//    }
+//
+//    /**
+//     * 删除接口
+//     *
+//     * @author Captain_Jazz
+//     * @Date 2023-03-18
+//     */
+//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+//    @ApiOperation("删除")
+//    public ResponseData delete(@RequestBody WxAuditParam wxAuditParam)  {
+//        this.wxAuditService.delete(wxAuditParam);
+//        return ResponseData.success();
+//    }
 
-    /**
-     * 编辑接口
-     *
-     * @author Captain_Jazz
-     * @Date 2023-03-18
-     */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @ApiOperation("编辑")
-    public ResponseData update(@RequestBody WxAuditParam wxAuditParam) {
-
-        this.wxAuditService.update(wxAuditParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 删除接口
-     *
-     * @author Captain_Jazz
-     * @Date 2023-03-18
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody WxAuditParam wxAuditParam)  {
-        this.wxAuditService.delete(wxAuditParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 查看详情接口
-     *
-     * @author Captain_Jazz
-     * @Date 2023-03-18
-     */
-    @RequestMapping(value = "/detail", method = RequestMethod.POST)
-    @ApiOperation("详情")
-    public ResponseData<WxAuditResult> detail(@RequestBody WxAuditParam wxAuditParam) {
-        WxAudit detail = this.wxAuditService.getById(wxAuditParam.getSpNo());
-        WxAuditResult result = new WxAuditResult();
-        if (ToolUtil.isNotEmpty(detail)) {
-            ToolUtil.copyProperties(detail, result);
-        }
-
-        return ResponseData.success(result);
-    }
-
-    /**
-     * 查询列表
-     *
-     * @author Captain_Jazz
-     * @Date 2023-03-18
-     */
-    @RequestMapping(value = "/list", method = RequestMethod.POST)
-    @ApiOperation("列表")
-    public PageInfo<WxAuditResult> list(@RequestBody(required = false) WxAuditParam wxAuditParam) {
-        if(ToolUtil.isEmpty(wxAuditParam)){
-            wxAuditParam = new WxAuditParam();
-        }
-        return this.wxAuditService.findPageBySpec(wxAuditParam);
-    }
+//    /**
+//     * 查看详情接口
+//     *
+//     * @author Captain_Jazz
+//     * @Date 2023-03-18
+//     */
+//    @RequestMapping(value = "/detail", method = RequestMethod.POST)
+//    @ApiOperation("详情")
+//    public ResponseData<WxAuditResult> detail(@RequestBody WxAuditParam wxAuditParam) {
+//        WxAudit detail = this.wxAuditService.getById(wxAuditParam.getSpNo());
+//        WxAuditResult result = new WxAuditResult();
+//        if (ToolUtil.isNotEmpty(detail)) {
+//            ToolUtil.copyProperties(detail, result);
+//        }
+//
+//        return ResponseData.success(result);
+//    }
+//
+//    /**
+//     * 查询列表
+//     *
+//     * @author Captain_Jazz
+//     * @Date 2023-03-18
+//     */
+//    @RequestMapping(value = "/list", method = RequestMethod.POST)
+//    @ApiOperation("列表")
+//    public PageInfo<WxAuditResult> list(@RequestBody(required = false) WxAuditParam wxAuditParam) {
+//        if(ToolUtil.isEmpty(wxAuditParam)){
+//            wxAuditParam = new WxAuditParam();
+//        }
+//        return this.wxAuditService.findPageBySpec(wxAuditParam);
+//    }
 
     /**
      * 查询列表
