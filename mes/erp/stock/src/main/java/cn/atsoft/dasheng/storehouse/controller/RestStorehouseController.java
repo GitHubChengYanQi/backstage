@@ -106,7 +106,9 @@ public class RestStorehouseController extends BaseController {
     public ResponseData detail(@RequestBody RestStorehouseParam storehouseParam) {
         RestStorehouse detail = this.storehouseService.getById(storehouseParam.getStorehouseId());
         RestStorehouseResult result = new RestStorehouseResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

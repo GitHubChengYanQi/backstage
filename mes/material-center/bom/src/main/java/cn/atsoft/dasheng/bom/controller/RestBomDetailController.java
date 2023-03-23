@@ -90,7 +90,9 @@ public class RestBomDetailController extends BaseController {
 //    public ResponseData detail(@RequestBody RestBomDetailParam erpPartsDetailParam) {
 //        RestBomDetail detail = this.erpPartsDetailService.getById(erpPartsDetailParam.getPartsDetailId());
 //        RestBomDetailResult result = new RestBomDetailResult();
-//        ToolUtil.copyProperties(detail, result);
+//        if (ToolUtil.isNotEmpty(detail)) {
+//            ToolUtil.copyProperties(detail, result);
+//        }
 //
 //        return ResponseData.success(result);
 //    }

@@ -82,7 +82,9 @@ public class RestBrandController extends BaseController {
     public ResponseData detail(@RequestBody RestBrandParam restBrandParam) {
         RestBrand detail = this.restBrandService.getById(restBrandParam.getBrandId());
         RestBrandResult result = new RestBrandResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         restBrandService.format(new ArrayList<RestBrandResult>() {{
             add(result);
         }});

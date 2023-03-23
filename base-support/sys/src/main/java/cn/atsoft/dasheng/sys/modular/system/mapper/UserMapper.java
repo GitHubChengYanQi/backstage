@@ -69,6 +69,7 @@ public interface UserMapper extends BaseMapper<User> {
     List<User> listUserByPositionAndDept(@Param("deptId")Long deptId, @Param("positionIds")List<Long> positionIds);
     List<UserResult> listUserByIds(@Param("userIds")List<Long> userIds);
     Page<UserResult> userResultPageList (@Param("page") Page page,@Param("paramCondition")UserParam param);
+    String getUserOpenId (@Param("userId")Long userId);
     List<UserResult> userResultList (@Param("paramCondition")UserParam param);
 
 }

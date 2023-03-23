@@ -1,11 +1,11 @@
 package cn.atsoft.dasheng.topic;
 
+import cn.atsoft.dasheng.audit.service.RestWxCpService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.entity.MessageEntity;
 import cn.atsoft.dasheng.service.RestAuditMessageService;
 import cn.atsoft.dasheng.service.RestMicroMessageService;
 import cn.atsoft.dasheng.service.RestRemarksMessageService;
-import cn.atsoft.dasheng.service.RestWxCpService;
 import com.alibaba.fastjson.JSON;
 import com.rabbitmq.client.Channel;
 import me.chanjar.weixin.common.error.WxErrorException;

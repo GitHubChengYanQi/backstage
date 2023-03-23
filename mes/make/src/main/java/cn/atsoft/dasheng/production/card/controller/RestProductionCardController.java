@@ -81,7 +81,9 @@ public class RestProductionCardController extends BaseController {
     public ResponseData<ProductionCardResult> detail(@RequestBody ProductionCardParam productionCardParam) {
         ProductionCard detail = this.restProductionCardService.getById(productionCardParam.getProductionCardId());
         ProductionCardResult result = new ProductionCardResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

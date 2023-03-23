@@ -87,7 +87,9 @@ public class RestAttributeValuesController extends BaseController {
     public ResponseData detail(@RequestBody RestAttributeValuesParam restAttributeValuesParam) {
         RestAttributeValues detail = this.restAttributeValuesService.getById(restAttributeValuesParam.getAttributeValuesId());
         RestAttributeValuesResult result = new RestAttributeValuesResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

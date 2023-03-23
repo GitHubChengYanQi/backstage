@@ -79,7 +79,9 @@ public class ProductionCardBindController extends BaseController {
     public ResponseData<ProductionCardBindResult> detail(@RequestBody ProductionCardBindParam productionCardBindParam) {
         ProductionCardBind detail = this.restProductionCardBindService.getById(productionCardBindParam.getProductionCardBindId());
         ProductionCardBindResult result = new ProductionCardBindResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }
