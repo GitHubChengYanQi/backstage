@@ -86,7 +86,9 @@ public class ItemBrandController extends BaseController {
     public ResponseData detail(@RequestBody ItemBrandParam itemBrandParam) {
         ItemBrand detail = this.itemBrandService.getById(itemBrandParam.getItemId());
         ItemBrandResult result = new ItemBrandResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

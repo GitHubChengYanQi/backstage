@@ -87,7 +87,9 @@ public class OriginController extends BaseController {
     public ResponseData detail(@RequestBody OriginParam originParam) {
         Origin detail = this.originService.getById(originParam.getOriginId());
         OriginResult result = new OriginResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

@@ -85,7 +85,9 @@ public class BusinessCompetitionController extends BaseController {
     public ResponseData detail(@RequestBody BusinessCompetitionParam businessCompetitionParam) {
         BusinessCompetition detail = this.businessCompetitionService.getById(businessCompetitionParam.getBusinessCompetitionId());
         BusinessCompetitionResult result = new BusinessCompetitionResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

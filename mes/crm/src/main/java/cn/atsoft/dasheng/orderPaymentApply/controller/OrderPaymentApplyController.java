@@ -1,7 +1,9 @@
 package cn.atsoft.dasheng.orderPaymentApply.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orderPaymentApply.model.params.CrmOrderPaymentApplyParam;
 import cn.atsoft.dasheng.orderPaymentApply.service.CrmOrderPaymentApplyService;
@@ -32,7 +34,23 @@ public class OrderPaymentApplyController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("新增")
     public PageInfo addItem(@RequestBody CrmOrderPaymentApplyParam param) {
+        if (LoginContextHolder.getContext().isAdmin()) {
+        return this.crmOrderPaymentApplyService.findPageBySpec(null,param);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.crmOrderPaymentApplyService.findPageBySpec(dataScope, param);
+        }
+    }
+    /**
+     * 新增接口
+     *
+     * @author Captain_Jazz
+     * @Date 2023-03-04
+     */
+    @RequestMapping(value = "/detail", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData detail(@RequestBody CrmOrderPaymentApplyParam param) {
 
-        return this.crmOrderPaymentApplyService.findPageBySpec(param);
+        return ResponseData.success(this.crmOrderPaymentApplyService.detail(param));
     }
 }

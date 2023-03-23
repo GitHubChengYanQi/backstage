@@ -83,7 +83,9 @@ public class AllocationDetailController extends BaseController {
     public ResponseData detail(@RequestBody AllocationDetailParam allocationDetailParam) {
         AllocationDetail detail = this.allocationDetailService.getById(allocationDetailParam.getAllocationDetailId());
         AllocationDetailResult result = new AllocationDetailResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

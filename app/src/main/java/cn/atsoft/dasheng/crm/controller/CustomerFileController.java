@@ -80,7 +80,9 @@ public class CustomerFileController extends BaseController {
     public ResponseData detail(@RequestBody CustomerFileParam customerFileParam) {
         CustomerFile detail = this.customerFileService.getById(customerFileParam.getFileId());
         CustomerFileResult result = new CustomerFileResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         return ResponseData.success(result);
     }
 

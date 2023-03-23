@@ -84,7 +84,9 @@ public class InvoiceController extends BaseController {
     public ResponseData detail(@RequestBody InvoiceParam invoiceParam) {
         Invoice detail = this.invoiceService.getById(invoiceParam.getInvoiceId());
         InvoiceResult result = new InvoiceResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

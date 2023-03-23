@@ -101,7 +101,9 @@ public class RestCodeRuleController extends BaseController {
     public ResponseData detail(@RequestBody RestCodeRuleParam codingRulesParam) {
         RestCodeRule detail = this.codingRulesService.getById(codingRulesParam.getCodingRulesId());
         RestCodeRuleResult result = new RestCodeRuleResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         if (ToolUtil.isNotEmpty(detail.getCodingRules())) {
             String[] split = detail.getCodingRules().split(",");

@@ -97,7 +97,9 @@ public class ContactsController extends BaseController {
         Contacts detail = this.contactsService.getById(contactsParam.getContactsId());
         ContactsResult result = new ContactsResult();
         List<ContactsResult> results = new ArrayList<>();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         results.add(result);
         this.contactsService.format(results);
         for (ContactsResult res : results) {

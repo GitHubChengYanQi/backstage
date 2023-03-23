@@ -161,7 +161,9 @@ public class ShopCartController extends BaseController {
     public ResponseData detail(@RequestBody ShopCartParam shopCartParam) {
         ShopCart detail = this.shopCartService.getById(shopCartParam.getCartId());
         ShopCartResult result = new ShopCartResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         return ResponseData.success(result);
     }
 

@@ -94,7 +94,9 @@ public class CodingRulesController extends BaseController {
     public ResponseData detail(@RequestBody CodingRulesParam codingRulesParam) {
         CodingRules detail = this.codingRulesService.getById(codingRulesParam.getCodingRulesId());
         CodingRulesResult result = new CodingRulesResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         if (ToolUtil.isNotEmpty(detail.getCodingRules())) {
             String[] split = detail.getCodingRules().split(",");

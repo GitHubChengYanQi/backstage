@@ -84,7 +84,9 @@ public class NavigationController extends BaseController {
     public ResponseData detail(@RequestBody NavigationParam navigationParam) {
         Navigation detail = this.navigationService.getById(navigationParam.getNavigationId());
         NavigationResult result = new NavigationResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

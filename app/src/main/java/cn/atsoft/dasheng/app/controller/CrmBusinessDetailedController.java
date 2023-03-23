@@ -108,7 +108,9 @@ public class CrmBusinessDetailedController extends BaseController {
 
         CrmBusinessDetailedResult result = new CrmBusinessDetailedResult();
 
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

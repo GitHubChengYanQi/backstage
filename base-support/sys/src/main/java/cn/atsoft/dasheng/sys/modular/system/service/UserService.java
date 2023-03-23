@@ -462,4 +462,15 @@ public class UserService extends ServiceImpl<UserMapper, User> {
 
         return this.baseMapper.getUserOpenId(userId);
     }
+    public UserResult getUserResultByOpenId(String openId){
+
+        if (ToolUtil.isEmpty(openId)){
+            return new UserResult();
+        }
+        UserResult userResultByOpenId = this.baseMapper.getUserResultByOpenId(openId);
+        if (ToolUtil.isEmpty(userResultByOpenId)){
+            throw new ServiceException(500,"参数错误");
+        }
+        return userResultByOpenId;
+    }
 }

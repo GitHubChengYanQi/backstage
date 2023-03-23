@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.audit.model.result.WxAuditResult;
 import cn.atsoft.dasheng.audit.service.WxAuditService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.io.File;
 import java.io.IOException;
 
 
@@ -147,6 +149,39 @@ public class WxAuditController extends BaseController {
             wxAuditParam = new WxAuditParam();
         }
         return ResponseData.success(this.wxAuditService.getTemplate(templateConfig.getTemplateId()));
+    }
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2023-03-18
+     */
+    @RequestMapping(value = "/getDetail", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData getDetail (@RequestBody(required = false) WxAuditParam wxAuditParam) throws WxErrorException {
+        if(ToolUtil.isEmpty(wxAuditParam)){
+            wxAuditParam = new WxAuditParam();
+        }
+        if (ToolUtil.isEmpty(wxAuditParam.getSpNo())) {
+            throw new ServiceException(500,"参数错误");
+        }
+        return ResponseData.success(this.wxAuditService.getDetail(wxAuditParam.getSpNo()));
+    }
+
+
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2023-03-18
+     */
+    @RequestMapping(value = "/getMedia", method = RequestMethod.GET)
+    @ApiOperation("列表")
+    public ResponseData getMedia (@RequestParam String mediaId) throws WxErrorException {
+        if(ToolUtil.isEmpty(mediaId)){
+            throw new ServiceException(500,"参数错误");
+        }
+        return ResponseData.success(wxCpService.getWxCpClient().getMediaService().download(mediaId));
     }
 
 

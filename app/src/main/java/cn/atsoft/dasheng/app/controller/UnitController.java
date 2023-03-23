@@ -88,7 +88,9 @@ public class UnitController extends BaseController {
     public ResponseData detail(@RequestBody UnitParam unitParam) {
         Unit detail = this.unitService.getById(unitParam.getUnitId());
         UnitResult result = new UnitResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

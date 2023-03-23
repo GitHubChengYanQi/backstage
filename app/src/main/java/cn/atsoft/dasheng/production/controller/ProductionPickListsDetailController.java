@@ -89,7 +89,9 @@ public class ProductionPickListsDetailController extends BaseController {
     public ResponseData detail(@RequestBody ProductionPickListsDetailParam productionPickListsDetailParam) {
         ProductionPickListsDetail detail = this.productionPickListsDetailService.getById(productionPickListsDetailParam.getPickListsDetailId());
         ProductionPickListsDetailResult result = new ProductionPickListsDetailResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

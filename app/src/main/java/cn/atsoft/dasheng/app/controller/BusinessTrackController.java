@@ -92,7 +92,9 @@ public class BusinessTrackController extends BaseController {
     public ResponseData detail(@RequestBody BusinessTrackParam businessTrackParam) {
         BusinessTrack detail = this.businessTrackService.getById(businessTrackParam.getTrackId());
         BusinessTrackResult result = new BusinessTrackResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

@@ -82,7 +82,9 @@ public class PurchaseQuotationController extends BaseController {
     public ResponseData detail(@RequestBody PurchaseQuotationParam purchaseQuotationParam) {
         PurchaseQuotation detail = this.purchaseQuotationService.getById(purchaseQuotationParam.getPurchaseQuotationId());
         PurchaseQuotationResult result = new PurchaseQuotationResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

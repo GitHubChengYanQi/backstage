@@ -87,7 +87,9 @@ public class PhoneController extends BaseController {
     public ResponseData detail(@RequestBody PhoneParam phoneParam) {
         Phone detail = this.phoneService.getById(phoneParam.getPhoneId());
         PhoneResult result = new PhoneResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

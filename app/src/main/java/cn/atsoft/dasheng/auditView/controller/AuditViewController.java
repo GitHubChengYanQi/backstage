@@ -83,7 +83,9 @@ public class AuditViewController extends BaseController {
     public ResponseData detail(@RequestBody AuditViewParam auditViewParam) {
         AuditView detail = this.auditViewService.getById(auditViewParam.getAuditViewId());
         AuditViewResult result = new AuditViewResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

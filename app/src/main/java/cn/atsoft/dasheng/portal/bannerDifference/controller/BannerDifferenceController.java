@@ -84,7 +84,9 @@ public class BannerDifferenceController extends BaseController {
     public ResponseData detail(@RequestBody BannerDifferenceParam bannerDifferenceParam) {
         BannerDifference detail = this.bannerDifferenceService.getById(bannerDifferenceParam.getClassificationId());
         BannerDifferenceResult result = new BannerDifferenceResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

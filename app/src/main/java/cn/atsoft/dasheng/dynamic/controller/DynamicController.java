@@ -45,7 +45,9 @@ public class DynamicController extends BaseController {
     public ResponseData detail(@RequestBody DynamicParam dynamicParam) {
         Dynamic detail = this.dynamicService.getById(dynamicParam.getDynamicId());
         DynamicResult result = new DynamicResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

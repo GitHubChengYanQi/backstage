@@ -86,7 +86,11 @@ public class AnomalyBindController extends BaseController {
 //    public ResponseData<AnomalyBindResult> detail(@RequestBody AnomalyBindParam anomalyBindParam) {
 //        AnomalyBind detail = this.anomalyBindService.getById(anomalyBindParam.getBindId());
 //        AnomalyBindResult result = new AnomalyBindResult();
-//        ToolUtil.copyProperties(detail, result);
+//        if (ToolUtil.isNotEmpty(detail)) {
+//            if (ToolUtil.isNotEmpty(detail)) {
+//            ToolUtil.copyProperties(detail, result);
+//        }
+//        }
 //        return ResponseData.success(result);
 //    }
 //

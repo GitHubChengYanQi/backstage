@@ -84,7 +84,9 @@ public class BannerController extends BaseController {
     public ResponseData detail(@RequestBody BannerParam bannerParam) {
         Banner detail = this.bannerService.getById(bannerParam.getBannerId());
         BannerResult result = new BannerResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

@@ -3,6 +3,8 @@ package cn.atsoft.dasheng.orderPaymentApply.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orderPaymentApply.entity.CrmOrderPaymentApply;
 import cn.atsoft.dasheng.orderPaymentApply.mapper.CrmOrderPaymentApplyMapper;
 import cn.atsoft.dasheng.orderPaymentApply.model.params.CrmOrderPaymentApplyParam;
@@ -39,6 +41,7 @@ public class CrmOrderPaymentApplyServiceImpl extends ServiceImpl<CrmOrderPayment
     @Autowired
     private UserService userService;
 
+
     @Override
     public void add(CrmOrderPaymentApplyParam param){
         CrmOrderPaymentApply entity = getEntity(param);
@@ -62,6 +65,22 @@ public class CrmOrderPaymentApplyServiceImpl extends ServiceImpl<CrmOrderPayment
     public CrmOrderPaymentApplyResult findBySpec(CrmOrderPaymentApplyParam param){
         return null;
     }
+    @Override
+    public CrmOrderPaymentApplyResult detail(CrmOrderPaymentApplyParam param){
+        if (ToolUtil.isEmpty(param.getSpNo())){
+            throw new ServiceException(500,"参数错误,请联系管理员");
+        }
+
+
+
+        CrmOrderPaymentApplyResult crmOrderPaymentApplyResult = this.baseMapper.getOneById(param.getSpNo());
+        if (ToolUtil.isEmpty(crmOrderPaymentApplyResult)){
+            throw new ServiceException(500,"参数错误,请联系管理员");
+        }
+        this.format(new ArrayList<CrmOrderPaymentApplyResult>(){{add(crmOrderPaymentApplyResult);}});
+        crmOrderPaymentApplyResult.setApplyEventRequest(JSON.parseObject(crmOrderPaymentApplyResult.getMsg(),WxCpOaApplyEventRequest.class));
+        return crmOrderPaymentApplyResult;
+    }
 
     @Override
     public List<CrmOrderPaymentApplyResult> findListBySpec(CrmOrderPaymentApplyParam param){
@@ -69,9 +88,9 @@ public class CrmOrderPaymentApplyServiceImpl extends ServiceImpl<CrmOrderPayment
     }
 
     @Override
-    public PageInfo<CrmOrderPaymentApplyResult> findPageBySpec(CrmOrderPaymentApplyParam param){
+    public PageInfo<CrmOrderPaymentApplyResult> findPageBySpec(DataScope dataScope,CrmOrderPaymentApplyParam param){
         Page<CrmOrderPaymentApplyResult> pageContext = getPageContext();
-        IPage<CrmOrderPaymentApplyResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<CrmOrderPaymentApplyResult> page = this.baseMapper.customPageList(dataScope,pageContext, param);
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

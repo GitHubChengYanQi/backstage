@@ -28,6 +28,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import me.chanjar.weixin.common.bean.result.WxMediaUploadResult;
 import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.cp.bean.oa.SummaryInfo;
+import me.chanjar.weixin.cp.bean.oa.WxCpApprovalDetailResult;
 import me.chanjar.weixin.cp.bean.oa.WxCpOaApplyEventRequest;
 import me.chanjar.weixin.cp.bean.oa.WxCpTemplateResult;
 import me.chanjar.weixin.cp.bean.oa.applydata.ApplyDataContent;
@@ -140,11 +142,29 @@ public class WxAuditServiceImpl extends ServiceImpl<WxAuditMapper, WxAudit> impl
         List<Long> mediaIdList = new ArrayList<>();
         CrmOrderPaymentApply paymentApply = new CrmOrderPaymentApply();
         paymentApply.setOrderId(param.getOrderId());
-        for (ApplyDataContent content : param.getApplyData().getContents()) {
+        List<SummaryInfo> summaryList = new ArrayList<>();
+        for (ApplyDataContent content : wxCpOaApplyEventRequest.getApplyData().getContents()) {
             String id = content.getId();
             ContentValue value = content.getValue();
             switch (id){
                 case "item-1494251052639":
+                    SummaryInfo moneySummaryInfo = new SummaryInfo();
+                    List<SummaryInfo.SummaryInfoData> moneySummaryInfoData = new ArrayList<>();
+                    SummaryInfo.SummaryInfoData moneyInfoData = new SummaryInfo.SummaryInfoData();
+                    moneyInfoData.setText("付款金额："+"￥"+value.getNewMoney());
+                    moneyInfoData.setLang("zh_CN");
+                    moneySummaryInfoData.add(moneyInfoData);
+                    moneySummaryInfo.setSummaryInfoData(moneySummaryInfoData);
+                    summaryList.add(moneySummaryInfo);
+//                    summaryList.add(new SummaryInfo(){{
+//                        setSummaryInfoData(new ArrayList<SummaryInfoData>(){{
+//                            add(new SummaryInfoData(){{
+//                                setText("付款金额："+"￥"+value.getNewMoney());
+//                                setLang("zh_CN");
+//                            }});
+//                        }});
+//                    }});
+
                     long money = BigDecimal.valueOf(Double.parseDouble(value.getNewMoney())).multiply(new BigDecimal(100)).longValue();
                     //TODO 保存金额
                     System.out.println(value.getNewMoney());
@@ -170,14 +190,45 @@ public class WxAuditServiceImpl extends ServiceImpl<WxAuditMapper, WxAudit> impl
                         file.setFileId(upload.getMediaId());
                     }
                     break;
+                case "item-1494251039326":
+                    SummaryInfo pay = new SummaryInfo();
+                    List<SummaryInfo.SummaryInfoData> paySummaryInfoData = new ArrayList<>();
+                    SummaryInfo.SummaryInfoData payInfoData = new SummaryInfo.SummaryInfoData();
+                    payInfoData.setText("付款事由："+value.getText());
+                    payInfoData.setLang("zh_CN");
+                    paySummaryInfoData.add(payInfoData);
+                    pay.setSummaryInfoData(paySummaryInfoData);
+                    summaryList.add(pay);
+//                    summaryList.add(new SummaryInfo(){{
+//                        setSummaryInfoData(new ArrayList<SummaryInfoData>(){{
+//                            add(new SummaryInfoData(){{
+//                                setText("付款事由："+value.getText());
+//                                setLang("zh_CN");
+//                            }});
+//                        }});
+//                    }});
+//                    break;
+                case "item-1494251166594":
+                    SummaryInfo summaryInfo = new SummaryInfo();
+                    List<SummaryInfo.SummaryInfoData> summaryInfoData = new ArrayList<>();
+                    SummaryInfo.SummaryInfoData infoData = new SummaryInfo.SummaryInfoData();
+                    infoData.setText("收款人全称：" + value.getText());
+                    infoData.setLang("zh_CN");
+                    summaryInfoData.add(infoData);
+                    summaryInfo.setSummaryInfoData(summaryInfoData);
+                    summaryList.add(summaryInfo);
+                    break;
             }
         }
+        wxCpOaApplyEventRequest.setSummaryList(summaryList);
+        param.setSummaryList(summaryList);
         param.setMediaIds(mediaIdList);
         String apply = wxCpService.getWxCpClient().getOaService().apply(wxCpOaApplyEventRequest);
         Long userId = LoginContextHolder.getContext().getUserId();
         if (mediaIdList.size()>0){
             paymentApply.setFiled(StringUtils.join( mediaIdList,","));
         }
+
         //TODO 保存数据
         paymentApply.setSpNo(apply);
         orderPaymentApplyService.save(paymentApply);
@@ -196,5 +247,12 @@ public class WxAuditServiceImpl extends ServiceImpl<WxAuditMapper, WxAudit> impl
     public WxCpTemplateResult getTemplate(String templateId) throws WxErrorException {
         WxCpTemplateResult templateDetail = wxCpService.getWxCpClient().getOaService().getTemplateDetail(templateId);
         return templateDetail;
+    }
+    @Override
+    public WxCpApprovalDetailResult getDetail(String spNo) throws WxErrorException {
+        if (ToolUtil.isEmpty(this.getById(spNo))){
+            throw new ServiceException(500,"参数不正确");
+        }
+        return wxCpService.getWxCpClient().getOaService().getApprovalDetail(spNo);
     }
 }

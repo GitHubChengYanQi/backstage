@@ -80,7 +80,9 @@ public class CustomerDynamicController extends BaseController {
     public ResponseData detail(@RequestBody CustomerDynamicParam customerDynamicParam) {
         CustomerDynamic detail = this.customerDynamicService.getById(customerDynamicParam.getDynamicId());
         CustomerDynamicResult result = new CustomerDynamicResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

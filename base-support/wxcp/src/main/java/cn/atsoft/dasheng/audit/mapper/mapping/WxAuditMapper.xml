@@ -17,11 +17,12 @@
         <result column="update_time" property="updateTime" />
         <result column="done_time" property="doneTime" />
         <result column="use_template_approver" property="useTemplateApprover" />
+        <result column="deptId" property="deptId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        sp_no AS "spNo",done_time AS  doneTime,template_id AS "templateId", status AS "status", code AS "code", msg AS "msg", creator_user AS "creatorUser", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", use_template_approver AS "useTemplateApprover"
+        sp_no AS "spNo",done_time AS  doneTime,deptId AS "deptId",template_id AS "templateId", status AS "status", code AS "code", msg AS "msg", creator_user AS "creatorUser", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", use_template_approver AS "useTemplateApprover"
     </sql>
 
 

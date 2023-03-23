@@ -83,7 +83,9 @@ public class PlanController extends BaseController {
     public ResponseData detail(@RequestBody PlanParam planParam) {
         Plan detail = this.planService.getById(planParam.getSalesProcessPlanId());
         PlanResult result = new PlanResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

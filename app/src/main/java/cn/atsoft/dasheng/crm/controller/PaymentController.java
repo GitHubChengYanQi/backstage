@@ -83,7 +83,9 @@ public class PaymentController extends BaseController {
     public ResponseData detail(@RequestBody PaymentParam paymentParam) {
         Payment detail = this.paymentService.getById(paymentParam.getPaymentId());
         PaymentResult result = new PaymentResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

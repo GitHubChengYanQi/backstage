@@ -44,7 +44,9 @@ public class ProcurementPlanBindController extends BaseController {
     public ResponseData detail(@RequestBody ProcurementPlanBindParam procurementPlanBindParam) {
         ProcurementPlanBind detail = this.procurementPlanBindService.getById(procurementPlanBindParam.getDetailId());
         ProcurementPlanBindResult result = new ProcurementPlanBindResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 ;
         return ResponseData.success(result);

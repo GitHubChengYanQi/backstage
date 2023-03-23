@@ -87,7 +87,9 @@ public class DispatchingController extends BaseController {
     public ResponseData detail(@RequestBody DispatchingParam dispatchingParam) {
         Dispatching detail = this.dispatchingService.getById(dispatchingParam.getDispatchingId());
         DispatchingResult result = new DispatchingResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

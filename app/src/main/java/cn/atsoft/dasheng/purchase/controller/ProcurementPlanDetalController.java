@@ -83,7 +83,9 @@ public class ProcurementPlanDetalController extends BaseController {
     public ResponseData detail(@RequestBody ProcurementPlanDetalParam procurementPlanDetalParam) {
         ProcurementPlanDetal detail = this.procurementPlanDetalService.getById(procurementPlanDetalParam.getDetailId());
         ProcurementPlanDetalResult result = new ProcurementPlanDetalResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

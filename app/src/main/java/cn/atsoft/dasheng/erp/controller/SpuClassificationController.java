@@ -100,7 +100,9 @@ public class SpuClassificationController extends BaseController {
     public ResponseData detail(@RequestBody SpuClassificationParam spuClassificationParam) {
         SpuClassification detail = this.spuClassificationService.getById(spuClassificationParam.getSpuClassificationId());
         SpuClassificationResult result = new SpuClassificationResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         if (ToolUtil.isNotEmpty(result.getFormStyleId())) {
             FormStyle formStyle = formStyleService.getById(result.getFormStyleId());
             result.setTypeSetting(formStyle.getTypeSetting());

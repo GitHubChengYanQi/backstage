@@ -83,7 +83,9 @@ public class ProductionCardController extends BaseController {
     public ResponseData detail(@RequestBody ProductionCardParam productionCardParam) {
         ProductionCard detail = this.productionCardService.getById(productionCardParam.getProductionCardId());
         ProductionCardResult result = new ProductionCardResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

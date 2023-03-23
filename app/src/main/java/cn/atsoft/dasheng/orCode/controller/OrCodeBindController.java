@@ -84,7 +84,9 @@ public class OrCodeBindController extends BaseController {
     public ResponseData detail(@RequestBody OrCodeBindParam orCodeBindParam) {
         OrCodeBind detail = this.orCodeBindService.getById(orCodeBindParam.getOrCodeBindId());
         OrCodeBindResult result = new OrCodeBindResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         return ResponseData.success(result);
     }
 

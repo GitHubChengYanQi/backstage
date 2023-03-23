@@ -83,7 +83,9 @@ public class QualityIssuessController extends BaseController {
     public ResponseData detail(@RequestBody QualityIssuessParam qualityIssuessParam) {
         QualityIssuess detail = this.qualityIssuessService.getById(qualityIssuessParam.getQualityIssuesId());
         QualityIssuessResult result = new QualityIssuessResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         qualityIssuessService.detailFormat(result);
 
         return ResponseData.success(result);

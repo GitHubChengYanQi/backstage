@@ -103,7 +103,9 @@ public class ProcurementOrderController extends BaseController {
     public ResponseData detail(@RequestBody ProcurementOrderParam procurementOrderParam) {
         ProcurementOrder detail = this.procurementOrderService.getById(procurementOrderParam.getProcurementOrderId());
         ProcurementOrderResult result = new ProcurementOrderResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         if (ToolUtil.isNotEmpty(detail) && ToolUtil.isNotEmpty(detail.getCreateUser())){
             User user = userService.getById(detail.getCreateUser());

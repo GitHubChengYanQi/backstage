@@ -83,7 +83,9 @@ public class ItemDataController extends BaseController {
     public ResponseData detail(@RequestBody ItemDataParam itemDataParam) {
         ItemData detail = this.itemDataService.getById(itemDataParam.getItemsDataId());
         ItemDataResult result = new ItemDataResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

@@ -91,7 +91,9 @@ public class PurchaseListingController extends BaseController {
     public ResponseData detail(@RequestBody PurchaseListingParam purchaseListingParam) {
         PurchaseListing detail = this.purchaseListingService.getById(purchaseListingParam.getPurchaseListingId());
         PurchaseListingResult result = new PurchaseListingResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

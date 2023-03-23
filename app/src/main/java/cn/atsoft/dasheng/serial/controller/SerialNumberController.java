@@ -83,7 +83,9 @@ public class SerialNumberController extends BaseController {
     public ResponseData detail(@RequestBody SerialNumberParam serialNumberParam) {
         SerialNumber detail = this.serialNumberService.getById(serialNumberParam.getSerialId());
         SerialNumberResult result = new SerialNumberResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
 

@@ -40,6 +40,8 @@ import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.model.response.SuccessResponseData;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.annotations.Param;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -366,5 +368,17 @@ public class UserMgrController extends BaseController {
         Page pageContext = LayuiPageFactory.defaultPage();
         IPage page = userService.listUserAndRoleExpectAdmin(pageContext);
         return LayuiPageFactory.createPageInfo(page);
+    }
+
+    /**
+     * 选择办理人
+     *
+     * @author fengshuonan
+     * @Date 2019-8-22 15:48
+     */
+    @RequestMapping(value = "/getUserResultByOpenId", method = RequestMethod.GET)
+    @ApiOperation("列表")
+    public ResponseData getUserResultByOpenId(@RequestParam String openId) {
+        return ResponseData.success(userService.getUserResultByOpenId(openId));
     }
 }

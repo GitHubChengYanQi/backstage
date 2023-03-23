@@ -89,7 +89,9 @@ public class TaxRateController extends BaseController {
     public ResponseData detail(@RequestBody TaxRateParam taxRateParam) {
         TaxRate detail = this.taxRateService.getById(taxRateParam.getTaxRateId());
         TaxRateResult result = new TaxRateResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

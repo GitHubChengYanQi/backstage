@@ -44,7 +44,9 @@ public class RestSerialNumberController extends BaseController {
     public ResponseData detail(@RequestBody RestSerialNumberParam serialNumberParam) {
         RestSerialNumber detail = this.serialNumberService.getById(serialNumberParam.getSerialId());
         RestSerialNumberResult result = new RestSerialNumberResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
 

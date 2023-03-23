@@ -83,7 +83,9 @@ public class DaoxinPositionController extends BaseController {
     public ResponseData detail(@RequestBody DaoxinPositionParam daoxinPositionParam) {
         DaoxinPosition detail = this.daoxinPositionService.getById(daoxinPositionParam.getPositionId());
         DaoxinPositionResult result = new DaoxinPositionResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

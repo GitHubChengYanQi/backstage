@@ -83,7 +83,9 @@ public class PaymentTemplateDetailController extends BaseController {
     public ResponseData detail(@RequestBody PaymentTemplateDetailParam paymentTemplateDetailParam) {
         PaymentTemplateDetail detail = this.paymentTemplateDetailService.getById(paymentTemplateDetailParam.getDetailId());
         PaymentTemplateDetailResult result = new PaymentTemplateDetailResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

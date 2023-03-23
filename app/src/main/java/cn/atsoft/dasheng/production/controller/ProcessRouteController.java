@@ -83,7 +83,9 @@ public class ProcessRouteController extends BaseController {
     public ResponseData detail(@RequestBody ProcessRouteParam processRouteParam) {
         ProcessRoute detail = this.processRouteService.getById(processRouteParam.getProcessRouteId());
         ProcessRouteResult result = new ProcessRouteResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

@@ -83,7 +83,9 @@ public class ProductionStationBindController extends BaseController {
     public ResponseData detail(@RequestBody ProductionStationBindParam productionStationBindParam) {
         ProductionStationBind detail = this.productionStationBindService.getById(productionStationBindParam.getProductionStationBindId());
         ProductionStationBindResult result = new ProductionStationBindResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

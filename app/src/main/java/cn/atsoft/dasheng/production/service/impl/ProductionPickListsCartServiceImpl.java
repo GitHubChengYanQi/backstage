@@ -311,7 +311,7 @@ public class ProductionPickListsCartServiceImpl extends ServiceImpl<ProductionPi
                 for (StockDetails stockDetail : stockDetails) {
                     if (number > 0) {
 //                        if ((ToolUtil.isNotEmpty(stockDetail.getBrandId()) && stockDetail.getBrandId().equals(listsDetail.getBrandId()) && stockDetail.getSkuId().equals(listsDetail.getSkuId()) && stockDetail.getStorehousePositionsId().equals(productionPickListsCartParam.getStorehousePositionsId())) || ((ToolUtil.isEmpty(stockDetail.getBrandId()) || stockDetail.getBrandId().equals(0L)) && stockDetail.getSkuId().equals(productionPickListsCartParam.getSkuId()) && stockDetail.getStorehousePositionsId().equals(productionPickListsCartParam.getStorehousePositionsId()))) {
-                        if ((ToolUtil.isNotEmpty(stockDetail.getBrandId()) && stockDetail.getBrandId().equals(listsDetail.getBrandId()) && stockDetail.getSkuId().equals(listsDetail.getSkuId())) || ((ToolUtil.isEmpty(listsDetail.getBrandId()) || listsDetail.getBrandId().equals(0L)) && stockDetail.getSkuId().equals(listsDetail.getSkuId()))) {
+                        if ((ToolUtil.isNotEmpty(stockDetail.getBrandId()) && stockDetail.getBrandId().equals(listsDetail.getBrandId()) && stockDetail.getSkuId().equals(listsDetail.getSkuId())) || ((ToolUtil.isEmpty(listsDetail.getBrandId()) || (listsDetail.getBrandId().equals(0L)) && stockDetail.getSkuId().equals(listsDetail.getSkuId())))) {
                             int lastNumber = number;
                             number -= stockDetail.getNumber();
                             if (number >= 0) {  //如果库存实物被全部备料 则不拆分实物  反之 需要拆分实物

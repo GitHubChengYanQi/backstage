@@ -92,7 +92,9 @@ public class DeliveryController extends BaseController {
     public ResponseData detail(@RequestBody DeliveryParam deliveryParam) {
         Delivery detail = this.deliveryService.getById(deliveryParam.getDeliveryId());
         DeliveryResult result = new DeliveryResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

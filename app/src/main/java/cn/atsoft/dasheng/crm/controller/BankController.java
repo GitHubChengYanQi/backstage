@@ -88,7 +88,9 @@ public class BankController extends BaseController {
     public ResponseData detail(@RequestBody BankParam bankParam) {
         Bank detail = this.bankService.getById(bankParam.getBankId());
         BankResult result = new BankResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

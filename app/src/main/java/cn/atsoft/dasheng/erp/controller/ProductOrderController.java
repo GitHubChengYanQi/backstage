@@ -127,7 +127,9 @@ public class ProductOrderController extends BaseController {
         ProductOrderRequest productOrderRequest = JSONUtil.toBean(detail.getCustomer(), ProductOrderRequest.class);
 
         ProductOrderResult result = new ProductOrderResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         Adress adress = adressService.query().eq("adress_id", productOrderRequest.getAdressId()).one();
         if (ToolUtil.isNotEmpty(adress)) {

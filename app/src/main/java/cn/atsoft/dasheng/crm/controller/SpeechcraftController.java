@@ -83,7 +83,9 @@ public class SpeechcraftController extends BaseController {
     public ResponseData detail(@RequestBody SpeechcraftParam speechcraftParam) {
         Speechcraft detail = this.speechcraftService.getById(speechcraftParam.getSpeechcraftId());
         SpeechcraftResult result = new SpeechcraftResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         return ResponseData.success(result);
     }
 

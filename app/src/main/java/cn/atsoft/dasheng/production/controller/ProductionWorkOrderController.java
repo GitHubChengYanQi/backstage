@@ -83,7 +83,9 @@ public class ProductionWorkOrderController extends BaseController {
     public ResponseData detail(@RequestBody ProductionWorkOrderParam productionWorkOrderParam) {
         ProductionWorkOrder detail = this.productionWorkOrderService.getById(productionWorkOrderParam.getWorkOrderId());
         ProductionWorkOrderResult result = new ProductionWorkOrderResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

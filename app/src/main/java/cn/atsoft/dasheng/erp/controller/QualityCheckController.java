@@ -127,7 +127,9 @@ public class QualityCheckController extends BaseController {
                 toolResults.add(toolResult);
             }
             QualityCheckResult result = new QualityCheckResult();
+            if (ToolUtil.isNotEmpty(detail)) {
             ToolUtil.copyProperties(detail, result);
+        }
             result.setTools(toolResults);
             result.setQualityCheckClassificationResult(qualityCheckClassificationResult);
             return ResponseData.success(result);

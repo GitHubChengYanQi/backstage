@@ -89,7 +89,9 @@ public class ToolClassificationController extends BaseController {
     public ResponseData detail(@RequestBody ToolClassificationParam toolClassificationParam) {
         ToolClassification detail = this.toolClassificationService.getById(toolClassificationParam.getToolClassificationId());
         ToolClassificationResult result = new ToolClassificationResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

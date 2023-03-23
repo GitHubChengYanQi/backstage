@@ -94,7 +94,9 @@ public class SysDeptController extends BaseController {
     public ResponseData detail(@RequestBody SysDeptParam sysDeptParam) {
         SysDept detail = this.sysDeptService.getById(sysDeptParam.getDeptId());
         SysDeptResult result = new SysDeptResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         List<Map<String,Object>> list = this.sysDeptService.listMaps();
         List<String> parentValue = SysDeptSelectWrapper.fetchParentKey(list, Convert.toStr(detail.getPid()));

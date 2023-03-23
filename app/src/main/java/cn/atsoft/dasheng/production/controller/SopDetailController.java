@@ -83,7 +83,9 @@ public class SopDetailController extends BaseController {
     public ResponseData detail(@RequestBody SopDetailParam sopDetailParam) {
         SopDetail detail = this.sopDetailService.getById(sopDetailParam.getSopDetailId());
         SopDetailResult result = new SopDetailResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

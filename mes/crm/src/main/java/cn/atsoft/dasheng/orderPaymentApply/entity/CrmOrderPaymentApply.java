@@ -59,6 +59,20 @@ public class CrmOrderPaymentApply implements Serializable {
     @TableField(value = "done_time")
     private Date doneTime;
 
+
+    @TableField(value = "deptId",fill = FieldFill.INSERT)
+    private Long deptId;
+
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
+
+
     public Long getOrderId() {
         return orderId;
     }

@@ -103,7 +103,9 @@ public class MaintenanceController extends BaseController {
     public ResponseData detail(@RequestBody MaintenanceParam maintenanceParam) {
         Maintenance detail = this.maintenanceService.getById(maintenanceParam.getMaintenanceId());
         MaintenanceResult result = new MaintenanceResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

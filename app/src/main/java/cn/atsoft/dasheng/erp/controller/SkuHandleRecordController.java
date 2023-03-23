@@ -83,7 +83,9 @@ public class SkuHandleRecordController extends BaseController {
     public ResponseData<SkuHandleRecordResult> detail(@RequestBody SkuHandleRecordParam skuHandleRecordParam) {
         SkuHandleRecord detail = this.skuHandleRecordService.getById(skuHandleRecordParam.getRecordId());
         SkuHandleRecordResult result = new SkuHandleRecordResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

@@ -93,7 +93,9 @@ public class MobelTableViewController extends BaseController {
             return ResponseData.success(new MobelTableViewResult());
         }else {
             MobelTableViewResult result = new MobelTableViewResult();
+            if (ToolUtil.isNotEmpty(detail)) {
             ToolUtil.copyProperties(detail, result);
+        }
             if (ToolUtil.isNotEmpty(detail.getField())) {
                 List<MobelViewJson> mobelViewJsons = JSON.parseArray(detail.getField(), MobelViewJson.class);
                 mobelViewJsons.sort(Comparator.comparing(MobelViewJson::getSort));
@@ -116,7 +118,9 @@ public class MobelTableViewController extends BaseController {
             return ResponseData.success(new MobelTableViewResult());
         }else {
             MobelTableViewResult result = new MobelTableViewResult();
+            if (ToolUtil.isNotEmpty(detail)) {
             ToolUtil.copyProperties(detail, result);
+        }
             if (ToolUtil.isNotEmpty(detail.getField())) {
                 List<MobelViewJson> mobelViewJsons = JSON.parseArray(detail.getField(), MobelViewJson.class);
                 mobelViewJsons.sort(Comparator.comparing(MobelViewJson::getSort));
@@ -140,7 +144,9 @@ public class MobelTableViewController extends BaseController {
             return ResponseData.success(new MobelTableViewResult());
         }else {
             MobelTableViewResult result = new MobelTableViewResult();
+            if (ToolUtil.isNotEmpty(detail)) {
             ToolUtil.copyProperties(detail, result);
+        }
             if (ToolUtil.isNotEmpty(detail.getField())) {
                 List<MobelViewJson> mobelViewJsons = JSON.parseArray(detail.getField(), MobelViewJson.class);
                 mobelViewJsons.sort(Comparator.comparing(MobelViewJson::getSort));

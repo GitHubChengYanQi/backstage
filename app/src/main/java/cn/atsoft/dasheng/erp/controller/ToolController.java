@@ -93,7 +93,9 @@ public class ToolController extends BaseController {
     public ResponseData detail(@RequestBody ToolParam toolParam) {
         Tool detail = this.toolService.getById(toolParam.getToolId());
         ToolResult result = new ToolResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

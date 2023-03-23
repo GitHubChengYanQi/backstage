@@ -97,7 +97,9 @@ public class FormStyleController extends BaseController {
         }
 
         FormStyleResult result = new FormStyleResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         return ResponseData.success(result);
     }
 

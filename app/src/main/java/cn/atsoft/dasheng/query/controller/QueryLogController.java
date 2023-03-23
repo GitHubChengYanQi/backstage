@@ -82,7 +82,9 @@ public class QueryLogController extends BaseController {
 //    public ResponseData<QueryLogResult> detail(@RequestBody QueryLogParam queryLogParam) {
 //        QueryLog detail = this.queryLogService.getById(queryLogParam.getQueryLogId());
 //        QueryLogResult result = new QueryLogResult();
-//        ToolUtil.copyProperties(detail, result);
+//        if (ToolUtil.isNotEmpty(detail)) {
+//            ToolUtil.copyProperties(detail, result);
+//        }
 //
 //        return ResponseData.success(result);
 //    }

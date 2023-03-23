@@ -104,7 +104,9 @@ public class InstockLogDetailController extends BaseController {
     public ResponseData detail(@RequestBody InstockLogDetailParam instockLogDetailParam) {
         InstockLogDetail detail = this.instockLogDetailService.getById(instockLogDetailParam.getInstockLogDetailId());
         InstockLogDetailResult result = new InstockLogDetailResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

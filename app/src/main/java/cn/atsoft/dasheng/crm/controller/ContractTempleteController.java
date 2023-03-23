@@ -87,7 +87,9 @@ public class ContractTempleteController extends BaseController {
     public ResponseData detail(@RequestBody ContractTempleteParam contractTempleteParam) {
         ContractTemplete detail = this.contractTempleteService.getById(contractTempleteParam.getContractTemplateId());
         ContractTempleteResult result = new ContractTempleteResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

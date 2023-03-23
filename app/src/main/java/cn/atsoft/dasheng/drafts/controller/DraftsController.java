@@ -83,7 +83,9 @@ public class DraftsController extends BaseController {
     public ResponseData detail(@RequestBody DraftsParam draftsParam) {
         Drafts detail = this.draftsService.getById(draftsParam.getDraftsId());
         DraftsResult result = new DraftsResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         draftsService.format(new ArrayList<DraftsResult>(){{
             add(result);
         }});

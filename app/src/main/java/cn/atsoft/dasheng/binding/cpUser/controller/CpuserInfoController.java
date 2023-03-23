@@ -96,7 +96,9 @@ public class CpuserInfoController extends BaseController {
     public ResponseData detail(@RequestBody CpuserInfoParam cpuserInfoParam) {
         CpuserInfo detail = this.cpuserInfoService.getById(cpuserInfoParam.getCpUserId());
         CpuserInfoResult result = new CpuserInfoResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

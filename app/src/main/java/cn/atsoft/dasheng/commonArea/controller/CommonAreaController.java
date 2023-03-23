@@ -92,7 +92,9 @@ public class CommonAreaController extends BaseController {
     public ResponseData detail(@RequestBody CommonAreaParam commonAreaParam) {
         CommonArea detail = this.commonAreaService.getById(commonAreaParam.getId());
         CommonAreaResult result = new CommonAreaResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         List<Map<String, Object>> list = this.commonAreaService.listMaps();
         List<String> parentValue = CommonAreaSelectWrapper.fetchParentKey(list, Convert.toStr(detail.getParentid()));

@@ -89,7 +89,9 @@ public class ApplyDetailsController extends BaseController {
     public ResponseData detail(@RequestBody ApplyDetailsParam applyDetailsParam) {
         ApplyDetails detail = this.applyDetailsService.getById(applyDetailsParam.getOutstockApplyDetailsId());
         ApplyDetailsResult result = new ApplyDetailsResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

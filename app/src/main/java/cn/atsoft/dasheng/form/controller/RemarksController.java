@@ -50,7 +50,9 @@ public class RemarksController extends BaseController {
     public ResponseData detail(@RequestBody RemarksParam remarksParam) {
         Remarks detail = this.remarksService.getById(remarksParam.getRemarksId());
         RemarksResult result = new RemarksResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

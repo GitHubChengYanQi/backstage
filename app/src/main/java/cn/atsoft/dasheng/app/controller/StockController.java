@@ -50,7 +50,9 @@ public class StockController extends BaseController {
     public ResponseData detail(@RequestBody StockParam stockParam) {
         Stock detail = this.stockService.getById(stockParam.getStockId());
         StockResult result = new StockResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         return ResponseData.success(result);
     }
 

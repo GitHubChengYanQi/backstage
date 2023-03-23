@@ -83,7 +83,9 @@ public class RulesRelationController extends BaseController {
     public ResponseData detail(@RequestBody RulesRelationParam rulesRelationParam) {
         RulesRelation detail = this.rulesRelationService.getById(rulesRelationParam.getRulesRelationId());
         RulesRelationResult result = new RulesRelationResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

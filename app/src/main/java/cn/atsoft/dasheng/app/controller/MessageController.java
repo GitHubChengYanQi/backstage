@@ -110,7 +110,9 @@ public class MessageController extends BaseController {
     public ResponseData detail(@RequestBody MessageParam messageParam) {
         Message detail = this.messageService.getById(messageParam.getMessageId());
         MessageResult result = new MessageResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);
