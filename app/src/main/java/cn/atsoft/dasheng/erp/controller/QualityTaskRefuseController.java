@@ -99,7 +99,9 @@ public class QualityTaskRefuseController extends BaseController {
     public ResponseData detail(@RequestBody QualityTaskRefuseParam qualityTaskRefuseParam) {
         QualityTaskRefuse detail = this.qualityTaskRefuseService.getById(qualityTaskRefuseParam.getRefuseId());
         QualityTaskRefuseResult result = new QualityTaskRefuseResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

@@ -83,7 +83,9 @@ public class ProductionTaskDetailController extends BaseController {
     public ResponseData detail(@RequestBody ProductionTaskDetailParam productionTaskDetailParam) {
         ProductionTaskDetail detail = this.productionTaskDetailService.getById(productionTaskDetailParam.getProductionTaskDetailId());
         ProductionTaskDetailResult result = new ProductionTaskDetailResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

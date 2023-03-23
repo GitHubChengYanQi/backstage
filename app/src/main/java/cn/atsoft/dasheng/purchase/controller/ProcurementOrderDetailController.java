@@ -85,7 +85,9 @@ public class ProcurementOrderDetailController extends BaseController {
     public ResponseData detail(@RequestBody ProcurementOrderDetailParam procurementOrderDetailParam) {
         ProcurementOrderDetail detail = this.procurementOrderDetailService.getById(procurementOrderDetailParam.getOrderDetailId());
         ProcurementOrderDetailResult result = new ProcurementOrderDetailResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

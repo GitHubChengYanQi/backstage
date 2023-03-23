@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.orderPaymentApply.mapper;
 
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.orderPaymentApply.entity.CrmOrderPaymentApply;
 import cn.atsoft.dasheng.orderPaymentApply.model.params.CrmOrderPaymentApplyParam;
 import cn.atsoft.dasheng.orderPaymentApply.model.result.CrmOrderPaymentApplyResult;
@@ -27,6 +28,7 @@ public interface CrmOrderPaymentApplyMapper extends BaseMapper<CrmOrderPaymentAp
      * @Date 2023-03-18
      */
     List<CrmOrderPaymentApplyResult> customList(@Param("paramCondition") CrmOrderPaymentApplyParam paramCondition);
+    CrmOrderPaymentApplyResult getOneById(@Param("id") String id);
 
     /**
      * 获取map列表
@@ -42,7 +44,7 @@ public interface CrmOrderPaymentApplyMapper extends BaseMapper<CrmOrderPaymentAp
      * @author Captain_Jazz
      * @Date 2023-03-18
      */
-    Page<CrmOrderPaymentApplyResult> customPageList(@Param("page") Page page, @Param("paramCondition") CrmOrderPaymentApplyParam paramCondition);
+    Page<CrmOrderPaymentApplyResult> customPageList(@Param("dataScope") DataScope dataScope, @Param("page") Page page, @Param("paramCondition") CrmOrderPaymentApplyParam paramCondition);
 
     /**
      * 获取分页map列表

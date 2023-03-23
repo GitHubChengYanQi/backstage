@@ -83,7 +83,9 @@ public class ProductionPickCodeBindController extends BaseController {
     public ResponseData detail(@RequestBody ProductionPickCodeBindParam productionPickCodeBindParam) {
         ProductionPickCodeBind detail = this.productionPickCodeBindService.getById(productionPickCodeBindParam.getPickCodeBindId());
         ProductionPickCodeBindResult result = new ProductionPickCodeBindResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

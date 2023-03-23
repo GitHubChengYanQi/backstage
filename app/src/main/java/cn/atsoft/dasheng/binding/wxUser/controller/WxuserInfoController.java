@@ -98,7 +98,9 @@ public class WxuserInfoController extends BaseController {
     public ResponseData detail(@RequestBody WxuserInfoParam wxuserInfoParam) {
         WxuserInfo detail = this.wxuserInfoService.getById(wxuserInfoParam.getUserInfoId());
         WxuserInfoResult result = new WxuserInfoResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

@@ -90,7 +90,9 @@ public class QualityCheckClassificationController extends BaseController {
     public ResponseData detail(@RequestBody QualityCheckClassificationParam qualityCheckClassificationParam) {
         QualityCheckClassification detail = this.qualityCheckClassificationService.getById(qualityCheckClassificationParam.getQualityCheckClassificationId());
         QualityCheckClassificationResult result = new QualityCheckClassificationResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

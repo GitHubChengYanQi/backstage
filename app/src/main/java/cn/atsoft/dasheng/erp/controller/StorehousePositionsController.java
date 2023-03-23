@@ -187,7 +187,9 @@ public class StorehousePositionsController extends BaseController {
     public ResponseData detail(@RequestBody StorehousePositionsParam storehousePositionsParam) {
         StorehousePositions detail = this.storehousePositionsService.getById(storehousePositionsParam.getStorehousePositionsId());
         StorehousePositionsResult result = new StorehousePositionsResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         List<StorehousePositionsBind> binds = storehousePositionsBindService.query().eq("position_id", detail.getStorehousePositionsId()).list();
         List<Long> skuIds = new ArrayList<>();
         for (StorehousePositionsBind bind : binds) {

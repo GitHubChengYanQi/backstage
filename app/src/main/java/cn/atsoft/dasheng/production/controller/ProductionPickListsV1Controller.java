@@ -68,7 +68,9 @@ public class ProductionPickListsV1Controller {
         if (ToolUtil.isNotEmpty(productionPickListsParam.getPickListsId())) {
             detail = this.productionPickListsService.getById(productionPickListsParam.getPickListsId());
 
+            if (ToolUtil.isNotEmpty(detail)) {
             ToolUtil.copyProperties(detail, result);
+        }
         }
         productionPickListsService.format(new ArrayList<ProductionPickListsResult>() {{
             add(result);

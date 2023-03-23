@@ -145,7 +145,9 @@ public class OutstockOrderController extends BaseController {
 //    public ResponseData detail(@RequestBody OutstockOrderParam outstockOrderParam) {
 //        OutstockOrder detail = this.outstockOrderService.getById(outstockOrderParam.getOutstockOrderId());
 //        OutstockOrderResult result = new OutstockOrderResult();
-//        ToolUtil.copyProperties(detail, result);
+//        if (ToolUtil.isNotEmpty(detail)) {
+//            ToolUtil.copyProperties(detail, result);
+//        }
 //
 ////        result.setValue(parentValue);
 //        return ResponseData.success(result);

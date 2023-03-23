@@ -79,7 +79,9 @@ public class GoodsDetailsController extends BaseController {
     public ResponseData detail(@RequestBody GoodsDetailsParam goodsDetailsParam) {
         GoodsDetails detail = this.goodsDetailsService.getById(goodsDetailsParam.getGoodDetailsId());
         GoodsDetailsResult result = new GoodsDetailsResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

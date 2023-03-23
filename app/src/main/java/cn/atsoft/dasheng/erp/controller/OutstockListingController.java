@@ -88,7 +88,9 @@ public class OutstockListingController extends BaseController {
     public ResponseData detail(@RequestBody OutstockListingParam outstockListingParam) {
         OutstockListing detail = this.outstockListingService.getById(outstockListingParam.getOutstockListingId());
         OutstockListingResult result = new OutstockListingResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

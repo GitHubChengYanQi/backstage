@@ -88,7 +88,9 @@ public class SupplierBlacklistController extends BaseController {
     public ResponseData detail(@RequestBody SupplierBlacklistParam supplierBlacklistParam) {
         SupplierBlacklist detail = this.supplierBlacklistService.getById(supplierBlacklistParam.getBlackListId());
         SupplierBlacklistResult result = new SupplierBlacklistResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

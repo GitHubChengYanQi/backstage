@@ -90,7 +90,9 @@ public class CompetitorQuoteController extends BaseController {
     public ResponseData detail(@RequestBody CompetitorQuoteParam competitorQuoteParam) {
         CompetitorQuote detail = this.competitorQuoteService.getById(competitorQuoteParam.getQuoteId());
         CompetitorQuoteResult result = new CompetitorQuoteResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

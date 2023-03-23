@@ -151,7 +151,9 @@ public class ProductionPickListsCartController extends BaseController {
     public ResponseData detail(@RequestBody ProductionPickListsCartParam productionPickListsCartParam) {
         ProductionPickListsCart detail = this.productionPickListsCartService.getById(productionPickListsCartParam.getPickListsCart());
         ProductionPickListsCartResult result = new ProductionPickListsCartResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

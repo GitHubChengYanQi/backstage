@@ -83,7 +83,9 @@ public class RepairImageController extends BaseController {
     public ResponseData detail(@RequestBody RepairImageParam repairImageParam) {
         RepairImage detail = this.repairImageService.getById(repairImageParam.getRepairImageId());
         RepairImageResult result = new RepairImageResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

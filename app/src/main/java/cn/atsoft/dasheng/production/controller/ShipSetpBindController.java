@@ -83,7 +83,9 @@ public class ShipSetpBindController extends BaseController {
     public ResponseData detail(@RequestBody ShipSetpBindParam shipSetpBindParam) {
         ShipSetpBind detail = this.shipSetpBindService.getById(shipSetpBindParam.getShipSetpBindId());
         ShipSetpBindResult result = new ShipSetpBindResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

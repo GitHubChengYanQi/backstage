@@ -486,6 +486,56 @@
             parameterType="Long">
         SELECT uuid from uc_open_user_info WHERE member_id = ( SELECT member_id FROM `daoxin_portal_wxuser_info` WHERE user_id = #{userId} and  display = 1 ) and source  = 'wxCp'
     </select>
+    <select id="getUserResultByOpenId"  resultType="cn.atsoft.dasheng.sys.modular.system.model.result.UserResult"
+            parameterType="String">
+        SELECT
+            users.user_id AS "userId",
+            userInfo.avatar AS "avatar",
+            users.`name` AS "name",
+            users.`role_id` AS "roleId",
+            users.`dept_id` AS "deptId",
+            users.`job_no` AS "jobNo",
+            users.`email` AS "email",
+            users.`phone` AS "phone",
+            users.`account` AS "account",
+            users.`password` AS "password",
+            users.`salt` AS "salt",
+            users.`birthday` AS "birthday",
+            users.`sex` AS "sex",
+            users.`status` AS "status",
+            users.`create_time` AS "createTime",
+            users.`create_user` AS "createUser",
+            users.`update_time` AS "updateTime",
+            users.`update_user` AS "updateUser",
+            users.`version` AS "version"
+        FROM
+            sys_user users
+                LEFT JOIN (
+                SELECT
+                    a.*
+                FROM
+                    daoxin_portal_wxuser_info a,(
+                    SELECT
+                        user_id,
+                        max( create_time ) AS create_time
+                    FROM
+                        daoxin_portal_wxuser_info
+                    GROUP BY
+                        user_id
+                ) AS b
+                WHERE
+                    a.user_id = b.user_id
+                  AND a.create_time = b.create_time
+                GROUP BY
+                    a.user_id
+            ) AS wxuserInfo ON users.user_id = wxuserInfo.user_id
+                LEFT JOIN uc_open_user_info userInfo ON userInfo.member_id = wxuserInfo.member_id
+                AND userInfo.display = 1
+        WHERE
+            1 = 1
+          and users.status = 'ENABLE'
+        and user_id = (SELECT user_id from daoxin_portal_wxuser_info WHERE member_id = (SELECT member_id FROM `uc_open_user_info` WHERE uuid = #{openId}) and display = 1 )
+    </select>
 
 
 </mapper>

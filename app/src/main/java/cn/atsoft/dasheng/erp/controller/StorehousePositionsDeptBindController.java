@@ -100,7 +100,9 @@ public class StorehousePositionsDeptBindController extends BaseController {
     public ResponseData detail(@RequestBody StorehousePositionsDeptBindParam storehousePositionsDeptBindParam) {
         StorehousePositionsDeptBind detail = this.storehousePositionsDeptBindService.getById(storehousePositionsDeptBindParam.getBindId());
         StorehousePositionsDeptBindResult result = new StorehousePositionsDeptBindResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

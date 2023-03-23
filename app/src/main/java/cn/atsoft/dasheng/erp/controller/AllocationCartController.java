@@ -83,7 +83,9 @@ public class AllocationCartController extends BaseController {
     public ResponseData detail(@RequestBody AllocationCartParam allocationCartParam) {
         AllocationCart detail = this.allocationCartService.getById(allocationCartParam.getAllocationCartId());
         AllocationCartResult result = new AllocationCartResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

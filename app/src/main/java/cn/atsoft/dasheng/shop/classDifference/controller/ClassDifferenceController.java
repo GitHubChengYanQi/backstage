@@ -85,7 +85,9 @@ public class ClassDifferenceController extends BaseController {
     public ResponseData detail(@RequestBody ClassDifferenceParam classDifferenceParam) {
         ClassDifference detail = this.classDifferenceService.getById(classDifferenceParam.getClassDifferenceId());
         ClassDifferenceResult result = new ClassDifferenceResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

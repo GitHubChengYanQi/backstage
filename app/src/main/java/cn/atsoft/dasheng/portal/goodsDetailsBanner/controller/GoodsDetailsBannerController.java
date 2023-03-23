@@ -79,7 +79,9 @@ public class GoodsDetailsBannerController extends BaseController {
     public ResponseData detail(@RequestBody GoodsDetailsBannerParam goodsDetailsBannerParam) {
         GoodsDetailsBanner detail = this.goodsDetailsBannerService.getById(goodsDetailsBannerParam.getDetailBannerId());
         GoodsDetailsBannerResult result = new GoodsDetailsBannerResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

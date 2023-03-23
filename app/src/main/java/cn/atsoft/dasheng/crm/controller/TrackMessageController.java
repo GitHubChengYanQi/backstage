@@ -83,7 +83,9 @@ public class TrackMessageController extends BaseController {
     public ResponseData detail(@RequestBody TrackMessageParam trackMessageParam) {
         TrackMessage detail = this.trackMessageService.getById(trackMessageParam.getTrackMessageId());
         TrackMessageResult result = new TrackMessageResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

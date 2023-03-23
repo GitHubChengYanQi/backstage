@@ -141,7 +141,9 @@ public class StockDetailsController extends BaseController {
     public ResponseData detail(@RequestBody StockDetailsParam stockDetailsParam) {
         StockDetails detail = this.stockDetailsService.getById(stockDetailsParam.getStockItemId());
         StockDetailsResult result = new StockDetailsResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

@@ -115,7 +115,9 @@ public class AnnouncementsController extends BaseController {
     public ResponseData detail(@RequestBody AnnouncementsParam announcementsParam) {
         Announcements detail = this.announcementsService.getById(announcementsParam.getNoticeId());
         AnnouncementsResult result = new AnnouncementsResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

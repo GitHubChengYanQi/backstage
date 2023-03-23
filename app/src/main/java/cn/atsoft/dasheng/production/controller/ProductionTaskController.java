@@ -109,7 +109,9 @@ public class ProductionTaskController extends BaseController {
     public ResponseData detail(@RequestBody ProductionTaskParam productionTaskParam) {
         ProductionTask detail = this.productionTaskService.getById(productionTaskParam.getProductionTaskId());
         ProductionTaskResult result = new ProductionTaskResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         List<ProductionTaskResult> list = new ArrayList<>();
         list.add(result);
         this.productionTaskService.format(list);

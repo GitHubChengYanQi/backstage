@@ -117,7 +117,9 @@ public class AsynTaskDetailController extends BaseController {
     public ResponseData detail(@RequestBody AsynTaskDetailParam asynTaskDetailParam) {
         AsynTaskDetail detail = this.asynTaskDetailService.getById(asynTaskDetailParam.getDetailId());
         AsynTaskDetailResult result = new AsynTaskDetailResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

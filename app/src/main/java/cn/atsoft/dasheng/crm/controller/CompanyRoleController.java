@@ -104,7 +104,9 @@ public class CompanyRoleController extends BaseController {
     public ResponseData detail(@RequestBody CompanyRoleParam companyRoleParam) {
         CompanyRole detail = this.companyRoleService.getById(companyRoleParam.getCompanyRoleId());
         CompanyRoleResult result = new CompanyRoleResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

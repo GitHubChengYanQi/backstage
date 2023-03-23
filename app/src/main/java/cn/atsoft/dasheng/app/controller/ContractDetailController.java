@@ -93,7 +93,9 @@ public class ContractDetailController extends BaseController {
     public ResponseData detail(@RequestBody ContractDetailParam contractDetailParam) {
         ContractDetail detail = this.contractDetailService.getById(contractDetailParam.getId());
         ContractDetailResult result = new ContractDetailResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

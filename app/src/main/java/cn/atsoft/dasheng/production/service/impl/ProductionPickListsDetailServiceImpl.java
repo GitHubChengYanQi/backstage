@@ -449,8 +449,10 @@ public class ProductionPickListsDetailServiceImpl extends ServiceImpl<Production
     public PageInfo<ProductionPickListsDetailResult> findPageBySpec(ProductionPickListsDetailParam param) {
         Page<ProductionPickListsDetailResult> pageContext = getPageContext();
         IPage<ProductionPickListsDetailResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
+
     @Override
     public PageInfo<ProductionPickListsDetailResult> pickListsDetailList(ProductionPickListsDetailParam param) {
         Page<ProductionPickListsDetailResult> pageContext = getPageContext();

@@ -83,7 +83,9 @@ public class QualityTaskBindController extends BaseController {
     public ResponseData detail(@RequestBody QualityTaskBindParam qualityTaskBindParam) {
         QualityTaskBind detail = this.qualityTaskBindService.getById(qualityTaskBindParam.getBingId());
         QualityTaskBindResult result = new QualityTaskBindResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

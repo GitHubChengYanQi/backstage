@@ -155,7 +155,9 @@ public class taskV1Controller {
                 case "procurementOrder":
                     ProcurementOrder detail = this.procurementOrderService.getById(taskResult.getFormId());
                     ProcurementOrderResult result = new ProcurementOrderResult();
-                    ToolUtil.copyProperties(detail, result);
+                    if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
                     User user1 = userService.getById(result.getCreateUser());
                     result.setUser(user1);
                     taskResult.setObject(result);

@@ -83,7 +83,9 @@ public class ProductionStationClassController extends BaseController {
     public ResponseData detail(@RequestBody ProductionStationClassParam productionStationClassParam) {
         ProductionStationClass detail = this.productionStationClassService.getById(productionStationClassParam.getProductionStationClassId());
         ProductionStationClassResult result = new ProductionStationClassResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

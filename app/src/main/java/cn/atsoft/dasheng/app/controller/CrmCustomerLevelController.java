@@ -86,7 +86,9 @@ public class CrmCustomerLevelController extends BaseController {
     public ResponseData detail(@RequestBody CrmCustomerLevelParam crmCustomerLevelParam) {
         CrmCustomerLevel detail = this.crmCustomerLevelService.getById(crmCustomerLevelParam.getCustomerLevelId());
         CrmCustomerLevelResult result = new CrmCustomerLevelResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

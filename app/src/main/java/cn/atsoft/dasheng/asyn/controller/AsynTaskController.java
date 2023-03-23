@@ -54,7 +54,9 @@ public class AsynTaskController extends BaseController {
     public ResponseData detail(@RequestBody AsynTaskParam asynTaskParam) {
         AsynTask detail = this.asynTaskService.getById(asynTaskParam.getTaskId());
         AsynTaskResult result = new AsynTaskResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         switch (result.getType()) {
             case "物料分析":
                 AllBomResult allBomResult = JSON.parseObject(result.getContent(), AllBomResult.class);

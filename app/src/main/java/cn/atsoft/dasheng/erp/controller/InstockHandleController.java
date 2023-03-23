@@ -88,7 +88,9 @@ public class InstockHandleController extends BaseController {
     public ResponseData detail(@RequestBody InstockHandleParam instockHandleParam) {
         InstockHandle detail = this.instockHandleService.getById(instockHandleParam.getInstockHandleId());
         InstockHandleResult result = new InstockHandleResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

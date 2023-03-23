@@ -87,7 +87,9 @@ public class CrmBusinessSalesController extends BaseController {
     public ResponseData detail(@RequestBody CrmBusinessSalesParam crmBusinessSalesParam) {
         CrmBusinessSales detail = this.crmBusinessSalesService.getById(crmBusinessSalesParam.getSalesId());
         CrmBusinessSalesResult result = new CrmBusinessSalesResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

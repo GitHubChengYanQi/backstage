@@ -49,7 +49,9 @@ public class ApiGoodsController {
     public ResponseData detail(@RequestBody GoodsParam goodsParam) {
         Goods detail = this.goodsService.getById(goodsParam.getGoodId());
         GoodsResult result = new GoodsResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

@@ -110,7 +110,9 @@ public class ItemAttributeController extends BaseController {
             }
         }
         ItemAttributeResult result = new ItemAttributeResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         result.setAttributeValuesResults(attributeValuesResults);
 
         return ResponseData.success(result);

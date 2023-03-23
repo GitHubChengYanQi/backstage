@@ -72,6 +72,17 @@ public class WxAudit implements Serializable {
     @TableField("use_template_approver")
     private Integer useTemplateApprover;
 
+    @TableField(value = "deptId",fill = FieldFill.INSERT)
+    private Long deptId;
+
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
 
     public String getSpNo() {
         return spNo;

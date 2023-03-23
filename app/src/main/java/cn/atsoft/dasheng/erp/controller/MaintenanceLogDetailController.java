@@ -83,7 +83,9 @@ public class MaintenanceLogDetailController extends BaseController {
     public ResponseData detail(@RequestBody MaintenanceLogDetailParam maintenanceLogDetailParam) {
         MaintenanceLogDetail detail = this.maintenanceLogDetailService.getById(maintenanceLogDetailParam.getMaintenanceLogDetailId());
         MaintenanceLogDetailResult result = new MaintenanceLogDetailResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

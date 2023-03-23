@@ -86,7 +86,9 @@ public class MaterialController extends BaseController {
     public ResponseData detail(@RequestBody MaterialParam materialParam) {
         Material detail = this.materialService.getById(materialParam.getMaterialId());
         MaterialResult result = new MaterialResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 //
 //        result.setValue(parentValue);
         return ResponseData.success(result);

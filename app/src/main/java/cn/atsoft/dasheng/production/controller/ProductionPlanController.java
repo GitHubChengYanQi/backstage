@@ -81,7 +81,9 @@ public class ProductionPlanController extends BaseController {
     public ResponseData detail(@RequestBody ProductionPlanParam productionPlanParam) {
         ProductionPlan detail = this.productionPlanService.getById(productionPlanParam.getProductionPlanId());
         ProductionPlanResult result = new ProductionPlanResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         productionPlanService.format(new ArrayList<ProductionPlanResult>(){{
             add(result);
         }});

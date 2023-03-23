@@ -83,7 +83,9 @@ public class AllocationLogController extends BaseController {
     public ResponseData detail(@RequestBody AllocationLogParam allocationLogParam) {
         AllocationLog detail = this.allocationLogService.getById(allocationLogParam.getAllocationLogId());
         AllocationLogResult result = new AllocationLogResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

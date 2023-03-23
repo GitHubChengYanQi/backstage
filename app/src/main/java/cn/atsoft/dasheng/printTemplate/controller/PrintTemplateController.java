@@ -91,7 +91,9 @@ public class PrintTemplateController extends BaseController {
     public ResponseData detail(@RequestBody PrintTemplateParam printTemplateParam) {
         PrintTemplate detail = this.printTemplateService.getById(printTemplateParam.getPrintTemplateId());
         PrintTemplateResult result = new PrintTemplateResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

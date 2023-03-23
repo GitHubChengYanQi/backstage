@@ -83,7 +83,9 @@ public class InquiryTaskDetailController extends BaseController {
     public ResponseData detail(@RequestBody InquiryTaskDetailParam inquiryTaskDetailParam) {
         InquiryTaskDetail detail = this.inquiryTaskDetailService.getById(inquiryTaskDetailParam.getInquiryDetailId());
         InquiryTaskDetailResult result = new InquiryTaskDetailResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

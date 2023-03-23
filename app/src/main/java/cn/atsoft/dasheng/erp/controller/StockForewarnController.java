@@ -115,7 +115,9 @@ public class StockForewarnController extends BaseController {
     public ResponseData<StockForewarnResult> detail(@RequestBody StockForewarnParam stockForewarnParam) {
         StockForewarn detail = this.stockForewarnService.getById(stockForewarnParam.getForewarnId());
         StockForewarnResult result = new StockForewarnResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

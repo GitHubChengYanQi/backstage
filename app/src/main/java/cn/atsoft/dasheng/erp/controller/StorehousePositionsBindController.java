@@ -118,7 +118,9 @@ public class StorehousePositionsBindController extends BaseController {
     public ResponseData detail(@RequestBody StorehousePositionsBindParam storehousePositionsBindParam) {
         StorehousePositionsBind detail = this.storehousePositionsBindService.getById(storehousePositionsBindParam.getBindId());
         StorehousePositionsBindResult result = new StorehousePositionsBindResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

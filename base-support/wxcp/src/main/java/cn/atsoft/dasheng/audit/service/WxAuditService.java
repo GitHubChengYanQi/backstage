@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.audit.model.params.WxAuditParam;
 import com.baomidou.mybatisplus.extension.service.IService;
 import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.cp.bean.oa.WxCpApprovalDetailResult;
 import me.chanjar.weixin.cp.bean.oa.WxCpOaApplyEventRequest;
 import me.chanjar.weixin.cp.bean.oa.WxCpTemplateResult;
 
@@ -74,4 +75,6 @@ public interface WxAuditService extends IService<WxAudit> {
     String post(WxAuditParam param) throws WxErrorException, IOException;
 
     WxCpTemplateResult getTemplate(String templateId) throws WxErrorException;
+
+    WxCpApprovalDetailResult getDetail(String spNo) throws WxErrorException;
 }

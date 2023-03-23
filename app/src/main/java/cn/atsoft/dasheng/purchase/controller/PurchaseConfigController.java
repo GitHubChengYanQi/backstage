@@ -83,7 +83,9 @@ public class PurchaseConfigController extends BaseController {
     public ResponseData detail(@RequestBody PurchaseConfigParam purchaseConfigParam) {
         PurchaseConfig detail = this.purchaseConfigService.getById(purchaseConfigParam.getPurchaseConfigId());
         PurchaseConfigResult result = new PurchaseConfigResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

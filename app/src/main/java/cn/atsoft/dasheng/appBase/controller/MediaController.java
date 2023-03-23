@@ -87,7 +87,9 @@ public class MediaController extends BaseController {
 //    public ResponseData<MediaResult> detail(@RequestBody MediaParam mediaParam) {
 //        Media detail = this.mediaService.getById(mediaParam.getMediaId());
 //        MediaResult result = new MediaResult();
-//        ToolUtil.copyProperties(detail, result);
+//        if (ToolUtil.isNotEmpty(detail)) {
+//            ToolUtil.copyProperties(detail, result);
+//        }
 //
 ////        result.setValue(parentValue);
 //        return ResponseData.success(result);
@@ -185,6 +187,9 @@ public class MediaController extends BaseController {
         for (Long mediaId : param.getMediaIds()) {
             Media media = mediaService.getById(mediaId);
             MediaResult mediaResult = new MediaResult();
+            if (ToolUtil.isEmpty(media)){
+                continue;
+            }
             ToolUtil.copyProperties(media,mediaResult);
             mediaResult.setMediaId(mediaId);
             switch (param.getModel()){

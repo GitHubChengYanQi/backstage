@@ -83,7 +83,9 @@ public class RemindUserController extends BaseController {
     public ResponseData detail(@RequestBody RemindUserParam remindUserParam) {
         RemindUser detail = this.remindUserService.getById(remindUserParam.getRemindUserId());
         RemindUserResult result = new RemindUserResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

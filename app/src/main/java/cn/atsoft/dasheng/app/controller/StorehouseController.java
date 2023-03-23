@@ -103,7 +103,9 @@ public class StorehouseController extends BaseController {
     public ResponseData detail(@RequestBody StorehouseParam storehouseParam) {
         Storehouse detail = this.storehouseService.getById(storehouseParam.getStorehouseId());
         StorehouseResult result = new StorehouseResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

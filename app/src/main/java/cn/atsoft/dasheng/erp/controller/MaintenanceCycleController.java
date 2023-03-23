@@ -83,7 +83,9 @@ public class MaintenanceCycleController extends BaseController {
     public ResponseData detail(@RequestBody MaintenanceCycleParam maintenanceCycleParam) {
         MaintenanceCycle detail = this.maintenanceCycleService.getById(maintenanceCycleParam.getMaintenanceCycleId());
         MaintenanceCycleResult result = new MaintenanceCycleResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

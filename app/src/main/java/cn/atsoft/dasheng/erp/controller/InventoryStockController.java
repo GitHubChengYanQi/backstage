@@ -109,7 +109,9 @@ public class InventoryStockController extends BaseController {
 //    public ResponseData<InventoryStockResult> detail(@RequestBody InventoryStockParam inventoryStockParam) {
 //        InventoryStock detail = this.inventoryStockService.getById(inventoryStockParam.getInventoryStockId());
 //        InventoryStockResult result = new InventoryStockResult();
-//        ToolUtil.copyProperties(detail, result);
+//        if (ToolUtil.isNotEmpty(detail)) {
+//            ToolUtil.copyProperties(detail, result);
+//        }
 //
 //        result.setValue(parentValue);
 //        return ResponseData.success(result);

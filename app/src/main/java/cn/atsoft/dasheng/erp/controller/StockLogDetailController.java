@@ -83,7 +83,9 @@ public class StockLogDetailController extends BaseController {
     public ResponseData<StockLogDetailResult> detail(@RequestBody StockLogDetailParam stockLogDetailParam) {
         StockLogDetail detail = this.stockLogDetailService.getById(stockLogDetailParam.getStockLogDetailId());
         StockLogDetailResult result = new StockLogDetailResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

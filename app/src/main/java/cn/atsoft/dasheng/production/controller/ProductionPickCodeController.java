@@ -95,7 +95,9 @@ public class ProductionPickCodeController extends BaseController {
     public ResponseData detail(@RequestBody ProductionPickCodeParam productionPickCodeParam) {
         ProductionPickCode detail = this.productionPickCodeService.getById(productionPickCodeParam.getPickCodeId());
         ProductionPickCodeResult result = new ProductionPickCodeResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

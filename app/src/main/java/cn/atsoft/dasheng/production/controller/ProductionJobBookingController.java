@@ -83,7 +83,9 @@ public class ProductionJobBookingController extends BaseController {
     public ResponseData detail(@RequestBody ProductionJobBookingParam productionJobBookingParam) {
         ProductionJobBooking detail = this.productionJobBookingService.getById(productionJobBookingParam.getJobBookingId());
         ProductionJobBookingResult result = new ProductionJobBookingResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

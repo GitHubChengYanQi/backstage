@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.orderPaymentApply.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.orderPaymentApply.entity.CrmOrderPaymentApply;
 import cn.atsoft.dasheng.orderPaymentApply.model.params.CrmOrderPaymentApplyParam;
 import cn.atsoft.dasheng.orderPaymentApply.model.result.CrmOrderPaymentApplyResult;
@@ -50,6 +51,8 @@ public interface CrmOrderPaymentApplyService extends IService<CrmOrderPaymentApp
      */
     CrmOrderPaymentApplyResult findBySpec(CrmOrderPaymentApplyParam param);
 
+    CrmOrderPaymentApplyResult detail(CrmOrderPaymentApplyParam param);
+
     /**
      * 查询列表，Specification模式
      *
@@ -64,6 +67,6 @@ public interface CrmOrderPaymentApplyService extends IService<CrmOrderPaymentApp
      * @author Captain_Jazz
      * @Date 2023-03-18
      */
-     PageInfo<CrmOrderPaymentApplyResult> findPageBySpec(CrmOrderPaymentApplyParam param);
+     PageInfo<CrmOrderPaymentApplyResult> findPageBySpec(DataScope dataScope, CrmOrderPaymentApplyParam param);
 
 }

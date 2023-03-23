@@ -85,7 +85,9 @@ public class ClasspojoController extends BaseController {
     public ResponseData detail(@RequestBody ClassParam classParam) {
         Classpojo detail = this.classService.getById(classParam.getClassId());
         ClassResult result = new ClassResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

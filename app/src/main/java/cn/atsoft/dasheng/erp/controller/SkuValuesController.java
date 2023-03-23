@@ -83,7 +83,9 @@ public class SkuValuesController extends BaseController {
     public ResponseData detail(@RequestBody SkuValuesParam skuValuesParam) {
         SkuValues detail = this.skuValuesService.getById(skuValuesParam.getSkuDetailId());
         SkuValuesResult result = new SkuValuesResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

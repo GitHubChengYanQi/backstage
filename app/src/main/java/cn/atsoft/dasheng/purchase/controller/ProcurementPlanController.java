@@ -80,7 +80,9 @@ public class ProcurementPlanController extends BaseController {
             return null;
         }
         ProcurementPlanResult result = new ProcurementPlanResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         User user = userService.getById(result.getCreateUser());
         result.setFounder(user);

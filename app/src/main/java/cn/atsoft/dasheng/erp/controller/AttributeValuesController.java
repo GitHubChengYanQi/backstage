@@ -92,7 +92,9 @@ public class AttributeValuesController extends BaseController {
     public ResponseData detail(@RequestBody AttributeValuesParam attributeValuesParam) {
         AttributeValues detail = this.attributeValuesService.getById(attributeValuesParam.getAttributeValuesId());
         AttributeValuesResult result = new AttributeValuesResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

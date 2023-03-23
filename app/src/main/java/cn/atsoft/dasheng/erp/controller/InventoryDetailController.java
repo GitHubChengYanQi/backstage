@@ -135,7 +135,9 @@ public class InventoryDetailController extends BaseController {
     public ResponseData detail(@RequestBody InventoryDetailParam inventoryDetailParam) {
         InventoryDetail detail = this.inventoryDetailService.getById(inventoryDetailParam.getDetailId());
         InventoryDetailResult result = new InventoryDetailResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         return ResponseData.success(result);
     }
 

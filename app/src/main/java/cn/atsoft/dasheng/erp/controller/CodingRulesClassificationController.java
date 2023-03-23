@@ -89,7 +89,9 @@ public class CodingRulesClassificationController extends BaseController {
     public ResponseData detail(@RequestBody CodingRulesClassificationParam codingRulesClassificationParam) {
         CodingRulesClassification detail = this.codingRulesClassificationService.getById(codingRulesClassificationParam.getCodingRulesClassificationId());
         CodingRulesClassificationResult result = new CodingRulesClassificationResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

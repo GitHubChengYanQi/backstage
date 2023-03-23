@@ -45,7 +45,9 @@ public class OrderDetailController extends BaseController {
     public ResponseData detail(@RequestBody OrderDetailParam orderDetailParam) {
         OrderDetail detail = this.orderDetailService.getById(orderDetailParam.getDetailId());
         OrderDetailResult result = new OrderDetailResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

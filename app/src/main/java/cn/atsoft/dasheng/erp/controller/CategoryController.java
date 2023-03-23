@@ -145,7 +145,9 @@ public class CategoryController extends BaseController {
             }
         }
         result.setItemAttributeParams(itemAttributeParamList);
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         result.setCategoryRequests(categoryRequests);
         return ResponseData.success(result);
     }

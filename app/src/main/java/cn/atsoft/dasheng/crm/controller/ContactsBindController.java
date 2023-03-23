@@ -83,7 +83,9 @@ public class ContactsBindController extends BaseController {
     public ResponseData detail(@RequestBody ContactsBindParam contactsBindParam) {
         ContactsBind detail = this.contactsBindService.getById(contactsBindParam.getContactsBindId());
         ContactsBindResult result = new ContactsBindResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

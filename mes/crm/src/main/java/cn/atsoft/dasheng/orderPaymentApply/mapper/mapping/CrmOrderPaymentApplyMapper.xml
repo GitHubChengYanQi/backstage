@@ -14,6 +14,7 @@
         <result column="update_time" property="updateTime" />
         <result column="done_time" property="doneTime" />
         <result column="status" property="status" />
+        <result column="deptId" property="deptId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -26,6 +27,29 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_order_payment_apply where 1 = 1
+    </select>
+
+    <select id="getOneById" resultType="cn.atsoft.dasheng.orderPaymentApply.model.result.CrmOrderPaymentApplyResult" >
+        SELECT
+            p.order_id AS "orderId",
+            p.new_money AS "newMoney",
+            p.display AS "display",
+            p.create_user AS "createUser",
+            p.update_user AS "updateUser",
+            p.create_time AS "createTime",
+            p.update_time AS "updateTime",
+            p.sp_no AS "spNo",
+            p.STATUS AS "status",
+            p.filed AS "filed",
+            p.deptId AS "deptId",
+            a.creator_user AS "creatorUser",
+            a.msg AS msg,
+            a.done_time As "doneTime"
+        FROM
+            `daoxin_crm_order_payment_apply` p
+            LEFT JOIN wx_audit a ON p.sp_no = a.sp_no
+            where 1 = 1 and p.display = 1
+            and p.sp_no = #{id}
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.orderPaymentApply.model.params.CrmOrderPaymentApplyParam">

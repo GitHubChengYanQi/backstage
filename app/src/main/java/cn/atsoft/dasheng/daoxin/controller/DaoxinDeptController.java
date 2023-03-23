@@ -83,7 +83,9 @@ public class DaoxinDeptController extends BaseController {
     public ResponseData detail(@RequestBody DaoxinDeptParam daoxinDeptParam) {
         DaoxinDept detail = this.daoxinDeptService.getById(daoxinDeptParam.getDeptId());
         DaoxinDeptResult result = new DaoxinDeptResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

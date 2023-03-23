@@ -107,7 +107,9 @@ public class TemplateController extends BaseController {
     public ResponseData detail(@RequestBody TemplateParam templateParam) {
         Template detail = this.templateService.getById(templateParam.getTemplateId());
         TemplateResult result = new TemplateResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

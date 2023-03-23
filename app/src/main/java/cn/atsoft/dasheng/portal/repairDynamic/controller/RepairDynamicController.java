@@ -79,7 +79,9 @@ public class RepairDynamicController extends BaseController {
     public ResponseData detail(@RequestBody RepairDynamicParam repairDynamicParam) {
         RepairDynamic detail = this.repairDynamicService.getById(repairDynamicParam.getDynamicId());
         RepairDynamicResult result = new RepairDynamicResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

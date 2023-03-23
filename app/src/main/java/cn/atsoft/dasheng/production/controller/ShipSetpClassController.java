@@ -86,7 +86,9 @@ public class ShipSetpClassController extends BaseController {
     public ResponseData detail(@RequestBody ShipSetpClassParam shipSetpClassParam) {
         ShipSetpClass detail = this.shipSetpClassService.getById(shipSetpClassParam.getShipSetpClassId());
         ShipSetpClassResult result = new ShipSetpClassResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

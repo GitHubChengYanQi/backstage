@@ -83,7 +83,9 @@ public class SkuBrandBindController extends BaseController {
     public ResponseData detail(@RequestBody SkuBrandBindParam skuBrandBindParam) {
         SkuBrandBind detail = this.skuBrandBindService.getById(skuBrandBindParam.getSkuBrandBind());
         SkuBrandBindResult result = new SkuBrandBindResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

@@ -85,7 +85,9 @@ public class AnomalyDetailController extends BaseController {
     public ResponseData detail(@RequestBody AnomalyDetailParam anomalyDetailParam) {
         AnomalyDetail detail = this.anomalyDetailService.getById(anomalyDetailParam.getDetailId());
         AnomalyDetailResult result = new AnomalyDetailResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

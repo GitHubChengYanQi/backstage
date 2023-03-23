@@ -149,7 +149,9 @@ public class InstockOrderController extends BaseController {
     public ResponseData detail(@RequestBody InstockOrderParam instockOrderParam) {
         InstockOrder detail = this.instockOrderService.getById(instockOrderParam.getInstockOrderId());
         InstockOrderResult result = new InstockOrderResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         instockOrderService.formatDetail(result);
         if (ToolUtil.isNotEmpty(result.getOrigin())) {

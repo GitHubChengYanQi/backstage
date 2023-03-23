@@ -84,7 +84,9 @@ public class NavigationDifferenceController extends BaseController {
     public ResponseData detail(@RequestBody NavigationDifferenceParam navigationDifferenceParam) {
         NavigationDifference detail = this.navigationDifferenceService.getById(navigationDifferenceParam.getClassificationId());
         NavigationDifferenceResult result = new NavigationDifferenceResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

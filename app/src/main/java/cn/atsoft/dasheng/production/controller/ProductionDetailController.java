@@ -79,7 +79,9 @@ public class ProductionDetailController extends BaseController {
     public ResponseData detail(@RequestBody ProductionPlanDetailParam productionPlanDetailParam) {
         ProductionPlanDetail detail = this.productionPlanDetailService.getById(productionPlanDetailParam.getProductionPlanDetailId());
         ProductionPlanDetailResult result = new ProductionPlanDetailResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

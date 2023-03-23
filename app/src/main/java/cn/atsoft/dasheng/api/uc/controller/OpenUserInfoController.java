@@ -88,7 +88,9 @@ public class OpenUserInfoController extends BaseController {
     public ResponseData detail(@RequestBody OpenUserInfoParam openUserInfoParam) {
         OpenUserInfo detail = this.openUserInfoService.getById(openUserInfoParam.getPrimaryKey());
         OpenUserInfoResult result = new OpenUserInfoResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

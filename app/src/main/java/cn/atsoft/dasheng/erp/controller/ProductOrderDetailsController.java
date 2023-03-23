@@ -88,7 +88,9 @@ public class ProductOrderDetailsController extends BaseController {
     public ResponseData detail(@RequestBody ProductOrderDetailsParam productOrderDetailsParam) {
         ProductOrderDetails detail = this.productOrderDetailsService.getById(productOrderDetailsParam.getProductOrderDetailsId());
         ProductOrderDetailsResult result = new ProductOrderDetailsResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         ;
         return ResponseData.success(result);

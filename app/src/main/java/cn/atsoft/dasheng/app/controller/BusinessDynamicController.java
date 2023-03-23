@@ -82,7 +82,9 @@ public class BusinessDynamicController extends BaseController {
     public ResponseData detail(@RequestBody BusinessDynamicParam businessDynamicParam) {
         BusinessDynamic detail = this.businessDynamicService.getById(businessDynamicParam.getDynamicId());
         BusinessDynamicResult result = new BusinessDynamicResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

@@ -86,7 +86,9 @@ public class ErpPartsDetailController extends BaseController {
     public ResponseData detail(@RequestBody ErpPartsDetailParam erpPartsDetailParam) {
         ErpPartsDetail detail = this.erpPartsDetailService.getById(erpPartsDetailParam.getPartsDetailId());
         ErpPartsDetailResult result = new ErpPartsDetailResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

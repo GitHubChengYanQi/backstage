@@ -100,7 +100,9 @@ public class DataClassificationController extends BaseController {
     public ResponseData detail(@RequestBody DataClassificationParam dataClassificationParam) {
         DataClassification detail = this.dataClassificationService.getById(dataClassificationParam.getDataClassificationId());
         DataClassificationResult result = new DataClassificationResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

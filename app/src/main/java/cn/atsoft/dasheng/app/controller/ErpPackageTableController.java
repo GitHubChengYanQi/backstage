@@ -88,7 +88,9 @@ public class ErpPackageTableController extends BaseController {
     public ResponseData detail(@RequestBody ErpPackageTableParam erpPackageTableParam) {
         ErpPackageTable detail = this.erpPackageTableService.getById(erpPackageTableParam.getId());
         ErpPackageTableResult result = new ErpPackageTableResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

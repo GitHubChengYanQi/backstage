@@ -48,6 +48,21 @@ public class PaymentRecordController extends BaseController {
         Object add = this.paymentRecordService.add(paymentRecordParam);
         return ResponseData.success(add);
     }
+    /**
+     * 新增接口
+     *
+     * @author song
+     * @Date 2022-03-01
+     */
+    @RequestMapping(value = "/addByApply", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData addByApply(@RequestBody @Valid PaymentRecordParam paymentRecordParam) {
+        if (ToolUtil.isEmpty(paymentRecordParam.getSpNo())){
+            throw new ServiceException(500,"单据号错误");
+        }
+        this.paymentRecordService.addRecordByApply(paymentRecordParam.getSpNo());
+        return ResponseData.success();
+    }
 
     /**
      * 编辑接口
@@ -97,7 +112,9 @@ public class PaymentRecordController extends BaseController {
     public ResponseData detail(@RequestBody PaymentRecordParam paymentRecordParam) {
         PaymentRecord detail = this.paymentRecordService.getById(paymentRecordParam.getRecordId());
         PaymentRecordResult result = new PaymentRecordResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         paymentRecordService.format(new ArrayList<PaymentRecordResult>() {{
             add(result);
         }});

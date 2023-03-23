@@ -102,7 +102,9 @@ public class CrmIndustryController extends BaseController {
     public ResponseData detail(@RequestBody(required = false) CrmIndustryParam crmIndustryParam) {
         CrmIndustry detail = this.crmIndustryService.getById(crmIndustryParam.getIndustryId());
         CrmIndustryResult result = new CrmIndustryResult();
-        ToolUtil.copyProperties(detail, result);
+if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         List<Map<String, Object>> list = this.crmIndustryService.listMaps();
 //        List<String> parentValue = CrmIndustrySelectWrapper.fetchParentKey(list, Convert.toStr(detail.getParent_id()));
