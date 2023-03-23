@@ -531,6 +531,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         for (OrderDetailResult detail : details) {
             totalNumber += detail.getPurchaseNumber();
         }
+
         orderResult.setTotalNumber(totalNumber);
         orderResult.setAllMoney(allMoney);
         orderResult.setDetailResults(details);
@@ -542,8 +543,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     private void detailFormat(OrderResult result) {
-        Contacts Acontacts = contactsService.getById(result.getPartyAClientId());//甲方委托人
-        Contacts Bcontacts = contactsService.getById(result.getPartyBClientId());//乙方联系人
+        Contacts Acontacts = contactsService.getById(result.getPartyAContactsId());//甲方委托人
+        Contacts Bcontacts = contactsService.getById(result.getPartyBContactsId());//乙方联系人
+        /**
+         * 银行账户
+         */
+        if (ToolUtil.isNotEmpty(result.getPartyABankAccount())) {
+            Invoice aInvoice = invoiceService.getById(result.getPartyABankAccount());
+            result.setPartyABankAccount(aInvoice.getBankAccount());
+        }
+        if (ToolUtil.isNotEmpty(result.getPartyBBankAccount())) {
+            Invoice bInvoice = invoiceService.getById(result.getPartyBBankAccount());
+            result.setPartyBBankAccount(bInvoice.getBankAccount());
+        }
 
 
         if (ToolUtil.isNotEmpty(Acontacts) && ToolUtil.isNotEmpty(Acontacts.getPhone())) {  //甲方代表电话
@@ -551,8 +563,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             if (ToolUtil.isNotEmpty(phone)) {
                 result.setAContactsPhone(phone.getPhoneNumber());
             }
-        } else {
-            Acontacts = new Contacts();
         }
 
         if (ToolUtil.isNotEmpty(Bcontacts) && ToolUtil.isNotEmpty(Bcontacts.getPhone())) {  //乙方代表电话
@@ -560,8 +570,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             if (ToolUtil.isNotEmpty(phone)) {
                 result.setBContactsPhone(phone.getPhoneNumber());
             }
-        } else {
-            Bcontacts = new Contacts();
         }
 
 
@@ -615,6 +623,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         Contacts contacts = contactsService.getById(result.getUserId());//交货人
         result.setDeliverer(contacts);
+
+        result.setUser(userService.getUserResultsByIds(new ArrayList<Long>(){{add(result.getCreateUser());}}).get(0));
 
     }
 

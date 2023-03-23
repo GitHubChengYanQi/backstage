@@ -38,6 +38,8 @@ public class PaymentRecordParam implements Serializable, BaseValidatingParam {
 
     private String field;
 
+    private String spNo;
+
     /**
      * 付款详情id
      */
