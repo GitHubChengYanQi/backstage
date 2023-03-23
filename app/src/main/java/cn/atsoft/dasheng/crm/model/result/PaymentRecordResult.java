@@ -40,6 +40,8 @@ public class PaymentRecordResult implements Serializable {
 
     private String field;
 
+    private String spNo;
+
 
     /**
      * 付款主表id

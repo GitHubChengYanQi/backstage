@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 import java.util.Map;
@@ -52,5 +53,7 @@ public interface PaymentRecordMapper extends BaseMapper<PaymentRecord> {
      * @Date 2022-03-01
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") PaymentRecordParam paramCondition);
+    PaymentRecord getPaymentApplyMoney(@Param("spNo") String spNo);
+    void updateApplyStatus(@Param("spNo") String spNo);
 
 }

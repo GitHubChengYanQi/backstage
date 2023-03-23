@@ -114,6 +114,11 @@ public class PaymentRecord implements Serializable {
      */
     @TableField("field")
     private String field;
+    /**
+     * 附件
+     */
+    @TableField("sp_no")
+    private String spNo;
 
 
     public String getField() {
@@ -236,6 +241,15 @@ public class PaymentRecord implements Serializable {
         this.deptId = deptId;
     }
 
+
+    public String getSpNo() {
+        return spNo;
+    }
+
+    public void setSpNo(String spNo) {
+        this.spNo = spNo;
+    }
+
     @Override
     public String toString() {
         return "PaymentRecord{" +
@@ -250,6 +264,7 @@ public class PaymentRecord implements Serializable {
                 ", updateTime=" + updateTime +
                 ", display=" + display +
                 ", deptId=" + deptId +
+                ", spNo=" + spNo +
                 "}";
     }
 }

@@ -145,7 +145,9 @@ public class ContractTempleteServiceImpl extends ServiceImpl<ContractTempleteMap
         List<ContractTempleteDetailResult> detailResultList = new ArrayList<>();
         for (ContractTempleteDetail detail : details) {
             ContractTempleteDetailResult result = new ContractTempleteDetailResult();
+    if (ToolUtil.isNotEmpty(detail)) {
             ToolUtil.copyProperties(detail, result);
+        }
             detailResultList.add(result);
         }
 

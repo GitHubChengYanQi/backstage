@@ -19,14 +19,15 @@
         <result column="status" property="status" />
         <result column="payment_date" property="paymentDate" />
         <result column="field" property="field" />
+        <result column="sp_no" property="spNo" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        record_id AS "recordId", field AS "field",detail_id AS "detailId", payment_date AS "paymentDate",payment_id AS "paymentId", payment_amount AS "paymentAmount", remark AS "remark", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", order_id AS "orderId", status AS "status"
+        record_id AS "recordId", sp_no AS "spNo",field AS "field",detail_id AS "detailId", payment_date AS "paymentDate",payment_id AS "paymentId", payment_amount AS "paymentAmount", remark AS "remark", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", order_id AS "orderId", status AS "status"
     </sql>
     <sql id="List">
-     o.coding AS "Coding", p.field AS "field",p.payment_date AS "paymentDate" ,p.record_id AS "recordId", p.detail_id AS "detailId", p.payment_id AS "paymentId", p.payment_amount AS "paymentAmount", p.remark AS "remark", p.create_user AS "createUser", p.update_user AS "updateUser", p.create_time AS "createTime", p.update_time AS "updateTime", p.display AS "display", p.deptId AS "deptId", p.order_id AS "orderId", p.status AS "status"
+     o.coding AS "Coding", p.sp_no AS "spNo", p.field AS "field",p.payment_date AS "paymentDate" ,p.record_id AS "recordId", p.detail_id AS "detailId", p.payment_id AS "paymentId", p.payment_amount AS "paymentAmount", p.remark AS "remark", p.create_user AS "createUser", p.update_user AS "updateUser", p.create_time AS "createTime", p.update_time AS "updateTime", p.display AS "display", p.deptId AS "deptId", p.order_id AS "orderId", p.status AS "status"
     </sql>
 
 
@@ -193,6 +194,16 @@
         <if test="paramCondition.deptId != null">
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
         </if>
+    </select>
+    <select id="getPaymentApplyMoney" resultType="cn.atsoft.dasheng.crm.entity.PaymentRecord">
+        select
+        order_id AS "orderId",
+        new_money AS "paymentAmount"
+        from daoxin_crm_order_payment_apply where 1 = 1 and status = 2 and display = 1
+        and sp_no = #{spNo}
+    </select>
+    <select id="updateApplyStatus">
+       update daoxin_crm_order_payment_apply set status = 99 where  sp_no = #{spNo}
     </select>
 
 </mapper>

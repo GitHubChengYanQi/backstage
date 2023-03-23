@@ -30,6 +30,7 @@ import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,6 +75,10 @@ public class PaymentRecordServiceImpl extends ServiceImpl<PaymentRecordMapper, P
 
         PaymentRecord entity = getEntity(param);
         this.save(entity);
+
+        if(ToolUtil.isNotEmpty(param.getSpNo())){
+            this.baseMapper.updateApplyStatus(param.getSpNo());
+        }
         return entity;
     }
     @Override
@@ -212,5 +217,27 @@ public class PaymentRecordServiceImpl extends ServiceImpl<PaymentRecordMapper, P
             }
         }
 
+    }
+    @Override
+    public void addRecordByApply(String spNo){
+        if (ToolUtil.isEmpty(spNo)){
+            throw new ServiceException(500,"单据号错误");
+        }
+        PaymentRecord paymentApplyMoney = this.baseMapper.getPaymentApplyMoney(spNo);
+        if (ToolUtil.isEmpty(paymentApplyMoney)){
+            throw new ServiceException(500,"单据未审批完成");
+        }
+        Order order = orderService.getById(paymentApplyMoney.getOrderId());
+        List<PaymentRecord> list = this.lambdaQuery().eq(PaymentRecord::getOrderId, paymentApplyMoney.getOrderId()).eq(PaymentRecord::getDisplay, 1).eq(PaymentRecord::getStatus,0).list();
+        long payPrice = 0l;
+        for (PaymentRecord paymentRecord : list) {
+            payPrice+=paymentRecord.getPaymentAmount();
+        }
+        if (payPrice+paymentApplyMoney.getPaymentAmount()>order.getTotalAmount()){
+            throw new ServiceException(500,"累计付款金额不得超过订单总金额");
+        }
+        paymentApplyMoney.setPaymentDate(new Date());
+        this.save(paymentApplyMoney);
+        this.baseMapper.updateApplyStatus(spNo);
     }
 }

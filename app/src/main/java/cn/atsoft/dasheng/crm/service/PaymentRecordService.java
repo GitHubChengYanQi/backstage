@@ -74,4 +74,6 @@ public interface PaymentRecordService extends IService<PaymentRecord> {
      PageInfo<PaymentRecordResult> findPageBySpec(PaymentRecordParam param);
 
     void format(List<PaymentRecordResult> results);
+
+    void addRecordByApply(String spNo);
 }
