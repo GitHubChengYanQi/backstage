@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,6 +59,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private OrderDetailService detailService;
     @Autowired
     private PaymentService paymentService;
+    @Autowired
+    private PaymentRecordService paymentRecordService;
     @Autowired
     private ContractService contractService;
     @Autowired
@@ -81,8 +84,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Autowired
     private InvoiceService invoiceService;
 
-    @Autowired
-    private PaymentRecordService paymentRecordService;
 
     @Override
     @Transactional
@@ -131,6 +132,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             totalAmount = totalAmount + param.getPaymentParam().getFloatingAmount();
         }
         entity.setTotalAmount(totalAmount);  //订单总金额
+        param.getPaymentParam().setTotalAmount(BigDecimal.valueOf(totalAmount).divide(BigDecimal.valueOf(100),2, RoundingMode.DOWN).doubleValue());
+        BigDecimal subtract = BigDecimal.valueOf(totalAmount).subtract(BigDecimal.valueOf(param.getPaymentParam().getFloatingAmount()));
+        param.getPaymentParam().setMoney(subtract.divide(BigDecimal.valueOf(100),2, RoundingMode.DOWN).doubleValue());
+        paymentService.add(param.getPaymentParam(), orderType);
         this.updateById(entity);
         return entity;
 
@@ -523,6 +528,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (ToolUtil.isNotEmpty(paymentResult) && ToolUtil.isNotEmpty(paymentResult.getOrderId())) {
             details = detailService.getDetails(paymentResult.getOrderId());
         }
+        int inStockNum = 0;
+        int allNum = 0;
+        for (OrderDetailResult detail : details) {
+            inStockNum+=detail.getInStockNumber();
+            allNum+=detail.getPurchaseNumber();
+        }
+
+        try{
+            orderResult.setInStockRate(BigDecimal.valueOf(inStockNum).divide(BigDecimal.valueOf(allNum),2,RoundingMode.UP).multiply(BigDecimal.valueOf(100)).intValue());
+        }catch (Exception e){
+
+        }
+
         double allMoney = 0;
         int totalNumber = 0;
         if (ToolUtil.isNotEmpty(order.getTotalAmount())) {  //兼容之前老订单  没有总价格 
@@ -623,6 +641,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         Contacts contacts = contactsService.getById(result.getUserId());//交货人
         result.setDeliverer(contacts);
+        List<PaymentRecord> paymentRecords = paymentRecordService.listByOrderIds(new ArrayList<Long>() {{
+            add(result.getOrderId());
+        }});
+        long paymentSum = 0;
+        for (PaymentRecord paymentRecord : paymentRecords) {
+            paymentSum += paymentRecord.getPaymentAmount();
+        }
+
+
+        try{
+            result.setPaymentRate(BigDecimal.valueOf(paymentSum).divide(BigDecimal.valueOf(result.getTotalAmount()),2,RoundingMode.UP).multiply(BigDecimal.valueOf(100)).intValue());
+        }catch (Exception e){
+
+        }
 
         result.setUser(userService.getUserResultsByIds(new ArrayList<Long>(){{add(result.getCreateUser());}}).get(0));
 

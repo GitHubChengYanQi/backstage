@@ -72,5 +72,6 @@ public interface UserMapper extends BaseMapper<User> {
     String getUserOpenId (@Param("userId")Long userId);
     UserResult getUserResultByOpenId (@Param("openId")String openId);
     List<UserResult> userResultList (@Param("paramCondition")UserParam param);
+    List<UserResult> getUserResultByOpenIds (@Param("openIds")List<String> openIds);
 
 }

@@ -32,6 +32,8 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
 
     private String startTime;
 
+    private Long orderId;
+
     private Long customerId;
 
     private Long pickUserId;

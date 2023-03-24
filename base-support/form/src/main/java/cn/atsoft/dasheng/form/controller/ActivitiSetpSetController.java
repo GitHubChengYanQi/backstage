@@ -83,7 +83,9 @@ public class ActivitiSetpSetController extends BaseController {
     public ResponseData detail(@RequestBody ActivitiSetpSetParam activitiSetpSetParam) {
         ActivitiSetpSet detail = this.activitiSetpSetService.getById(activitiSetpSetParam.getSetId());
         ActivitiSetpSetResult result = new ActivitiSetpSetResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

@@ -494,6 +494,9 @@
         <if test="paramCondition.customerId !=null and paramCondition.customerId !=''">
             and instock.customer_id = #{paramCondition.customerId}
         </if>
+        <if test="paramCondition.orderId !=null">
+            and instock.order_id = #{paramCondition.orderId}
+        </if>
         <if test="paramCondition.status !=null and paramCondition.status !=''">
             <choose>
                 <when test="paramCondition.status ==7">

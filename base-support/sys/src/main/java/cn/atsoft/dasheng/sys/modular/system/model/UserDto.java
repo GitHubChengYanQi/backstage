@@ -21,6 +21,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 用户传输bean
@@ -30,6 +31,8 @@ import java.util.Date;
  */
 @Data
 public class UserDto {
+
+    List<String> openIds;
 
     private Long userId;
 

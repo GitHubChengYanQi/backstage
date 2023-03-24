@@ -346,6 +346,14 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         return PageFactory.createPageInfo(page);
 
     }
+    @Override
+    public PageInfo<ActivitiProcessTaskResult> aboutOrderInStockList(ActivitiProcessTaskParam param) {
+        Page<ActivitiProcessTaskResult> pageContext = getPageContext();
+        IPage<ActivitiProcessTaskResult> page = this.baseMapper.instockTask(pageContext, param);
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+
+    }
 
     @Override
     public PageInfo<ActivitiProcessTaskResult> auditListV1(ActivitiProcessTaskParam param) {

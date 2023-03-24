@@ -90,6 +90,8 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
 
     PageInfo<ActivitiProcessTaskResult> aboutMeTasks(ActivitiProcessTaskParam param);
 
+    PageInfo<ActivitiProcessTaskResult> aboutOrderInStockList(ActivitiProcessTaskParam param);
+
     PageInfo<ActivitiProcessTaskResult> auditListV1(ActivitiProcessTaskParam param);
 
     PageInfo LoginStart(ActivitiProcessTaskParam param);

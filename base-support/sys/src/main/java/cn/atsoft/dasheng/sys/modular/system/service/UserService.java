@@ -473,4 +473,11 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         }
         return userResultByOpenId;
     }
+    public List<UserResult> getUserResultByOpenIds(List<String> openIds){
+
+        if (ToolUtil.isEmpty(openIds) || openIds.size() == 0){
+            return new ArrayList<>();
+        }
+        return this.baseMapper.getUserResultByOpenIds(openIds);
+    }
 }

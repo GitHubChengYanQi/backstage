@@ -536,6 +536,39 @@
           and users.status = 'ENABLE'
         and user_id = (SELECT user_id from daoxin_portal_wxuser_info WHERE member_id = (SELECT member_id FROM `uc_open_user_info` WHERE uuid = #{openId}) and display = 1 )
     </select>
+    <select id="getUserResultByOpenIds"  resultType="cn.atsoft.dasheng.sys.modular.system.model.result.UserResult">
+        SELECT
+            u.user_id AS "userId",
+            o.avatar AS "avatar",
+            o.uuid AS "openId",
+            u.`name` AS "name",
+            u.`role_id` AS "roleId",
+            u.`dept_id` AS "deptId",
+            u.`job_no` AS "jobNo",
+            u.`email` AS "email",
+            u.`phone` AS "phone",
+            u.`account` AS "account",
+            u.`password` AS "password",
+            u.`salt` AS "salt",
+            u.`birthday` AS "birthday",
+            u.`sex` AS "sex",
+            u.`status` AS "status",
+            u.`create_time` AS "createTime",
+            u.`create_user` AS "createUser",
+            u.`update_time` AS "updateTime",
+            u.`update_user` AS "updateUser",
+            u.`version` AS "version"
+        FROM
+            sys_user u
+                LEFT JOIN daoxin_portal_wxuser_info wx ON u.user_id = wx.user_id
+                AND wx.display = 1
+                LEFT JOIN uc_open_user_info o ON o.member_id = wx.member_id
+        WHERE 1 = 1
+        and o.uuid in
+        <foreach collection="openIds" index="index" item="item" separator="," close=")" open="(">
+            #{item}
+        </foreach>
+    </select>
 
 
 </mapper>

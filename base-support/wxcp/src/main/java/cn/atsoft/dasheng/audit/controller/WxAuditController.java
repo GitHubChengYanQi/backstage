@@ -1,23 +1,16 @@
 package cn.atsoft.dasheng.audit.controller;
 
 import cn.atsoft.dasheng.audit.config.TemplateConfig;
+import cn.atsoft.dasheng.audit.model.params.WxCpMediaParam;
+import cn.atsoft.dasheng.audit.model.result.WxCpMediaResult;
 import cn.atsoft.dasheng.audit.service.RestWxCpService;
-import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.audit.entity.WxAudit;
 import cn.atsoft.dasheng.audit.model.params.WxAuditParam;
-import cn.atsoft.dasheng.audit.model.result.WxAuditResult;
 import cn.atsoft.dasheng.audit.service.WxAuditService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
 import me.chanjar.weixin.common.error.WxErrorException;
-import me.chanjar.weixin.cp.api.impl.WxCpServiceImpl;
-import me.chanjar.weixin.cp.bean.message.WxCpXmlMessage;
-import me.chanjar.weixin.cp.bean.message.WxCpXmlOutMessage;
-import me.chanjar.weixin.cp.bean.oa.WxCpOaApplyEventRequest;
-import me.chanjar.weixin.cp.config.impl.WxCpDefaultConfigImpl;
 import org.mybatis.logging.Logger;
 import org.mybatis.logging.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -182,6 +176,29 @@ public class WxAuditController extends BaseController {
             throw new ServiceException(500,"参数错误");
         }
         return ResponseData.success(wxCpService.getWxCpClient().getMediaService().download(mediaId));
+    }
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2023-03-18
+     */
+    @RequestMapping(value = "/getMediaByIds", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData getMedia (@RequestBody WxCpMediaParam param) throws WxErrorException {
+        if(ToolUtil.isEmpty(param.getMediaIds()) || param.getMediaIds().size() == 0){
+            throw new ServiceException(500,"参数错误");
+        }
+        List<WxCpMediaResult> resultList = new ArrayList<>();
+
+        for (String mediaId : param.getMediaIds()) {
+            resultList.add(new WxCpMediaResult(){{
+                setMediaId(mediaId);
+                setFile(wxCpService.getWxCpClient().getMediaService().download(mediaId));
+            }});
+        }
+
+        return ResponseData.success(resultList);
     }
 
 

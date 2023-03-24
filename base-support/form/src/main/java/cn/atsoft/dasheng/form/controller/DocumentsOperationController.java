@@ -83,7 +83,9 @@ public class DocumentsOperationController extends BaseController {
 //    public ResponseData<DocumentsOperationResult> detail(@RequestBody DocumentsOperationParam documentsOperationParam) {
 //        DocumentsOperation detail = this.documentsOperationService.getById(documentsOperationParam);
 //        DocumentsOperationResult result = new DocumentsOperationResult();
-//        ToolUtil.copyProperties(detail, result);
+//        if (ToolUtil.isNotEmpty(detail)) {
+//            ToolUtil.copyProperties(detail, result);
+//        }
 //
 //
 //        return ResponseData.success(result);

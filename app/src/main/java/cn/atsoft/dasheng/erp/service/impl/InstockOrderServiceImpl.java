@@ -608,7 +608,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Override
     public List<InstockOrderResult> findListBySpec(InstockOrderParam param) {
-        return null;
+        List<InstockOrderResult> instockOrderResults = this.baseMapper.customList(param);
+        this.format(instockOrderResults);
+        return instockOrderResults;
     }
 
     @Override

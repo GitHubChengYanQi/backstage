@@ -80,7 +80,9 @@ public class ActivitiProcessLogController extends BaseController {
     public ResponseData detail(@RequestBody ActivitiProcessLogParam activitiProcessLogParam) {
         ActivitiProcessLog detail = this.activitiProcessFormLogService.getById(activitiProcessLogParam.getLogId());
         ActivitiProcessLogResult result = new ActivitiProcessLogResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);
