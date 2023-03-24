@@ -53,6 +53,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 
@@ -63,7 +64,7 @@ import java.util.UUID;
  * @Date 2017年1月11日 下午1:08:17
  */
 @Controller
-@RequestMapping("/mgr")
+    @RequestMapping("/mgr")
 @Validated
 public class UserMgrController extends BaseController {
 
@@ -371,14 +372,27 @@ public class UserMgrController extends BaseController {
     }
 
     /**
-     * 选择办理人
+     * 根据openId返回userResult
      *
      * @author fengshuonan
      * @Date 2019-8-22 15:48
      */
     @RequestMapping(value = "/getUserResultByOpenId", method = RequestMethod.GET)
-    @ApiOperation("列表")
     public ResponseData getUserResultByOpenId(@RequestParam String openId) {
         return ResponseData.success(userService.getUserResultByOpenId(openId));
+    }
+    /**
+     * 根据openIds返回userResults
+     *
+     * @author Captain_Jazz
+     * @Date 2019-8-22 15:48
+     */
+    @RequestMapping(value = "/getUserResultByOpenIds", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseData getUserResultByOpenId(@RequestBody UserDto param) {
+        if (ToolUtil.isEmpty(param.getOpenIds()) || param.getOpenIds().size() == 0) {
+            return ResponseData.success(new ArrayList<>());
+        }
+        return ResponseData.success(userService.getUserResultByOpenIds(param.getOpenIds()));
     }
 }

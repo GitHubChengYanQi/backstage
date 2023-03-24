@@ -37,7 +37,6 @@ public class UserResult implements Serializable {
     /**
      * 微信openId
      */
-    @JSONField(serialize = false)
     private String  openId;
     /**
      * 角色返回

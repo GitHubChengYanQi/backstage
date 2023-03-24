@@ -84,7 +84,9 @@ public class RestGeneralFormDataController extends BaseController {
     public ResponseData<RestGeneralFormDataResult> detail(@RequestBody RestGeneralFormDataParam generalFormDataParam) {
         RestGeneralFormData detail = this.generalFormDataService.getById(generalFormDataParam.getId());
         RestGeneralFormDataResult result = new RestGeneralFormDataResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         return ResponseData.success(result);
     }

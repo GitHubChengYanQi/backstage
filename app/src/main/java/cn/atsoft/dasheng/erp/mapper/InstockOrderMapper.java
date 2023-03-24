@@ -29,7 +29,7 @@ public interface InstockOrderMapper extends BaseMapper<InstockOrder> {
      * @author song
      * @Date 2021-10-06
      */
-    List<InstockOrderResult> customList(@Param("paramCondition") InstockOrderParam paramCondition);
+    List<InstockOrderResult>     customList(@Param("paramCondition") InstockOrderParam paramCondition);
 
 
     List<StockView> countOrderByType(@Param("paramCondition") DataStatisticsViewParam paramCondition);

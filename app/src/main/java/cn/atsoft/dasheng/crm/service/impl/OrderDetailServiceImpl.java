@@ -123,6 +123,8 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
             orderDetail.setOrderId(orderId);
             orderDetail.setCustomerId(customerId);
             orderDetail.setTotalPrice(detailAmount);
+            orderDetail.setInStockNumber(0);
+            orderDetail.setArrivalNumber(0);
             totalAmount = totalAmount + detailAmount;
             details.add(orderDetail);
         }
@@ -167,7 +169,11 @@ public class OrderDetailServiceImpl extends ServiceImpl<OrderDetailMapper, Order
     }
 
     private Page<OrderDetailResult> getPageContext() {
-        return PageFactory.defaultPage();
+        return PageFactory.defaultPage( new ArrayList<String>(){{
+            add("totalPrice");
+            add("arrivalNumber");
+            add("inStockNumber");
+        }});
     }
 
     private OrderDetail getOldEntity(OrderDetailParam param) {

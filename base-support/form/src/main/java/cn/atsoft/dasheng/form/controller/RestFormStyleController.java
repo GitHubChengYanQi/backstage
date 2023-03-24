@@ -101,7 +101,9 @@ public class RestFormStyleController extends BaseController {
         }
 
         RestFormStyleResult result = new RestFormStyleResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
         return ResponseData.success(result);
     }
 

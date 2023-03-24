@@ -33,6 +33,7 @@ public class SkuHandleRecordParam implements Serializable, BaseValidatingParam {
 
     private List<Long> positionIds;
 
+    private Long orderId;
 
     private String startTime;
 

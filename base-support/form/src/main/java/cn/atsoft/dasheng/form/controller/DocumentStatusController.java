@@ -91,7 +91,9 @@ public class DocumentStatusController extends BaseController {
     public ResponseData detail(@RequestBody DocumentsStatusParam documentsStatusParam) {
         DocumentsStatus detail = this.documentStatusService.getById(documentsStatusParam.getDocumentsStatusId());
         DocumentsStatusResult result = new DocumentsStatusResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);

@@ -30,13 +30,13 @@ public class Payment implements Serializable {
      * 浮动金额
      */
     @TableField("floating_amount")
-    private Integer floatingAmount;
+    private Long floatingAmount;
 
     /**
      * 总金额
      */
     @TableField("total_amount")
-    private Integer totalAmount;
+    private Long totalAmount;
 
     /**
      * 票据类型
@@ -66,7 +66,7 @@ public class Payment implements Serializable {
     private Integer type;
 
     @TableField("money")
-    private Integer money;
+    private Long money;
 
     /**
      * 订单编号
@@ -280,11 +280,11 @@ public class Payment implements Serializable {
         this.remark = remark;
     }
 
-    public Integer getMoney() {
+    public Long getMoney() {
         return money;
     }
 
-    public void setMoney(Integer money) {
+    public void setMoney(Long money) {
         this.money = money;
     }
 
@@ -297,19 +297,19 @@ public class Payment implements Serializable {
     }
 
 
-    public Integer getFloatingAmount() {
+    public Long getFloatingAmount() {
         return floatingAmount;
     }
 
-    public void setFloatingAmount(Integer floatingAmount) {
+    public void setFloatingAmount(Long floatingAmount) {
         this.floatingAmount = floatingAmount;
     }
 
-    public Integer getTotalAmount() {
+    public Long getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(Integer totalAmount) {
+    public void setTotalAmount(Long totalAmount) {
         this.totalAmount = totalAmount;
     }
 

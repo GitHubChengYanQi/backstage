@@ -83,7 +83,9 @@ public class FormDataValueController extends BaseController {
     public ResponseData detail(@RequestBody FormDataValueParam formDataValueParam) {
         FormDataValue detail = this.formDataValueService.getById(formDataValueParam.getValueId());
         FormDataValueResult result = new FormDataValueResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

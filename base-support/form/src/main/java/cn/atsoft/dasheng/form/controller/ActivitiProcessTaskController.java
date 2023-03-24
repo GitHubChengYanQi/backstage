@@ -90,7 +90,9 @@ public class ActivitiProcessTaskController extends BaseController {
     public ResponseData detail(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam) {
         ActivitiProcessTask detail = this.activitiProcessTaskService.getById(activitiProcessTaskParam.getProcessTaskId());
         ActivitiProcessTaskResult result = new ActivitiProcessTaskResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

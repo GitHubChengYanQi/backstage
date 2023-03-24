@@ -80,7 +80,9 @@ public class FormConfigController extends BaseController {
     public ResponseData detail(@RequestBody FormConfigParam formConfigParam) {
         FormConfig detail = this.formConfigService.getById(formConfigParam.getFormId());
         FormConfigResult result = new FormConfigResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

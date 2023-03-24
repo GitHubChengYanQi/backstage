@@ -80,7 +80,9 @@ public class ActivitiAuditController extends BaseController {
     public ResponseData detail(@RequestBody ActivitiAuditParam activitiAuditParam) {
         ActivitiAudit detail = this.activitiAuditService.getById(activitiAuditParam.getAuditId());
         ActivitiAuditResult result = new ActivitiAuditResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

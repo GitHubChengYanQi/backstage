@@ -190,6 +190,15 @@ public class ActivitiProcessTaskController extends BaseController {
         }
         return this.activitiProcessTaskService.auditList(activitiProcessTaskParam);
     }
+    @RequestMapping(value = "/aboutOrderInStockTaskList", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<ActivitiProcessTaskResult> aboutOrderInStockTaskList(@RequestBody(required = false) ActivitiProcessTaskParam activitiProcessTaskParam) {
+
+        if (ToolUtil.isEmpty(activitiProcessTaskParam)) {
+            activitiProcessTaskParam = new ActivitiProcessTaskParam();
+        }
+        return this.activitiProcessTaskService.aboutOrderInStockList(activitiProcessTaskParam);
+    }
 
     @RequestMapping(value = "/aboutMeTasks", method = RequestMethod.POST)
     @ApiOperation("列表")

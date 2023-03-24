@@ -177,6 +177,21 @@ public class InstockOrderController extends BaseController {
         return this.instockOrderService.findPageBySpec(instockOrderParam);
     }
 
+    /**
+     * 查询列表
+     *
+     * @author song
+     * @Date 2021-10-06
+     */
+    @RequestMapping(value = "/noPageList", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData noPageList(@RequestBody(required = false) InstockOrderParam instockOrderParam) {
+        if (ToolUtil.isEmpty(instockOrderParam)) {
+            instockOrderParam = new InstockOrderParam();
+        }
+        return ResponseData.success(this.instockOrderService.findListBySpec(instockOrderParam));
+    }
+
 
 }
 

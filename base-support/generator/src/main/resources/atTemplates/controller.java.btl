@@ -133,7 +133,9 @@ public class ${entity}Controller extends BaseController {
     public ResponseData<${entity}Result> detail(@RequestBody ${entity}Param ${lowerEntity}Param) {
         ${entity} detail = this.${lowerEntity}Service.getById(${lowerEntity}Param.get${bigKeyPropertyName}());
         ${entity}Result result = new ${entity}Result();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
         <%
         if(titleField!=""){

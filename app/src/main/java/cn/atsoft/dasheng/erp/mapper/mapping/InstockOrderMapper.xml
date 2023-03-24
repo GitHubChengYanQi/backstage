@@ -40,7 +40,7 @@
     AS "stockUserId",urgent AS "urgent",enclosure AS "enclosure",type AS "type",status AS "status",notice_id AS "noticeId",customer_id AS "customerId",
         storehouse_id AS "storeHouseId",register_time AS "registerTime", theme AS "theme" , origin AS "origin" ,storehouse_positions_id AS "storehousePositionsId",source AS "source",
           source_id AS "sourceId",push_people AS "pushPeople",
-        instock_order_id AS "instockOrderId", user_id AS "userId", coding AS "coding", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId", state AS "state" , instock_type AS "instockType""
+        instock_order_id AS "instockOrderId", user_id AS "userId", coding AS "coding", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId", state AS "state" , instock_type AS "instockType"
     </sql>
 
 
@@ -75,6 +75,9 @@
         </if>
         <if test="paramCondition.state != null and paramCondition.state != ''">
             and state like CONCAT('%',#{paramCondition.state},'%')
+        </if>
+        <if test="paramCondition.orderId != null">
+            and order_id  = #{paramCondition.orderId}
         </if>
     </select>
     <select id="countOrderByType" resultType="cn.atsoft.dasheng.app.model.request.StockView"

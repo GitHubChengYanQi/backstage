@@ -83,7 +83,9 @@ public class DocumentsActionController extends BaseController {
     public ResponseData detail(@RequestBody DocumentsActionParam documentsActionParam) {
         DocumentsAction detail = this.documentsActionService.getById(documentsActionParam.getDocumentsActionId());
         DocumentsActionResult result = new DocumentsActionResult();
-        ToolUtil.copyProperties(detail, result);
+        if (ToolUtil.isNotEmpty(detail)) {
+            ToolUtil.copyProperties(detail, result);
+        }
 
 
         return ResponseData.success(result);
