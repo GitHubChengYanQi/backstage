@@ -142,7 +142,7 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         if (ToolUtil.isEmpty(orderId)) {
             return null;
         }
-        Payment payment = this.query().eq("order_id", orderId).one();
+        Payment payment = this.query().eq("order_id", orderId).groupBy("order_id").one();
         if (ToolUtil.isEmpty(payment)) {
             return null;
         }
