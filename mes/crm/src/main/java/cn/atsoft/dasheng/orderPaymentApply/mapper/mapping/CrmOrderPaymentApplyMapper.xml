@@ -77,7 +77,8 @@
             p.filed AS "filed",
             a.creator_user AS "creatorUser",
             a.msg AS msg,
-            a.done_time As "doneTime"
+            a.done_time As "doneTime",
+            p.deptId AS "deptId"
         FROM
         `daoxin_crm_order_payment_apply` p
         LEFT JOIN wx_audit a ON p.sp_no = a.sp_no

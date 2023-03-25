@@ -127,7 +127,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         param.getPaymentParam().setOrderId(entity.getOrderId());
         supplyService.OrdersBackFill(param.getSellerId(), param.getDetailParams());  //回填
         long totalAmount = detailService.addList(entity.getOrderId(), param.getSellerId(), param.getDetailParams());    //返回添加所有物料总价
-        paymentService.add(param.getPaymentParam(), orderType);
         if (ToolUtil.isNotEmpty(param.getPaymentParam()) && ToolUtil.isNotEmpty(param.getPaymentParam().getFloatingAmount())) {
             totalAmount = totalAmount + param.getPaymentParam().getFloatingAmount();
         }
