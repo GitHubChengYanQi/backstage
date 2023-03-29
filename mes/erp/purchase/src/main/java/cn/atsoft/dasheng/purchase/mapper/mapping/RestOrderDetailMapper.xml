@@ -272,9 +272,6 @@
         <if test="paramCondition.sellerId !=null">
             and seller_id = #{paramCondition.sellerId}
         </if>
-        <if test="paramCondition.status != null">
-            and status = #{paramCondition.status}
-        </if>
         <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
             and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
             str_to_date(#{paramCondition.startTime},'%Y/%m/%d
@@ -299,7 +296,14 @@
             and seller_id = #{paramCondition.sellerId}
         </if>
         <if test="paramCondition.status != null">
-            and status = #{paramCondition.status}
+            <choose>
+                <when test="paramCondition.status == 0 ">
+                    and (status = 0 or status is null )
+                </when>
+                <otherwise>
+                    and status = #{paramCondition.status}
+                </otherwise>
+            </choose>
         </if>
         <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
             and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
@@ -325,7 +329,14 @@
             and seller_id = #{paramCondition.sellerId}
         </if>
         <if test="paramCondition.status != null">
-            and status = #{paramCondition.status}
+            <choose>
+                <when test="paramCondition.status == 0 ">
+                    and (status = 0 or status is null )
+                </when>
+                <otherwise>
+                    and status = #{paramCondition.status}
+                </otherwise>
+            </choose>
         </if>
         <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
             and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
@@ -353,7 +364,14 @@
             and seller_id = #{paramCondition.sellerId}
         </if>
         <if test="paramCondition.status != null">
-            and status = #{paramCondition.status}
+            <choose>
+                <when test="paramCondition.status == 0 ">
+                    and (status = 0 or status is null )
+                </when>
+                <otherwise>
+                    and status = #{paramCondition.status}
+                </otherwise>
+            </choose>
         </if>
         <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
             and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
@@ -378,7 +396,15 @@
             and seller_id = #{paramCondition.sellerId}
         </if>
         <if test="paramCondition.status != null">
-            and status = #{paramCondition.status}
+
+            <choose>
+                <when test="paramCondition.status == 0 ">
+                    and (status = 0 or status is null )
+                </when>
+                <otherwise>
+                    and status = #{paramCondition.status}
+                </otherwise>
+            </choose>
         </if>
         <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
             and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
@@ -408,7 +434,14 @@
             and seller_id = #{paramCondition.sellerId}
         </if>
         <if test="paramCondition.status != null">
-            and status = #{paramCondition.status}
+            <choose>
+                <when test="paramCondition.status == 0 ">
+                    and (status = 0 or status is null )
+                </when>
+                <otherwise>
+                    and status = #{paramCondition.status}
+                </otherwise>
+            </choose>
         </if>
         <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
             and date_format(create_time,'%Y/%m/%d %H:%i:%s') &gt;=
@@ -457,7 +490,14 @@
             and v.seller_id = #{paramCondition.sellerId}
         </if>
         <if test="paramCondition.status != null">
-            and v.status = #{paramCondition.status}
+            <choose>
+                <when test="paramCondition.status == 0 ">
+                    and (status = 0 or status is null )
+                </when>
+                <otherwise>
+                    and status = #{paramCondition.status}
+                </otherwise>
+            </choose>
         </if>
         <if test="paramCondition.startTime!=null and paramCondition.startTime.trim() neq ''">
             and date_format(v.create_time,'%Y/%m/%d %H:%i:%s') &gt;=
