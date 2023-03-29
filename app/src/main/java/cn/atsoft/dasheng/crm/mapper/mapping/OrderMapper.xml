@@ -233,7 +233,14 @@
             and o.generate_contract like CONCAT('%',#{paramCondition.generateContract},'%')
         </if>
         <if test="paramCondition.status != null">
-            and o.status = #{paramCondition.status}
+            <choose>
+                <when test="paramCondition.status = 0 ">
+                    and (o.status = 0 or o.status is null )
+                </when>
+                <otherwise>
+                    and o.status = #{paramCondition.status}
+                </otherwise>
+            </choose>
         </if>
         <if test="paramCondition.deliveryDate != null and paramCondition.deliveryDate != ''">
             and o.delivery_date like CONCAT('%',#{paramCondition.deliveryDate},'%')
