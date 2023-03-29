@@ -58,6 +58,9 @@ public class RestSkuParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("spuId")
     private Long spuId;
 
+    @ApiModelProperty("skuId")
+    private Long skuId;
+
     @ApiModelProperty(value = "spu名称",notes = "如果spuId为空则spuName为必填，创建对应spu")
     private String spuName;
 

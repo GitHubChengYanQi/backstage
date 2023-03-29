@@ -41,9 +41,10 @@ public class StockLogServiceImpl extends ServiceImpl<StockLogMapper, StockLog> i
     private StockDetailsService stockDetailsService;
 
     @Override
-    public void add(StockLogParam param){
+    public StockLog add(StockLogParam param){
         StockLog entity = getEntity(param);
         this.save(entity);
+        return entity;
     }
     @Override
     public void addBatch(List<StockDetails> param, String source, String type, ProcessType numberType){

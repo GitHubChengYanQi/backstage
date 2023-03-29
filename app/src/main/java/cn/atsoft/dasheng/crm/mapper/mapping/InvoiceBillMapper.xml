@@ -5,6 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.crm.entity.InvoiceBill">
         <id column="invoice_bill_id" property="invoiceBillId"/>
+        <result column="invoice_bill_no" property="invoiceBillNo"/>
         <result column="money" property="money"/>
         <result column="enclosure_id" property="enclosureId"/>
         <result column="name" property="name"/>
@@ -21,14 +22,14 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         invoice_bill_id
-        AS "invoiceBillId", money AS "money", enclosure_id AS "enclosureId", name AS "name", Invoice_date AS "invoiceDate", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId", order_id AS "orderId"
+        AS "invoiceBillId", invoice_bill_no AS "invoiceBillNo",money AS "money", enclosure_id AS "enclosureId", name AS "name", Invoice_date AS "invoiceDate", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId", order_id AS "orderId"
     </sql>
 
     <sql id="List">
         o
         .
         coding
-        AS "coding" ,b.invoice_bill_id AS "invoiceBillId", b.money AS "money", b.enclosure_id AS "enclosureId", b.name AS "name", b.Invoice_date AS "invoiceDate", b.create_time AS "createTime", b.create_user AS "createUser", b.update_time AS "updateTime", b.update_user AS "updateUser", b.display AS "display", b.deptId AS "deptId", b.order_id AS "orderId"
+        AS "coding" ,b.invoice_bill_id AS "invoiceBillId", b.invoice_bill_no AS "invoiceBillNo", b.money AS "money", b.enclosure_id AS "enclosureId", b.name AS "name", b.Invoice_date AS "invoiceDate", b.create_time AS "createTime", b.create_user AS "createUser", b.update_time AS "updateTime", b.update_user AS "updateUser", b.display AS "display", b.deptId AS "deptId", b.order_id AS "orderId"
     </sql>
 
 

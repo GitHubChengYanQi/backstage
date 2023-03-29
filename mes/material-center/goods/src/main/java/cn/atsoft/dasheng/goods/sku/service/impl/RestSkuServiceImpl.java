@@ -52,7 +52,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import sun.font.AttributeValues;
 
 import java.util.*;
 
@@ -759,5 +758,26 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
             }
         }
     }
+    @Override
+    public Boolean skuCheck(RestSkuParam param, Long skuId){
+        List<RestSkuResult> restSkuResults = this.formatSkuResult(new ArrayList<Long>() {{
+            add(skuId);
+        }});
+        if (restSkuResults.size() == 0 ){
+            throw new ServiceException(500,"id未找到");
+        }
+        RestSkuResult restSkuResult = restSkuResults.get(0);
+        RestSkuParam restSkuParam = BeanUtil.copyProperties(restSkuResult, RestSkuParam.class);
 
+        Boolean flag = true;
+
+
+
+
+
+
+    return flag;
+
+
+    }
 }

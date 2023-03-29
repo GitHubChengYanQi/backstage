@@ -194,7 +194,8 @@
         tableTmp.purchase_number AS "purchaseNumber",
         tableTmp.inStock_number AS "inStockCount",
         tableTmp.instockRate AS "inStockRate",
-        tableTmp.create_time AS "createTime"
+        tableTmp.create_time AS "createTime",
+        tableTmp.money AS "invoiceMoney"
         FROM
         (
         (

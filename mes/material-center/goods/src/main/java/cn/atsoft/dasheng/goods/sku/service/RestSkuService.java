@@ -133,4 +133,6 @@ public interface RestSkuService extends IService<RestSku> {
     List<RestSku> getByIds(List<Long> skuIds);
 
     List<SkuListResult> viewResultsByIds(List<Long> ids);
+
+    Boolean skuCheck(RestSkuParam param, Long skuId);
 }

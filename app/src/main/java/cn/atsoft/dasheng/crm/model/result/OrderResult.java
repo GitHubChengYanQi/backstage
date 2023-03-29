@@ -38,6 +38,9 @@ public class OrderResult implements Serializable {
     @ApiModelProperty("付款进度百分比")
     private Integer paymentRate;
 
+    @ApiModelProperty("发票进度百分比")
+    private Integer invoiceBillRate;
+
     private int totalNumber;
 
     private Double totalAmount;

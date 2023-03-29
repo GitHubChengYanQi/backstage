@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -171,8 +172,37 @@ public class OrderController extends BaseController {
         }
         return ResponseData.success(this.orderService.pendingProductionPlanByContracts(orderParam));
     }
+    /**
+     * 企业微信微盘上传
+     *
+     * @author song
+     * @Date 2022-02-23
+     */
+    @RequestMapping(value = "/wxUpload", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData wxUpload(@RequestBody(required = false) OrderParam orderParam)  {
+        if (ToolUtil.isEmpty(orderParam)) {
+            orderParam = new OrderParam();
+        }
+        return ResponseData.success(this.orderService.wxUpload(orderParam));
+    }
 
+    /**
+     * 企业微信微盘上传
+     *
+     * @author song
+     * @Date 2022-02-23
+     */
+    @RequestMapping(value = "/createWeDirvSpace", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData createWeDirvSpace(@RequestBody(required = false) OrderParam orderParam){
+        if (ToolUtil.isEmpty(orderParam)) {
+            orderParam = new OrderParam();
+        }
+        return ResponseData.success(this.orderService.createWeDirvSpace(orderParam));
+    }
 
 }
+
 
 

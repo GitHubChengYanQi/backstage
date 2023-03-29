@@ -8,8 +8,10 @@ import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ContractResult;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.util.SpringContextHolder;
 import cn.atsoft.dasheng.crm.entity.*;
 import cn.atsoft.dasheng.crm.mapper.OrderMapper;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
@@ -31,10 +33,17 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.convert.NumberChineseFormatter;
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.cp.bean.WxCpDepart;
+import me.chanjar.weixin.cp.bean.oa.wedrive.WxCpFileUpload;
+import me.chanjar.weixin.cp.bean.oa.wedrive.WxCpFileUploadRequest;
+import me.chanjar.weixin.cp.bean.oa.wedrive.WxCpSpaceCreateData;
+import me.chanjar.weixin.cp.bean.oa.wedrive.WxCpSpaceCreateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -211,6 +220,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             add("coding");
             add("inStockRate");
             add("paymentRate");
+            add("createTime");
+            add("invoiceBillRate");
         }});
     }
 
@@ -517,7 +528,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public OrderResult getDetail(Long id) {
         Order order = this.getById(id);
         if (ToolUtil.isEmpty(order)) {
-            return new OrderResult();
+            throw new ServiceException(500,"数据不存在");
         }
         OrderResult orderResult = new OrderResult();
         ToolUtil.copyProperties(order, orderResult);
@@ -884,5 +895,58 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             this.updateById(order);
         }
     }
+    @Override
+    public String wxUpload(OrderParam param) {
+       try{
+           Order order = this.getById(param.getOrderId());
+           WxCpService wxCpService = SpringContextHolder.getBean(WxCpService.class);
 
+           WxCpFileUploadRequest wxCpFileUploadRequest = new WxCpFileUploadRequest("RenYiTaiYu", "spaceId", "fatherId", "fileName", "base64");
+           WxCpFileUpload wxCpFileUpload = wxCpService.getWxCpClient().getOaWeDriveService().fileUpload(wxCpFileUploadRequest);
+           return wxCpFileUpload.getFileId();
+       } catch (WxErrorException e) {
+//           throw new RuntimeException(e);
+       }
+       return "false";
+    }
+
+    @Override
+    public String createWeDirvSpace(OrderParam param) {
+       try {
+           WxCpService wxCpService = SpringContextHolder.getBean(WxCpService.class);
+//        WxCpFileUploadRequest wxCpFileUploadRequest = new WxCpFileUploadRequest("RenYiTaiYu", "spaceId", "fatherId", "fileName", "base64");
+//        WxCpFileUpload wxCpFileUpload = wxCpService.getWxCpClient().getOaWeDriveService().fileUpload(wxCpFileUploadRequest);
+           List<WxCpDepart> list = wxCpService.getWxCpClient().getDepartmentService().list(null);
+           String userId = "RenYaiTiYu";
+           String spaceName = "浑河云-订单";
+//        配置
+           List<WxCpSpaceCreateRequest.AuthInfo> infoList = new ArrayList<>();
+           for (WxCpDepart wxCpDepart : list) {
+//               WxCpSpaceCreateRequest.AuthInfo authInfoDepartment = new WxCpSpaceCreateRequest.AuthInfo();
+//               authInfoDepartment.setAuth(4);
+//               authInfoDepartment.setType(2);
+//               authInfoDepartment.setDepartmentId(Math.toIntExact(wxCpDepart.getId()));
+               infoList.add(new WxCpSpaceCreateRequest.AuthInfo(){{
+                   setAuth(4);
+                   setType(2);
+                   setDepartmentId(Math.toIntExact(wxCpDepart.getId()));
+               }});
+
+           }
+
+
+//        WxCpSpaceCreateRequest.AuthInfo authInfoUser = new WxCpSpaceCreateRequest.AuthInfo();
+//        authInfoUser.setAuth(7);
+//        authInfoUser.setType(1);
+//        authInfoUser.setUserId("RenYiTaiYu");
+
+//        infoList.add(authInfoUser);
+           WxCpSpaceCreateRequest wxCpSpaceCreateRequest = new WxCpSpaceCreateRequest(userId, spaceName, infoList);
+           WxCpSpaceCreateData wxCpSpaceCreateData = wxCpService.getWxCpClient().getOaWeDriveService().spaceCreate(wxCpSpaceCreateRequest);
+           return JSON.toJSONString(wxCpSpaceCreateData);
+       }catch (WxErrorException e ){
+
+       }
+       return "false";
+    }
 }

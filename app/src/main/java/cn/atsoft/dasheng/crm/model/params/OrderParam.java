@@ -42,6 +42,7 @@ public class OrderParam implements Serializable, BaseValidatingParam {
     private String customerName;
 
     private Long userId;
+    private Long mediaId;
 
     private Long adressId;
 

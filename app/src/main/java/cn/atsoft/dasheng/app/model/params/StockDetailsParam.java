@@ -25,7 +25,7 @@ import java.util.List;
 public class StockDetailsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    List<InventoryCorrectionParam> params;
     private List<Long> lockedInkindIds;
     private List<Long> inkindIds;
     private String inkind;

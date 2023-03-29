@@ -352,21 +352,21 @@ public class RestSkuController extends BaseController {
 //
 //        return this.skuService.changePageBySpec(restSkuParam);
 //    }
-//
-//    /**
-//     * 根据md5
-//     *
-//     * @author
-//     * @Date 2021-10-18
-//     */
-//    @RequestMapping(value = "/skuByMd5", method = RequestMethod.POST)
-//    @ApiOperation("直接物料列表")
-//    public ResponseData skuByMd5(@RequestBody(required = false) RestSkuParam restSkuParam) {
-//        if (ToolUtil.isEmpty(restSkuParam)) {
-//            restSkuParam = new RestSkuParam();
-//        }
-//        return ResponseData.success(this.skuService.getSkuByMd5(restSkuParam));
-//    }
+
+    /**
+     * 根据md5
+     *
+     * @author
+     * @Date 2021-10-18
+     */
+    @RequestMapping(value = "/skuCheck", method = RequestMethod.POST)
+    @ApiOperation("对比物料")
+    public ResponseData skuByMd5(@RequestBody(required = false) RestSkuParam restSkuParam) {
+        if (ToolUtil.isEmpty(restSkuParam)) {
+            restSkuParam = new RestSkuParam();
+        }
+        return ResponseData.success(this.skuService.skuCheck(restSkuParam,restSkuParam.getSkuId()));
+    }
 //
 //    /**
 //     * 查询列表

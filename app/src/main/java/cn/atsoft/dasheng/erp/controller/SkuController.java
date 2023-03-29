@@ -504,6 +504,11 @@ public class SkuController extends BaseController {
         List<SkuLogDetail> logDetailResults = instockLogDetailService.skuLogDetail(skuId);
         return ResponseData.success(logDetailResults);
     }
+    @RequestMapping(value = "/checkSku", method = RequestMethod.POST    )
+    @ApiOperation("物料操作记录")
+    public ResponseData checkSku(@RequestBody SkuParam skuParam) throws IllegalAccessException {
+        return ResponseData.success(skuService.checkSku(skuParam));
+    }
 
 }
 

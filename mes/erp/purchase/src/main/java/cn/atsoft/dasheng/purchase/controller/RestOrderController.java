@@ -33,9 +33,9 @@ import javax.validation.Valid;
 @Api(tags = "订单表")
 public class RestOrderController extends BaseController {
 
-//    @Autowired
-//    private RestOrderService orderService;
-//
+    @Autowired
+    private RestOrderService orderService;
+
 //
 //    /**
 //     * 新增接口
@@ -60,21 +60,8 @@ public class RestOrderController extends BaseController {
 //        RestOrder order = this.orderService.add(orderParam);
 //        return ResponseData.success(order);
 //    }
-//
-//    /**
-//     * 查询列表
-//     *
-//     * @author song
-//     * @Date 2022-02-23
-//     */
-//    @RequestMapping(value = "/list", method = RequestMethod.POST)
-//    @ApiOperation("列表")
-//    public PageInfo<RestOrderResult> list(@RequestBody(required = false) RestOrderParam orderParam) {
-//        if (ToolUtil.isEmpty(orderParam)) {
-//            orderParam = new RestOrderParam();
-//        }
-//        return this.orderService.findPageBySpec(orderParam);
-//    }
+
+
 }
 
 

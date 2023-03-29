@@ -116,6 +116,7 @@
 	o.party_a_zipCode AS "partyAZipcode" ,
 	ROUND(d.inStock_number/d.purchase_number*100) AS inStockRate,
 	FLOOR(p.total_amount/o.total_amount*100) AS paymentRate,
+	FLOOR(i.invoice_amount/o.total_amount*100) AS invoiceBillRate,
     p.total_amount AS "paymentPrice",
     o.total_amount - if(p.total_amount is null ,0,p.total_amount) AS "deficientPrice"
     </sql>
@@ -204,6 +205,7 @@
         from daoxin_crm_order o
         LEFT JOIN (SELECT order_id ,sum(inStock_number) as inStock_number,SUM(purchase_number) as purchase_number from daoxin_crm_order_detail WHERE display = 1 GROUP BY order_id) d on d.order_id = o.order_id
         LEFT JOIN (SELECT order_id , sum(payment_amount) AS total_amount from daoxin_crm_payment_record WHERE 1 = 1  and display = 1 and `status` = 0 GROUP BY order_id) p ON p.order_id = o.order_id
+        LEFT JOIN (SELECT order_id , sum(money) AS invoice_amount from daoxin_invoice_bill WHERE 1 = 1  and display = 1  GROUP BY order_id) i ON i.order_id = o.order_id
         WHERE 1 = 1 and o.display = 1
         <if test="paramCondition.orderId != null">
             and o.order_id like CONCAT('%',#{paramCondition.orderId},'%')
@@ -234,7 +236,7 @@
         </if>
         <if test="paramCondition.status != null">
             <choose>
-                <when test="paramCondition.status = 0 ">
+                <when test="paramCondition.status == 0 ">
                     and (o.status = 0 or o.status is null )
                 </when>
                 <otherwise>

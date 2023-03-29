@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AnomalyOrder;
 import cn.atsoft.dasheng.erp.model.params.AnomalyOrderParam;
 import cn.atsoft.dasheng.erp.model.result.AnomalyOrderResult;
+import cn.atsoft.dasheng.erp.model.result.AnomalyResult;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -34,6 +35,8 @@ public interface AnomalyOrderService extends IService<AnomalyOrder> {
     void submit(AnomalyOrderParam orderParam);
 
     boolean check(Long skuId, Long brandId, Long positionId, Integer checkNum);
+
+    void inStock(List<AnomalyResult> anomalyResults);
 
     /**
      * 删除

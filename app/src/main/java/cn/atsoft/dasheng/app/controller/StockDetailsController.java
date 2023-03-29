@@ -64,6 +64,11 @@ public class StockDetailsController extends BaseController {
         List<StockDetailsResult> stockDetails = this.stockDetailsService.getDetailsBySkuId(stockDetailsParam.getSkuId());
         return ResponseData.success(stockDetails);
     }
+    @RequestMapping(value = "/inventoryCorrection", method = RequestMethod.POST)
+    public ResponseData InventoryCorrection(@RequestBody StockDetailsParam stockDetailsParam) {
+        this.stockDetailsService.InventoryCorrection(stockDetailsParam.getParams());
+        return ResponseData.success();
+    }
 
 
     @RequestMapping(value = "/stockSkuBrands", method = RequestMethod.GET)

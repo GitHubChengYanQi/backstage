@@ -48,6 +48,9 @@ public class InvoiceBillServiceImpl extends ServiceImpl<InvoiceBillMapper, Invoi
 
     @Override
     public InvoiceBill add(InvoiceBillParam param){
+        if (ToolUtil.isEmpty(param.getInvoiceBillNo())){
+            throw new ServiceException(500,"发票号不可为空");
+        }
         InvoiceBill entity = getEntity(param);
         this.save(entity);
         return entity;

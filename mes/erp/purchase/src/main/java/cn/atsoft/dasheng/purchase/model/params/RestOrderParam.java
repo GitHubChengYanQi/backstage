@@ -38,6 +38,8 @@ public class RestOrderParam implements Serializable, BaseValidatingParam {
 
     private Long adressId;
 
+    private Long mediaId;
+
     @NotNull
     private List<RestOrderDetailParam> detailParams;
 //    @NotNull

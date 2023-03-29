@@ -304,7 +304,7 @@
     <select id="listUserByIds" resultType="cn.atsoft.dasheng.sys.modular.system.model.result.UserResult">
         SELECT
         users.user_id AS "userId",
-        userInfo.avatar AS "avatar",
+        wechat.avatar AS "avatar",
         users.`name` AS "name",
         users.`role_id` AS "roleId",
         users.`dept_id` AS "deptId",
@@ -323,31 +323,12 @@
         users.`update_user` AS "updateUser",
         users.`version` AS "version"
         FROM
-        sys_user users
-        LEFT JOIN (
-        SELECT
-        a.*
-        FROM
-        daoxin_portal_wxuser_info a,(
-        SELECT
-        user_id,
-        max( create_time ) AS create_time
-        FROM
-        daoxin_portal_wxuser_info
-        GROUP BY
-        user_id
-        ) AS b
-        WHERE
-        a.user_id = b.user_id
-        AND a.create_time = b.create_time
-        AND a.source = 'wxCp'
-        GROUP BY
-        a.user_id
-        ) AS wxuserInfo ON users.user_id = wxuserInfo.user_id
-        LEFT JOIN uc_open_user_info userInfo ON userInfo.member_id = wxuserInfo.member_id
-        AND userInfo.source = "WxCp"
-        WHERE
-        1 = 1
+        `sys_user` users
+        LEFT JOIN daoxin_portal_wxuser_info bind ON users.user_id = bind.user_id
+        AND bind.display = 1
+        LEFT JOIN uc_open_user_info wechat ON bind.member_id = wechat.member_id
+        AND wechat.source = 'wxCp'
+
         <if test=" userIds!=null and userIds.size()>0">
             AND users.user_id IN
             <foreach item="i" index="index" collection="userIds" open="(" separator="," close=")">
@@ -356,7 +337,8 @@
         </if>
 
 
-
+        GROUP BY
+        users.user_id
     </select>
 
 

@@ -27,7 +27,7 @@ public interface StockLogService extends IService<StockLog> {
      * @author Captain_Jazz
      * @Date 2022-12-22
      */
-    void add(StockLogParam param);
+    StockLog add(StockLogParam param);
 
     void addBatch(List<StockDetails> param, String source, String type, ProcessType numberType);
 

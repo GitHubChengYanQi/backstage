@@ -7,6 +7,9 @@ import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.OrderResult;
 import com.baomidou.mybatisplus.extension.service.IService;
+import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.cp.bean.oa.wedrive.WxCpSpaceCreateData;
+import me.chanjar.weixin.cp.bean.oa.wedrive.WxCpSpaceCreateRequest;
 
 import java.util.List;
 import java.util.Map;
@@ -83,4 +86,8 @@ public interface OrderService extends IService<Order> {
     void format(List<OrderResult> data);
 
     void checkStatus(Long orderId);
+
+    String wxUpload(OrderParam param);
+
+    String createWeDirvSpace(OrderParam param);
 }
