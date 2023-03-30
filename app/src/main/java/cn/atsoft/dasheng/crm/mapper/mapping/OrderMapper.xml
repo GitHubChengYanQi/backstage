@@ -234,7 +234,7 @@
         </if>
         <if test="paramCondition.status != null">
             <choose>
-                <when test="paramCondition.status = 0 ">
+                <when test="paramCondition.status == 0 ">
                     and (o.status = 0 or o.status is null )
                 </when>
                 <otherwise>
