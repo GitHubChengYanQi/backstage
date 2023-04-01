@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import me.chanjar.weixin.common.error.WxErrorException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -200,6 +201,44 @@ public class OrderController extends BaseController {
             orderParam = new OrderParam();
         }
         return ResponseData.success(this.orderService.createWeDirvSpace(orderParam));
+    }
+
+    /**
+     * 绑定附件
+     *
+     * @author jazz
+     * @Date 2023-03-29
+     */
+    @RequestMapping(value = "/addFile", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData addFile(@RequestBody(required = false) OrderParam orderParam){
+        if (ToolUtil.isEmpty(orderParam)) {
+            orderParam = new OrderParam();
+        }
+        if (ToolUtil.isEmpty(orderParam.getOrderId()) || ToolUtil.isEmpty(orderParam.getMediaIds())) {
+            throw new ServiceException(500,"参数错误");
+        }
+        orderParam.setFileId( StringUtils.join(orderParam.getMediaIds(),","));
+        this.orderService.update(orderParam);
+        return ResponseData.success();
+    }
+    /**
+     * 绑定附件
+     *
+     * @author jazz
+     * @Date 2023-03-29
+     */
+    @RequestMapping(value = "/getAllFile", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData getAllFile(@RequestBody(required = false) OrderParam orderParam){
+        if (ToolUtil.isEmpty(orderParam)) {
+            orderParam = new OrderParam();
+        }
+        if (ToolUtil.isEmpty(orderParam.getOrderId())) {
+            throw new ServiceException(500,"参数错误");
+        }
+
+        return ResponseData.success(this.orderService.getAllFile(orderParam));
     }
 
 }

@@ -50,6 +50,7 @@ public interface OrderService extends IService<Order> {
      * @Date 2022-02-23
      */
     void update(OrderParam param);
+    Map<String,Object> getAllFile(OrderParam param);
 
     /**
      * 查询单条数据，Specification模式

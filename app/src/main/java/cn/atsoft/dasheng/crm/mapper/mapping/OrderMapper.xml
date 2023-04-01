@@ -247,6 +247,20 @@
         <if test="paramCondition.deliveryDate != null and paramCondition.deliveryDate != ''">
             and o.delivery_date like CONCAT('%',#{paramCondition.deliveryDate},'%')
         </if>
+        <if test="paramCondition.completeStatus != null and paramCondition.completeStatus != ''">
+            <choose>
+                <when test="paramCondition.completeStatus =='inStock'">
+                   and  ROUND(d.inStock_number/d.purchase_number*100) = 100
+                </when>
+                <when test="paramCondition.completeStatus =='payment'">
+                    and  FLOOR(p.total_amount/o.total_amount*100) = 100
+                </when>
+                <when test="paramCondition.completeStatus =='invoice'">
+                    and  FLOOR(i.invoice_amount/o.total_amount*100) = 100
+                </when>
+            </choose>
+
+        </if>
         <if test="paramCondition.coding != null and paramCondition.coding != ''">
             and o.coding like CONCAT('%',#{paramCondition.coding},'%')
         </if>

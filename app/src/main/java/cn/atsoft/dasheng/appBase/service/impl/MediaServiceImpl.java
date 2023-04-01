@@ -458,6 +458,7 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
                 case "jpeg":
                 case "png":
                 case "jpg":
+                case "webp":
                     String thumbUrl = getMediaUrlAddUseData(result.getMediaId(), null, THUMB_URL_PARAM);
                     result.setThumbUrl(thumbUrl);
                     break;

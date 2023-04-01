@@ -37,7 +37,7 @@ public class Order implements Serializable {
     private String leadTime;
 
     @TableField("file_id")
-    private Long fileId;
+    private String fileId;
     /**
      * 交货地点
      */
@@ -255,11 +255,11 @@ public class Order implements Serializable {
     private String partyAZipcode;
 
 
-    public Long getFileId() {
+    public String getFileId() {
         return fileId;
     }
 
-    public void setFileId(Long fileId) {
+    public void setFileId(String fileId) {
         this.fileId = fileId;
     }
 

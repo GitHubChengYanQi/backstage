@@ -49,7 +49,7 @@ public class OrderResult implements Serializable {
 
     private Double deficientPrice;
 
-    private Long fileId;
+    private String fileId;
 
     private String leadTime;
 

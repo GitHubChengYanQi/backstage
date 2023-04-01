@@ -195,7 +195,8 @@
         tableTmp.inStock_number AS "inStockCount",
         tableTmp.instockRate AS "inStockRate",
         tableTmp.create_time AS "createTime",
-        tableTmp.money AS "invoiceMoney"
+        tableTmp.money AS "invoiceMoney",
+        FLOOR(tableTmp.money/pay.total_amount * 100) AS "invoiceBillRate"
         FROM
         (
         (
@@ -207,6 +208,7 @@
         sum( purchase_number ) AS purchase_number,
         sum( inStock_number ) AS inStock_number,
         ROUND( sum( inStock_number )/ sum( purchase_number )* 100 ) AS instockRate,
+        money AS money,
         create_time
         FROM
         view_order_detail

@@ -14,6 +14,7 @@ public class ViewResult {
     private String  month;
     private String  year;
     private Integer sellerCount;
+    private Integer invoiceBillRate;
     private Integer skuCount;
     private Long purchaseNumber;
     private Long totalPrice;

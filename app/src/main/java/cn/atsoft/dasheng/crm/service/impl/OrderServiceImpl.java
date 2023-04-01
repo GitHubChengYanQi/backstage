@@ -44,6 +44,7 @@ import me.chanjar.weixin.cp.bean.oa.wedrive.WxCpFileUpload;
 import me.chanjar.weixin.cp.bean.oa.wedrive.WxCpFileUploadRequest;
 import me.chanjar.weixin.cp.bean.oa.wedrive.WxCpSpaceCreateData;
 import me.chanjar.weixin.cp.bean.oa.wedrive.WxCpSpaceCreateRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -92,6 +93,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private BrandService brandService;
     @Autowired
     private InvoiceService invoiceService;
+    @Autowired
+    private InvoiceBillService invoiceBillService;
 
 
     @Override
@@ -112,7 +115,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         String theme = entity.getTheme();
 
 
-        int codingCount = ToolUtil.isEmpty(coding) ? 0 :this.lambdaQuery().eq(Order::getCoding, coding).eq(Order::getDisplay, 1).count();
+        int codingCount = ToolUtil.isEmpty(coding) ? 0 : this.lambdaQuery().eq(Order::getCoding, coding).eq(Order::getDisplay, 1).count();
         int themeCount = ToolUtil.isEmpty(theme) ? 0 : this.lambdaQuery().eq(Order::getTheme, theme).eq(Order::getDisplay, 1).count();
 
         if (codingCount > 0) {
@@ -140,9 +143,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             totalAmount = totalAmount + param.getPaymentParam().getFloatingAmount();
         }
         entity.setTotalAmount(totalAmount);  //订单总金额
-        param.getPaymentParam().setTotalAmount(BigDecimal.valueOf(totalAmount).divide(BigDecimal.valueOf(100),2, RoundingMode.DOWN).doubleValue());
+        param.getPaymentParam().setTotalAmount(BigDecimal.valueOf(totalAmount).divide(BigDecimal.valueOf(100), 2, RoundingMode.DOWN).doubleValue());
         BigDecimal subtract = BigDecimal.valueOf(totalAmount).subtract(BigDecimal.valueOf(param.getPaymentParam().getFloatingAmount()));
-        param.getPaymentParam().setMoney(subtract.divide(BigDecimal.valueOf(100),2, RoundingMode.DOWN).doubleValue());
+        param.getPaymentParam().setMoney(subtract.divide(BigDecimal.valueOf(100), 2, RoundingMode.DOWN).doubleValue());
         paymentService.add(param.getPaymentParam(), orderType);
         this.updateById(entity);
         return entity;
@@ -189,6 +192,27 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Order newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+    }
+
+    @Override
+    public Map<String, Object> getAllFile(OrderParam param) {
+        Long orderId = param.getOrderId();
+        List<PaymentRecord> paymentRecords = paymentRecordService.lambdaQuery().eq(PaymentRecord::getOrderId, orderId).isNotNull(PaymentRecord::getField).list();
+
+        List<InvoiceBill> invoice = invoiceBillService.lambdaQuery().eq(InvoiceBill::getOrderId, orderId).isNotNull(InvoiceBill::getEnclosureId).list();
+
+        Order order = this.getById(orderId);
+
+        Map<String, Object> result = new HashMap<>();
+
+        List<String> payment = paymentRecords.stream().map(PaymentRecord::getField).collect(Collectors.toList());
+
+        List<String> invoiceFile = invoice.stream().map(InvoiceBill::getEnclosureId).collect(Collectors.toList());
+
+        result.put("invoiceBillFiles", StringUtils.join(invoiceFile, ","));
+        result.put("paymentRecordFiles", StringUtils.join(payment, ","));
+        result.put("orderFiles", ToolUtil.isEmpty(order.getFileId()) ? "" : order.getFileId());
+        return result;
     }
 
     @Override
@@ -528,7 +552,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public OrderResult getDetail(Long id) {
         Order order = this.getById(id);
         if (ToolUtil.isEmpty(order)) {
-            throw new ServiceException(500,"数据不存在");
+            throw new ServiceException(500, "数据不存在");
         }
         OrderResult orderResult = new OrderResult();
         ToolUtil.copyProperties(order, orderResult);
@@ -541,13 +565,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         int inStockNum = 0;
         int allNum = 0;
         for (OrderDetailResult detail : details) {
-            inStockNum+=detail.getInStockNumber();
-            allNum+=detail.getPurchaseNumber();
+            inStockNum += detail.getInStockNumber();
+            allNum += detail.getPurchaseNumber();
         }
 
-        try{
-            orderResult.setInStockRate(BigDecimal.valueOf(inStockNum).divide(BigDecimal.valueOf(allNum),2,RoundingMode.UP).multiply(BigDecimal.valueOf(100)).intValue());
-        }catch (Exception e){
+        try {
+            orderResult.setInStockRate(BigDecimal.valueOf(inStockNum).divide(BigDecimal.valueOf(allNum), 2, RoundingMode.UP).multiply(BigDecimal.valueOf(100)).intValue());
+        } catch (Exception e) {
 
         }
 
@@ -660,13 +684,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
 
-        try{
-            result.setPaymentRate(BigDecimal.valueOf(paymentSum).divide(BigDecimal.valueOf(result.getTotalAmount()),2,RoundingMode.UP).multiply(BigDecimal.valueOf(100)).intValue());
-        }catch (Exception e){
+        try {
+            result.setPaymentRate(BigDecimal.valueOf(paymentSum).divide(BigDecimal.valueOf(result.getTotalAmount()), 2, RoundingMode.UP).multiply(BigDecimal.valueOf(100)).intValue());
+        } catch (Exception e) {
 
         }
 
-        result.setUser(userService.getUserResultsByIds(new ArrayList<Long>(){{add(result.getCreateUser());}}).get(0));
+        result.setUser(userService.getUserResultsByIds(new ArrayList<Long>() {{
+            add(result.getCreateUser());
+        }}).get(0));
 
     }
 
@@ -895,44 +921,45 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             this.updateById(order);
         }
     }
+
     @Override
     public String wxUpload(OrderParam param) {
-       try{
-           Order order = this.getById(param.getOrderId());
-           WxCpService wxCpService = SpringContextHolder.getBean(WxCpService.class);
+        try {
+            Order order = this.getById(param.getOrderId());
+            WxCpService wxCpService = SpringContextHolder.getBean(WxCpService.class);
 
-           WxCpFileUploadRequest wxCpFileUploadRequest = new WxCpFileUploadRequest("RenYiTaiYu", "spaceId", "fatherId", "fileName", "base64");
-           WxCpFileUpload wxCpFileUpload = wxCpService.getWxCpClient().getOaWeDriveService().fileUpload(wxCpFileUploadRequest);
-           return wxCpFileUpload.getFileId();
-       } catch (WxErrorException e) {
+            WxCpFileUploadRequest wxCpFileUploadRequest = new WxCpFileUploadRequest("RenYiTaiYu", "spaceId", "fatherId", "fileName", "base64");
+            WxCpFileUpload wxCpFileUpload = wxCpService.getWxCpClient().getOaWeDriveService().fileUpload(wxCpFileUploadRequest);
+            return wxCpFileUpload.getFileId();
+        } catch (WxErrorException e) {
 //           throw new RuntimeException(e);
-       }
-       return "false";
+        }
+        return "false";
     }
 
     @Override
     public String createWeDirvSpace(OrderParam param) {
-       try {
-           WxCpService wxCpService = SpringContextHolder.getBean(WxCpService.class);
+        try {
+            WxCpService wxCpService = SpringContextHolder.getBean(WxCpService.class);
 //        WxCpFileUploadRequest wxCpFileUploadRequest = new WxCpFileUploadRequest("RenYiTaiYu", "spaceId", "fatherId", "fileName", "base64");
 //        WxCpFileUpload wxCpFileUpload = wxCpService.getWxCpClient().getOaWeDriveService().fileUpload(wxCpFileUploadRequest);
-           List<WxCpDepart> list = wxCpService.getWxCpClient().getDepartmentService().list(null);
-           String userId = "RenYaiTiYu";
-           String spaceName = "浑河云-订单";
+            List<WxCpDepart> list = wxCpService.getWxCpClient().getDepartmentService().list(null);
+            String userId = "RenYaiTiYu";
+            String spaceName = "浑河云-订单";
 //        配置
-           List<WxCpSpaceCreateRequest.AuthInfo> infoList = new ArrayList<>();
-           for (WxCpDepart wxCpDepart : list) {
+            List<WxCpSpaceCreateRequest.AuthInfo> infoList = new ArrayList<>();
+            for (WxCpDepart wxCpDepart : list) {
 //               WxCpSpaceCreateRequest.AuthInfo authInfoDepartment = new WxCpSpaceCreateRequest.AuthInfo();
 //               authInfoDepartment.setAuth(4);
 //               authInfoDepartment.setType(2);
 //               authInfoDepartment.setDepartmentId(Math.toIntExact(wxCpDepart.getId()));
-               infoList.add(new WxCpSpaceCreateRequest.AuthInfo(){{
-                   setAuth(4);
-                   setType(2);
-                   setDepartmentId(Math.toIntExact(wxCpDepart.getId()));
-               }});
+                infoList.add(new WxCpSpaceCreateRequest.AuthInfo() {{
+                    setAuth(4);
+                    setType(2);
+                    setDepartmentId(Math.toIntExact(wxCpDepart.getId()));
+                }});
 
-           }
+            }
 
 
 //        WxCpSpaceCreateRequest.AuthInfo authInfoUser = new WxCpSpaceCreateRequest.AuthInfo();
@@ -941,12 +968,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 //        authInfoUser.setUserId("RenYiTaiYu");
 
 //        infoList.add(authInfoUser);
-           WxCpSpaceCreateRequest wxCpSpaceCreateRequest = new WxCpSpaceCreateRequest(userId, spaceName, infoList);
-           WxCpSpaceCreateData wxCpSpaceCreateData = wxCpService.getWxCpClient().getOaWeDriveService().spaceCreate(wxCpSpaceCreateRequest);
-           return JSON.toJSONString(wxCpSpaceCreateData);
-       }catch (WxErrorException e ){
+            WxCpSpaceCreateRequest wxCpSpaceCreateRequest = new WxCpSpaceCreateRequest(userId, spaceName, infoList);
+            WxCpSpaceCreateData wxCpSpaceCreateData = wxCpService.getWxCpClient().getOaWeDriveService().spaceCreate(wxCpSpaceCreateRequest);
+            return JSON.toJSONString(wxCpSpaceCreateData);
+        } catch (WxErrorException e) {
 
-       }
-       return "false";
+        }
+        return "false";
     }
 }
