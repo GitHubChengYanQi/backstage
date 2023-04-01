@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.action.Enum.InStockActionEnum;
 import cn.atsoft.dasheng.action.Enum.ReceiptsEnum;
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.InventoryCorrectionParam;
 import cn.atsoft.dasheng.app.model.request.InstockView;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
@@ -16,9 +17,9 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.entity.OrderDetail;
 import cn.atsoft.dasheng.crm.entity.Supply;
-import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.crm.service.OrderDetailService;
 import cn.atsoft.dasheng.crm.service.OrderService;
+import cn.atsoft.dasheng.crm.service.SupplyService;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.enums.StockLogDetailSourceEnum;
 import cn.atsoft.dasheng.erp.enums.StockLogTypeEnum;
@@ -65,14 +66,12 @@ import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -98,6 +97,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private UserService userService;
     @Autowired
     private StorehouseService storehouseService;
+    @Autowired
+    private SupplyService supplyService;
     @Autowired
     private InstockListService instockListService;
     @Autowired
@@ -859,6 +860,47 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
         return null;
     }
+    @Override
+    public void instock(List<InventoryCorrectionParam> params){
+        List<Long> skuIds = params.stream().map(InventoryCorrectionParam::getSkuId).distinct().collect(Collectors.toList());
+        List<Sku> skuList = skuIds.size() == 0 ? new ArrayList<>() : skuService.listByIds(skuIds);
+
+        for (InventoryCorrectionParam param : params) {
+            Long skuId = 0L;
+            int bantch = 0;
+            for (Sku sku : skuList) {
+                if(param.getSkuId().equals(sku.getSkuId())){
+                    skuId = sku.getSkuId();
+                    bantch = sku.getBatch();
+                }
+            }
+            if (skuId.equals(0L)){
+                throw new ServiceException(500,"未找到物料信息 请验证物料id");
+            }
+            InstockListParam listParam = new InstockListParam();
+            listParam.setSkuId(skuId);
+            if (ToolUtil.isEmpty(param.getCustomerId())){
+                Long customerId = supplyService.getanyOneCustomerIdBySkuIdAndBrandId(param.getSkuId(), param.getBrandId());
+                listParam.setCustomerId( ToolUtil.isEmpty(customerId)?null:customerId);
+            }else {
+                listParam.setCustomerId( param.getCustomerId());
+            }
+            listParam.setBrandId(param.getBrandId());
+            listParam.setStorehousePositionsId(param.getPositionId());
+            listParam.setNumber(Long.valueOf(param.getNumber()));
+            if (bantch == 1) {   //批量
+                Long inKind = createInKind(listParam);
+                listParam.setInkind(inKind);
+                handle(listParam, inKind);  //入库处理
+                //添加物料的操作记录
+                skuHandleRecordService.addRecord(listParam.getSkuId(), listParam.getBrandId(), listParam.getStorehousePositionsId(), listParam.getCustomerId(), "InventoryCorrection", null, listParam.getNumber(), Long.valueOf(param.getNumber()), listParam.getNumber() + param.getNumber());
+            } else {
+                instockBatchSku(listParam);
+                //添加物料的操作记录
+                skuHandleRecordService.addRecord(listParam.getSkuId(), listParam.getBrandId(), listParam.getStorehousePositionsId(), listParam.getCustomerId(), "InventoryCorrection", null, listParam.getNumber(), Long.valueOf(param.getNumber()), listParam.getNumber() + param.getNumber());
+            }
+        }
+    }
 
 
     /**
@@ -869,11 +911,24 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
      * @param instockLogDetails
      */
     private void batchInStock(InstockOrderParam param, InstockListParam listParam, List<InstockLogDetail> instockLogDetails) {
-
-        Long number = listParam.getNumber();
         Integer numberByStock = stockDetailsService.getNumberByStock(listParam.getSkuId(), listParam.getBrandId(), null);  //入库之前库存数
 
+        this.instockBatchSku(listParam);
 
+
+
+
+
+
+
+        InstockLogDetail instockLogDetail = addLog(param, listParam, null, numberByStock);
+        instockLogDetails.add(instockLogDetail);
+    }
+
+    private void instockBatchSku(InstockListParam listParam){
+        Integer numberByStock = stockDetailsService.getNumberByStock(listParam.getSkuId(), listParam.getBrandId(), null);  //入库之前库存数
+
+        Long number = listParam.getNumber();
         StockLog stockLog = new StockLog();
         stockLog.setType(StockLogTypeEnum.increase.getValue());
         stockLog.setSkuId(listParam.getSkuId());
@@ -883,7 +938,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         stockLog.setStorehouseId(listParam.getStoreHouseId());
         stockLog.setStorehousePositionsId(listParam.getStorehousePositionsId());
         stockLogService.save(stockLog);
-
 
         List<OrCode> orCodes = new ArrayList<>();
         List<Inkind> inkinds = new ArrayList<>();   //先创建实物
@@ -921,11 +975,13 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             stockLogDetail.setStockLogId(stockLog.getStockLogId());
             stockLogDetails.add(stockLogDetail);
         }
-        stockLogDetailService.saveBatch(stockLogDetails);
-
-
-
         orCodeService.saveBatch(orCodes);
+
+
+
+
+
+
         StorehousePositions storehousePositions = positionsService.getById(listParam.getStorehousePositionsId());
 
         List<OrCodeBind> binds = new ArrayList<>();
@@ -952,8 +1008,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             stockDetailList.add(stockDetails);
 
         }
-        InstockLogDetail instockLogDetail = addLog(param, listParam, null, numberByStock);
-        instockLogDetails.add(instockLogDetail);
+        stockLogDetailService.saveBatch(stockLogDetails);
+
         stockDetailsService.saveBatch(stockDetailList);
         orCodeBindService.saveBatch(binds);
     }

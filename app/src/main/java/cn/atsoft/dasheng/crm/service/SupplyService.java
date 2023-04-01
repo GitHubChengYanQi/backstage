@@ -111,4 +111,6 @@ public interface SupplyService extends IService<Supply> {
     List<SupplyResult> listBySkuIds(SupplyParam param);
 
     List<BrandResult> getBrandBySkuIds(List<Long> skuIds);
+
+    Long getanyOneCustomerIdBySkuIdAndBrandId(Long skuId, Long brandId);
 }

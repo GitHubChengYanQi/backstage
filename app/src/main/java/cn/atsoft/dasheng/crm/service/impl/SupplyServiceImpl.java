@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -659,5 +660,19 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             brandIds.add(supply.getBrandId());
         }
         return brandService.getBrandResults(brandIds);
+    }
+    @Override
+    public Long getanyOneCustomerIdBySkuIdAndBrandId(Long skuId,Long brandId){
+        List<SkuBrandBind> skuBrandBindList = skuBrandBindService.lambdaQuery().eq(SkuBrandBind::getSkuId, skuId).eq(SkuBrandBind::getBrandId, brandId).list();
+        if (skuBrandBindList.size() == 0){
+            return null ;
+        }
+        List<Long> skuBrandBinds = skuBrandBindList.stream().map(SkuBrandBind::getSkuBrandBind).distinct().collect(Collectors.toList());
+
+        Supply supply = this.lambdaQuery().in(Supply::getSkuBrandBind, skuBrandBinds).orderByDesc(Supply::getCreateTime).last(" limit 0,1").one();
+        if (ToolUtil.isEmpty(supply)){
+            return null ;
+        }
+        return supply.getCustomerId();
     }
 }

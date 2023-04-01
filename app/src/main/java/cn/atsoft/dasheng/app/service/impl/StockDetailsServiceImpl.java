@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 import cn.atsoft.dasheng.Excel.pojo.StockDetailExcel;
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.InventoryCorrectionParam;
 import cn.atsoft.dasheng.app.model.request.StockDetailView;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.pojo.SpuClassDetail;
@@ -25,6 +26,7 @@ import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
+import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -54,6 +56,8 @@ import java.util.stream.Collectors;
 public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, StockDetails> implements StockDetailsService {
     @Autowired
     private StorehouseService storehouseService;
+    @Autowired
+    private InstockOrderService instockOrderService;
     @Autowired
     private BrandService brandService;
     @Autowired
@@ -86,7 +90,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private StatementAsync statementAsync;
     @Autowired
     private SpuClassificationService spuClassificationService;
-
+    @Autowired
+    private ProductionPickListsService productionPickListsService;
 
     @Override
     public Long add(StockDetailsParam param) {
@@ -869,9 +874,63 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     public Integer getAllStockNumber() {
         return this.baseMapper.getAllStockNumber();
     }
+
+    /**
+     * 库存修正
+     * @return
+     */
+    @Override
+    public void InventoryCorrection(List<InventoryCorrectionParam> params) {
+        List<StockDetails> stockNumber = this.getStockNumber(params);
+        List<InventoryCorrectionParam> instockList = new ArrayList<>();
+        List<InventoryCorrectionParam> outstockList = new ArrayList<>();
+        for (InventoryCorrectionParam param : params) {
+//            this.getStockNumberBySkuId();
+            if (stockNumber.stream().noneMatch(i->i.getSkuId().equals(param.getSkuId()) && i.getBrandId().equals(param.getBrandId()) && i.getStorehousePositionsId().equals(param.getPositionId()) &&  (ToolUtil.isEmpty(param.getCustomerId()) || param.getCustomerId().equals(i.getCustomerId())))) {
+                InventoryCorrectionParam instock = BeanUtil.copyProperties(param, InventoryCorrectionParam.class);
+                instockList.add(instock);
+            }
+            for (StockDetails stockDetails : stockNumber) {
+                if (param.getSkuId().equals(stockDetails.getSkuId()) && param.getBrandId().equals(stockDetails.getBrandId()) && (ToolUtil.isEmpty(param.getCustomerId()) || param.getCustomerId().equals(stockDetails.getCustomerId())) && param.getPositionId().equals(stockDetails.getStorehousePositionsId())){
+                    long kickNumber = param.getNumber() - stockDetails.getNumber();
+                    if (kickNumber>0){
+                        InventoryCorrectionParam instock = BeanUtil.copyProperties(param, InventoryCorrectionParam.class);
+                        instock.setNumber((int) kickNumber);
+                        instockList.add(instock);
+                    }else if (kickNumber<0){
+                        //出库
+                        InventoryCorrectionParam instock = BeanUtil.copyProperties(param, InventoryCorrectionParam.class);
+                        instock.setNumber((int) kickNumber*-1);
+                        outstockList.add(instock);
+                    }
+                }
+            }
+        }
+
+       if (instockList.size()>0){
+           //入库
+           instockOrderService.instock(instockList);
+       }
+
+       if (outstockList.size()>0){
+           //入库
+           productionPickListsService.outStock(outstockList);
+       }
+
+
+
+    }
     @Override
     public ViewCountResult getViewCount() {
         return this.baseMapper.getViewCount();
+    }
+    @Override
+    public List<StockDetails> getStockNumber(List<InventoryCorrectionParam> params) {
+        return this.baseMapper.getStockNumber(params);
+    }
+    @Override
+    public List<StockDetails> getStockNumberDetail(List<InventoryCorrectionParam> params) {
+        return this.baseMapper.getStockNumberDetail(params);
     }
 
 }

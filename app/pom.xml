@@ -57,34 +57,34 @@
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-miniapp</artifactId>
-            <version>4.1.7.B</version>
+            <version>4.4.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-open</artifactId>
-            <version>4.1.7.B</version>
+            <version>4.4.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-pay</artifactId>
-            <version>4.1.7.B</version>
+            <version>4.4.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>wx-java-miniapp-spring-boot-starter</artifactId>
-            <version>4.1.7.B</version>
+            <version>4.4.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.github.binarywang/wx-java-mp-spring-boot-starter -->
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>wx-java-mp-spring-boot-starter</artifactId>
-            <version>4.1.7.B</version>
+            <version>4.4.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.github.binarywang/weixin-java-cp -->
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-cp</artifactId>
-            <version>4.1.7.B</version>
+            <version>4.4.0</version>
         </dependency>
         <!--生成二维码 的  依赖包        -->
         <dependency>

@@ -51,6 +51,8 @@ public class InventoryParam implements Serializable, BaseValidatingParam {
 
     private List<InventoryDetailParam> detailParams;
 
+    private List<InventoryParam> params;
+
     private List<InventoryStockParam> stockParams;
 
     private InventoryDetailParam detailParam;

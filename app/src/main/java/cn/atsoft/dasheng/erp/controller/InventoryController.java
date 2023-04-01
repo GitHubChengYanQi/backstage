@@ -2,15 +2,15 @@ package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.erp.entity.InventoryDetail;
 import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
-import cn.atsoft.dasheng.erp.model.result.InkindResult;
-import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.entity.Inventory;
 import cn.atsoft.dasheng.erp.model.params.InventoryParam;
-import cn.atsoft.dasheng.erp.model.result.InventoryDetailResult;
-import cn.atsoft.dasheng.erp.model.result.InventoryResult;
 import cn.atsoft.dasheng.erp.pojo.InventoryRequest;
+import cn.atsoft.dasheng.erp.service.AnomalyOrderService;
+import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.InventoryService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -18,6 +18,7 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.hutool.core.bean.BeanUtil;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +44,12 @@ public class InventoryController extends BaseController {
 
     @Autowired
     private InventoryService inventoryService;
+
+    @Autowired
+    private InstockOrderService instockOrderService;
+
+    @Autowired
+    private AnomalyOrderService anomalyOrderService;
 
     /**
      * 新增接口
@@ -94,6 +101,17 @@ public class InventoryController extends BaseController {
     public ResponseData timely(@RequestBody InventoryParam inventoryParam) {
         Object timely = this.inventoryService.timely(inventoryParam.getPositionId());
         return ResponseData.success(timely);
+    }
+
+
+
+    @RequestMapping(value = "{version}/timely", method = RequestMethod.POST)
+    @ApiOperation("及时盘点")
+    @ApiVersion("1.1")
+    public ResponseData timelyV1(@RequestBody InventoryParam inventoryParam) {
+        List<AnomalyResult> anomalyOrders = BeanUtil.copyToList(inventoryParam.getParams(), AnomalyResult.class);
+        this.anomalyOrderService.inStock(anomalyOrders);
+        return ResponseData.success();
     }
 
 

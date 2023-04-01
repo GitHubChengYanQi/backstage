@@ -33,6 +33,10 @@ public class OrderParam implements Serializable, BaseValidatingParam {
 
     private String leadTime;
 
+
+
+    private String completeStatus;
+
     private String skuName;
     private String startTime;
 
@@ -42,6 +46,8 @@ public class OrderParam implements Serializable, BaseValidatingParam {
     private String customerName;
 
     private Long userId;
+    private Long mediaId;
+    private List<Long> mediaIds;
 
     private Long adressId;
 

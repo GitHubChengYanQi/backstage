@@ -133,4 +133,6 @@ public interface SkuService extends IService<Sku> {
     SkuResult getDetail(Long skuId);
 
     Long addSkuFromSpu(PartsParam partsParam);
+
+    Boolean checkSku(SkuParam param) throws IllegalAccessException;
 }

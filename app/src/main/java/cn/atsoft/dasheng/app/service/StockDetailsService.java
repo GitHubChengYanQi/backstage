@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.service;
 
 import cn.atsoft.dasheng.Excel.pojo.StockDetailExcel;
+import cn.atsoft.dasheng.app.model.params.InventoryCorrectionParam;
 import cn.atsoft.dasheng.app.model.request.StockDetailView;
 import cn.atsoft.dasheng.app.model.result.ViewCountResult;
 import cn.atsoft.dasheng.app.pojo.SpuClassDetail;
@@ -148,5 +149,10 @@ public interface StockDetailsService extends IService<StockDetails> {
 
     Integer getAllStockNumber();
 
+    void InventoryCorrection(List<InventoryCorrectionParam> params);
+
     ViewCountResult getViewCount();
+
+    List<StockDetails> getStockNumber(List<InventoryCorrectionParam> params);
+    List<StockDetails> getStockNumberDetail(List<InventoryCorrectionParam> params);
 }

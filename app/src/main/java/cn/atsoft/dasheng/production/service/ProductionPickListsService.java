@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.service;
 
+import cn.atsoft.dasheng.app.model.params.InventoryCorrectionParam;
 import cn.atsoft.dasheng.app.model.request.StockView;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
@@ -100,6 +101,8 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
 
     String outStock(ProductionPickListsParam param);
 
+
+    void outStock(List<InventoryCorrectionParam> params);
 
     String outStockV2(ProductionPickListsParam param);
 

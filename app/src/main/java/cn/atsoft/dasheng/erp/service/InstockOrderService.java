@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service;
 
 import cn.atsoft.dasheng.app.entity.Stock;
+import cn.atsoft.dasheng.app.model.params.InventoryCorrectionParam;
 import cn.atsoft.dasheng.app.model.request.InstockView;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Supply;
@@ -109,6 +110,8 @@ public interface InstockOrderService extends IService<InstockOrder> {
     void formatResult(InstockOrderResult result);
 
     List<Long> inStock(InstockOrderParam param);
+
+    void instock(List<InventoryCorrectionParam> params);
 
     List<InstockOrderResult> getDetails(List<Long> orderIds);
 

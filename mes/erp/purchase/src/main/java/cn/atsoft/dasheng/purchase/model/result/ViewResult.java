@@ -14,6 +14,7 @@ public class ViewResult {
     private String  month;
     private String  year;
     private Integer sellerCount;
+    private Integer invoiceBillRate;
     private Integer skuCount;
     private Long purchaseNumber;
     private Long totalPrice;
@@ -23,6 +24,7 @@ public class ViewResult {
     private Integer inStockRate;
     private Long deficientPrice;
     private Long paymentPrice;
+    private Long invoiceMoney;
 
 
     public Double getTotalPrice() {
@@ -50,6 +52,13 @@ public class ViewResult {
             return null;
         }
         return BigDecimal.valueOf(totalAmount).divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP).doubleValue();
+    }
+
+    public Double getInvoiceMoney() {
+        if (ToolUtil.isEmpty(invoiceMoney) || invoiceMoney.equals(0L)){
+            return null;
+        }
+        return BigDecimal.valueOf(invoiceMoney).divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP).doubleValue();
     }
 
 }

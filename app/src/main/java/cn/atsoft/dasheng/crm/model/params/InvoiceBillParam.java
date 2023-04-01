@@ -34,6 +34,12 @@ public class InvoiceBillParam implements Serializable, BaseValidatingParam {
     private Long invoiceBillId;
 
     /**
+     * 发票号
+     */
+    @ApiModelProperty("发票号")
+    private String invoiceBillNo;
+
+    /**
      * 金额
      */
     @ApiModelProperty("金额")

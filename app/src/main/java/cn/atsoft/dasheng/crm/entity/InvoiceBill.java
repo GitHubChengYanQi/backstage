@@ -29,6 +29,11 @@ public class InvoiceBill implements Serializable {
      */
     @TableId(value = "invoice_bill_id", type = IdType.ID_WORKER)
     private Long invoiceBillId;
+    /**
+     * 发票id
+     */
+    @TableField(value = "invoice_bill_no")
+    private String invoiceBillNo;
 
     /**
      * 金额
@@ -72,7 +77,7 @@ public class InvoiceBill implements Serializable {
     /**
      * 部门编号
      */
-    @TableField("deptId")
+    @TableField(value= "deptId" , fill = FieldFill.INSERT)
     private Long deptId;
 
     /**
@@ -177,13 +182,22 @@ public class InvoiceBill implements Serializable {
         this.deptId = deptId;
     }
 
+    public String getInvoiceBillNo() {
+        return invoiceBillNo;
+    }
+
+    public void setInvoiceBillNo(String invoiceBillNo) {
+        this.invoiceBillNo = invoiceBillNo;
+    }
+
     @Override
     public String toString() {
         return "InvoiceBill{" +
                 "invoiceBillId=" + invoiceBillId +
+                ", invoiceBillNo='" + invoiceBillNo + '\'' +
                 ", money=" + money +
-                ", enclosureId=" + enclosureId +
-                ", name=" + name +
+                ", enclosureId='" + enclosureId + '\'' +
+                ", name='" + name + '\'' +
                 ", invoiceDate=" + invoiceDate +
                 ", createTime=" + createTime +
                 ", createUser=" + createUser +
@@ -191,6 +205,7 @@ public class InvoiceBill implements Serializable {
                 ", updateUser=" + updateUser +
                 ", display=" + display +
                 ", deptId=" + deptId +
-                "}";
+                ", orderId=" + orderId +
+                '}';
     }
 }

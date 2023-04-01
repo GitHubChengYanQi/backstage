@@ -63,6 +63,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -2344,5 +2345,79 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         }
         return null;
+    }
+    @Override
+    public Boolean checkSku(SkuParam param) throws IllegalAccessException {
+        Long skuId = param.getSkuId();
+        SkuResult sku = this.getSku(skuId);
+        SkuCopyCheckParam entityCopy = BeanUtil.copyProperties(sku, SkuCopyCheckParam.class);
+        SkuCopyCheckParam paramCopy = BeanUtil.copyProperties(param, SkuCopyCheckParam.class);
+
+        Field[] entityFields =  entityCopy.getClass().getDeclaredFields();
+        Field[] paramFields = paramCopy.getClass().getDeclaredFields();
+        boolean flag = true;
+        Map<String,Object> result = new HashMap<>();
+        for (Field entityField : entityFields) {
+            entityField.setAccessible(true);
+            for (Field paramField : paramFields) {
+                paramField.setAccessible(true);
+                if (entityField.getName().equals(paramField.getName()) && checkField(entityField)){
+                    if ((ToolUtil.isNotEmpty(entityField.get(entityCopy)) && ToolUtil.isEmpty(paramField.get(paramCopy))) ||  (ToolUtil.isEmpty(entityField.get(entityCopy)) && ToolUtil.isNotEmpty(paramField.get(paramCopy))) || (ToolUtil.isNotEmpty(entityField.get(entityCopy)) && ToolUtil.isNotEmpty(paramField.get(paramCopy))&&!entityField.get(entityCopy).equals(paramField.get(paramCopy)))){
+                        flag = false;
+                        result.put(entityField.getName(),entityField.get(entityCopy));
+                    }
+                } else if (entityField.getName().equals(paramField.getName()) && entityField.getName().equals("sku")){
+                    if ((ToolUtil.isEmpty(entityField.get(entityCopy)) && ToolUtil.isNotEmpty(paramField.get(entityCopy)))||(ToolUtil.isNotEmpty(entityField.get(entityCopy)) && ToolUtil.isEmpty(paramField.get(entityCopy)))) {
+
+                    } else if (ToolUtil.isNotEmpty(entityField.get(entityCopy)) && ToolUtil.isNotEmpty(paramField.get(entityCopy))) {
+                        List<SkuAttributeAndValue> entitySku = JSON.parseArray(JSON.toJSONString(entityField.get(entityCopy)), SkuAttributeAndValue.class);
+                        List<SkuAttributeAndValue> paramSku = JSON.parseArray(JSON.toJSONString(paramField.get(entityCopy)), SkuAttributeAndValue.class);
+                        if(entitySku.size() == paramSku.size()){
+
+                            for (SkuAttributeAndValue skuAttributeAndValue : entitySku) {
+
+                            }
+                        }else {
+                            flag = false;
+                        }
+                    }
+
+
+
+                }
+
+
+            }
+        }
+        if(flag){
+            throw new ServiceException(500,"两个物料不可完全相同");
+        }
+        return true;
+    }
+    public Boolean checkField(Field field){
+        //需要验证的普通字段
+        List<String> keylist = new ArrayList<String>(){{
+            add("batch");
+            add("color");
+            add("heatTreatment");
+            add("level");
+            add("maintenancePeriod");
+            add("materialId");
+            add("packaging");
+            add("partNo");
+            add("skuName");
+            add("skuSize");
+            add("specifications");
+            add("spuClass");
+            add("spuCoding");
+            add("type");
+            add("unitId");
+            add("viewFrame");
+            add("weight");
+        }};
+        if (keylist.stream().anyMatch(i->i.equals(field.getName()))){
+            return true;
+        }
+        return false;
     }
 }

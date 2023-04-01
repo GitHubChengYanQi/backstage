@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.mapper;
 
 import cn.atsoft.dasheng.Excel.pojo.StockDetailExcel;
 import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.model.params.InventoryCorrectionParam;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.request.StockDetailView;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
@@ -81,5 +82,7 @@ public interface StockDetailsMapper extends BaseMapper<StockDetails> {
     Long getNumberCountBySkuId(@Param("skuId") Long skuId);
     Integer getAllStockNumber();
     ViewCountResult getViewCount();
+    List<StockDetails> getStockNumber(@Param("paramConditions")List<InventoryCorrectionParam> paramConditions);
+    List<StockDetails> getStockNumberDetail(@Param("paramConditions")List<InventoryCorrectionParam> paramConditions);
     List<StockDetails> getNumberCountEntityBySkuId(@Param("skuIds") List<Long> skuIds);
 }
