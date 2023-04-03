@@ -1297,7 +1297,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     stockBeforeNumber = Math.toIntExact(numberCountEntityBySkuId.getNumber());
                 }
             }
-            skuHandleRecordService.addRecord(listsCart.getSkuId(), listsCart.getBrandId(), listsCart.getCustomerId(), listsCart.getStorehousePositionsId(), "OUTSTOCK", activitiProcessTaskService.getByFormId(listsCart.getPickListsId()), Long.valueOf(listsCart.getNumber()), Long.valueOf(listsCart.getNumber()), Long.valueOf(stockBeforeNumber - listsCart.getNumber()));
+            skuHandleRecordService.addRecord(listsCart.getSkuId(), listsCart.getBrandId(), listsCart.getCustomerId(), listsCart.getStorehousePositionsId(), "OUTSTOCK", activitiProcessTaskService.getByFormId(listsCart.getPickListsId()), Long.valueOf(stockBeforeNumber), Long.valueOf(listsCart.getNumber()), Long.valueOf(stockBeforeNumber - listsCart.getNumber()));
             StockLog stockLog = new StockLog() {{
                 setSkuId(listsCart.getSkuId());
                 setNumber(listsCart.getNumber());
