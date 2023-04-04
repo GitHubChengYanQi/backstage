@@ -11,8 +11,13 @@ import cn.atsoft.dasheng.app.entity.Template;
 import cn.atsoft.dasheng.app.service.ContractService;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.TemplateService;
+import cn.atsoft.dasheng.appBase.config.AliConfiguration;
+import cn.atsoft.dasheng.appBase.config.AliyunService;
+import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.consts.ConstantsContext;
 import cn.atsoft.dasheng.base.oshi.model.SysFileInfo;
+import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
+import cn.atsoft.dasheng.core.util.FileUtil;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.ContractTemplete;
 import cn.atsoft.dasheng.crm.entity.ContractTempleteDetail;
@@ -28,16 +33,22 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
 import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
+import cn.atsoft.dasheng.wedrive.file.entity.WedriveFile;
+import cn.atsoft.dasheng.wedrive.file.model.params.WedriveFileParam;
+import cn.atsoft.dasheng.wedrive.file.service.WedriveFileService;
+import cn.atsoft.dasheng.wedrive.space.model.enums.TypeEnum;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.poi.word.DocUtil;
 import cn.hutool.poi.word.Word07Writer;
 import com.alibaba.fastjson.JSON;
+import com.aliyun.oss.model.*;
 import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import io.lettuce.core.dynamic.annotation.Param;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.apache.poi.hwpf.converter.WordToHtmlConverter;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
@@ -73,10 +84,7 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Controller
@@ -96,6 +104,12 @@ public class ContractExcel {
     private CustomerService customerService;
     @Autowired
     private OrderUpload orderUpload;
+    @Autowired
+    private AliyunService aliyunService;
+    @Autowired
+    private MediaService mediaService;
+    @Autowired
+    private WedriveFileService wedriveFileService;
 
 
     @RequestMapping(value = "/exportContract", method = RequestMethod.GET)
@@ -162,8 +176,7 @@ public class ContractExcel {
             String encode = URLEncoder.encode(fileName, "utf-8");
             response.setHeader("Content-Disposition", "attachment; filename=" + encode + ".docx");
             response.setContentType("application/vnd.ms-excel;charset=utf-8");
-            OutputStream os = response.getOutputStream();
-            document.write(os);
+
 
             String uploadPath = ConstantsContext.getFileUploadPath();  //读取系统文件路径位置
             uploadPath = uploadPath.replace("\\", "");
@@ -172,8 +185,29 @@ public class ContractExcel {
             document.write(bao);
             FileOutputStream fileOutputStream = new FileOutputStream(filePath);
             fileOutputStream.write(bao.toByteArray());
+
             File file = new File(filePath);
+
+
+            //上传到oss并回填到数据库mediaId
+            Long mediaId = mediaService.uploadPrivateFile(file);
+            if (ToolUtil.isEmpty(order.getFileId())) {
+                order.setFileId(mediaId.toString());
+            }else {
+                order.setFileId(order.getFileId()+","+mediaId);
+            }
+            orderService.updateById(order);
+
+
+            OutputStream os = response.getOutputStream();
+            document.write(os);
+
             orderUpload.upload(file);
+
+            /**
+             * 选择 判断是否上传微盘
+             */
+
 
 
 //            BufferedOutputStream outputStream = new BufferedOutputStream(response.getOutputStream());
@@ -187,9 +221,85 @@ public class ContractExcel {
         } catch (Exception e) {
             //异常处理
             e.printStackTrace();
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
 
     }
+
+    @RequestMapping(value = "/{version}/exportContractWord", method = RequestMethod.GET)
+    @ApiVersion("1.1")
+    public ResponseData exportContractV1(HttpServletResponse response, Long id) {
+
+        Contract contract = contractService.getById(id);
+        if (ToolUtil.isEmpty(contract)) {
+            throw new ServiceException(500, "请确定合同");
+        }
+        Template template = templateService.getById(contract.getTemplateId());
+        if (ToolUtil.isEmpty(template)) {
+            throw new ServiceException(500, "请确定合同模板");
+        }
+        FileInfo fileInfo = fileInfoService.getById(template.getFileId());
+        if (ToolUtil.isEmpty(fileInfo)) {
+            throw new ServiceException(500, "请确定合同模板");
+        }
+        try {
+            XWPFDocument document = formatDocument(contract, template, fileInfo.getFilePath());  //读取word
+
+            Order order = orderService.getById(contract.getSourceId());
+            Long customerId;
+            if (ToolUtil.isNotEmpty(order.getType()) && order.getType().equals(1)) {
+                customerId = order.getSellerId();
+            } else {
+                customerId = order.getBuyerId();
+            }
+            Customer customer = customerService.getById(customerId);
+
+            if (ToolUtil.isEmpty(contract.getCoding())) {
+                contract.setCoding("");
+            }
+
+            String fileName = contract.getCoding() + customer.getCustomerName();
+            String encode = URLEncoder.encode(fileName, "utf-8");
+            response.setHeader("Content-Disposition", "attachment; filename=" + encode + ".docx");
+            response.setContentType("application/vnd.ms-excel;charset=utf-8");
+
+
+            String uploadPath = ConstantsContext.getFileUploadPath();  //读取系统文件路径位置
+            uploadPath = uploadPath.replace("\\", "");
+            String filePath = uploadPath + fileName + ".docx";
+            ByteArrayOutputStream bao = new ByteArrayOutputStream();
+            document.write(bao);
+            FileOutputStream fileOutputStream = new FileOutputStream(filePath);
+            fileOutputStream.write(bao.toByteArray());
+
+            File file = new File(filePath);
+
+
+            //上传到oss并回填到数据库mediaId
+            Long mediaId = mediaService.uploadPrivateFile(file);
+            if (ToolUtil.isEmpty(order.getFileId())) {
+                order.setFileId(mediaId.toString());
+            }else {
+                order.setFileId(order.getFileId()+","+mediaId);
+            }
+            orderService.updateById(order);
+            wedriveFileService.add(new WedriveFileParam(){{
+                setSpaceType(TypeEnum.order);
+                setMediaIds(Collections.singletonList(mediaId));
+                setOrderId(order.getOrderId());
+            }});
+
+            orderUpload.upload(file);
+
+            return ResponseData.success(mediaId);
+        } catch (Exception e) {
+            //异常处理
+            e.printStackTrace();
+        }
+        return ResponseData.success();
+    }
+
 
     /**
      * 返回表格

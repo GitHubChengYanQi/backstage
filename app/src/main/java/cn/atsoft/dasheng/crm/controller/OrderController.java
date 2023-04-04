@@ -11,19 +11,20 @@ import cn.atsoft.dasheng.erp.entity.CodingRules;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
+import cn.atsoft.dasheng.wedrive.file.model.params.WedriveFileParam;
+import cn.atsoft.dasheng.wedrive.file.service.WedriveFileService;
+import cn.atsoft.dasheng.wedrive.space.model.enums.TypeEnum;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
 
 
 /**
@@ -41,6 +42,8 @@ public class OrderController extends BaseController {
     private OrderService orderService;
     @Autowired
     private CodingRulesService codingRulesService;
+    @Autowired
+    private WedriveFileService wedriveFileService;
 
 
     /**
@@ -211,7 +214,8 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/addFile", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public ResponseData addFile(@RequestBody(required = false) OrderParam orderParam){
+    @Transactional
+    public ResponseData addFile(@RequestBody(required = false) OrderParam orderParam) throws IOException, WxErrorException {
         if (ToolUtil.isEmpty(orderParam)) {
             orderParam = new OrderParam();
         }
@@ -220,6 +224,12 @@ public class OrderController extends BaseController {
         }
         orderParam.setFileId( StringUtils.join(orderParam.getMediaIds(),","));
         this.orderService.update(orderParam);
+        OrderParam finalOrderParam = orderParam;
+        wedriveFileService.add(new WedriveFileParam(){{
+            setSpaceType(TypeEnum.order);
+            setMediaIds(finalOrderParam.getMediaIds());
+            setOrderId(finalOrderParam.getOrderId());
+        }});
         return ResponseData.success();
     }
     /**

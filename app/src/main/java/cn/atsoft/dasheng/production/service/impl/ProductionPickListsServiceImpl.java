@@ -1140,9 +1140,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 if (ToolUtil.isNotEmpty(listings) || listings.size() > 0) {
                     instockLogDetailService.saveBatch(logDetails);
                     outstockOrder.setListingParams(listings);
-                    outstockOrderService.saveOutStockOrderByPickLists(outstockOrder);
                     outstockOrder.setSource("pickLists");
                     outstockOrder.setSourceId(pickList.getPickListsId());
+                    outstockOrderService.saveOutStockOrderByPickLists(outstockOrder);
                     Map<Long, Long> longLongMap = outstockOrderService.outBoundByLists(listings);
                     oldAndNewInkindIds.putAll(longLongMap);
                 }
@@ -1297,11 +1297,12 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     stockBeforeNumber = Math.toIntExact(numberCountEntityBySkuId.getNumber());
                 }
             }
-            skuHandleRecordService.addRecord(listsCart.getSkuId(), listsCart.getBrandId(), listsCart.getCustomerId(), listsCart.getStorehousePositionsId(), "OUTSTOCK", activitiProcessTaskService.getByFormId(listsCart.getPickListsId()), Long.valueOf(listsCart.getNumber()), Long.valueOf(listsCart.getNumber()), Long.valueOf(stockBeforeNumber - listsCart.getNumber()));
+            skuHandleRecordService.addRecord(listsCart.getSkuId(), listsCart.getBrandId(), listsCart.getCustomerId(), listsCart.getStorehousePositionsId(), "OUTSTOCK", activitiProcessTaskService.getByFormId(listsCart.getPickListsId()), Long.valueOf(stockBeforeNumber), Long.valueOf(listsCart.getNumber()), Long.valueOf(stockBeforeNumber - listsCart.getNumber()));
             StockLog stockLog = new StockLog() {{
                 setSkuId(listsCart.getSkuId());
                 setNumber(listsCart.getNumber());
                 setBeforeNumber(0);
+                setType("reduce");
                 for (StockDetails numberCountEntityBySkuId : numberCountEntityBySkuIds) {
                     if (numberCountEntityBySkuId.getSkuId().equals(listsCart.getSkuId())) {
                         setBeforeNumber(Math.toIntExact(numberCountEntityBySkuId.getNumber()));
@@ -1316,7 +1317,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             stockLogDetail.setSkuId(listsCart.getSkuId());
             stockLogDetail.setInkindId(listsCart.getInkindId());
             stockLogDetail.setNumber(Math.toIntExact(listsCart.getNumber()));
-
+            stockLogDetail.setType("reduce");
             stockLogDetail.setStorehouseId(listsCart.getStorehouseId());
             stockLogDetail.setStockLogId(stockLog.getStockLogId());
             stockLogService.save(stockLog);

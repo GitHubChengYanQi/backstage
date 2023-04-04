@@ -264,19 +264,30 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 //
 //            outstockListingService.saveBatch(outstockListings);
 //        }
-        List<StockDetailView> stockDetailViews = stockDetailsService.stockDetailViews();
+        List<Long> skuIds = param.getListingParams().stream().map(OutstockListingParam::getSkuId).distinct().collect(Collectors.toList());
+        List<StockDetails> numberCountEntityBySkuIds =skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.getNumberCountEntityBySkuIds(skuIds);
         List<OutstockListing> listings = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getListingParams())) {
             for (OutstockListingParam listingParam : param.getListingParams()) {
 
                 OutstockListing outstockListing = new OutstockListing();
-                for (StockDetailView stockDetailView : stockDetailViews) {
-                    if (listingParam.getSkuId().equals(stockDetailView.getSkuId()) && listingParam.getBrandId().equals(stockDetailView.getBrandId())) {
-                        outstockListing.setBeforeNumber(stockDetailView.getNumber());
-                        outstockListing.setAfterNumber(Math.toIntExact(stockDetailView.getNumber() - listingParam.getNumber()));
-                        stockDetailView.setNumber(Math.toIntExact(stockDetailView.getNumber() - listingParam.getNumber()));
+//                for (StockDetailView stockDetailView : stockDetailViews) {
+//                    if (listingParam.getSkuId().equals(stockDetailView.getSkuId()) && listingParam.getBrandId().equals(stockDetailView.getBrandId())) {
+//                        outstockListing.setBeforeNumber(stockDetailView.getNumber());
+//                        outstockListing.setAfterNumber(Math.toIntExact(stockDetailView.getNumber() - listingParam.getNumber()));
+//                        stockDetailView.setNumber(Math.toIntExact(stockDetailView.getNumber() - listingParam.getNumber()));
+//                        //添加 物料操作记录
+//                        skuHandleRecordService.addRecord(listingParam.getSkuId(), listingParam.getBrandId(), listingParam.getStorehousePositionsId(), listingParam.getCustomerId(), "OUTSTOCK", task, listingParam.getNumber(), Long.valueOf(stockDetailView.getNumber()), Long.valueOf(outstockListing.getAfterNumber()));
+//                        break;
+//                    }
+//                }
+                for (StockDetails numberCountEntityBySkuId : numberCountEntityBySkuIds) {
+                    if (listingParam.getSkuId().equals(numberCountEntityBySkuId.getSkuId())) {
+                        outstockListing.setBeforeNumber(Math.toIntExact(numberCountEntityBySkuId.getNumber()));
+                        outstockListing.setAfterNumber(Math.toIntExact(numberCountEntityBySkuId.getNumber() - listingParam.getNumber()));
+                        numberCountEntityBySkuId.setNumber(numberCountEntityBySkuId.getNumber() - listingParam.getNumber());
                         //添加 物料操作记录
-                        skuHandleRecordService.addRecord(listingParam.getSkuId(), listingParam.getBrandId(), listingParam.getStorehousePositionsId(), listingParam.getCustomerId(), "OUTSTOCK", task, listingParam.getNumber(), Long.valueOf(stockDetailView.getNumber()), Long.valueOf(outstockListing.getAfterNumber()));
+                        skuHandleRecordService.addRecord(listingParam.getSkuId(), listingParam.getBrandId(), listingParam.getStorehousePositionsId(), listingParam.getCustomerId(), "OUTSTOCK", task, listingParam.getNumber(),numberCountEntityBySkuId.getNumber(), Long.valueOf(outstockListing.getAfterNumber()));
                         break;
                     }
                 }

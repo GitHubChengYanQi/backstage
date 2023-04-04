@@ -357,7 +357,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 case ABankAccount:
                     if (ToolUtil.isNotEmpty(orderResult.getPartyABankAccount())) {
                         Invoice invoice = invoiceService.getById(orderResult.getPartyABankAccount());
-                        map.put(ContractEnum.ABankAccount.getDetail(), invoice.getBankAccount());
+                        if (ToolUtil.isNotEmpty(invoice)) {
+                            map.put(ContractEnum.ABankAccount.getDetail(), invoice.getBankAccount());
+                        }
                     } else {
                         map.put(ContractEnum.ABankAccount.getDetail(), "");
                     }
@@ -365,7 +367,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 case BBankAccount:
                     if (ToolUtil.isNotEmpty(orderResult.getPartyBBankAccount())) {
                         Invoice invoice = invoiceService.getById(orderResult.getPartyBBankAccount());
-                        map.put(ContractEnum.BBankAccount.getDetail(), invoice.getBankAccount());
+                        if (ToolUtil.isNotEmpty(invoice)){
+                            map.put(ContractEnum.BBankAccount.getDetail(), invoice.getBankAccount());
+                        }
                     } else {
                         map.put(ContractEnum.BBankAccount.getDetail(), "");
                     }

@@ -5,6 +5,8 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import me.chanjar.weixin.common.bean.result.WxMediaUploadResult;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 public class OrderUpload {
@@ -26,6 +30,8 @@ public class OrderUpload {
     private UcOpenUserInfoService openUserInfoService;
     @Autowired
     private WxuserInfoService wxuserInfoService;
+    @Autowired
+    private UserService userService;
 
 
     public void upload(File file) {
@@ -38,17 +44,15 @@ public class OrderUpload {
             Long userId = LoginContextHolder.getContext().getUserId();
 //            WxuserInfo wxuserInfo = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").orderByDesc("create_time").last("limit 1").one();
             WxuserInfo wxuserInfo = wxuserInfoService.query().eq("user_id", userId).orderByDesc("create_time").last("limit 1").one();
-
-            if (ToolUtil.isNotEmpty(wxuserInfo)) {
+            List<UserResult> userResultsByIds = userService.getUserResultsByIds(Collections.singletonList(userId));
+            if (ToolUtil.isNotEmpty(userResultsByIds.get(0).getOpenId())) {
 //                UcOpenUserInfo userInfo = openUserInfoService.query().eq("source", "wxCp").eq("member_id", wxuserInfo.getMemberId()).one();
-                UcOpenUserInfo userInfo = openUserInfoService.query().eq("member_id", wxuserInfo.getMemberId()).one();
-                if (ToolUtil.isNotEmpty(userInfo)) {
                     WxCpMessage wxCpMessage = new WxCpMessage();
-                    wxCpMessage.setToUser(userInfo.getUuid());
+                    wxCpMessage.setToUser(userResultsByIds.get(0).getOpenId());
                     wxCpMessage.setMsgType("file");
                     wxCpMessage.setMediaId(mediaId);
                     wxCpService.getWxCpClient().getMessageService().send(wxCpMessage);
-                }
+
             }
 
 

@@ -150,6 +150,7 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
         this.getBaseMapper().insert(media);
         return media;
     }
+
     @Override
     public Media getMediaId(String type, Long userId, OssEnums model) {
 
@@ -371,23 +372,9 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
         if (ToolUtil.isEmpty(result)) {
             throw new ServiceException(500, "媒体不存在");
         }
-//        if (ToolUtil.isNotEmpty(result.getUserId()) && !result.getUserId().equals(userId)) {
-//            throw new ServiceException(500, "媒体信息错误");
-//        }
         OSS ossClient = aliyunService.getOssClient();
         ossClient.setObjectAcl(result.getBucket(), result.getPath(), CannedAccessControlList.PublicRead);
 
-//        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(result.getBucket(), result.getPath(), HttpMethod.GET);
-//        long expireTime = 86400 * 15;
-//        long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
-//        Date expiration = new Date(expireEndTime);
-//        generatePresignedUrlRequest.setExpiration(expiration);
-//        if (ToolUtil.isNotEmpty(useData)){
-//            generatePresignedUrlRequest.setQueryParameter(new HashMap<String,String>(){{
-//                put("x-oss-process",useData);
-//            }});
-//        }
-//        URL url = ossClient.generatePresignedUrl(generatePresignedUrlRequest);
         ossClient.shutdown();
         return "https://" + result.getBucket() + "." + result.getEndpoint() + "/" + result.getPath();
     }
@@ -468,5 +455,18 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
         }
         return results;
     }
+    @Override
+    public Long uploadPrivateFile(File file){
+        if (ToolUtil.isEmpty(file)){
+            return null;
+        }
 
+        Media media = this.getMediaId(file.getName(),0L,PRI);
+        List<String> collect = Arrays.stream(media.getPath().split("/")).map(String::valueOf).collect(Collectors.toList());
+        String name = collect.get(collect.size() - 1);
+        PutObjectResult objectResult = aliyunService.getPrivateOssClient().putObject(media.getBucket(),media.getPath() , file);
+        objectResult.getETag();
+
+        return media.getMediaId();
+    }
 }
