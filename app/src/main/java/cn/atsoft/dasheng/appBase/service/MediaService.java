@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.appBase.model.result.MediaUrlResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ import java.util.Map;
  * @since 2021-04-21
  */
 public interface MediaService extends IService<Media> {
+
 
     Media getMediaId(String type, Long userId, OssEnums model);
 
@@ -98,4 +100,6 @@ public interface MediaService extends IService<Media> {
    Long getTemporaryFile(String mediaId);
 
     List<MediaResult> listByIds(List<Long> ids);
+
+    Long uploadPrivateFile(File file);
 }

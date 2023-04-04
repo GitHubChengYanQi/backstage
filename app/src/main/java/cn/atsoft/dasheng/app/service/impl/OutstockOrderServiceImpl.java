@@ -265,7 +265,6 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 //            outstockListingService.saveBatch(outstockListings);
 //        }
         List<Long> skuIds = param.getListingParams().stream().map(OutstockListingParam::getSkuId).distinct().collect(Collectors.toList());
-        List<StockDetailView> stockDetailViews = stockDetailsService.stockDetailViews();
         List<StockDetails> numberCountEntityBySkuIds =skuIds.size() == 0 ? new ArrayList<>() : stockDetailsService.getNumberCountEntityBySkuIds(skuIds);
         List<OutstockListing> listings = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getListingParams())) {

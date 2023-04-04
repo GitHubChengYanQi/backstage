@@ -100,10 +100,17 @@ public class InvoiceBillServiceImpl extends ServiceImpl<InvoiceBillMapper, Invoi
                 mediaIds.addAll(Arrays.stream(invoiceBillResult.getEnclosureId().split(",")).map(Long::parseLong).collect(Collectors.toList()));
                 orderIds.add(invoiceBillResult.getOrderId());
             }
+        }
+        List<Order> orderList = orderIds.size() == 0 ? new ArrayList<>() : orderService.listByIds(orderIds);
+        List<OrderResult> orderResults = BeanUtil.copyToList(orderList,OrderResult.class, new CopyOptions());
+        orderService.format(orderResults);
+        for (InvoiceBillResult invoiceBillResult : param) {
+            if (ToolUtil.isNotEmpty(invoiceBillResult.getEnclosureId())){
+                mediaIds.addAll(Arrays.stream(invoiceBillResult.getEnclosureId().split(",")).map(Long::parseLong).collect(Collectors.toList()));
+                orderIds.add(invoiceBillResult.getOrderId());
+            }
             List<MediaUrlResult> mediaList = mediaIds.size() == 0 ? new ArrayList<>() : mediaService.getMediaUrlResults(mediaIds);
-            List<Order> orderList = orderIds.size() == 0 ? new ArrayList<>() : orderService.listByIds(orderIds);
-            List<OrderResult> orderResults = BeanUtil.copyToList(orderList,OrderResult.class, new CopyOptions());
-            orderService.format(orderResults);
+
             for (InvoiceBillResult billResult : param) {
                 if (ToolUtil.isNotEmpty(billResult.getEnclosureId())) {
                     List<Long> mediaIdList = Arrays.stream(invoiceBillResult.getEnclosureId().split(",")).map(Long::parseLong).collect(Collectors.toList());

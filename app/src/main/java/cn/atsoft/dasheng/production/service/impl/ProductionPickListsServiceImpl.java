@@ -1140,9 +1140,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 if (ToolUtil.isNotEmpty(listings) || listings.size() > 0) {
                     instockLogDetailService.saveBatch(logDetails);
                     outstockOrder.setListingParams(listings);
-                    outstockOrderService.saveOutStockOrderByPickLists(outstockOrder);
                     outstockOrder.setSource("pickLists");
                     outstockOrder.setSourceId(pickList.getPickListsId());
+                    outstockOrderService.saveOutStockOrderByPickLists(outstockOrder);
                     Map<Long, Long> longLongMap = outstockOrderService.outBoundByLists(listings);
                     oldAndNewInkindIds.putAll(longLongMap);
                 }
@@ -1302,6 +1302,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 setSkuId(listsCart.getSkuId());
                 setNumber(listsCart.getNumber());
                 setBeforeNumber(0);
+                setType("reduce");
                 for (StockDetails numberCountEntityBySkuId : numberCountEntityBySkuIds) {
                     if (numberCountEntityBySkuId.getSkuId().equals(listsCart.getSkuId())) {
                         setBeforeNumber(Math.toIntExact(numberCountEntityBySkuId.getNumber()));
@@ -1316,7 +1317,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             stockLogDetail.setSkuId(listsCart.getSkuId());
             stockLogDetail.setInkindId(listsCart.getInkindId());
             stockLogDetail.setNumber(Math.toIntExact(listsCart.getNumber()));
-
+            stockLogDetail.setType("reduce");
             stockLogDetail.setStorehouseId(listsCart.getStorehouseId());
             stockLogDetail.setStockLogId(stockLog.getStockLogId());
             stockLogService.save(stockLog);
