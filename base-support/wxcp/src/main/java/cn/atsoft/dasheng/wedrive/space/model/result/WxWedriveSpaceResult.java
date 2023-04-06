@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.wedrive.space.model.result;
 
+import cn.atsoft.dasheng.wedrive.space.model.enums.TypeEnum;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -47,6 +48,12 @@ public class WxWedriveSpaceResult implements Serializable {
      */
     @ApiModelProperty(hidden = true)
     private Long createUser;
+
+    /**
+     * 空间id
+     */
+    @ApiModelProperty("类型")
+    private TypeEnum type;
 
     /**
      * 部门编号
