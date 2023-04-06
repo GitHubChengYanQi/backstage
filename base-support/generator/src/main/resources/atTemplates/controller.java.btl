@@ -1,5 +1,7 @@
 package ${controllerPackage};
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import ${package.Entity}.${entity};
 import ${package.EntitySpecParams}.${entity}Param;
@@ -146,7 +148,7 @@ public class ${entity}Controller extends BaseController {
             <%
             }
         }%>
-        result.set${bigParentField}Value(parentValue);
+//        result.set${bigParentField}Value(parentValue);
         return ResponseData.success(result);
     }
 
@@ -184,7 +186,13 @@ public class ${entity}Controller extends BaseController {
         }
         }
         %>
-        return this.${lowerEntity}Service.findPageBySpec(${lowerEntity}Param);
+        if (LoginContextHolder.getContext().isAdmin()) {
+             return this.${lowerEntity}Service.findPageBySpec(${lowerEntity}Param,null);
+        } else {
+             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+             return  this.${lowerEntity}Service.findPageBySpec(${lowerEntity}Param,dataScope);
+        }
+//        return this.${lowerEntity}Service.findPageBySpec(${lowerEntity}Param);
     }
 
     <%

@@ -102,6 +102,7 @@ public class AtMpGenerator extends AbstractMpGenerator {
         tableFills.add(new TableFill("CREATE_TIME", FieldFill.INSERT));
         tableFills.add(new TableFill("UPDATE_TIME", FieldFill.UPDATE));
         tableFills.add(new TableFill("CREATE_USER", FieldFill.INSERT));
+        tableFills.add(new TableFill("deptId", FieldFill.INSERT));
         tableFills.add(new TableFill("UPDATE_USER", FieldFill.UPDATE));
         strategyConfig.setTableFillList(tableFills);
 

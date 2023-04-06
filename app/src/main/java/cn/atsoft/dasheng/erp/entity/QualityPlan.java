@@ -102,7 +102,7 @@ public class QualityPlan implements Serializable {
     /**
      * 部门编号
      */
-    @TableField("deptId")
+    @TableField(value = "deptId" , fill = FieldFill.INSERT)
     private Long deptId;
 
 

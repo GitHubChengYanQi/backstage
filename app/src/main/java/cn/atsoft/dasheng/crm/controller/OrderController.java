@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.crm.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.OrderResult;
@@ -104,11 +106,17 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+    //TODO @Permission
     public PageInfo<OrderResult> list(@RequestBody(required = false) OrderParam orderParam) {
         if (ToolUtil.isEmpty(orderParam)) {
             orderParam = new OrderParam();
         }
-        return this.orderService.findPageBySpec(orderParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.orderService.findPageBySpec(orderParam,null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return  this.orderService.findPageBySpec(orderParam,dataScope);
+        }
     }
 
     /**
@@ -123,7 +131,12 @@ public class OrderController extends BaseController {
         if (ToolUtil.isEmpty(orderParam)) {
             orderParam = new OrderParam();
         }
-        return ResponseData.success(this.orderService.findListBySpec(orderParam));
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return ResponseData.success(this.orderService.findListBySpec(orderParam,null));
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return  ResponseData.success(this.orderService.findListBySpec(orderParam,dataScope));
+        }
     }
 
     /**

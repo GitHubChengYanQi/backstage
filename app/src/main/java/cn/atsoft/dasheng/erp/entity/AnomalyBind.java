@@ -54,7 +54,7 @@ public class AnomalyBind implements Serializable {
     @TableField("display")
     private Integer display;
 
-    @TableField("deptId")
+    @TableField(value = "deptId" , fill = FieldFill.INSERT)
     private Long deptId;
 
 

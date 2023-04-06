@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
@@ -127,6 +128,7 @@ public class ProductionPickListsController extends BaseController {
     @RequestMapping(value = "/{version}/createCode", method = RequestMethod.POST)
     @ApiOperation("新增")
     @ApiVersion("2.0")
+    @Permission
     public ResponseData createCodeV2(@RequestBody ProductionPickListsParam productionPickListsParam) {
         String code = this.productionPickListsService.createCodeV2(productionPickListsParam);
         return ResponseData.success(code);
@@ -277,11 +279,19 @@ public class ProductionPickListsController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public PageInfo list(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
         if (ToolUtil.isEmpty(productionPickListsParam)) {
             productionPickListsParam = new ProductionPickListsParam();
         }
-        return this.productionPickListsService.findPageBySpec(productionPickListsParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.productionPickListsService.findPageBySpec(productionPickListsParam,null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return  this.productionPickListsService.findPageBySpec(productionPickListsParam,dataScope);
+        }
+
+
     }
 
     /**
@@ -339,6 +349,7 @@ public class ProductionPickListsController extends BaseController {
     @RequestMapping(value = "/{version}/createOutStockOrder", method = RequestMethod.POST)
     @ApiOperation("列表")
     @ApiVersion("v1.2")
+    @Permission
     public ResponseData createOutStockOrderV2(@RequestBody(required = false) ProductionPickListsParam productionPickListsParam) {
         inventoryService.staticState();
         if (ToolUtil.isEmpty(productionPickListsParam)) {

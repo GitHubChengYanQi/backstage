@@ -19,6 +19,7 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
@@ -368,9 +369,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     }
 
     @Override
-    public PageInfo findPageBySpec(ProductionPickListsParam param) {
+    public PageInfo findPageBySpec(ProductionPickListsParam param, DataScope dataScope) {
         Page<ProductionPickListsResult> pageContext = getPageContext();
-        IPage<ProductionPickListsResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<ProductionPickListsResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         if (ToolUtil.isNotEmpty(page.getRecords())) {
             this.format(page.getRecords());
         }

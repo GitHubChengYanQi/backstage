@@ -78,7 +78,7 @@ public class MaintenanceLogDetail implements Serializable {
     /**
      * 部门id
      */
-    @TableField("deptId")
+    @TableField(value = "deptId" , fill = FieldFill.INSERT)
     private Long deptId;
 
     @TableField("maintenance_detail_id")

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.mapper;
 
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.crm.model.params.SupplyParam;
 import cn.atsoft.dasheng.crm.model.result.SupplyResult;
@@ -42,7 +43,7 @@ public interface SupplyMapper extends BaseMapper<Supply> {
      * @author song
      * @Date 2021-12-20
      */
-    Page<SupplyResult> customPageList(@Param("page") Page page, @Param("paramCondition") SupplyParam paramCondition);
+    Page<SupplyResult> customPageList(@Param("page") Page page, @Param("paramCondition") SupplyParam paramCondition, @Param("dataScope")DataScope dataScope);
     List<SupplyResult> listBySkuIds(@Param("paramCondition") SupplyParam param);
     List<SupplyResult> listByPurchase(@Param("paramCondition") SupplyParam param);
 

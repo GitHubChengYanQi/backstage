@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.model.request.StockView;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.pojo.StockSkuBrand;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
@@ -78,7 +79,7 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
      * @author Captain_Jazz
      * @Date 2022-03-25
      */
-    PageInfo findPageBySpec(ProductionPickListsParam param);
+    PageInfo findPageBySpec(ProductionPickListsParam param, DataScope dataScope);
 
     void taskFormat(List<ProductionPickListsResult> results);
 

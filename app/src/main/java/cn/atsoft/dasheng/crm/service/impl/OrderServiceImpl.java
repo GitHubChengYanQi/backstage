@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.SpringContextHolder;
 import cn.atsoft.dasheng.crm.entity.*;
 import cn.atsoft.dasheng.crm.mapper.OrderMapper;
@@ -221,16 +222,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
     @Override
-    public List<OrderResult> findListBySpec(OrderParam param) {
-        List<OrderResult> orderResults = this.baseMapper.customList(param);
+    public List<OrderResult> findListBySpec(OrderParam param, DataScope dataScope) {
+        List<OrderResult> orderResults = this.baseMapper.customList(param,dataScope);
         format(orderResults);
         return orderResults;
     }
 
     @Override
-    public PageInfo<OrderResult> findPageBySpec(OrderParam param) {
+    public PageInfo<OrderResult> findPageBySpec(OrderParam param, DataScope dataScope) {
         Page<OrderResult> pageContext = getPageContext();
-        IPage<OrderResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<OrderResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

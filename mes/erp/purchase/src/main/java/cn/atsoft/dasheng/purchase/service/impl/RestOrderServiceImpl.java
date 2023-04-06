@@ -1,8 +1,10 @@
 package cn.atsoft.dasheng.purchase.service.impl;
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.customer.entity.Customer;
 import cn.atsoft.dasheng.customer.model.result.CustomerResult;
@@ -120,7 +122,14 @@ public class RestOrderServiceImpl extends ServiceImpl<RestOrderMapper, RestOrder
     public PageInfo getOrderList(Map<String, Object> param) {
         RestOrderParam restOrderParam = BeanUtil.mapToBean(param, RestOrderParam.class, true);
         Page<RestOrderResult> pageContext = getPageContext();
-        IPage<RestOrderSimpleResult> page = this.baseMapper.orderList(pageContext, restOrderParam);
+        IPage<RestOrderSimpleResult> page = new Page<>();
+
+        if (LoginContextHolder.getContext().isAdmin()) {
+            page = this.baseMapper.orderList(pageContext, restOrderParam,null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            page = this.baseMapper.orderList(pageContext, restOrderParam,null);
+        }
         List<Long> userIds = page.getRecords().stream().map(RestOrderSimpleResult::getCreateUser).collect(Collectors.toList());
         List<Long> customerIds = page.getRecords().stream().map(RestOrderSimpleResult::getSellerId).collect(Collectors.toList());
         List<UserResult> userResultsByIds = userIds.size() == 0 ? new ArrayList<>() : userService.getUserResultsByIds(userIds);

@@ -66,7 +66,7 @@ public class ShipSetpClass implements Serializable {
     /**
      * 部门id
      */
-    @TableField("deptId")
+    @TableField(value = "deptId" , fill = FieldFill.INSERT)
     private Long deptId;
 
 

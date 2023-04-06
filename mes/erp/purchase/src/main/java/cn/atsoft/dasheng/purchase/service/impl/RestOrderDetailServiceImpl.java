@@ -2,8 +2,10 @@ package cn.atsoft.dasheng.purchase.service.impl;
 
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 
 import cn.atsoft.dasheng.entity.RestOrder;
@@ -79,7 +81,16 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
 
     @Override
     public List<RestOrderDetailResult> findListBySpec(RestOrderDetailParam param) {
-        List<RestOrderDetailResult> page = this.baseMapper.customList( param);
+        List<RestOrderDetailResult> page = new ArrayList<>();
+//        List<RestOrderDetailResult> page = this.baseMapper.customList( param);
+
+        if (LoginContextHolder.getContext().isAdmin()) {
+            page = this.baseMapper.customList(param,null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            page =  this.baseMapper.customList(param,dataScope);
+        }
+
         format(page);
         return page;
     }

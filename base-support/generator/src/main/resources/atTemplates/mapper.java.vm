@@ -1,5 +1,6 @@
 package ${package.Mapper};
 
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import ${package.Entity}.${entity};
 import ${package.EntitySpecParams}.${entity}Param;
 import ${package.EntitySpecResult}.${entity}Result;
@@ -47,6 +48,14 @@ public interface ${table.mapperName} extends ${superMapperClass}<${entity}> {
      * @Date ${date}
      */
     Page<${entity}Result> customPageList(@Param("page") Page page, @Param("paramCondition") ${entity}Param paramCondition);
+
+    /**
+     * 获取分页实体列表
+     *
+     * @author ${author}
+     * @Date ${date}
+     */
+    Page<${entity}Result> customPageList(@Param("page") Page page, @Param("paramCondition") ${entity}Param paramCondition,@Param("dataScope")DataScope dataScope);
 
     /**
      * 获取分页map列表

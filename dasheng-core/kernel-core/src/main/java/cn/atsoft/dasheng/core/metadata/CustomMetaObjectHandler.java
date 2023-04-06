@@ -68,6 +68,19 @@ public class CustomMetaObjectHandler implements MetaObjectHandler {
         } catch (ReflectionException e) {
             //没有此字段，则不处理
         }
+        Object deptId = null;
+        try {
+            deptId = getFieldValByName(getDeptFieldName(), metaObject);
+            if (deptId == null) {
+
+                //部门
+                Object userDeptId = getUserDeptId();
+
+                setFieldValByName(getDeptFieldName(), userDeptId, metaObject);
+            }
+        } catch (ReflectionException e) {
+            //没有此字段，则不处理
+        }
     }
 
     @Override
@@ -134,6 +147,9 @@ public class CustomMetaObjectHandler implements MetaObjectHandler {
      */
     protected String getCreateUserFieldName() {
         return "createUser";
+    }
+    protected String getDeptFieldName() {
+        return "deptId";
     }
 
     /**

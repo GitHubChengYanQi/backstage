@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.mapper;
 
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.purchase.entity.RestOrderDetail;
 import cn.atsoft.dasheng.purchase.model.params.RestOrderDetailParam;
 import cn.atsoft.dasheng.purchase.model.params.ViewParam;
@@ -28,7 +29,7 @@ public interface RestOrderDetailMapper extends BaseMapper<RestOrderDetail> {
      * @author song
      * @Date 2022-02-23
      */
-    List<RestOrderDetailResult> customList(@Param("paramCondition") RestOrderDetailParam paramCondition);
+    List<RestOrderDetailResult> customList(@Param("paramCondition") RestOrderDetailParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 查询未加入生产计划的待生产任务

@@ -119,7 +119,7 @@ public class Contract implements Serializable {
     private String content;
 
 
-    @TableField("deptId")
+    @TableField(value = "deptId" , fill = FieldFill.INSERT)
     private Long deptId;
 
 

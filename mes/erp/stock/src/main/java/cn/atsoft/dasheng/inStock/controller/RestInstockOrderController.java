@@ -53,6 +53,7 @@ public class RestInstockOrderController extends BaseController {
      */
     @RequestMapping(value = "/showOrderList", method = RequestMethod.POST)
     @ApiOperation("订单查询接口")
+    @Permission
     public PageInfo showOrderList(@RequestBody  RestOrderParam param){
          if (ToolUtil.isEmpty(param.getKeywords())){
             return new PageInfo();
@@ -73,6 +74,7 @@ public class RestInstockOrderController extends BaseController {
      */
     @RequestMapping(value = "/autoInStock", method = RequestMethod.POST)
     @ApiOperation("根据订单入库")
+    @Permission
     public ResponseData showOrderList(@RequestBody RestInstockOrderParam param){
 
         return  ResponseData.success(instockOrderService.autoInStock(param));
@@ -86,6 +88,7 @@ public class RestInstockOrderController extends BaseController {
      */
     @RequestMapping(value = "/showOrderDetailList", method = RequestMethod.POST)
     @ApiOperation("订单详情查询接口")
+    @Permission
     public ResponseData showOrderDetailList(@RequestBody  RestOrderDetailParam param){
         IErpBase restOrderService = SpringContextHolder.getBean("RestOrderDetailService");
         Map<String, Object> stringObjectMap = BeanUtil.beanToMap(param);

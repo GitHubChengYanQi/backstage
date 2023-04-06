@@ -6,8 +6,10 @@ import cn.atsoft.dasheng.app.model.params.BrandParam;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.crm.mapper.SupplyMapper;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
@@ -161,7 +163,13 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     @Override
     public PageInfo<SupplyResult> findPageBySpec(SupplyParam param) {
         Page<SupplyResult> pageContext = getPageContext();
-        IPage<SupplyResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<SupplyResult> page = new Page<>();
+        if (LoginContextHolder.getContext().isAdmin()) {
+            page = this.baseMapper.customPageList(pageContext,param,null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        }
         format(page.getRecords());
         page.getRecords().removeIf(i -> ToolUtil.isEmpty(i.getSkuResult()));
         return PageFactory.createPageInfo(page);

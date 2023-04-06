@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.mapper;
 
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.OrderResult;
@@ -27,7 +28,7 @@ public interface OrderMapper extends BaseMapper<Order> {
      * @author song
      * @Date 2022-02-23
      */
-    List<OrderResult> customList(@Param("paramCondition") OrderParam paramCondition);
+    List<OrderResult> customList(@Param("paramCondition") OrderParam paramCondition,@Param("dataScope")DataScope dataScope);
 
     /**
      * 获取map列表
@@ -43,7 +44,7 @@ public interface OrderMapper extends BaseMapper<Order> {
      * @author song
      * @Date 2022-02-23
      */
-    Page<OrderResult> customPageList(@Param("page") Page page, @Param("paramCondition") OrderParam paramCondition);
+    Page<OrderResult> customPageList(@Param("page") Page page, @Param("paramCondition") OrderParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表
