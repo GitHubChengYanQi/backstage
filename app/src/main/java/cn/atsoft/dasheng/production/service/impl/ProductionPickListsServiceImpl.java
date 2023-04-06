@@ -1297,7 +1297,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                     stockBeforeNumber = Math.toIntExact(numberCountEntityBySkuId.getNumber());
                 }
             }
-            skuHandleRecordService.addRecord(listsCart.getSkuId(), listsCart.getBrandId(), listsCart.getCustomerId(), listsCart.getStorehousePositionsId(), "OUTSTOCK", activitiProcessTaskService.getByFormId(listsCart.getPickListsId()), Long.valueOf(stockBeforeNumber), Long.valueOf(listsCart.getNumber()), Long.valueOf(stockBeforeNumber - listsCart.getNumber()));
+            skuHandleRecordService.addRecord(listsCart.getSkuId(), listsCart.getBrandId(),listsCart.getStorehousePositionsId(), listsCart.getCustomerId(), "OUTSTOCK", activitiProcessTaskService.getByFormId(listsCart.getPickListsId()),  Long.valueOf(listsCart.getNumber()), Long.valueOf(stockBeforeNumber),Long.valueOf(stockBeforeNumber - listsCart.getNumber()));
             StockLog stockLog = new StockLog() {{
                 setSkuId(listsCart.getSkuId());
                 setNumber(listsCart.getNumber());
@@ -1313,14 +1313,15 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
                 setStorehouseId(listsCart.getStorehouseId());
 
             }};
+            stockLogService.save(stockLog);
+
             StockLogDetail stockLogDetail = new StockLogDetail();
             stockLogDetail.setSkuId(listsCart.getSkuId());
             stockLogDetail.setInkindId(listsCart.getInkindId());
             stockLogDetail.setNumber(Math.toIntExact(listsCart.getNumber()));
-            stockLogDetail.setType("reduce");
             stockLogDetail.setStorehouseId(listsCart.getStorehouseId());
+            stockLogDetail.setStorehousePositionsId(listsCart.getStorehousePositionsId());
             stockLogDetail.setStockLogId(stockLog.getStockLogId());
-            stockLogService.save(stockLog);
             stockLogDetail.setBeforeNumber(stockBeforeNumber);
             stockLogDetail.setAfterNumber((int) (stockBeforeNumber - listsCart.getNumber()));
             stockLogDetail.setStorehousePositionsId(listsCart.getStorehousePositionsId());
@@ -1392,7 +1393,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
         List<StockDetails> restStockDetails = inkinds.size() == 0 ? new ArrayList<>() : stockDetailsService.lambdaQuery().in(StockDetails::getInkindId, inkinds).list();
         stockLogService.addBatch(restStockDetails, "processTask", "reduce", ProcessType.OUTSTOCK);
         for (StockDetails restStockDetail : restStockDetails) {
-            skuHandleRecordService.addRecord(restStockDetail.getSkuId(), restStockDetail.getBrandId(), restStockDetail.getStorehousePositionsId(), restStockDetail.getCustomerId(), taskId, restStockDetail.getNumber(), "OUTSTOCK");
+//            skuHandleRecordService.addRecord(restStockDetail.getSkuId(), restStockDetail.getBrandId(), restStockDetail.getStorehousePositionsId(), restStockDetail.getCustomerId(), taskId, restStockDetail.getNumber(), "OUTSTOCK");
             restStockDetail.setDisplay(0);
             restStockDetail.setNumber(0L);
             restStockDetail.setStage(0);
