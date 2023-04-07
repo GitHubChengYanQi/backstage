@@ -34,7 +34,7 @@
         notice
         AS "notice",end_time AS "endTime", begin_time AS "beginTime",mode AS "mode",method as "method",handle_user AS "handleUser",
         inventory_task_id
-        AS "inventoryTaskId", inventory_task_name AS "inventoryTaskName", remark AS "remark", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", deptId AS "deptId"
+        AS "inventoryTaskId", inventory_task_name AS "inventoryTaskName", remark AS "remark", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

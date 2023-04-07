@@ -25,7 +25,7 @@
     <sql id="Base_Column_List">pid
     AS "pid",sort AS "sort",coding_class AS "codingClass", children AS "children",childrens AS "childrens",type AS "type",
         spu_classification_id
-        AS "spuClassificationId", type AS "type",name AS "name", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        AS "spuClassificationId", type AS "type",name AS "name", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

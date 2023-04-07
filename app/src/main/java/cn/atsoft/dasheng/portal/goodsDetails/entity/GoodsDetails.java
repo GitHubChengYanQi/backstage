@@ -130,7 +130,16 @@ public class GoodsDetails implements Serializable {
     public Long getGoodDetailsId() {
         return goodDetailsId;
     }
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
 
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
     public void setGoodDetailsId(Long goodDetailsId) {
         this.goodDetailsId = goodDetailsId;
     }

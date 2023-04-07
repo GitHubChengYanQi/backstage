@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.purchase.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseAskParam;
@@ -65,7 +66,7 @@ public interface PurchaseAskService extends IService<PurchaseAsk> {
      * @author song
      * @Date 2021-12-15
      */
-    PageInfo<PurchaseAskResult> findPageBySpec(PurchaseAskParam param);
+    PageInfo<PurchaseAskResult> findPageBySpec(PurchaseAskParam param, DataScope dataScope);
 
     PurchaseAskResult detail(PurchaseAskParam param);
 

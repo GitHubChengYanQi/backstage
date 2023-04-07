@@ -18,12 +18,13 @@
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
         <result column="status" property="status" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        maintenance_detail_id AS "maintenanceDetailId",storehouse_positions_id AS "storehousePositionsId", done_number AS "doneNumber",maintenance_id AS "maintenanceId", inkind_id AS "inkindId", sku_id AS "skuId", number AS "number", brand_id AS "brandId", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status"
+        maintenance_detail_id AS "maintenanceDetailId",storehouse_positions_id AS "storehousePositionsId", done_number AS "doneNumber",maintenance_id AS "maintenanceId", inkind_id AS "inkindId", sku_id AS "skuId", number AS "number", brand_id AS "brandId", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId", status AS "status"
     </sql>
     <sql id="Base_LeftJoin_List">
         md.maintenance_detail_id AS "maintenanceDetailId",
@@ -39,7 +40,7 @@
         md.update_user AS "updateUser",
         md.update_time AS "updateTime",
         md.display AS "display",
-        md.deptId AS "deptId",
+        md. deptId AS "deptId",tenant_id AS "tenantId",
         STATUS AS "status"
     </sql>
 

@@ -29,7 +29,7 @@
         customer_id
         AS "customerId",user_id
     AS "userId",type AS "type",business_id
-    AS "businessId",  note AS "note",  time AS "time", latitude AS "latitude", longitude AS "longitude", image AS "image",deptId AS "deptId", state AS "state",
+    AS "businessId",  note AS "note",  time AS "time", latitude AS "latitude", longitude AS "longitude", image AS "image", deptId AS "deptId",tenant_id AS "tenantId", state AS "state",
         track_message_id AS "trackMessageId", message AS "message", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 

@@ -93,7 +93,17 @@ public class Media implements Serializable {
 
       @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
+      
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
 
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
 
     public Long getMediaId() {
         return mediaId;

@@ -31,7 +31,7 @@
     <sql id="Base_Column_List">remark
     AS "remark",
         detail_id
-        AS "detailId", order_id AS "orderId", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", preorde_number AS "preordeNumber", purchase_number AS "purchaseNumber", unit_id AS "unitId", one_price AS "onePrice", total_price AS "totalPrice", paper_type AS "paperType", rate AS "rate", delivery_date AS "deliveryDate", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId",arrival_number AS "arrivalNumber",inStock_Number AS "inStockNumber"
+        AS "detailId", order_id AS "orderId", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", preorde_number AS "preordeNumber", purchase_number AS "purchaseNumber", unit_id AS "unitId", one_price AS "onePrice", total_price AS "totalPrice", paper_type AS "paperType", rate AS "rate", delivery_date AS "deliveryDate", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId",arrival_number AS "arrivalNumber",inStock_Number AS "inStockNumber"
     </sql>
     <!-- 汇总统计查询结果列 -->
     <sql id="View_Column_List">
@@ -80,7 +80,7 @@
         orderDetail.create_time AS "createTime",
         orderDetail.update_time AS "updateTime",
         orderDetail.display AS "display",
-        orderDetail.deptId AS "deptId" ,
+        orderDetail. deptId AS "deptId",tenant_id AS "tenantId" ,
         planDetail.production_plan_detail_id AS "planDetailId"
     </sql>
 
@@ -756,7 +756,7 @@
         create_time AS "createTime",
         update_time AS "updateTime",
         display AS "display",
-        deptId AS "deptId",
+         deptId AS "deptId",tenant_id AS "tenantId",
         arrival_number AS "arrivalNumber"
         FROM
         daoxin_crm_order_detail

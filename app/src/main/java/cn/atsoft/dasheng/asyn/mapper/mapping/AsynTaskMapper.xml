@@ -25,7 +25,7 @@
     AS "successNum" , error_num AS "errorNum"
     ,
         task_id
-        AS "taskId", all_count AS "allCount", count AS "count", type AS "type",  status AS "status", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        AS "taskId", all_count AS "allCount", count AS "count", type AS "type",  status AS "status", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

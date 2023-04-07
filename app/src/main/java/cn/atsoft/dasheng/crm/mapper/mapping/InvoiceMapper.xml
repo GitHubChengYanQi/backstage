@@ -26,7 +26,7 @@
     <sql id="Base_Column_List">bank_id
     AS "bankId",
         invoice_id
-        AS "invoiceId", bank_no AS "bankNo", invoice_note AS "invoiceNote",customer_id AS "customerId", bank AS "bank", bank_account AS "bankAccount", credit_code AS "creditCode", email AS "email", is_default AS "isDefault", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        AS "invoiceId", bank_no AS "bankNo", invoice_note AS "invoiceNote",customer_id AS "customerId", bank AS "bank", bank_account AS "bankAccount", credit_code AS "creditCode", email AS "email", is_default AS "isDefault", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

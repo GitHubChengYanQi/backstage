@@ -167,7 +167,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         if (LoginContextHolder.getContext().isAdmin()) {
             page = this.baseMapper.customPageList(pageContext,param,null);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             page = this.baseMapper.customPageList(pageContext, param,dataScope);
         }
         format(page.getRecords());

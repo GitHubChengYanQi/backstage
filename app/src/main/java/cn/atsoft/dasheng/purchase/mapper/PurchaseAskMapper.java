@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.mapper;
 
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseAskParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseAskResult;
@@ -43,7 +44,7 @@ public interface PurchaseAskMapper extends BaseMapper<PurchaseAsk> {
      * @author song
      * @Date 2021-12-15
      */
-    Page<PurchaseAskResult> customPageList(@Param("page") Page page, @Param("paramCondition") PurchaseAskParam paramCondition);
+    Page<PurchaseAskResult> customPageList(@Param("page") Page page, @Param("paramCondition") PurchaseAskParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

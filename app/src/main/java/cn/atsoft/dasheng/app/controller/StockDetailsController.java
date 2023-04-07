@@ -170,7 +170,7 @@ if (ToolUtil.isNotEmpty(detail)) {
 //        if (LoginContextHolder.getContext().isAdmin()) {
         return this.stockDetailsService.findPageBySpec(stockDetailsParam, null);
 //        } else {
-//            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+//            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
 //            return this.stockDetailsService.findPageBySpec(stockDetailsParam, dataScope);
 //        }
     }
@@ -190,7 +190,7 @@ if (ToolUtil.isNotEmpty(detail)) {
 //        if (LoginContextHolder.getContext().isAdmin()) {
         return this.stockDetailsService.skuDetailView(stockDetailsParam, null);
 //        } else {
-//            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+//            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
 //            return this.stockDetailsService.findPageBySpec(stockDetailsParam, dataScope);
 //        }
     }

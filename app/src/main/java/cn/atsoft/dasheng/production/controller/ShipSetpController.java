@@ -117,7 +117,7 @@ public class ShipSetpController extends BaseController {
             return this.shipSetpService.findPageBySpec(shipSetpParam, null);
 
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             return this.shipSetpService.findPageBySpec(shipSetpParam,dataScope);
         }
 

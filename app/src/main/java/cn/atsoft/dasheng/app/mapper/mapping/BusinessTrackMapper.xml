@@ -30,7 +30,7 @@
     <sql id="Base_Column_List">state
     AS "state",
         track_id
-        AS "trackId", message AS "message", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", tixing AS "tixing", type AS "type", display AS "display", time AS "time", note AS "note", image AS "image", longitude AS "longitude", latitude AS "latitude", user_id AS "userId", deptId AS "deptId", classify AS "classify", classify_id AS "classifyId", track_message_id AS "trackMessageId"
+        AS "trackId", message AS "message", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", tixing AS "tixing", type AS "type", display AS "display", time AS "time", note AS "note", image AS "image", longitude AS "longitude", latitude AS "latitude", user_id AS "userId",  deptId AS "deptId",tenant_id AS "tenantId", classify AS "classify", classify_id AS "classifyId", track_message_id AS "trackMessageId"
     </sql>
 
 

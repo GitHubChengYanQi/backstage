@@ -27,7 +27,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">number
     AS "number",
-        detail_id AS "detailId", anomaly_id AS "anomalyId", inkind_id AS "inkindId", stauts AS "stauts", remark AS "remark", reason_img AS "reasonImg", user_id AS "userId", opinion AS "opinion", opinion_img AS "opinionImg", description AS "description", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        detail_id AS "detailId", anomaly_id AS "anomalyId", inkind_id AS "inkindId", stauts AS "stauts", remark AS "remark", reason_img AS "reasonImg", user_id AS "userId", opinion AS "opinion", opinion_img AS "opinionImg", description AS "description", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 
@@ -268,7 +268,7 @@
         detail.update_time AS "updateTime",
         detail.update_user AS "updateUser",
         detail.display AS "display",
-        detail.deptId AS "deptId",
+        detail. deptId AS "deptId",tenant_id AS "tenantId",
         anomaly.form_id as formId,
         anomaly.source_id as sourceId,
         anomaly.type as type

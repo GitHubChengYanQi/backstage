@@ -97,7 +97,7 @@ public class RestUnitController extends BaseController {
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.restUnitService.findPageBySpec(restUnitParam, null);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             return this.restUnitService.findPageBySpec(restUnitParam, dataScope);
         }
     }

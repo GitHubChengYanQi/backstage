@@ -17,7 +17,7 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">deptId AS "deptId",
+    <sql id="Base_Column_List"> deptId AS "deptId",tenant_id AS "tenantId",
         speechcraft_type_detail_id AS "speechcraftTypeDetailId", name AS "name", speechcraft_type_id AS "speechcraftTypeId", sort AS "sort", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 

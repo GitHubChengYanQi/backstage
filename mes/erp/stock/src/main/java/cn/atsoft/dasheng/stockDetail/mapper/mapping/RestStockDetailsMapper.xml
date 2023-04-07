@@ -31,7 +31,7 @@
 
 <!--    &lt;!&ndash; 通用查询结果列 &ndash;&gt;-->
 <!--    <sql id="Base_Column_List">outstock_order_id-->
-<!--    AS "outStockOrderId",deptId AS "deptId",number AS "number",qr_code_id AS "qrCodeId",inkind_id AS "inkindId",customer_id AS "customerId",-->
+<!--    AS "outStockOrderId", deptId AS "deptId",tenant_id AS "tenantId",number AS "number",qr_code_id AS "qrCodeId",inkind_id AS "inkindId",customer_id AS "customerId",-->
 <!--stage-->
 <!--    AS "stage",sku_id AS "skuId",storehouse_positions_id AS "storehousePositionsId",-->
 <!--        barcode AS "barcode", brand_id AS "brandId", item_id AS "itemId", storehouse_id AS "storehouseId",  stock_item_id AS "stockItemId", stock_id AS "stockId", price AS "price", storage_time AS "storageTime", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"-->

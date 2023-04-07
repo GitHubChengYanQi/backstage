@@ -30,7 +30,7 @@
     <sql id="Base_Column_List">type
     AS "type",instock_list_id AS "instockListId",
         instock_handle_id
-        AS "instockHandleId", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", instock_order_id AS "instockOrderId", storehouse_id AS "storehouseId", storehouse_positions_id AS "storehousePositionsId", number AS "number", inkind_id AS "inkindId", status AS "status", instock_number AS "instockNumber", real_number AS "realNumber", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        AS "instockHandleId", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", instock_order_id AS "instockOrderId", storehouse_id AS "storehouseId", storehouse_positions_id AS "storehousePositionsId", number AS "number", inkind_id AS "inkindId", status AS "status", instock_number AS "instockNumber", real_number AS "realNumber", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

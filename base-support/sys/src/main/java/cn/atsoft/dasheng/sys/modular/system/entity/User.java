@@ -95,6 +95,11 @@ public class User implements Serializable {
      */
     @TableField("status")
     private String status;
+    /**
+     * 状态(字典)
+     */
+    @TableField("tenant_id")
+    private Long tenantId;
 
     /**
      * 创建时间
@@ -126,6 +131,14 @@ public class User implements Serializable {
     @TableField("version")
     private Integer version;
 
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
 
     public Long getUserId() {
         return userId;

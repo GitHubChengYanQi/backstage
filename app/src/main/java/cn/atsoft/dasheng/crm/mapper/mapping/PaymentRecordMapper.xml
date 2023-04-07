@@ -15,6 +15,7 @@
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
         <result column="order_id" property="orderId" />
         <result column="status" property="status" />
         <result column="payment_date" property="paymentDate" />
@@ -24,10 +25,10 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        record_id AS "recordId", sp_no AS "spNo",field AS "field",detail_id AS "detailId", payment_date AS "paymentDate",payment_id AS "paymentId", payment_amount AS "paymentAmount", remark AS "remark", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", order_id AS "orderId", status AS "status"
+        record_id AS "recordId", sp_no AS "spNo",field AS "field",detail_id AS "detailId", payment_date AS "paymentDate",payment_id AS "paymentId", payment_amount AS "paymentAmount", remark AS "remark", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId", order_id AS "orderId", status AS "status"
     </sql>
     <sql id="List">
-     o.coding AS "Coding", p.sp_no AS "spNo", p.field AS "field",p.payment_date AS "paymentDate" ,p.record_id AS "recordId", p.detail_id AS "detailId", p.payment_id AS "paymentId", p.payment_amount AS "paymentAmount", p.remark AS "remark", p.create_user AS "createUser", p.update_user AS "updateUser", p.create_time AS "createTime", p.update_time AS "updateTime", p.display AS "display", p.deptId AS "deptId", p.order_id AS "orderId", p.status AS "status"
+     o.coding AS "Coding", p.sp_no AS "spNo", p.field AS "field",p.payment_date AS "paymentDate" ,p.record_id AS "recordId", p.detail_id AS "detailId", p.payment_id AS "paymentId", p.payment_amount AS "paymentAmount", p.remark AS "remark", p.create_user AS "createUser", p.update_user AS "updateUser", p.create_time AS "createTime", p.update_time AS "updateTime", p.display AS "display", p. deptId AS "deptId",tenant_id AS "tenantId", p.order_id AS "orderId", p.status AS "status"
     </sql>
 
 

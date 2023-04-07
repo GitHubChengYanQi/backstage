@@ -56,7 +56,7 @@
         industry_id AS "industryId" ,agent AS "agent",avatar AS "avatar",sort AS "sort" , classification AS "classification",
         customer_level_id AS "customerLevelId" ,status AS "status", origin_id AS "originId" , note AS "note" , user_id AS "userId" , emall AS "emall" ,url AS "url" ,
         customer_id
-        AS "customerId", customer_name AS "customerName",abbreviation AS "abbreviation",default_contacts AS "defaultContacts",default_address AS "defaultAddress", setup AS "setup", legal AS "legal", utscc AS "utscc", company_type AS "companyType", business_term AS "businessTerm", sign_in AS "signIn", introduction AS "introduction", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        AS "customerId", customer_name AS "customerName",abbreviation AS "abbreviation",default_contacts AS "defaultContacts",default_address AS "defaultAddress", setup AS "setup", legal AS "legal", utscc AS "utscc", company_type AS "companyType", business_term AS "businessTerm", sign_in AS "signIn", introduction AS "introduction", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

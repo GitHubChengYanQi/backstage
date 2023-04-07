@@ -20,7 +20,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">name
-    AS "name",data_classification_id AS "dataClassificationId",title AS "title",deptId AS "deptId",
+    AS "name",data_classification_id AS "dataClassificationId",title AS "title", deptId AS "deptId",tenant_id AS "tenantId",
         data_id AS "dataId", content AS "content", attachment AS "attachment", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 

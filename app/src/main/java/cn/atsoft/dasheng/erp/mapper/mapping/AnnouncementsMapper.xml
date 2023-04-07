@@ -20,7 +20,7 @@
     <sql id="Base_Column_List">type
     AS "type",
         notice_id
-        AS "noticeId", content AS "content", sort AS "sort", deptId AS "deptId", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
+        AS "noticeId", content AS "content", sort AS "sort",  deptId AS "deptId",tenant_id AS "tenantId", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
     </sql>
 
 

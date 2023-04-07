@@ -118,7 +118,7 @@ public class OutstockController extends BaseController {
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.outstockService.findPageBySpec(outstockParam, null);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             return this.outstockService.findPageBySpec(outstockParam, dataScope);
         }
     }

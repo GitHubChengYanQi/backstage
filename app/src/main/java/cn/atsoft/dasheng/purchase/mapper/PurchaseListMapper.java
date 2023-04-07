@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.mapper;
 
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.purchase.entity.PurchaseList;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseListParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseListResult;
@@ -27,8 +28,8 @@ public interface PurchaseListMapper extends BaseMapper<PurchaseList> {
      * @author Captain_Jazz
      * @Date 2023-03-04
      */
-    List<PurchaseListResult> customList(@Param("paramCondition") PurchaseListParam paramCondition);
-    List<PurchaseListResult> leftJoinList(@Param("paramCondition") PurchaseListParam paramCondition);
+    List<PurchaseListResult> customList(@Param("paramCondition") PurchaseListParam paramCondition,@Param("dataScope") DataScope dataScope);
+    List<PurchaseListResult> leftJoinList(@Param("paramCondition") PurchaseListParam paramCondition,@Param("dataScope")DataScope dataScope);
 
     /**
      * 获取map列表

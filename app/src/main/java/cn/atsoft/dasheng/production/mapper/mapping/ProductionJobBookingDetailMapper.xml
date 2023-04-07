@@ -11,6 +11,7 @@
         <result column="job_booking_id" property="jobBookingId" />
         <result column="create_user" property="createUser" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
         <result column="display" property="display" />
         <result column="update_time" property="updateTime" />
         <result column="create_time" property="createTime" />
@@ -23,7 +24,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        job_booking_detail_id AS "jobBookingDetailId", inkind_id AS "inkindId" ,sku_id AS "skuId", steps_id AS "stepsId", job_booking_id AS "jobBookingId", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser", source AS "source", source_id AS "sourceId", theme AS "theme", origin AS "origin"
+        job_booking_detail_id AS "jobBookingDetailId", inkind_id AS "inkindId" ,sku_id AS "skuId", steps_id AS "stepsId", job_booking_id AS "jobBookingId", create_user AS "createUser",  deptId AS "deptId",tenant_id AS "tenantId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser", source AS "source", source_id AS "sourceId", theme AS "theme", origin AS "origin"
     </sql>
 
 

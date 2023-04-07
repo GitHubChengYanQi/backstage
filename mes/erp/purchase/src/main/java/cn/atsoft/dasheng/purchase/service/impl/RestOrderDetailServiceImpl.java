@@ -87,7 +87,7 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
         if (LoginContextHolder.getContext().isAdmin()) {
             page = this.baseMapper.customList(param,null);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             page =  this.baseMapper.customList(param,dataScope);
         }
 

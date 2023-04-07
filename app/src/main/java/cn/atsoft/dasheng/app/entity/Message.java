@@ -128,8 +128,22 @@ public class Message implements Serializable {
     @TableField("sort")
     private Long sort;
 
-    @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
+
+
+
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
+
 
     public Long getMessageId() {
         return messageId;

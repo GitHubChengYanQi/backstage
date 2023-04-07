@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.purchase.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.purchase.entity.PurchaseList;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseListParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseListResult;
@@ -115,7 +117,12 @@ public class PurchaseListController extends BaseController {
         if(ToolUtil.isEmpty(purchaseListParam)){
             purchaseListParam = new PurchaseListParam();
         }
-        return ResponseData.success(purchaseListService.findListBySpec(purchaseListParam));
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return ResponseData.success(this.purchaseListService.findListBySpec(purchaseListParam,null));
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
+            return  ResponseData.success(this.purchaseListService.findListBySpec(purchaseListParam,dataScope));
+        }
     }
     /**
      * 查询列表

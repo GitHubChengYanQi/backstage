@@ -32,7 +32,7 @@
     <sql id="Base_Column_List">money
     AS "money",type AS "type",status AS "status", floating_amount AS "floatingAmount" , total_amount AS "totalAmount" ,  paper_type AS "paperType" , rate AS "rate",
         payment_id
-        AS "paymentId", order_id AS "orderId", pay_method AS "payMethod", freight AS "freight", name AS "name", delivery_way AS "deliveryWay", adress_id AS "adressId", pay_plan AS "payPlan", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", remark AS "remark"
+        AS "paymentId", order_id AS "orderId", pay_method AS "payMethod", freight AS "freight", name AS "name", delivery_way AS "deliveryWay", adress_id AS "adressId", pay_plan AS "payPlan", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId", remark AS "remark"
     </sql>
 
 

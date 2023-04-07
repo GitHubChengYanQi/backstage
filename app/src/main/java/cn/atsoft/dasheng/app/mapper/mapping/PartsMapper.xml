@@ -30,7 +30,7 @@
     <sql id="Base_Column_List">sku_id
     AS "skuId", children AS "children",childrens AS "childrens",status AS "status",name AS "name",
         parts_id
-        AS "partsId", spu_id AS "spuId",skus AS "skus",type AS "type", attribute AS "attribute", pid AS "pid", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", part_name AS "partName", note AS "note"
+        AS "partsId", spu_id AS "spuId",skus AS "skus",type AS "type", attribute AS "attribute", pid AS "pid", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId", part_name AS "partName", note AS "note"
     </sql>
 
     <sql id="sku_join_column">
@@ -45,7 +45,7 @@
         "attribute", daoxin_erp_parts.pid AS "pid", daoxin_erp_parts.number AS
         "number", daoxin_erp_parts.create_time AS "createTime", daoxin_erp_parts.update_time AS "updateTime",
         daoxin_erp_parts.create_user AS "createUser", daoxin_erp_parts.update_user AS
-        "updateUser", daoxin_erp_parts.display AS "display", daoxin_erp_parts.deptId AS "deptId",
+        "updateUser", daoxin_erp_parts.display AS "display", daoxin_erp_parts. deptId AS "deptId",tenant_id AS "tenantId",
             daoxin_erp_parts.name AS "name",
         daoxin_erp_parts.part_name AS "partName", daoxin_erp_parts.note AS "note"
     </sql>

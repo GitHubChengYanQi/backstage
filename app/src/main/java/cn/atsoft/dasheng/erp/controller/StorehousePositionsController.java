@@ -218,7 +218,7 @@ public class StorehousePositionsController extends BaseController {
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.storehousePositionsService.findListBySpec(storehousePositionsParam, null);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             return this.storehousePositionsService.findListBySpec(storehousePositionsParam, dataScope);
         }
 

@@ -103,7 +103,7 @@ public class AdressController extends BaseController {
             PageInfo<AdressResult> adress = adressService.findPageBySpec(adressParam, null);
             return ResponseData.success(adress.getData().get(0));
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             PageInfo<AdressResult> adress = adressService.findPageBySpec(adressParam, dataScope);
             return ResponseData.success(adress.getData().get(0));
         }
@@ -131,7 +131,7 @@ public class AdressController extends BaseController {
             return this.adressService.findPageBySpec(adressParam, null);
 
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             PageInfo<AdressResult> adress = adressService.findPageBySpec(adressParam, dataScope);
             return this.adressService.findPageBySpec(adressParam, null);
         }

@@ -20,7 +20,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">sort
-    AS "sort" ,link AS "link",difference AS "difference",deptId AS "deptId",
+    AS "sort" ,link AS "link",difference AS "difference", deptId AS "deptId",tenant_id AS "tenantId",
 
         banner_id AS "bannerId", title AS "title", img_url AS "imgUrl", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>

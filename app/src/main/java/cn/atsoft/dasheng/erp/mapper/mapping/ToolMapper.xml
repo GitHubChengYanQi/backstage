@@ -25,7 +25,7 @@
     <sql id="Base_Column_List">coding
     AS "coding" ,norm AS "norm",
         tool_id
-        AS "toolId", name AS "name", state AS "state", note AS "note", attachment AS "attachment", unit_id AS "unitId", tool_classification_id AS "toolClassificationId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        AS "toolId", name AS "name", state AS "state", note AS "note", attachment AS "attachment", unit_id AS "unitId", tool_classification_id AS "toolClassificationId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

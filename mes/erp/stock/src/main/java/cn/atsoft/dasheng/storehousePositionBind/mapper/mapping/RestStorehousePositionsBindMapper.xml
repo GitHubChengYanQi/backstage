@@ -11,6 +11,7 @@
         <result column="customer_id" property="customerId" />
         <result column="brand_id" property="brandId" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
         <result column="create_time" property="createTime" />
@@ -20,7 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        bind_id AS "bindId", position_id AS "positionId", sku_id AS "skuId", sort AS "sort", customer_id AS "customerId", brand_id AS "brandId", deptId AS "deptId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+        bind_id AS "bindId", position_id AS "positionId", sku_id AS "skuId", sort AS "sort", customer_id AS "customerId", brand_id AS "brandId",  deptId AS "deptId",tenant_id AS "tenantId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 

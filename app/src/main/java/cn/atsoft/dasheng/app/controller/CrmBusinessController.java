@@ -138,7 +138,7 @@ public class CrmBusinessController extends BaseController {
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.crmBusinessService.findPageBySpec(null, crmBusinessParam);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             return this.crmBusinessService.findPageBySpec(dataScope, crmBusinessParam);
         }
     }

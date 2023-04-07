@@ -15,12 +15,13 @@
         <result column="update_user" property="updateUser" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
         <result column="status" property="status" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        purchase_list_id AS "purchaseListId", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", status AS "status"
+        purchase_list_id AS "purchaseListId", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId", status AS "status"
     </sql>
 
     <sql id="Left_Column_List">
@@ -34,7 +35,7 @@
         list.create_user AS "createUser",
         list.update_user AS "updateUser",
         list.display AS "display",
-        list.deptId AS "deptId",
+        list. deptId AS "deptId",tenant_id AS "tenantId",
         list.STATUS AS "status"
     </sql>
     <select id="leftJoinList" resultType="cn.atsoft.dasheng.purchase.model.result.PurchaseListResult" parameterType="cn.atsoft.dasheng.purchase.model.params.PurchaseListParam">

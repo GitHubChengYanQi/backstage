@@ -175,6 +175,34 @@ public class DatabaseInfoController extends BaseController {
             return PageFactory.createPageInfo(objectPage);
         }
     }
+    @RequestMapping("/addColumn")
+    @ResponseBody
+    public ResponseData addColumn(@RequestBody DatabaseInfoParam databaseInfoParam, HttpServletRequest request) {
+
+        Long dbId = databaseInfoParam.getDbId();
+        if (ToolUtil.isEmpty(dbId)) {
+            return ResponseData.success();
+        }
+
+        //清空session中的字段条件信息
+        HttpSession session = request.getSession();
+        session.removeAttribute(CONDITION_FIELDS);
+
+        try {
+            DatabaseInfo databaseInfo = databaseInfoService.getById(dbId);
+            List<Map<String, Object>> maps = DbUtil.selectTables(databaseInfo);
+            StringBuffer sqlALl = new StringBuffer();
+            for (Map<String, Object> map : maps) {
+                String sql = "ALTER TABLE `"+map.get("tableName")+"` \n" +
+                        "ADD COLUMN `tenant_id` bigint(20) NOT NULL AFTER `create_time`;\n";
+                sqlALl.append(sql);
+            }
+            return ResponseData.success(sqlALl);
+        } catch (Exception e) {
+            Page<Map<String, Object>> objectPage = new Page<>();
+            return ResponseData.success();
+        }
+    }
 
     @ResponseBody
     @RequestMapping("/listSelect")

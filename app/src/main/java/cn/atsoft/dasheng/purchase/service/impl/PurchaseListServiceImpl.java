@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.crm.service.SupplyService;
 import cn.atsoft.dasheng.erp.entity.SkuBrandBind;
@@ -125,12 +126,12 @@ public class PurchaseListServiceImpl extends ServiceImpl<PurchaseListMapper, Pur
     }
 
     @Override
-    public List<PurchaseListResult> findListBySpec(PurchaseListParam param) {
+    public List<PurchaseListResult> findListBySpec(PurchaseListParam param, DataScope dataScope) {
         List<PurchaseListResult> purchaseListResults = new ArrayList<>();
         if(ToolUtil.isEmpty(param.getCustomerId())){
-            purchaseListResults = this.baseMapper.customList(param);
+            purchaseListResults = this.baseMapper.customList(param,dataScope);
         }else {
-            purchaseListResults = this.baseMapper.leftJoinList(param);
+            purchaseListResults = this.baseMapper.leftJoinList(param,dataScope);
         }
         this.format(purchaseListResults);
         return purchaseListResults;

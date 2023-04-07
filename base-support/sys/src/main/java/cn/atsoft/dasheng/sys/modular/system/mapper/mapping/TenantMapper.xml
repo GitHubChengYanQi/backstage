@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.sys.modular.system.mapper.TenantMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.sys.modular.system.entity.Tenant">
+        <id column="tenant_id" property="tenantId" />
+        <result column="name" property="name" />
+        <result column="address" property="address" />
+        <result column="email" property="email" />
+        <result column="telephone" property="telephone" />
+        <result column="display" property="display" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        tenant_id AS "tenantId", name AS "name", address AS "address", email AS "email", telephone AS "telephone", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.sys.modular.system.model.result.TenantResult" parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.TenantParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_tenant where 1 = 1
+            <if test="paramCondition.tenantId != null">
+                and tenant_id like CONCAT('%',#{paramCondition.tenantId},'%')
+            </if>
+            <if test="paramCondition.name != null and paramCondition.name != ''">
+                and name like CONCAT('%',#{paramCondition.name},'%')
+            </if>
+            <if test="paramCondition.address != null and paramCondition.address != ''">
+                and address like CONCAT('%',#{paramCondition.address},'%')
+            </if>
+            <if test="paramCondition.email != null and paramCondition.email != ''">
+                and email like CONCAT('%',#{paramCondition.email},'%')
+            </if>
+            <if test="paramCondition.telephone != null and paramCondition.telephone != ''">
+                and telephone like CONCAT('%',#{paramCondition.telephone},'%')
+            </if>
+            <if test="paramCondition.display != null">
+                and display like CONCAT('%',#{paramCondition.display},'%')
+            </if>
+            <if test="paramCondition.createUser != null">
+                and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+            </if>
+            <if test="paramCondition.updateUser != null">
+                and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+            </if>
+            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+            </if>
+            <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.TenantParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_tenant where 1 = 1
+                <if test="paramCondition.tenantId != null">
+                        and tenant_id like CONCAT('%',#{paramCondition.tenantId},'%')
+                </if>
+                <if test="paramCondition.name != null and paramCondition.name != ''">
+                        and name like CONCAT('%',#{paramCondition.name},'%')
+                </if>
+                <if test="paramCondition.address != null and paramCondition.address != ''">
+                        and address like CONCAT('%',#{paramCondition.address},'%')
+                </if>
+                <if test="paramCondition.email != null and paramCondition.email != ''">
+                        and email like CONCAT('%',#{paramCondition.email},'%')
+                </if>
+                <if test="paramCondition.telephone != null and paramCondition.telephone != ''">
+                        and telephone like CONCAT('%',#{paramCondition.telephone},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.sys.modular.system.model.result.TenantResult" parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.TenantParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_tenant where 1 = 1 and display = 1
+                <if test="paramCondition.tenantId != null">
+                        and tenant_id  = #{paramCondition.tenantId}
+                </if>
+                <if test="paramCondition.name != null and paramCondition.name != ''">
+                        and name like CONCAT('%',#{paramCondition.name},'%')
+                </if>
+                <if test="paramCondition.address != null and paramCondition.address != ''">
+                        and address like CONCAT('%',#{paramCondition.address},'%')
+                </if>
+                <if test="paramCondition.email != null and paramCondition.email != ''">
+                        and email like CONCAT('%',#{paramCondition.email},'%')
+                </if>
+                <if test="paramCondition.telephone != null and paramCondition.telephone != ''">
+                        and telephone like CONCAT('%',#{paramCondition.telephone},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display = #{paramCondition.display}
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user = #{paramCondition.createUser}
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user = #{paramCondition.updateUser}
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.TenantParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_tenant where 1 = 1
+                <if test="paramCondition.tenantId != null">
+                        and tenant_id like CONCAT('%',#{paramCondition.tenantId},'%')
+                </if>
+                <if test="paramCondition.name != null and paramCondition.name != ''">
+                        and name like CONCAT('%',#{paramCondition.name},'%')
+                </if>
+                <if test="paramCondition.address != null and paramCondition.address != ''">
+                        and address like CONCAT('%',#{paramCondition.address},'%')
+                </if>
+                <if test="paramCondition.email != null and paramCondition.email != ''">
+                        and email like CONCAT('%',#{paramCondition.email},'%')
+                </if>
+                <if test="paramCondition.telephone != null and paramCondition.telephone != ''">
+                        and telephone like CONCAT('%',#{paramCondition.telephone},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+    </select>
+
+</mapper>

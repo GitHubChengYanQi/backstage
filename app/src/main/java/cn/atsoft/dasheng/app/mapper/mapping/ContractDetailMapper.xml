@@ -24,7 +24,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         brand_id
-        AS "brandId" ,id AS "id", contract_id AS "contractId", sku_id AS "skuId",customer_id AS "customerId", quantity AS "quantity", process_id AS "processId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", sale_price AS "salePrice", total_price AS "totalPrice", deptId AS "deptId"
+        AS "brandId" ,id AS "id", contract_id AS "contractId", sku_id AS "skuId",customer_id AS "customerId", quantity AS "quantity", process_id AS "processId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", sale_price AS "salePrice", total_price AS "totalPrice",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

@@ -22,11 +22,12 @@
         <result column="update_user" property="updateUser" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        stock_log_detail_id AS "stockLogDetailId",sku_id AS "skuId", stock_log_id AS "stockLogId", inkind_id AS "inkindId", number AS "number", before_number AS "beforeNumber", after_number AS "afterNumber", storehouse_id AS "storehouseId", storehouse_positions_id AS "storehousePositionsId", type AS "type", source AS "source", source_id AS "sourceId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        stock_log_detail_id AS "stockLogDetailId",sku_id AS "skuId", stock_log_id AS "stockLogId", inkind_id AS "inkindId", number AS "number", before_number AS "beforeNumber", after_number AS "afterNumber", storehouse_id AS "storehouseId", storehouse_positions_id AS "storehousePositionsId", type AS "type", source AS "source", source_id AS "sourceId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

@@ -19,7 +19,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">member_id
-    AS "memberId",deptId AS "deptId", source AS "source",
+    AS "memberId", deptId AS "deptId",tenant_id AS "tenantId", source AS "source",
         user_info_id AS "userInfoId", user_id AS "userId", uuid AS "uuid", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 

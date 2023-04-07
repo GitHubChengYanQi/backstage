@@ -20,7 +20,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">serial_id
-        AS "serialId", date AS "date", serial_length AS "serialLength" ,model AS "model", num AS "num", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        AS "serialId", date AS "date", serial_length AS "serialLength" ,model AS "model", num AS "num", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

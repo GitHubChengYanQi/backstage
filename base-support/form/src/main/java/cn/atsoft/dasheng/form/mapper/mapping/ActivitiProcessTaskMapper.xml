@@ -58,7 +58,7 @@
 	    update_time AS "updateTime",
             source AS "source",
             source_id AS "source_id",
-            deptId AS "deptId",
+             deptId AS "deptId",tenant_id AS "tenantId",
             version AS "version"
     </sql>
     <sql id="Left_Join_Column_List">
@@ -87,7 +87,7 @@
 	    activiti_process_task.update_time AS "updateTime",
         activiti_process_task.source AS "source",
         activiti_process_task.source_id AS "source_id",
-        activiti_process_task.deptId AS "deptId",
+        activiti_process_task. deptId AS "deptId",tenant_id AS "tenantId",
           activiti_process_task.version AS "version"
     </sql>
     <sql id="auditColumn">

@@ -22,7 +22,7 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">   process_id AS "processId",deptId AS "deptId",
+    <sql id="Base_Column_List">   process_id AS "processId", deptId AS "deptId",tenant_id AS "tenantId",
       total_price AS "totalPrice",sale_price AS "salePrice",id AS "id", business_id AS "businessId", item_id AS "itemId", brand_id AS "brandId",quantity AS "quantity", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 

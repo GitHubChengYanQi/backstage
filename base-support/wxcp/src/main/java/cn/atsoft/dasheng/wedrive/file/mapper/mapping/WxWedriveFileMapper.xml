@@ -11,6 +11,7 @@
         <result column="type" property="type" />
         <result column="create_user" property="createUser" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
         <result column="display" property="display" />
         <result column="update_time" property="updateTime" />
         <result column="create_time" property="createTime" />
@@ -19,7 +20,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        file_id AS "fileId", file_name AS "fileName", space_id AS "spaceId", father_id AS "fatherId", type AS "type", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
+        file_id AS "fileId", file_name AS "fileName", space_id AS "spaceId", father_id AS "fatherId", type AS "type", create_user AS "createUser",  deptId AS "deptId",tenant_id AS "tenantId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
     </sql>
 
 

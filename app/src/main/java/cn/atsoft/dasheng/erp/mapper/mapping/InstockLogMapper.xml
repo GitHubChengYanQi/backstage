@@ -21,7 +21,7 @@
     AS "instockTime",
 remark AS "remark",
         instock_log_id
-        AS "instockLogId", instock_order_id AS "instockOrderId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        AS "instockLogId", instock_order_id AS "instockOrderId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

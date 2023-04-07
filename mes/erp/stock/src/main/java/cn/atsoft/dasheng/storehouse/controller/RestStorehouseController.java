@@ -134,7 +134,7 @@ public class RestStorehouseController extends BaseController {
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.storehouseService.findPageBySpec(storehouseParam,null);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             return  this.storehouseService.findPageBySpec(storehouseParam,dataScope);
         }
     }

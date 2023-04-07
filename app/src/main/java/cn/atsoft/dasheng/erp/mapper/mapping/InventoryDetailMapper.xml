@@ -40,7 +40,7 @@ lock_status
  status
     AS "status",sku_id AS "skuId",customer_id AS customerId ,brand_id AS "brandId",position_id AS "positionId",number AS "number",anomaly_id AS "anomalyId",enclosure AS "enclosure",
         detail_id
-        AS "detailId",inventory_id AS "inventoryId" ,inkind_id AS "inkindId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", deptId AS "deptId"
+        AS "detailId",inventory_id AS "inventoryId" ,inkind_id AS "inkindId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
     <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.InventoryDetailResult"

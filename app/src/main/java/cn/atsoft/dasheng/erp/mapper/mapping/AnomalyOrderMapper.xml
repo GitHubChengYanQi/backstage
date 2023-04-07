@@ -22,7 +22,7 @@
     <sql id="Base_Column_List">instock_order_id
     AS "instockOrderId",type AS "type",complete AS "complete",
         order_id
-        AS "orderId", coding AS "coding", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        AS "orderId", coding AS "coding", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

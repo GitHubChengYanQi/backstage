@@ -21,7 +21,7 @@
     <sql id="Base_Column_List">type
     AS "type",
         qr_code_bind_id
-        AS "QrCodeBindId", qr_code_id AS "QrCodeId", source AS "source", form_id AS "formId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        AS "QrCodeBindId", qr_code_id AS "QrCodeId", source AS "source", form_id AS "formId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

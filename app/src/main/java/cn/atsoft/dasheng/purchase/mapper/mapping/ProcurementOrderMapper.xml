@@ -26,7 +26,7 @@
     <sql id="Base_Column_List">money
     AS "money", coding AS "coding",adress_id AS "adressId", theme AS "theme" , origin AS "origin" ,
         procurement_order_id
-        AS "procurementOrderId", procurement_plan_id AS "procurementPlanId", status AS "status", note AS "note", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", deptId AS "deptId"
+        AS "procurementOrderId", procurement_plan_id AS "procurementPlanId", status AS "status", note AS "note", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

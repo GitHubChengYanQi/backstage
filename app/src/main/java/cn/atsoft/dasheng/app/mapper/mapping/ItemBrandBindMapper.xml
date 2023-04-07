@@ -18,7 +18,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         item_brand_bind_id
-        AS "itemBrandBindId", item_id AS "itemId", brand_id AS "brandId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        AS "itemBrandBindId", item_id AS "itemId", brand_id AS "brandId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

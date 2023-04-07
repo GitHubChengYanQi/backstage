@@ -21,7 +21,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List"> link
     AS "link", sort AS "sort",difference AS "difference",
-deptId AS "deptId",
+ deptId AS "deptId",tenant_id AS "tenantId",
         navigation_Id AS "navigationId", title AS "title", icon AS "icon", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 

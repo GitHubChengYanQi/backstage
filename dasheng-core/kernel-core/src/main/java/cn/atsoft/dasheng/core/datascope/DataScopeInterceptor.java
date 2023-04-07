@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.core.datascope;
 
 
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.auth.context.LoginUserHolder;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.toolkit.PluginUtils;
@@ -51,12 +53,19 @@ public class DataScopeInterceptor implements Interceptor {
             String scopeName = dataScope.getScopeName();
             List<Long> deptIds = dataScope.getDeptIds();
             String join = CollectionUtil.join(deptIds, ",");
+            //TODO 增加租户id
 
             //如果是pgsql，进行一下大小写敏感处理
             if (dbType != null && dbType.equals(DbType.POSTGRE_SQL)) {
                 originalSql = "select * from (" + originalSql + ") temp_data_scope where temp_data_scope.\"" + scopeName + "\" in (" + join + ")";
+                if (ToolUtil.isNotEmpty(dataScope.getTenantId())){
+                    originalSql+="and temp_data_scope.tenantId = "+dataScope.getTenantId();
+                }
             } else {
                 originalSql = "select * from (" + originalSql + ") temp_data_scope where temp_data_scope." + scopeName + " in (" + join + ")";
+                if (ToolUtil.isNotEmpty(dataScope.getTenantId())){
+                    originalSql+="and temp_data_scope.tenantId = "+dataScope.getTenantId();
+                }
             }
 
             metaStatementHandler.setValue("delegate.boundSql.sql", originalSql);

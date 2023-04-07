@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.mapper;
 
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.Inventory;
 import cn.atsoft.dasheng.erp.model.params.InventoryParam;
 import cn.atsoft.dasheng.erp.model.result.InventoryResult;
@@ -42,10 +43,10 @@ public interface InventoryMapper extends BaseMapper<Inventory> {
      * @author Captain_Jazz
      * @Date 2021-12-27
      */
-    Page<InventoryResult> customPageList(@Param("page") Page page, @Param("paramCondition") InventoryParam paramCondition);
+    Page<InventoryResult> customPageList(@Param("page") Page page, @Param("paramCondition") InventoryParam paramCondition,@Param("dataScope") DataScope dataScope);
 
 
-    Page<InventoryResult> pageList(@Param("page") Page page, @Param("paramCondition") InventoryParam paramCondition);
+    Page<InventoryResult> pageList(@Param("page") Page page, @Param("paramCondition") InventoryParam paramCondition,@Param("dataScope")DataScope dataScope);
 
     /**
      * 获取分页map列表

@@ -21,6 +21,7 @@
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
         <result column="status" property="status" />
         <result column="theme" property="theme" />
         <result column="origin" property="origin" />
@@ -30,7 +31,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        allocation_id AS "allocationId", task_id AS "taskId",allocation_type AS "allocationType",coding AS "coding", allocation_name AS "allocationName", storehouse_id AS "storehouseId", user_id AS "userId", reason AS "reason", remark AS "remark", note AS "note", enclosure AS "enclosure", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status", theme AS "theme", origin AS "origin", type AS "type"
+        allocation_id AS "allocationId", task_id AS "taskId",allocation_type AS "allocationType",coding AS "coding", allocation_name AS "allocationName", storehouse_id AS "storehouseId", user_id AS "userId", reason AS "reason", remark AS "remark", note AS "note", enclosure AS "enclosure", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId", status AS "status", theme AS "theme", origin AS "origin", type AS "type"
     </sql>
 
 

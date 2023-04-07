@@ -82,5 +82,9 @@ public interface LoginContext {
      * 获取当前用户的部门数据范围的集合
      */
     List<Long> getDeptDataScope();
+    /**
+     * 获取当前用户的租户id
+     */
+    Long getTenantId();
 
 }

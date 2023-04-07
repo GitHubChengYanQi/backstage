@@ -35,7 +35,7 @@
 delivery_id
     AS "deliveryId",sku_id AS "skuId",delivery AS "delivery", customer_id AS "customerId",after_number AS "afterNumber",before_number AS "beforeNumber",
         outstock_listing_id
-        AS "outstockListingId", time AS "time", number AS "number", price AS "price", brand_id AS "brandId", deptId AS "deptId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", item_id AS "itemId", state AS "state", outstock_order_id AS "outstockOrderId", outstock_apply_id AS "outstockApplyId"
+        AS "outstockListingId", time AS "time", number AS "number", price AS "price", brand_id AS "brandId",  deptId AS "deptId",tenant_id AS "tenantId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", item_id AS "itemId", state AS "state", outstock_order_id AS "outstockOrderId", outstock_apply_id AS "outstockApplyId"
     </sql>
 
 

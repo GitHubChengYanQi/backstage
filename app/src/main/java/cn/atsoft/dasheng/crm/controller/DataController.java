@@ -117,7 +117,7 @@ public class DataController extends BaseController {
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.dataService.findPageBySpec(null, dataParam);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             return this.dataService.findPageBySpec(dataScope, dataParam);
         }
 

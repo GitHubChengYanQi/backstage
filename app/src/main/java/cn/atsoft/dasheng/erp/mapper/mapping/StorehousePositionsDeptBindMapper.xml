@@ -7,6 +7,7 @@
         <id column="bind_id" property="bindId" />
         <result column="storehouse_positions_id" property="storehousePositionsId" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
         <result column="create_user" property="createUser" />
         <result column="create_time" property="createTime" />
         <result column="update_user" property="updateUser" />
@@ -16,7 +17,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        bind_id AS "bindId", storehouse_positions_id AS "storehousePositionsId", deptId AS "deptId", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"
+        bind_id AS "bindId", storehouse_positions_id AS "storehousePositionsId",  deptId AS "deptId",tenant_id AS "tenantId", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"
     </sql>
 
 

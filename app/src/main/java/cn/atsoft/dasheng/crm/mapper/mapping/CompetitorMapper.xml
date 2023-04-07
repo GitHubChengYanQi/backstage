@@ -31,7 +31,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">  adress
-    AS "adress",deptId AS "deptId",
+    AS "adress", deptId AS "deptId",tenant_id AS "tenantId",
         competitor_id AS "competitorId", competitors_quote_id AS "competitorsQuoteId", name AS "name", phone AS "phone", url AS "url", creation_date AS "creationDate", email AS "email", staff_size AS "staffSize", ownership AS "ownership", region AS "region", competition_level AS "competitionLevel", annual_sales AS "annualSales", company_profile AS "companyProfile", rival_advantage AS "rivalAdvantage", opponents_weaknesses AS "opponentsWeaknesses", take_countermeasures AS "takeCountermeasures", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 

@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.entity.OrderDetail;
 import cn.atsoft.dasheng.crm.entity.Supply;
@@ -615,9 +616,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     }
 
     @Override
-    public PageInfo findPageBySpec(InstockOrderParam param) {
+    public PageInfo findPageBySpec(InstockOrderParam param, DataScope dataScope) {
         Page<InstockOrderResult> pageContext = getPageContext();
-        IPage<InstockOrderResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<InstockOrderResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

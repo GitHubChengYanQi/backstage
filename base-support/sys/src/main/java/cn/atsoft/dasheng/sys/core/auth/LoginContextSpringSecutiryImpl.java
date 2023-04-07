@@ -112,4 +112,8 @@ public class LoginContextSpringSecutiryImpl implements LoginContext {
         subDeptIds.add(deptId);
         return subDeptIds;
     }
+    @Override
+    public Long getTenantId() {
+        return getUser().getTenantId();
+    }
 }

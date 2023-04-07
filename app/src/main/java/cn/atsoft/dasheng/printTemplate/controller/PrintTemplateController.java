@@ -116,7 +116,7 @@ public class PrintTemplateController extends BaseController {
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.printTemplateService.findPageBySpec(null,printTemplateParam);
         }else{
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             PageInfo<PrintTemplateResult> pageBySpec = printTemplateService.findPageBySpec(null, printTemplateParam);
             return pageBySpec;
         }

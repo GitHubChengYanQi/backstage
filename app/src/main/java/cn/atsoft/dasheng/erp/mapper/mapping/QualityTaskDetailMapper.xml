@@ -34,7 +34,7 @@
         AS "parentId",inkind_id AS "inkindId",status AS "status",percentum AS "percentum",customer_id AS "customerId",
 instockNumber AS "instockNumber",
         quality_task_detail_id
-        AS "qualityTaskDetailId", sku_id AS "skuId",remaining AS "remaining",batch AS "batch", quality_plan_id AS "qualityPlanId",number AS "number",brand_id AS "brandId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        AS "qualityTaskDetailId", sku_id AS "skuId",remaining AS "remaining",batch AS "batch", quality_plan_id AS "qualityPlanId",number AS "number",brand_id AS "brandId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

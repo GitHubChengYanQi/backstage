@@ -93,6 +93,16 @@ public class CustomerFile implements Serializable {
     public Long getFileId() {
         return fileId;
     }
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
 
     public void setFileId(Long fileId) {
         this.fileId = fileId;

@@ -189,7 +189,7 @@ public class ${entity}Controller extends BaseController {
         if (LoginContextHolder.getContext().isAdmin()) {
              return this.${lowerEntity}Service.findPageBySpec(${lowerEntity}Param,null);
         } else {
-             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
              return  this.${lowerEntity}Service.findPageBySpec(${lowerEntity}Param,dataScope);
         }
 //        return this.${lowerEntity}Service.findPageBySpec(${lowerEntity}Param);

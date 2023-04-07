@@ -20,7 +20,7 @@
     <sql id="Base_Column_List"> state
     AS "state",
         qr_code_id
-        AS "QrCodeId", type AS "type", data AS "data", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        AS "QrCodeId", type AS "type", data AS "data", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

@@ -25,7 +25,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         quality_check_id
-        AS "qualityCheckId", name AS "name",type AS "type", simple_name AS "simpleName", quality_check_classification_id AS "qualityCheckClassificationId", tool AS "tool", note AS "note", norm AS "norm", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", attachment AS "attachment", coding AS "coding"
+        AS "qualityCheckId", name AS "name",type AS "type", simple_name AS "simpleName", quality_check_classification_id AS "qualityCheckClassificationId", tool AS "tool", note AS "note", norm AS "norm", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId", attachment AS "attachment", coding AS "coding"
     </sql>
 
 

@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.CodingRules;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.form.entity.*;
@@ -171,9 +172,9 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     }
 
     @Override
-    public PageInfo<PurchaseAskResult> findPageBySpec(PurchaseAskParam param) {
+    public PageInfo<PurchaseAskResult> findPageBySpec(PurchaseAskParam param, DataScope dataScope) {
         Page<PurchaseAskResult> pageContext = getPageContext();
-        IPage<PurchaseAskResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<PurchaseAskResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         this.format(page.getRecords()
         );
         return PageFactory.createPageInfo(page);

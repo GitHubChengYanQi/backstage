@@ -31,7 +31,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         production_task_id
-        AS "productionTaskId", status AS "status", end_time AS "endTime",coding AS "coding", production_task_name AS "productionTaskName", sku_id AS "skuId", number AS "number", remark AS "remark", user_id AS "userId", work_order_id AS "workOrderId", ship_setp_id AS "shipSetpId", single_production_cycle AS "singleProductionCycle", production_time AS "productionTime", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser", theme AS "theme", origin AS "origin", user_ids AS "userIds"
+        AS "productionTaskId", status AS "status", end_time AS "endTime",coding AS "coding", production_task_name AS "productionTaskName", sku_id AS "skuId", number AS "number", remark AS "remark", user_id AS "userId", work_order_id AS "workOrderId", ship_setp_id AS "shipSetpId", single_production_cycle AS "singleProductionCycle", production_time AS "productionTime", create_user AS "createUser",  deptId AS "deptId",tenant_id AS "tenantId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser", theme AS "theme", origin AS "origin", user_ids AS "userIds"
     </sql>
 
 

@@ -114,7 +114,7 @@ public class OrderController extends BaseController {
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.orderService.findPageBySpec(orderParam,null);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             return  this.orderService.findPageBySpec(orderParam,dataScope);
         }
     }
@@ -134,7 +134,7 @@ public class OrderController extends BaseController {
         if (LoginContextHolder.getContext().isAdmin()) {
             return ResponseData.success(this.orderService.findListBySpec(orderParam,null));
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             return  ResponseData.success(this.orderService.findListBySpec(orderParam,dataScope));
         }
     }

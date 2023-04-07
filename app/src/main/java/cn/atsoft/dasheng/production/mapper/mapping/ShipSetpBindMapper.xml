@@ -15,11 +15,12 @@
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        ship_setp_bind_id AS "shipSetpBindId",ship_setp_id AS "shipSetpId", type AS "type", from_id AS "fromId", is_common AS "isCommon", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        ship_setp_bind_id AS "shipSetpBindId",ship_setp_id AS "shipSetpId", type AS "type", from_id AS "fromId", is_common AS "isCommon", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

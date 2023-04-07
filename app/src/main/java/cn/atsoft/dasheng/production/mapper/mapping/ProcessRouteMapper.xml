@@ -24,7 +24,7 @@
     <sql id="Base_Column_List">sku_id
     AS "sku_id",pid AS "pid",
         process_route_id
-        AS "processRouteId", process_route_coding AS "processRouteCoding", process_rote_name AS "processRoteName", parts_id AS "partsId", version AS "version", status AS "status", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        AS "processRouteId", process_route_coding AS "processRouteCoding", process_rote_name AS "processRoteName", parts_id AS "partsId", version AS "version", status AS "status", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

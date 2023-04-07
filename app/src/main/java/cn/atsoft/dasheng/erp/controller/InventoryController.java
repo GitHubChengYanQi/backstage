@@ -1,8 +1,10 @@
 package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.InventoryDetail;
 import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
 import cn.atsoft.dasheng.erp.model.result.*;
@@ -234,7 +236,14 @@ public class InventoryController extends BaseController {
         if (ToolUtil.isEmpty(inventoryParam)) {
             inventoryParam = new InventoryParam();
         }
-        return this.inventoryService.findPageBySpec(inventoryParam);
+
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.inventoryService.findPageBySpec(inventoryParam,null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
+            return  this.inventoryService.findPageBySpec(inventoryParam,dataScope);
+        }
+//        return this.inventoryService.findPageBySpec(inventoryParam);
     }
 
 
@@ -245,7 +254,12 @@ public class InventoryController extends BaseController {
             inventoryParam = new InventoryParam();
         }
         inventoryParam.setComplete(99);
-        return this.inventoryService.findPageBySpec(inventoryParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.inventoryService.findPageBySpec(inventoryParam,null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
+            return  this.inventoryService.findPageBySpec(inventoryParam,dataScope);
+        }
     }
 
 
@@ -255,7 +269,12 @@ public class InventoryController extends BaseController {
         if (ToolUtil.isEmpty(inventoryParam)) {
             inventoryParam = new InventoryParam();
         }
-        return this.inventoryService.pageList(inventoryParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.inventoryService.pageList(inventoryParam,null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
+            return  this.inventoryService.pageList(inventoryParam,dataScope);
+        }
     }
 
 }

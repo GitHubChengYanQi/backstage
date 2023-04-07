@@ -24,7 +24,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">sort
     AS "sort",state AS "state",module AS "module",serial AS "serial",
-        coding_rules_id AS "codingRulesId", coding_rules_classification_id AS "codingRulesClassificationId", name AS "name",note AS "note", coding_rules AS "codingRules", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        coding_rules_id AS "codingRulesId", coding_rules_classification_id AS "codingRulesClassificationId", name AS "name",note AS "note", coding_rules AS "codingRules", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

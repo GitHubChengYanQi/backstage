@@ -28,7 +28,7 @@
     <sql id="Base_Column_List">sort
     AS "sort",unit_id AS "unitId",
         plan_detail_id
-        AS "planDetailId", is_null AS "isNull",plan_id AS "planId", quality_check_id AS "qualityCheckId", operator AS "operator", standard_value AS "standardValue", testing_type AS "testingType", quality_amount AS "qualityAmount", quality_proportion AS "qualityProportion", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        AS "planDetailId", is_null AS "isNull",plan_id AS "planId", quality_check_id AS "qualityCheckId", operator AS "operator", standard_value AS "standardValue", testing_type AS "testingType", quality_amount AS "qualityAmount", quality_proportion AS "qualityProportion", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 
