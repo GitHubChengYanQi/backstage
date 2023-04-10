@@ -37,7 +37,8 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.wedrive.space.model.result.WxWedriveSpaceResult" parameterType="cn.atsoft.dasheng.wedrive.space.model.params.WxWedriveSpaceParam">
         select
         <include refid="Base_Column_List"/>
-        from wx_wedrive_space where 1 = 1
+        from wx_wedrive_space where 1 = 1 and display = 1
+
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.wedrive.space.model.params.WxWedriveSpaceParam">

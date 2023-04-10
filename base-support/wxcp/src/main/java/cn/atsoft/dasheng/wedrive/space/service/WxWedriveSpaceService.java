@@ -40,7 +40,7 @@ public interface WxWedriveSpaceService extends IService<WxWedriveSpace> {
      * @author Captain_Jazz
      * @Date 2023-03-31
      */
-    void delete(WxWedriveSpaceParam param);
+    void delete(WxWedriveSpaceParam param) throws WxErrorException;
 
     /**
      * 更新
@@ -74,4 +74,5 @@ public interface WxWedriveSpaceService extends IService<WxWedriveSpace> {
      */
      PageInfo<WxWedriveSpaceResult> findPageBySpec(WxWedriveSpaceParam param);
 
+    WxCpBaseResp rename(WxWedriveSpaceParam param) throws WxErrorException;
 }

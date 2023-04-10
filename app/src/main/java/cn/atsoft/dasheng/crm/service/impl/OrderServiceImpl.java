@@ -574,7 +574,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
 
         try {
-            orderResult.setInStockRate(BigDecimal.valueOf(inStockNum).divide(BigDecimal.valueOf(allNum), 2, RoundingMode.UP).multiply(BigDecimal.valueOf(100)).intValue());
+            orderResult.setInStockRate(BigDecimal.valueOf(inStockNum).divide(BigDecimal.valueOf(allNum), 2, RoundingMode.DOWN).multiply(BigDecimal.valueOf(100)).intValue());
         } catch (Exception e) {
 
         }
@@ -689,7 +689,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 
         try {
-            result.setPaymentRate(BigDecimal.valueOf(paymentSum).divide(BigDecimal.valueOf(result.getTotalAmount()), 2, RoundingMode.UP).multiply(BigDecimal.valueOf(100)).intValue());
+            result.setPaymentRate(BigDecimal.valueOf(paymentSum).divide(BigDecimal.valueOf(100),2,RoundingMode.DOWN).divide(BigDecimal.valueOf(result.getTotalAmount()), 2, RoundingMode.DOWN).multiply(BigDecimal.valueOf(100)).intValue());
         } catch (Exception e) {
 
         }
