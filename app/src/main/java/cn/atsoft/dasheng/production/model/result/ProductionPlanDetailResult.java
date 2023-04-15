@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.model.result;
 
 import cn.atsoft.dasheng.app.model.result.PartsResult;
+import cn.atsoft.dasheng.bom.model.result.RestBomResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
 
@@ -27,9 +28,10 @@ public class ProductionPlanDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private PartsResult partsResult;
+    private RestBomResult partsResult;
 
     private SkuResult skuResult;
+    private Integer skuCount;
 
     private ProcessRouteResult processRouteResult;
     /**

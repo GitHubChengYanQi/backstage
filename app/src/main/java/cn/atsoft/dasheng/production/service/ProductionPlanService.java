@@ -26,6 +26,9 @@ public interface ProductionPlanService extends IService<ProductionPlan> {
      */
     void add(ProductionPlanParam param);
 
+
+    void addByBom(ProductionPlanParam param);
+
     /**
      * 删除
      *

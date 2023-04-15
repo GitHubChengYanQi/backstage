@@ -2,9 +2,11 @@ package cn.atsoft.dasheng.production.controller;
 
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickCode;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.entity.ProductionTask;
+import cn.atsoft.dasheng.production.model.params.ProductionTaskByCardParam;
 import cn.atsoft.dasheng.production.model.params.ProductionTaskParam;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskResult;
 import cn.atsoft.dasheng.production.service.ProductionPickCodeService;
@@ -79,10 +81,36 @@ public class ProductionTaskController extends BaseController {
      */
     @RequestMapping(value = "/receive", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ProductionTask Receive(@RequestBody ProductionTaskParam productionTaskParam) {
+    public ProductionTask receive(@RequestBody ProductionTaskParam productionTaskParam) {
 
-        ProductionTask receive = this.productionTaskService.Receive(productionTaskParam);
+        ProductionTask receive = this.productionTaskService.receive(productionTaskParam);
         return receive;
+    }
+
+    /**
+     * 编辑接口
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-22
+     */
+    @RequestMapping(value = "/createTaskByBom", method = RequestMethod.POST)
+    @ApiOperation("编辑")
+    public ResponseData createTaskByBom(@RequestBody ProductionTaskByCardParam productionTaskParam) {
+
+        this.productionTaskService.createTaskByBom(productionTaskParam);
+        return ResponseData.success();
+    }
+    /**
+     * 编辑接口
+     *
+     * @author Captain_Jazz
+     * @Date 2022-03-22
+     */
+    @RequestMapping(value = "/doneTasks", method = RequestMethod.POST)
+    @ApiOperation("编辑")
+    public ResponseData doneTasks(@RequestBody ProductionTaskByCardParam productionTaskParam) {
+        this.productionTaskService.doneTasks(productionTaskParam);
+        return ResponseData.success();
     }
 
 //    /**

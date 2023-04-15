@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.pojo.ProcessType;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsCart;
 import cn.atsoft.dasheng.production.entity.ProductionPickListsDetail;
@@ -420,6 +421,18 @@ public class ProductionPickListsController extends BaseController {
     public ResponseData listByUser(@RequestParam String code) {
 
         return ResponseData.success(productionPickListsService.listByCode(code));
+    }
+    @RequestMapping(value = "/createByBom", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public ResponseData createByBom(@RequestBody ProductionPickListsParam param) {
+        if (ToolUtil.isEmpty(param.getPartsId()) || ToolUtil.isEmpty(param.getPartsId()) || ToolUtil.isEmpty(param.getPartsId()) || ToolUtil.isEmpty(param.getSourceId())) {
+            throw new ServiceException(500,"参数错误");
+        }
+        if (param.getNumber()<1){
+            throw new ServiceException(500,"数量必须大于0");
+        }
+        productionPickListsService.createByBom(param.getPartsId(),param.getNumber(),param.getUserId(), "productionPlan", param.getSourceId());
+        return ResponseData.success();
     }
 
 

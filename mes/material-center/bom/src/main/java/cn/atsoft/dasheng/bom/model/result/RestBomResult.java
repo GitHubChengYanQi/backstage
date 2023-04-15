@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.bom.model.result;
 
+import cn.atsoft.dasheng.goods.sku.model.result.RestSkuResult;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
@@ -8,10 +10,26 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @ApiModel
 public class RestBomResult implements Serializable {
+
+    private List<RestBomDetailResult> detailResults;
+
+    private Long parentId;
+
+    private UserResult userResult;
+
+    private Long productionTaskId;
+    private Integer done ;
+
+    private Date lastTime;
+
+    @ApiModelProperty("sku返回类")
+    private RestSkuResult skuResult;
+
     @ApiModelProperty("bomId")
     private Long bomId;
 
@@ -23,6 +41,9 @@ public class RestBomResult implements Serializable {
 
     @ApiModelProperty("note")
     private String note;
+
+    @ApiModelProperty("number")
+    private Integer number;
 
     @ApiModelProperty("children")
     private String children;

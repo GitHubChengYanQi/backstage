@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
+import cn.atsoft.dasheng.production.model.CreateProductionTask;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
 import cn.atsoft.dasheng.production.model.result.ProductionPickListsCartResult;
@@ -80,12 +81,16 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
      */
     PageInfo findPageBySpec(ProductionPickListsParam param);
 
+    List<ProductionPickListsResult> countNumber(ProductionPickListsParam param);
+
     void taskFormat(List<ProductionPickListsResult> results);
 
     void format(List<ProductionPickListsResult> results);
 
 
     String addByProductionTask(Object param);
+
+    void addByProductionTasks(List<CreateProductionTask> tasks, Long userId);
 
     String sendPersonPick(ProductionPickListsParam param);
 
@@ -125,4 +130,6 @@ public interface ProductionPickListsService extends IService<ProductionPickLists
     Page<StockView> outStockUserView(DataStatisticsViewParam param);
 
    List<StockView> outStockView(DataStatisticsViewParam param);
+
+    void createByBom(Long bomId, Integer num, Long userId,String source,Long courseId);
 }

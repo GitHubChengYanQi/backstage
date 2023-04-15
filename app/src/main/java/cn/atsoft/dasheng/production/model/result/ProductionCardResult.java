@@ -20,6 +20,8 @@ public class ProductionCardResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private Integer grupByPlanId;
+    private String cardCoding;
+    private Integer doneBomCount;
 
     /**
      * 生产卡片id
@@ -61,6 +63,16 @@ public class ProductionCardResult implements Serializable {
      */
     @ApiModelProperty("来源Id")
     private Long sourceId;
+    /**
+     * 状态
+     */
+    @ApiModelProperty("状态")
+    private Integer status;
+    /**
+     * BOM数量
+     */
+    @ApiModelProperty("BOM数量")
+    private Integer bomCount;
 
 
     /**

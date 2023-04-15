@@ -16,10 +16,39 @@ public class RestBomParam {
     private Long skuId;
 
     /**
+     * 数量
+     */
+    @ApiModelProperty("number")
+    private Integer number;
+    /**
+     * bomId
+     */
+    @ApiModelProperty("bomId")
+    private Long bomId;
+
+    /**
+     * 部门Id
+     */
+    @ApiModelProperty("部门Id")
+    private Long deptId;
+
+    /**
      * 版本
      */
     @ApiModelProperty("version")
     private String version;
+
+    /**
+     * 关键字
+     */
+    @ApiModelProperty("关键字")
+    private String keywords;
+
+    /**
+     * 创建人
+     */
+    @ApiModelProperty("创建人")
+    private Long createUser;
 
     private List<RestBomDetailParam> bomDetailParam;
 

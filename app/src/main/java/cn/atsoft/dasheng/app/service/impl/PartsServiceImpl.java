@@ -14,6 +14,11 @@ import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.mapper.PartsMapper;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
+import cn.atsoft.dasheng.bom.entity.RestBom;
+import cn.atsoft.dasheng.bom.model.params.RestBomDetailParam;
+import cn.atsoft.dasheng.bom.model.params.RestBomParam;
+import cn.atsoft.dasheng.bom.service.RestBomService;
+import cn.atsoft.dasheng.bom.service.impl.RestBomServiceImpl;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.Spu;
@@ -26,6 +31,9 @@ import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.production.entity.ProductionTask;
+import cn.atsoft.dasheng.production.service.ProductionTaskService;
+import cn.atsoft.dasheng.production.service.impl.ProductionTaskServiceImpl;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -75,10 +83,16 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     private AsyncMethod asyncMethod;
     @Autowired
     private AsynTaskService asynTaskService;
+    @Autowired
+    private ProductionTaskService productionTaskService;
+    @Autowired
+    private RestBomService restBomService;
 
 
     @Override
+    @Transactional
     public Parts add(PartsParam partsParam) {
+
 
         judge(partsParam); //防止添加重复数据
         DeadLoopJudge(partsParam); //防止死循环添加
@@ -178,6 +192,32 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Transactional
     @Override
     public Parts newAdd(PartsParam partsParam) {
+        RestBomParam restBomParam = BeanUtil.copyProperties(partsParam, RestBomParam.class);
+        restBomParam.setVersion(partsParam.getName());
+        List<RestBomDetailParam> bomDetailParams = BeanUtil.copyToList(partsParam.getParts(), RestBomDetailParam.class);
+        List<Long> versionBonIds = bomDetailParams.stream().map(RestBomDetailParam::getVersionBomId).distinct().collect(Collectors.toList());
+        List<Parts> childrenList = versionBonIds.size() == 0 ? new ArrayList<>() : this.listByIds(versionBonIds);
+        for (Parts parts : childrenList) {
+            for (RestBomDetailParam detail : bomDetailParams) {
+                if (ToolUtil.isNotEmpty(detail.getVersionBomId()) && detail.getSkuId().equals(parts.getSkuId())){
+                    detail.setVersion(parts.getName());
+                    break;
+                }
+            }
+        }
+        List<RestBom> childrenBomList =childrenList.size() == 0 ? new ArrayList<>() : restBomService.lambdaQuery().in(RestBom::getVersion, childrenList.stream().map(Parts::getName).collect(Collectors.toList())).in(RestBom::getSkuId, childrenList.stream().map(Parts::getSkuId).collect(Collectors.toList())).list();
+        for (RestBomDetailParam bomDetailParam : bomDetailParams) {
+            if (ToolUtil.isNotEmpty(bomDetailParam.getVersionBomId())){
+                for (RestBom restBom : childrenBomList) {
+                    if (bomDetailParam.getSkuId().equals(restBom.getSkuId()) && bomDetailParam.getVersion().equals(restBom.getVersion())){
+                        bomDetailParam.setVersionBomId(restBom.getBomId());
+                        break;
+                    }
+                }
+            }
+        }
+        restBomParam.setBomDetailParam(bomDetailParams);
+        restBomService.add(restBomParam);
         //如果相同skuBom    发布最新创建的
         if (ToolUtil.isNotEmpty(partsParam.getSkuId())) {
             Parts one = this.query().eq("sku_id", partsParam.getSkuId()).eq("display", 1).eq("status", 99).one();
@@ -960,7 +1000,9 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         List<Long> skuIds = new ArrayList<>();
         for (PartsResult datum : data) {
             pids.add(datum.getPartsId());
-            userIds.add(datum.getCreateUser());
+            if (ToolUtil.isNotEmpty(datum.getCreateUser())) {
+                userIds.add(datum.getCreateUser());
+            }
             skuIds.add(datum.getSkuId());
         }
         List<Parts> parts = pids.size() == 0 ? new ArrayList<>() : this.lambdaQuery().in(Parts::getPartsId, pids).in(Parts::getDisplay, 1).list();
@@ -996,12 +1038,14 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             if (ToolUtil.isNotEmpty(datum.getAttribute())) {
                 datum.setPartsAttributes(datum.getAttribute());
             }
-            for (User user : users) {
-                if (user.getUserId().equals(datum.getCreateUser())) {
-                    UserResult userResult = new UserResult();
-                    ToolUtil.copyProperties(user, userResult);
-                    datum.setUserResult(userResult);
-                    break;
+            if (ToolUtil.isNotEmpty(datum.getCreateUser())) {
+                for (User user : users) {
+                    if (user.getUserId().equals(datum.getCreateUser())) {
+                        UserResult userResult = new UserResult();
+                        ToolUtil.copyProperties(user, userResult);
+                        datum.setUserResult(userResult);
+                        break;
+                    }
                 }
             }
             for (SkuResult skuResult : skuResults) {
@@ -1075,9 +1119,51 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         for (Parts parts : childrenList) {
             loopGetByBomId(parts.getPartsId(),childrenAndNumber.get(parts.getPartsId()),  result);
         }
+    }
+    @Override
+    public  List<PartsResult> listByBomId(Long bomId, Long cartId){
+        List<PartsResult> result = new ArrayList<>();
+        loopListByBomId(bomId,1,result,0L);
+        List<ProductionTask> productionTasks = productionTaskService.lambdaQuery().eq(ProductionTask::getProductionCardId, cartId).list();
+        for (PartsResult partsResult : result) {
+            for (ProductionTask productionTask : productionTasks) {
+                if(partsResult.getNumber().equals(productionTask.getNumber()) && partsResult.getPartsId().equals(productionTask.getPartsId()) && productionTask.getParentPartsId().equals(partsResult.getParentId())){
+                    partsResult.setDone(1);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+    public void loopListByBomId(Long bomId,Integer number,List<PartsResult> result,Long parentId){
+        Parts bom = this.getById(bomId);
 
 
+        List<ErpPartsDetail> details = erpPartsDetailService.lambdaQuery().eq(ErpPartsDetail::getPartsId, bom.getPartsId()).eq(ErpPartsDetail::getDisplay, 1).list();
 
+        List<Long> skuIds = details.stream().map(ErpPartsDetail::getSkuId).distinct().collect(Collectors.toList());
+
+        skuIds.removeIf(i->i.equals(bom.getSkuId()));
+        List<Parts> childrenList = skuIds.size() == 0 ? new ArrayList<>() : this.lambdaQuery().eq(Parts::getStatus, 99).eq(Parts::getDisplay, 1).in(Parts::getSkuId, skuIds).groupBy(Parts::getSkuId).list();
+        PartsResult partsResult = BeanUtil.copyProperties(bom, PartsResult.class);
+        this.format(Collections.singletonList(partsResult));
+        partsResult.setNumber(number);
+        partsResult.setParentId(parentId);
+        for (ErpPartsDetailResult part : partsResult.getParts()) {
+            part.setNumber(part.getNumber()*number);
+        }
+        result.add(partsResult);
+
+        for (Parts parts : childrenList) {
+            for (ErpPartsDetail detail : details) {
+                double num = 1;
+                if (parts.getSkuId().equals(detail.getSkuId())){
+                    num = detail.getNumber();
+                    loopListByBomId(parts.getPartsId(), (int) (num*number), result,bom.getPartsId());
+
+                }
+            }
+        }
     }
 
 }

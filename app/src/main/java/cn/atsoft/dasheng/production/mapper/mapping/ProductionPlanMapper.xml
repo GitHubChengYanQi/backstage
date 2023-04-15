@@ -46,7 +46,8 @@
         plan.card_coding AS "cardCoding",
         plan.type AS "type",
         plan.files AS "files",
-        plan.status AS "status"
+        plan.status AS "status",
+        plan.bom_count AS "bomCount"
     </sql>
 
 
@@ -141,7 +142,7 @@
         LEFT JOIN daoxin_production_plan_detail detail on plan.production_plan_id = detail.production_plan_id
         LEFT JOIN daoxin_crm_order_detail orderDetail on detail.order_detail_id = orderDetail.detail_id
         LEFT JOIN daoxin_crm_order `order` on `order`.order_id = orderDetail.order_id
-        where 1 = 1
+        where 1 = 1 and plan.display = 1
                 <if test="paramCondition.productionPlanId != null">
                         and plan.production_plan_id like CONCAT('%',#{paramCondition.productionPlanId},'%')
                 </if>

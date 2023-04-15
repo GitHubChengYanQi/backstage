@@ -35,18 +35,24 @@ public class PartsResult implements Serializable {
     private static final long serialVersionUID = 1L;
     @JSONField(serializeUsing= ToStringSerializer.class)
     private Long skuId;
+    private Long productionTaskId;
     private List<BackSku> backSkus;
     private SkuResult skuResult;
     private UserResult userResult;
     private SpuResult spuResult;
     private Integer status;
-    private Item item;;
+    private Item item;
+    private Long parentId;
+    private Integer done;
     //零件
     private List<PartsResult> partsResults;
 
     private List<ErpPartsDetailResult> parts;
 
+
     private String name;
+
+    private String version;
 
     private Double bomNum;  //配套数量
 

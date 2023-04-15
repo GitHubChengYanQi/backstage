@@ -110,7 +110,7 @@ public class SkuController extends BaseController {
         Map<String, Sku> skuMap = this.skuService.add(skuParam);
 
 
-        if (ToolUtil.isNotEmpty(skuParam.getGeneralFormDataParams()) || skuParam.getGeneralFormDataParams().size() > 0) {
+        if (ToolUtil.isNotEmpty(skuParam.getGeneralFormDataParams())) {
             for (GeneralFormDataParam generalFormDataParam : skuParam.getGeneralFormDataParams()) {
                 generalFormDataParam.setTableName("goods_sku");
             }

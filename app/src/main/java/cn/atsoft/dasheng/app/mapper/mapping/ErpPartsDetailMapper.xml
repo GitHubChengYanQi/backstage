@@ -17,13 +17,14 @@
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
         <result column="note" property="note"/>
+        <result column="version_bom_id" property="versionBomId"/>
         <result column="auto_outstock" property="autoOutstock"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         parts_detail_id
-        AS "partsDetailId", attribute AS "attribute",parts_id AS "partsId", spu_id AS "spuId",sku_id AS "skuId", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", note AS "note" , auto_outstock AS "autoOutstock"
+        AS "partsDetailId",version_bom_id AS "versionBomId" ,attribute AS "attribute",parts_id AS "partsId", spu_id AS "spuId",sku_id AS "skuId", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", note AS "note" , auto_outstock AS "autoOutstock"
     </sql>
 
 
@@ -157,7 +158,7 @@
     <select id="pageBomList" resultType="cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult"
             parameterType="cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam">
 
-        SELECT daoxin_erp_parts_detail.parts_id as partId,
+        SELECT daoxin_erp_parts_detail.parts_id as partId,version_bom_id AS "versionBomId",
         daoxin_erp_parts_detail.number as number,
         goods_sku.sku_id as skuId,
         daoxin_erp_parts_detail.create_time as createTime
@@ -180,7 +181,7 @@
     <select id=" allBomList" resultType="cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult"
             parameterType="cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam">
 
-        SELECT daoxin_erp_parts_detail.parts_id as partId,
+        SELECT daoxin_erp_parts_detail.parts_id as partId,version_bom_id AS "versionBomId",
         daoxin_erp_parts_detail.number as number,
         goods_sku.sku_id as skuId,
         daoxin_erp_parts_detail.create_time as createTime

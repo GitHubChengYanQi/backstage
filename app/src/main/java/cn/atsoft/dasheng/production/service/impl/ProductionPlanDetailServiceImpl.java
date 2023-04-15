@@ -8,6 +8,9 @@ import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.bom.entity.RestBom;
+import cn.atsoft.dasheng.bom.model.result.RestBomResult;
+import cn.atsoft.dasheng.bom.service.RestBomService;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -52,7 +55,7 @@ public class ProductionPlanDetailServiceImpl extends ServiceImpl<ProductionPlanD
     @Autowired
     private StockDetailsService stockDetailsService;
     @Autowired
-    private PartsService partsService;
+    private RestBomService partsService;
     @Autowired
     private ProcessRouteService routeService;
     @Autowired
@@ -84,7 +87,7 @@ public class ProductionPlanDetailServiceImpl extends ServiceImpl<ProductionPlanD
 
     public void getItemBom(List<ProductionPlanDetailResult> detailResults) {
 
-        List<Parts> partsList = partsService.query().eq("display", 1).list();
+        List<RestBom> partsList = partsService.query().eq("display", 1).list();
         List<ProcessRoute> processRoutes = routeService.list();
 
         List<ProductionPlanDetailResult> ok = new ArrayList<>();
@@ -113,12 +116,12 @@ public class ProductionPlanDetailServiceImpl extends ServiceImpl<ProductionPlanD
      * @param processRoutes
      * @return
      */
-    private boolean productionBom(ProductionPlanDetailResult detailResult, List<Parts> partsList, List<ProcessRoute> processRoutes) {
-        for (Parts parts : partsList) {
+    private boolean productionBom(ProductionPlanDetailResult detailResult, List<RestBom> partsList, List<ProcessRoute> processRoutes) {
+        for (RestBom parts : partsList) {
             for (ProcessRoute processRoute : processRoutes) {
                 if (detailResult.getSkuId().equals(parts.getSkuId())
-                        && parts.getType().equals("2")
-                        && processRoute.getPartsId().equals(parts.getPartsId())) {
+
+                        && processRoute.getPartsId().equals(parts.getBomId())) {
                     return true;
                 }
             }
@@ -133,9 +136,9 @@ public class ProductionPlanDetailServiceImpl extends ServiceImpl<ProductionPlanD
      * @param partsList
      * @return
      */
-    private boolean designBom(ProductionPlanDetailResult detailResult, List<Parts> partsList) {
-        for (Parts parts : partsList) {
-            if (parts.getType().equals("1") && parts.getSkuId().equals(detailResult.getSkuId())) {
+    private boolean designBom(ProductionPlanDetailResult detailResult, List<RestBom> partsList) {
+        for (RestBom parts : partsList) {
+            if (parts.getSkuId().equals(detailResult.getSkuId())) {
                 return true;
             }
         }
@@ -209,15 +212,15 @@ public class ProductionPlanDetailServiceImpl extends ServiceImpl<ProductionPlanD
         List<ProductionPlanDetail> details = planIds.size() == 0 ? new ArrayList<>() : this.query().in("production_plan_id", planIds).eq("display", 1).list();
         List<ProductionPlanDetailResult> productionPlanDetailResults = new ArrayList<>();
         List<Long> partList = details.stream().map(ProductionPlanDetail::getPartsId).collect(Collectors.toList());
-        List<Parts> parts =partList.size() == 0 ? new ArrayList<>() : partsService.listByIds(partList);
+        List<RestBom> parts =partList.size() == 0 ? new ArrayList<>() : partsService.listByIds(partList);
 
 
         for (ProductionPlanDetail detail : details) {
             ProductionPlanDetailResult productionPlanDetailResult = new ProductionPlanDetailResult();
             ToolUtil.copyProperties(detail,productionPlanDetailResult);
-            for (Parts part : parts) {
-                if (ToolUtil.isNotEmpty(detail.getPartsId())){
-                    PartsResult partsResult = BeanUtil.copyProperties(part, PartsResult.class);
+            for (RestBom part : parts) {
+                if (ToolUtil.isNotEmpty(detail.getPartsId()) && detail.getPartsId().equals(part.getBomId())){
+                    RestBomResult partsResult = BeanUtil.copyProperties(part, RestBomResult.class);
                     productionPlanDetailResult.setPartsResult(partsResult);
                     break;
                 }

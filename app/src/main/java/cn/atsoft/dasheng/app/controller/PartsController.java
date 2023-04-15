@@ -30,6 +30,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -157,7 +158,7 @@ public class PartsController extends BaseController {
     public ResponseData detail(@RequestBody PartsParam partsParam) {
         Parts detail = this.partsService.getById(partsParam.getPartsId());
         PartsResult result = new PartsResult();
-if (ToolUtil.isNotEmpty(detail)) {
+        if (ToolUtil.isNotEmpty(detail)) {
             ToolUtil.copyProperties(detail, result);
         }
 
@@ -175,6 +176,9 @@ if (ToolUtil.isNotEmpty(detail)) {
             erpPartsDetailParams.add(erpPartsDetailResult);
             skuIds.add(erpPartsDetail.getSkuId());
         }
+        List<Long> childrenIds = erpPartsDetails.stream().map(ErpPartsDetail::getVersionBomId).collect(Collectors.toList());
+        List<Parts> parts = childrenIds.size() == 0 ? new ArrayList<>() : partsService.listByIds(childrenIds);
+
 
         Item item = new Item();
         if (ToolUtil.isNotEmpty(detail.getSkuId())) {
@@ -192,6 +196,12 @@ if (ToolUtil.isNotEmpty(detail)) {
                 if (skuResult.getSkuId().equals(erpPartsDetailParam.getSkuId())) {
                     erpPartsDetailParam.setSkuResult(skuResult);
                     erpPartsDetailParam.setCoding(skuResult.getStandard());
+                    break;
+                }
+            }
+            for (Parts part : parts) {
+                if (ToolUtil.isNotEmpty(erpPartsDetailParam.getVersionBomId()) && erpPartsDetailParam.getVersionBomId().equals(part.getPartsId())){
+                    erpPartsDetailParam.setVersion(part.getName());
                     break;
                 }
             }
@@ -230,7 +240,7 @@ if (ToolUtil.isNotEmpty(detail)) {
     @RequestMapping(value = "/getByBomId", method = RequestMethod.POST)
     public ResponseData getByBomId(@RequestBody PartsParam param) {
 
-        return ResponseData.success(this.partsService.getByBomId(param.getPartsId(),param.getNumber()));
+        return ResponseData.success(this.partsService.getByBomId(param.getPartsId(), param.getNumber()));
     }
 
     /**

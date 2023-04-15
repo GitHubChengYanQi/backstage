@@ -44,6 +44,19 @@ public class ProductionPlanController extends BaseController {
     }
 
     /**
+     * 新增接口
+     *
+     * @author
+     * @Date 2022-02-25
+     */
+    @RequestMapping(value = "/addByBom", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData addByBom(@RequestBody ProductionPlanParam productionPlanParam) {
+        this.productionPlanService.addByBom(productionPlanParam);
+        return ResponseData.success();
+    }
+
+    /**
      * 编辑接口
      *
      * @author 

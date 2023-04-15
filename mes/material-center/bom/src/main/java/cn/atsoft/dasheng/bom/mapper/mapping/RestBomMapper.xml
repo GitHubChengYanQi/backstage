@@ -28,6 +28,19 @@
         create_user AS "createUser",
         update_user AS "updateUser"
     </sql>
+    <sql id="LeftJoin">
+            b.bom_id AS "bomId",
+            b.sku_id AS "skuId",
+            b.version AS "version",
+            b.note AS "note",
+            b.children AS "children",
+            b.childrens AS "childrens",
+            b.create_time AS "createTime",
+            b.update_time AS "updateTime",
+            b.create_user AS "createUser",
+            b.update_user AS "updateUser"
+
+    </sql>
     <select id="customList" resultType="cn.atsoft.dasheng.bom.model.result.RestBomResult" parameterType="cn.atsoft.dasheng.bom.model.params.RestBomParam">
         select
         <include refid="Base_Column_List"/>
@@ -42,8 +55,66 @@
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.bom.model.result.RestBomResult" parameterType="cn.atsoft.dasheng.bom.model.params.RestBomParam">
         select
-        <include refid="Base_Column_List"/>
-        from daoxin_erp_bom where 1 = 1
+        <include refid="LeftJoin"/>
+        FROM
+        daoxin_erp_bom b
+        LEFT JOIN goods_sku s ON b.sku_id = s.sku_id
+        where  1 = 1
+        <if test="paramCondition.bomId != null">
+            and b.bom_id like CONCAT('%',#{paramCondition.partsId},'%')
+        </if>
+<!--        <if test="paramCondition.partIds != null and  paramCondition.partIds.size>0">-->
+<!--            and b.bom_id in-->
+<!--            <foreach collection="paramCondition.partIds" separator="," open="(" item="state" index="index" close=")">-->
+<!--                #{state}-->
+<!--            </foreach>-->
+<!--        </if>-->
+        <if test="paramCondition.skuId != null">
+            and b.sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and b.create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and b.deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+<!--        <if test="paramCondition.skuName != null and paramCondition.skuName != ''">-->
+<!--            and b.sku_id in (-->
+<!--                select sku_id from view_sku-->
+<!--                where 1 = 1 and (-->
+<!--                sku_name like CONCAT('%',#{paramCondition.keywords},'%')-->
+<!--                or-->
+<!--                spu_name like CONCAT('%',#{paramCondition.keywords},'%')-->
+<!--                or-->
+<!--                category_name like CONCAT('%',#{paramCondition.keywords},'%')-->
+<!--                or-->
+<!--                standard like CONCAT('%',#{paramCondition.keywords},'%')-->
+<!--                or-->
+<!--                specifications like CONCAT('%',#{paramCondition.keywords},'%')-->
+<!--                )-->
+<!--            )-->
+<!--        </if>-->
+        <if test="paramCondition.keywords!=null and paramCondition.keywords!=''">
+            and (
+                b.version like CONCAT('%',#{paramCondition.keywords},'%')
+                or
+                b.sku_id in (
+                    select sku_id from view_sku
+                    where 1 = 1 and (
+                        sku_name like CONCAT('%',#{paramCondition.keywords},'%')
+                        or
+                        spu_name like CONCAT('%',#{paramCondition.keywords},'%')
+                        or
+                        category_name like CONCAT('%',#{paramCondition.keywords},'%')
+                        or
+                        standard like CONCAT('%',#{paramCondition.keywords},'%')
+                        or
+                        specifications like CONCAT('%',#{paramCondition.keywords},'%')
+                    )
+                )
+
+            )
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.bom.model.params.RestBomParam">

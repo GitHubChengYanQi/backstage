@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
-import cn.atsoft.dasheng.goods.sku.model.result.RestSkuResult;
 import cn.atsoft.dasheng.goods.sku.model.result.SkuListResult;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

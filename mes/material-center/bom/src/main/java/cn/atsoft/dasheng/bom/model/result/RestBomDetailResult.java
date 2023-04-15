@@ -29,6 +29,9 @@ public class RestBomDetailResult {
     @ApiModelProperty("note")
     private String note;
 
+    @ApiModelProperty("autoOutstock")
+    private Integer autoOutstock;
+
     /**
      * 创建时间
      */

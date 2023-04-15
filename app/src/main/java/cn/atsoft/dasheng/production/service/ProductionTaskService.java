@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.production.service;
 
+import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.bom.model.result.RestBomResult;
 import cn.atsoft.dasheng.production.entity.ProductionTask;
+import cn.atsoft.dasheng.production.model.params.ProductionTaskByCardParam;
 import cn.atsoft.dasheng.production.model.params.ProductionTaskParam;
 import cn.atsoft.dasheng.production.model.result.ProductionTaskResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -42,7 +46,7 @@ public interface ProductionTaskService extends IService<ProductionTask> {
      */
     ProductionTask update(ProductionTaskParam param);
 
-    ProductionTask Receive(ProductionTaskParam param);
+    ProductionTask receive(ProductionTaskParam param);
 
     ProductionTask changeUser(ProductionTaskParam param);
 
@@ -75,4 +79,15 @@ public interface ProductionTaskService extends IService<ProductionTask> {
     List<ProductionTaskResult> resultsByWorkOrderIds(List<Long> workOrderIds);
 
     List<ProductionTaskResult> resultsByIds(List<Long> taskIds);
+
+    void createTaskByBom(Long bomId, Integer num, String source, Long sourceId, Long cardId);
+
+    void createTaskByBom(Long bomId, Integer num, Long cardId);
+
+    void createTaskByBom(ProductionTaskByCardParam param);
+
+    @Transactional
+    void doneTasks(ProductionTaskByCardParam param);
+
+    List<RestBomResult> formatBomList(List<ProductionTaskResult> productionTaskResults);
 }

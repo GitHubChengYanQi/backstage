@@ -42,7 +42,7 @@ public class ProductionTaskDetail implements Serializable {
     /**
      * 部门编号
      */
-    @TableField("deptId")
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
 
     /**
@@ -81,13 +81,13 @@ public class ProductionTaskDetail implements Serializable {
     private Long outSkuId;
 
     /**
-     * 实物
+     * 质检方案
      */
     @TableField("quality_id")
     private Long qualityId;
 
     /**
-     * 实物
+     * 自我质检方案
      */
     @TableField("my_quality_id")
     private Long myQualityId;

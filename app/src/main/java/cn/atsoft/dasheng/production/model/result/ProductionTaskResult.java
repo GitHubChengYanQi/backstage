@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.ToStringSerializer;
@@ -25,13 +26,16 @@ public class ProductionTaskResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private UserResult createUserResult;
+    private SkuSimpleResult skuResult;
     private UserResult userResult;
     private List<UserResult> userResults;
 
+    private Long parentPartsId;
+    private Long partsId;
     private ProductionWorkOrderResult workOrderResult;
 
     private ShipSetpResult shipSetpResult;
-
+    @JSONField(serialize = false)
     private List<ProductionTaskDetailResult> taskDetailResults;
 
 

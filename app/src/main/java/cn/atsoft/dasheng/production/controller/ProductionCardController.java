@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionCard;
 import cn.atsoft.dasheng.production.model.params.ProductionCardParam;
 import cn.atsoft.dasheng.production.model.result.ProductionCardResult;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -86,6 +88,7 @@ public class ProductionCardController extends BaseController {
         if (ToolUtil.isNotEmpty(detail)) {
             ToolUtil.copyProperties(detail, result);
         }
+        this.productionCardService.format(Collections.singletonList(result));
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);
@@ -104,6 +107,24 @@ public class ProductionCardController extends BaseController {
             productionCardParam = new ProductionCardParam();
         }
         return this.productionCardService.findPageBySpec(productionCardParam);
+    }
+    /**
+     * 查询列表
+     *
+     * @author
+     * @Date 2022-02-28
+     */
+    @RequestMapping(value = "/getBomListByCardId", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData getBomListByCardId(@RequestBody(required = false) ProductionCardParam productionCardParam) {
+        if(ToolUtil.isEmpty(productionCardParam)){
+            productionCardParam = new ProductionCardParam();
+        }
+
+        if (ToolUtil.isEmpty(productionCardParam.getProductionCardId())) {
+            throw new ServiceException(500,"参数错误");
+        }
+        return ResponseData.success(this.productionCardService.getBomListByCardId(productionCardParam.getProductionCardId()));
     }
 
 
