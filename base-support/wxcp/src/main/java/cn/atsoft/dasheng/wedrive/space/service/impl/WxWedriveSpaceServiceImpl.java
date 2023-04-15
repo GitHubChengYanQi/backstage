@@ -61,9 +61,10 @@ public class WxWedriveSpaceServiceImpl extends ServiceImpl<WxWedriveSpaceMapper,
         if (ToolUtil.isEmpty(param.getType())){
             throw new ServiceException(500,"类型格式错误");
         }
-        Integer count = this.lambdaQuery().eq(WxWedriveSpace::getType, param.getType()).eq(WxWedriveSpace::getSpaceName, param.getSpaceName()).eq(WxWedriveSpace::getDisplay, 1).count();
+        Integer count = this.lambdaQuery().eq(WxWedriveSpace::getType, param.getType()).eq(WxWedriveSpace::getDisplay, 1).count();
+        count += this.lambdaQuery().eq(WxWedriveSpace::getSpaceName,param.getSpaceName()).eq(WxWedriveSpace::getDisplay,1).count();
         if (count>0){
-            throw new ServiceException(500,"此分类此名称文件夹已经存在");
+            throw new ServiceException(500,"此分类或此名称文件夹 已经存在");
         }
 
         List<UserResult> userResultsByIds = userService.getUserResultsByIds(param.getUserIds());
