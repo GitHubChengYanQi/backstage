@@ -30,9 +30,10 @@ import java.util.List;
 public class UnitServiceImpl extends ServiceImpl<UnitMapper, Unit> implements UnitService {
 
     @Override
-    public void add(UnitParam param){
+    public Long  add(UnitParam param){
         Unit entity = getEntity(param);
         this.save(entity);
+        return entity.getUnitId();
     }
 
     @Override

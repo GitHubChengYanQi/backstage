@@ -45,8 +45,11 @@ public interface RestBomService extends IService<RestBom> {
      */
     PageInfo<RestBomResult> findPageBySpec(RestBomParam bomParam);
 
+    void format(List<RestBomResult> dataList);
+
     Integer countBySkuIdAndVersion(Long skuId, String version);
 
     List<RestBom> getBySkuIds(List<Long> skuIds);
 
+    List<RestBomResult> getByBomId(Long bomId, Integer number);
 }

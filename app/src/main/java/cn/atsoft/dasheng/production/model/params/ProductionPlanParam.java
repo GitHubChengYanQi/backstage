@@ -75,7 +75,7 @@ public class ProductionPlanParam implements Serializable, BaseValidatingParam {
      * 负责人
      */
     @ApiModelProperty("负责人")
-    private Long userId;
+    private String userId;
 
     /**
      * 备注

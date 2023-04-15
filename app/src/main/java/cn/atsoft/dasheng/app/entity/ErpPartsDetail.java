@@ -49,6 +49,11 @@ public class ErpPartsDetail implements Serializable {
      */
     @TableField("parts_id")
     private Long partsId;
+    /**
+     * 组成物品id
+     */
+    @TableField("version_bom_id")
+    private Long versionBomId;
 
     public Long getSkuId() {
         return skuId;
@@ -222,11 +227,23 @@ public class ErpPartsDetail implements Serializable {
         this.autoOutstock = autoOutstock;
     }
 
+    public Long getVersionBomId() {
+        return versionBomId;
+    }
+
+    public void setVersionBomId(Long versionBomId) {
+        this.versionBomId = versionBomId;
+    }
+
     @Override
     public String toString() {
         return "ErpPartsDetail{" +
                 "partsDetailId=" + partsDetailId +
-                ", attribute=" + attribute +
+                ", attribute='" + attribute + '\'' +
+                ", spuId=" + spuId +
+                ", partsId=" + partsId +
+                ", versionBomId=" + versionBomId +
+                ", skuId=" + skuId +
                 ", number=" + number +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
@@ -234,7 +251,8 @@ public class ErpPartsDetail implements Serializable {
                 ", updateUser=" + updateUser +
                 ", display=" + display +
                 ", deptId=" + deptId +
-                ", note=" + note +
-                "}";
+                ", note='" + note + '\'' +
+                ", autoOutstock=" + autoOutstock +
+                '}';
     }
 }

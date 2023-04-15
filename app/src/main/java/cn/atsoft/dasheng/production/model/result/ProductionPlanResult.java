@@ -22,8 +22,18 @@ public class ProductionPlanResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private List<ProductionPlanDetailResult> planDetailResults;
-
+    private Integer skuCount;
     private UserResult userResult;
+    private List<UserResult> userList;
+
+    private Integer bomCount;
+    private Integer receivedCount;
+
+    private Integer numberCount;
+
+    private Integer cartCount;
+    private Integer doneCartCount;
+    private Integer doneBomCount;
 
     private UserResult createUserResult;
 
@@ -76,7 +86,7 @@ public class ProductionPlanResult implements Serializable {
      * 负责人
      */
     @ApiModelProperty("负责人")
-    private Long userId;
+    private String userId;
 
     /**
      * 备注

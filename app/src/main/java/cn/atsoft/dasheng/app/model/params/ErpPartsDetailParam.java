@@ -29,6 +29,9 @@ public class ErpPartsDetailParam implements Serializable, BaseValidatingParam {
 
     private Boolean all;
 
+    @ApiModelProperty("自身存在bom 的话  传自身bomId")
+    private Long versionBomId;
+
     /**
      * 清单详情id
      */

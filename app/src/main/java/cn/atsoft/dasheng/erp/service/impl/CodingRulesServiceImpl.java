@@ -288,12 +288,15 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
 
         if (rules.contains("${skuClass}")) {
             Spu spu = spuService.getById(spuId);
-            String codings = spuClassificationService.getCodings(spu.getSpuClassificationId());
-            if (ToolUtil.isEmpty(codings)) {
-                codings = "";
+            if (ToolUtil.isNotEmpty(spu)) {
+                String codings = spuClassificationService.getCodings(spu.getSpuClassificationId());
+
+                if (ToolUtil.isEmpty(codings)) {
+                    codings = "";
+                }
+                rules = rules.replace("${skuClass}", codings);
+                stringBuffer.append(codings);
             }
-            rules = rules.replace("${skuClass}", codings);
-            stringBuffer.append(codings);
         }
 
         Pattern compile = Pattern.compile("\\$\\{(serial.*?(\\[(\\d[0-9]?)\\]))\\}");

@@ -25,7 +25,7 @@ public interface UnitService extends IService<Unit> {
      * @author cheng
      * @Date 2021-08-11
      */
-    void add(UnitParam param);
+    Long add(UnitParam param);
 
     /**
      * 删除

@@ -35,7 +35,7 @@ public interface RestBomMapper extends BaseMapper<RestBom> {
      * @author Captain_Jazz
      * @Date 2022-07-25
      */
-    Page<RestBomParam> customPageList(@Param("page") Page page, @Param("paramCondition") RestBomParam bomParam);
+    Page<RestBomResult> customPageList(@Param("page") Page page, @Param("paramCondition") RestBomParam bomParam);
 
     /**
      * 获取分页map列表

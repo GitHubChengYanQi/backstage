@@ -40,14 +40,14 @@ import java.util.Map;
  * @Date 2021-10-21 08:41:22
  */
 @RestController
-@RequestMapping("/parts/{v1}")
+@RequestMapping("/parts/{version}")
 @Api(tags = "清单")
 public class PartsVersionController extends BaseController {
 
     @Autowired
     private PartsService partsService;
 
-    @ApiVersion("1.1")
+    @ApiVersion("1.1.1")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public ResponseData add(@RequestBody  PartsParam partsParam) {
         Parts parts = this.partsService.newAdd(partsParam);

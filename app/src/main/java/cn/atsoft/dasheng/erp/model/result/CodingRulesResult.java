@@ -45,7 +45,7 @@ public class CodingRulesResult implements Serializable {
      * 状态
      */
     private Integer state;
-    private Integer module;
+    private String  module;
     /**
      * 排序
      */

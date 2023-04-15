@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
@@ -9,18 +10,20 @@ import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
-import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.bom.entity.RestBom;
+import cn.atsoft.dasheng.bom.entity.RestBomDetail;
+import cn.atsoft.dasheng.bom.model.result.RestBomResult;
+import cn.atsoft.dasheng.bom.service.RestBomDetailService;
+import cn.atsoft.dasheng.bom.service.RestBomService;
 import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.CodingRules;
+import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.form.entity.ActivitiProcess;
-import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.ActivitiSetpSet;
 import cn.atsoft.dasheng.form.entity.ActivitiSetpSetDetail;
-import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiSetpSetDetailResult;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.message.enmu.MicroServiceType;
@@ -31,6 +34,9 @@ import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.*;
 import cn.atsoft.dasheng.production.mapper.ProductionTaskMapper;
+import cn.atsoft.dasheng.production.model.CreateProductionTask;
+import cn.atsoft.dasheng.production.model.params.ProductionJobBookingParam;
+import cn.atsoft.dasheng.production.model.params.ProductionTaskByCardParam;
 import cn.atsoft.dasheng.production.model.params.ProductionTaskParam;
 import cn.atsoft.dasheng.production.model.request.JobBookingDetailCount;
 import cn.atsoft.dasheng.production.model.request.SavePickListsObject;
@@ -40,10 +46,10 @@ import cn.atsoft.dasheng.production.model.result.ProductionWorkOrderResult;
 import cn.atsoft.dasheng.production.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
-import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sendTemplate.pojo.MarkDownTemplateTypeEnum;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -53,9 +59,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -104,9 +108,9 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     @Autowired
     private ActivitiSetpSetService setpSetService;
     @Autowired
-    private PartsService partsService;
+    private RestBomService partsService;
     @Autowired
-    private ErpPartsDetailService partsDetailService;
+    private RestBomDetailService partsDetailService;
     @Autowired
     private StockDetailsService stockDetailsService;
     @Autowired
@@ -121,17 +125,17 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     @Autowired
     private CodingRulesService codingRulesService;
 
+    @Autowired
+    private ProductionCardService cardService;
+
+    @Autowired
+    private RestBomService bomService;
+
     @Override
     @Transactional
     public void add(ProductionTaskParam param) {
         if (ToolUtil.isEmpty(param.getCoding())) {
-            CodingRules codingRules = codingRulesService.query().eq("module", "18").eq("state", 1).one();
-            if (ToolUtil.isNotEmpty(codingRules)) {
-                String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
-                param.setCoding(coding);
-            } else {
-                throw new ServiceException(500, "请配置生产任务单据编码规则");
-            }
+            param.setCoding(genCoding());
         }
         ProductionWorkOrder productionWorkOrder = productionWorkOrderService.getById(param.getWorkOrderId());
         List<ActivitiSetpSetDetail> setpSetDetails = activitiSetpSetDetailService.query().eq("setps_id", productionWorkOrder.getStepsId()).eq("type", "out").list();
@@ -143,12 +147,11 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
                 skuIds.add(setpSetDetail.getSkuId());
             }
             skuIds = skuIds.stream().distinct().collect(Collectors.toList());
-            List<Parts> list = partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
+            List<RestBom> list = partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list ();
             if (list.size() != skuIds.size()) {
                 throw new ServiceException(500, "有物料不存在Bom无法创建");
             }
         }
-
 
 
         /**
@@ -325,84 +328,84 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
     }
 
     private void checkStockDetail(ProductionTaskParam param, ProductionWorkOrder workOrder) {
-        Long stepsId = workOrder.getStepsId();
-        ActivitiSetpSet setpSet = setpSetService.query().eq("setps_id", stepsId).one();
-        List<ActivitiSetpSetDetailResult> setpSetDetails = activitiSetpSetDetailService.getResultByStepsIds(new ArrayList<Long>() {{
-            add(stepsId);
-        }});
-        if (setpSet.getProductionType().equals("in")) {
-
-        } else if (setpSet.getProductionType().equals("out")) {
-            List<Long> skuIds = new ArrayList<>();
-            for (ActivitiSetpSetDetailResult setpSetDetail : setpSetDetails) {
-                skuIds.add(setpSetDetail.getSkuId());
-            }
-            List<Long> partsIds = new ArrayList<>();
-            List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
-            List<PartsResult> partsResults = new ArrayList<>();
-            for (Parts part : parts) {
-                partsIds.add(part.getPartsId());
-                PartsResult partsResult = new PartsResult();
-                ToolUtil.copyProperties(part, partsResult);
-                partsResults.add(partsResult);
-            }
-            List<ErpPartsDetailResult> details = partsIds.size() == 0 ? new ArrayList<>() : partsDetailService.getDetails(partsIds);
-            List<Long> partsDetailSkuId = new ArrayList<>();
-            for (ErpPartsDetailResult detail : details) {
-                partsDetailSkuId.add(detail.getSkuId());
-            }
-            /**
-             * 查询过滤掉有子bom的物料
-             */
-            List<Long> childrenPartsSkuId = new ArrayList<>();
-            List<Parts> childrenParts = partsDetailSkuId.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", partsDetailSkuId).eq("display", 1).eq("status", 99).list();
-            for (Parts childrenPart : childrenParts) {
-                childrenPartsSkuId.add(childrenPart.getSkuId());
-            }
-            partsDetailSkuId.removeAll(childrenPartsSkuId);
-
-            for (PartsResult partsResult : partsResults) {
-                List<ErpPartsDetailResult> partsDetailResults = new ArrayList<>();
-                for (ErpPartsDetailResult detail : details) {
-                    if (partsResult.getPartsId().equals(detail.getPartsId())) {
-                        partsDetailResults.add(detail);
-                    }
-                }
-                partsResult.setParts(partsDetailResults);
-            }
-            details.clear();
-            for (ActivitiSetpSetDetailResult setpSetDetail : setpSetDetails) {
-                for (PartsResult partsResult : partsResults) {
-                    if (setpSetDetail.getSkuId().equals(partsResult.getSkuId())) {
-                        for (ErpPartsDetailResult part : partsResult.getParts()) {
-                            part.setNumber(part.getNumber() * setpSetDetail.getNum());
-                            details.add(part);
-                        }
-                    }
-                }
-            }
-
-            details = details.stream().collect(Collectors.toMap(ErpPartsDetailResult::getSkuId, a -> a, (o1, o2) -> {
-                o1.setNumber(o1.getNumber() + o2.getNumber());
-                return o1;
-            })).values().stream().collect(Collectors.toList());
-
-            List<StockDetails> stockDetails = partsDetailSkuId.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("sku_id", partsDetailSkuId).list();
-            stockDetails = stockDetails.stream().collect(Collectors.toMap(StockDetails::getSkuId, a -> a, (o1, o2) -> {
-                o1.setNumber(o1.getNumber() + o2.getNumber());
-                return o1;
-            })).values().stream().collect(Collectors.toList());
-            if (stockDetails.size() == 0 && partsDetailSkuId.size() != 0) {
-                throw new ServiceException(500, "库存数量不足 不可以直接投入生产");
-            }
-            for (ErpPartsDetailResult detail : details) {
-                for (StockDetails stockDetail : stockDetails) {
-                    if (detail.getSkuId().equals(stockDetail.getSkuId()) && detail.getNumber() > stockDetail.getNumber()) {
-                        throw new ServiceException(500, "库存数量不足 不可以直接投入生产");
-                    }
-                }
-            }
-        }
+//        Long stepsId = workOrder.getStepsId();
+//        ActivitiSetpSet setpSet = setpSetService.query().eq("setps_id", stepsId).one();
+//        List<ActivitiSetpSetDetailResult> setpSetDetails = activitiSetpSetDetailService.getResultByStepsIds(new ArrayList<Long>() {{
+//            add(stepsId);
+//        }});
+//        if (setpSet.getProductionType().equals("in")) {
+//
+//        } else if (setpSet.getProductionType().equals("out")) {
+//            List<Long> skuIds = new ArrayList<>();
+//            for (ActivitiSetpSetDetailResult setpSetDetail : setpSetDetails) {
+//                skuIds.add(setpSetDetail.getSkuId());
+//            }
+//            List<Long> partsIds = new ArrayList<>();
+//            List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", skuIds).eq("display", 1).eq("status", 99).list();
+//            List<PartsResult> partsResults = new ArrayList<>();
+//            for (Parts part : parts) {
+//                partsIds.add(part.getPartsId());
+//                PartsResult partsResult = new PartsResult();
+//                ToolUtil.copyProperties(part, partsResult);
+//                partsResults.add(partsResult);
+//            }
+//            List<ErpPartsDetailResult> details = partsIds.size() == 0 ? new ArrayList<>() : partsDetailService.getDetails(partsIds);
+//            List<Long> partsDetailSkuId = new ArrayList<>();
+//            for (ErpPartsDetailResult detail : details) {
+//                partsDetailSkuId.add(detail.getSkuId());
+//            }
+//            /**
+//             * 查询过滤掉有子bom的物料
+//             */
+//            List<Long> childrenPartsSkuId = new ArrayList<>();
+//            List<Parts> childrenParts = partsDetailSkuId.size() == 0 ? new ArrayList<>() : partsService.query().in("sku_id", partsDetailSkuId).eq("display", 1).eq("status", 99).list();
+//            for (Parts childrenPart : childrenParts) {
+//                childrenPartsSkuId.add(childrenPart.getSkuId());
+//            }
+//            partsDetailSkuId.removeAll(childrenPartsSkuId);
+//
+//            for (PartsResult partsResult : partsResults) {
+//                List<ErpPartsDetailResult> partsDetailResults = new ArrayList<>();
+//                for (ErpPartsDetailResult detail : details) {
+//                    if (partsResult.getPartsId().equals(detail.getPartsId())) {
+//                        partsDetailResults.add(detail);
+//                    }
+//                }
+//                partsResult.setParts(partsDetailResults);
+//            }
+//            details.clear();
+//            for (ActivitiSetpSetDetailResult setpSetDetail : setpSetDetails) {
+//                for (PartsResult partsResult : partsResults) {
+//                    if (setpSetDetail.getSkuId().equals(partsResult.getSkuId())) {
+//                        for (ErpPartsDetailResult part : partsResult.getParts()) {
+//                            part.setNumber(part.getNumber() * setpSetDetail.getNum());
+//                            details.add(part);
+//                        }
+//                    }
+//                }
+//            }
+//
+//            details = details.stream().collect(Collectors.toMap(ErpPartsDetailResult::getSkuId, a -> a, (o1, o2) -> {
+//                o1.setNumber(o1.getNumber() + o2.getNumber());
+//                return o1;
+//            })).values().stream().collect(Collectors.toList());
+//
+//            List<StockDetails> stockDetails = partsDetailSkuId.size() == 0 ? new ArrayList<>() : stockDetailsService.query().in("sku_id", partsDetailSkuId).list();
+//            stockDetails = stockDetails.stream().collect(Collectors.toMap(StockDetails::getSkuId, a -> a, (o1, o2) -> {
+//                o1.setNumber(o1.getNumber() + o2.getNumber());
+//                return o1;
+//            })).values().stream().collect(Collectors.toList());
+//            if (stockDetails.size() == 0 && partsDetailSkuId.size() != 0) {
+//                throw new ServiceException(500, "库存数量不足 不可以直接投入生产");
+//            }
+//            for (ErpPartsDetailResult detail : details) {
+//                for (StockDetails stockDetail : stockDetails) {
+//                    if (detail.getSkuId().equals(stockDetail.getSkuId()) && detail.getNumber() > stockDetail.getNumber()) {
+//                        throw new ServiceException(500, "库存数量不足 不可以直接投入生产");
+//                    }
+//                }
+//            }
+//        }
 
     }
 
@@ -423,7 +426,7 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
      * @return
      */
     @Override
-    public ProductionTask Receive(ProductionTaskParam param) {
+    public ProductionTask receive(ProductionTaskParam param) {
 
         ProductionTask entity = this.getById(param.getProductionTaskId());
         ProductionWorkOrder productionWorkOrder = productionWorkOrderService.getById(entity.getWorkOrderId());
@@ -561,8 +564,15 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
         List<Long> userIds = new ArrayList<>();
         List<Long> workOrderIds = new ArrayList<>();
         List<Long> taskIds = new ArrayList<>();
-
+        List<Long> skuIds = param.stream().map(ProductionTaskResult::getSkuId).distinct().collect(Collectors.toList());
+        List<SkuSimpleResult> skuResults = skuService.simpleFormatSkuResult(skuIds);
         for (ProductionTaskResult productionTaskResult : param) {
+            for (SkuSimpleResult skuResult : skuResults) {
+                if (productionTaskResult.getSkuId().equals(skuResult.getSkuId())) {
+                    productionTaskResult.setSkuResult(skuResult);
+                    break;
+                }
+            }
             taskIds.add(productionTaskResult.getProductionTaskId());
             /**
              * 添加工单id
@@ -691,6 +701,200 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
             results.add(result);
         }
         return results;
+    }
+
+    @Override
+    @Transactional
+    public void createTaskByBom(Long bomId, Integer num, String source, Long sourceId, Long cardId) {
+        RestBom parts = partsService.getById(bomId);
+        List<CreateProductionTask> tasks = new ArrayList<>();
+
+
+        this.loopAddTask(tasks, 0L,parts, num,source,sourceId,cardId);
+
+        for (CreateProductionTask task : tasks) {
+            this.save(task.getProductionTask());
+            for (ProductionTaskDetail detail : task.getDetails()) {
+                detail.setProductionTaskId(task.getProductionTask().getProductionTaskId());
+            }
+            this.productionTaskDetailService.saveBatch(task.getDetails());
+        }
+        this.updateBatchById(tasks.stream().map(CreateProductionTask::getProductionTask).collect(Collectors.toList()));
+
+//        TODO 生产卡片  以及出库单
+    }
+    @Override
+    public void createTaskByBom(Long bomId, Integer num, Long cardId) {
+        RestBom bom = bomService.getById(bomId);
+        ProductionTask productionTask = this.lambdaQuery().eq(ProductionTask::getProductionCardId, cardId).eq(ProductionTask::getPartsId, bomId).eq(ProductionTask::getNumber, num).one();
+        if (ToolUtil.isNotEmpty(productionTask)){
+            productionTask.setUpdateTime(new Date());
+        }else {
+            productionTask = new ProductionTask();
+            productionTask.setUserId(LoginContextHolder.getContext().getUserId());
+            productionTask.setSkuId(bom.getSkuId());
+            productionTask.setProductionCardId(cardId);
+            productionTask.setStatus(99);
+            productionTask.setNumber(num);
+            productionTask.setPartsId(bomId);
+            this.save(productionTask);
+        }
+
+    }
+
+    @Override
+    @Transactional
+    public void createTaskByBom(ProductionTaskByCardParam param) {
+        List<ProductionTask> saveOrUpdateEntityList = new ArrayList<>();
+        for (ProductionTaskByCardParam.DetailParam detailParam : param.getDetails()) {
+            RestBom bom = partsService.getById(detailParam.getBomId());
+
+            ProductionTask productionTask = this.lambdaQuery().eq(ProductionTask::getProductionCardId, param.getCardId()).eq(ProductionTask::getPartsId, detailParam.getBomId()).eq(ProductionTask::getNumber, detailParam.getNumber()).one();
+            if (ToolUtil.isNotEmpty(productionTask)){
+                productionTask.setUpdateTime(new Date());
+            }else {
+                productionTask = new ProductionTask();
+                productionTask.setUserId(LoginContextHolder.getContext().getUserId());
+                productionTask.setSkuId(bom.getSkuId());
+                productionTask.setProductionCardId(param.getCardId());
+                productionTask.setParentPartsId(detailParam.getParentId());
+                productionTask.setStatus(99);
+                productionTask.setNumber(detailParam.getNumber());
+                productionTask.setPartsId(detailParam.getBomId());
+
+            }
+            saveOrUpdateEntityList.add(productionTask);
+        }
+        this.saveOrUpdateBatch(saveOrUpdateEntityList);
+    }
+    @Override
+    @Transactional
+    public void doneTasks(ProductionTaskByCardParam param) {
+        List<ProductionTask> productionTasks = this.listByIds(param.getTaskIds());
+        if (productionTasks.size()!=param.getTaskIds().size()){
+            throw new ServiceException(500,"参数错误");
+        }
+        for (ProductionTask productionTask : productionTasks) {
+            productionTask.setUserId(LoginContextHolder.getContext().getUserId());
+            productionTask.setStatus(99);
+            jobBookingService.save(new ProductionJobBooking(){{
+                setProductionTaskId(productionTask.getProductionTaskId());
+            }});
+        }
+
+        this.updateBatchById(productionTasks);
+        Long productionCardId = productionTasks.get(0).getProductionCardId();
+        //查询更新卡片状态
+        Integer count = this.lambdaQuery().eq(ProductionTask::getProductionCardId, productionCardId).eq(ProductionTask::getStatus, 0).count();
+        if (count==0){
+            cardService.updateById(new ProductionCard(){{
+                setProductionCardId(productionCardId);
+                setStatus(99);
+            }});
+        }
+    }
+
+    public void loopAddTask(List<CreateProductionTask> tasks, Long parentId ,RestBom parts, Integer number,String source,Long sourceId,Long cardId) {
+        List<RestBomDetail> partsDetails = partsDetailService.lambdaQuery().eq(RestBomDetail::getBomId,parts.getBomId()).list();
+
+        List<RestBomDetail> havePartDetailList = new ArrayList<>();
+
+
+        List<Long> versionBomIds = partsDetails.stream().map(RestBomDetail::getVersionBomId).distinct().collect(Collectors.toList());
+
+        List<RestBom> childrenPartList =versionBomIds.size() == 0? new ArrayList<>() : partsService.listByIds(versionBomIds);
+
+
+        for (RestBomDetail partsDetail : partsDetails) {
+            for (RestBom children : childrenPartList) {
+                if (children.getSkuId().equals(partsDetail.getSkuId())) {
+                    havePartDetailList.add(partsDetail);
+                    loopAddTask(tasks, parts.getBomId(),children, (int) (number * partsDetail.getNumber()),source,sourceId,cardId);
+                }
+            }
+        }
+
+        //去掉带bom的物料
+//        partsDetails.removeAll(havePartDetailList);
+        if(partsDetails.size()>0){
+            tasks.add(new CreateProductionTask() {{
+                ProductionTask productionTask = new ProductionTask();
+                productionTask.setCoding(genCoding());
+                productionTask.setSkuId(parts.getSkuId());
+                productionTask.setNumber(number);
+                productionTask.setSource(source);
+                productionTask.setSourceId(sourceId);
+                productionTask.setPartsId(parts.getBomId());
+                productionTask.setParentPartsId(parentId);
+                productionTask.setProductionCardId(cardId);
+                setProductionTask(productionTask);
+
+                List<ProductionTaskDetail> details = new ArrayList<>();
+
+                for (RestBomDetail partsDetail : partsDetails) {
+                        details.add(new ProductionTaskDetail() {{
+                            setOutSkuId(partsDetail.getSkuId());
+                            setNumber((int) (number * partsDetail.getNumber()));
+                        }});
+                }
+                setDetails(details);
+
+            }});
+        }
+
+    }
+
+
+    private String genCoding() {
+        CodingRules codingRules = codingRulesService.query().eq("module", "18").eq("state", 1).one();
+        if (ToolUtil.isNotEmpty(codingRules)) {
+            return codingRulesService.backCoding(codingRules.getCodingRulesId());
+        } else {
+            throw new ServiceException(500, "请配置生产任务单据编码规则");
+        }
+    }
+    @Override
+    public List<RestBomResult> formatBomList(List<ProductionTaskResult> productionTaskResults){
+        List<RestBomResult> partsResults = new ArrayList<>();
+        List<Long> partsIds = productionTaskResults.stream().map(ProductionTaskResult::getPartsId).collect(Collectors.toList());
+        List<RestBom> parts = partsIds.size() == 0? new ArrayList<>() : partsService.listByIds(partsIds);
+        List<Long> userIds = productionTaskResults.stream().map(ProductionTaskResult::getUserId).distinct().collect(Collectors.toList());
+        List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds);
+
+
+        for (ProductionTaskResult productionTaskResult : productionTaskResults) {
+            for (UserResult userResultsById : userResultsByIds) {
+                if (ToolUtil.isNotEmpty(productionTaskResult.getUserId()) && productionTaskResult.getUserId().equals(userResultsById.getUserId())){
+                    productionTaskResult.setUserResult(userResultsById);
+                }
+            }
+            for (RestBom part : parts) {
+                if (productionTaskResult.getPartsId().equals(part.getBomId())){
+
+                    RestBomResult partsResult = BeanUtil.copyProperties(part, RestBomResult.class);
+                    if (ToolUtil.isNotEmpty(productionTaskResult.getUserResult())) {
+                        partsResult.setUserResult(productionTaskResult.getUserResult());
+                    }
+                    partsResult.setSkuId(productionTaskResult.getSkuId());
+                    partsResult.setBomId(productionTaskResult.getPartsId());
+                    partsResult.setParentId(productionTaskResult.getParentPartsId());
+                    partsResult.setNumber(productionTaskResult.getNumber());
+                    partsResult.setProductionTaskId(productionTaskResult.getProductionTaskId());
+                    partsResult.setProductionTaskId(productionTaskResult.getProductionTaskId());
+                    if (productionTaskResult.getStatus().equals(99)){
+                        partsResult.setDone(1);
+                    }
+                    if (ToolUtil.isNotEmpty(productionTaskResult.getUpdateTime())) {
+                        partsResult.setLastTime(productionTaskResult.getUpdateTime());
+                    }
+                    partsResults.add(partsResult);
+                    break;
+                }
+            }
+
+        }
+        partsService.format(partsResults);
+        return partsResults;
     }
 
 }

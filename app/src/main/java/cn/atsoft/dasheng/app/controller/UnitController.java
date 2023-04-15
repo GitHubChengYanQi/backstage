@@ -46,8 +46,8 @@ public class UnitController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody UnitParam unitParam) {
-        this.unitService.add(unitParam);
-        return ResponseData.success();
+
+        return ResponseData.success(this.unitService.add(unitParam));
     }
 
     /**
