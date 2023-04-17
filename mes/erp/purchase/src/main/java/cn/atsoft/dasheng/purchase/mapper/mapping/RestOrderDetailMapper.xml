@@ -108,6 +108,24 @@
         <if test="paramCondition.paperType != null">
             and paper_type like CONCAT('%',#{paramCondition.paperType},'%')
         </if>
+        <if test="paramCondition.keyWords!=null and paramCondition.keyWords!=''">
+            and (
+            sku_id in (
+            select sku_id from view_sku
+            where 1 = 1 and (
+            sku_name like CONCAT('%',#{paramCondition.keywords},'%')
+            or
+            spu_name like CONCAT('%',#{paramCondition.keywords},'%')
+            or
+            category_name like CONCAT('%',#{paramCondition.keywords},'%')
+            or
+            standard like CONCAT('%',#{paramCondition.keywords},'%')
+            or
+            specifications like CONCAT('%',#{paramCondition.keywords},'%')
+            )
+            )
+            )
+        </if>
     </select>
     <select id="viewOrderDetail" resultType="cn.atsoft.dasheng.purchase.model.result.ViewResult"
             parameterType="cn.atsoft.dasheng.purchase.model.params.ViewParam">

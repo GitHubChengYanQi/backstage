@@ -213,7 +213,26 @@
             coding like CONCAT('%',#{paramCondition.keywords},'%')
                 or
             seller_id  in ( select customer_id from  daoxin_crm_customer where 1 = 1 and customer_name like CONCAT('%',#{paramCondition.keywords},'%') )
+            or order_id in (
+            select order_id from daoxin_crm_order_detail where sku_id in (
+            select sku_id from view_sku
+            where 1 = 1 and (
+            sku_name like CONCAT('%',#{paramCondition.keywords},'%')
+            or
+            spu_name like CONCAT('%',#{paramCondition.keywords},'%')
+            or
+            category_name like CONCAT('%',#{paramCondition.keywords},'%')
+            or
+            standard like CONCAT('%',#{paramCondition.keywords},'%')
+            or
+            specifications like CONCAT('%',#{paramCondition.keywords},'%')
             )
+            )
+
+            )
+            )
+
+
         </if>
         <if test="paramCondition.orderId != null">
             and order_id = #{paramCondition.orderId}
