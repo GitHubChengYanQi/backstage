@@ -25,6 +25,7 @@ public class RestOrderDetailParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
     private String remark;
+    private String keyWords;
     private Integer type;
     private Long orderDetailId;
 
