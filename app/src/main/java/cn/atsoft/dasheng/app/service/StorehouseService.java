@@ -41,7 +41,7 @@ public interface StorehouseService extends IService<Storehouse> {
      * @author
      * @Date 2021-07-15
      */
-    void update(StorehouseParam param);
+    Storehouse update(StorehouseParam param);
 
     /**
      * 查询单条数据，Specification模式
