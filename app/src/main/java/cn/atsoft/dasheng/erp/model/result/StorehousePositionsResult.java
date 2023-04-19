@@ -44,6 +44,8 @@ public class StorehousePositionsResult implements Serializable {
     @JSONField(serialize = false)
     private StorehousePositionsResult storehousePositionsResult;
 
+    private StorehousePositionsResult parent;
+
     private StorehousePositionsResult supper;
 
     @JSONField(serialize = false)

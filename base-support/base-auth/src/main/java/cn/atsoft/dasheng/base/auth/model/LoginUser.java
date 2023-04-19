@@ -46,6 +46,12 @@ public class LoginUser implements UserDetails, Serializable {
      */
     private String account;
 
+
+    /**
+     * 账号
+     */
+    private String phone;
+
     /**
      * 姓名
      */

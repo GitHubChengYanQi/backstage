@@ -55,11 +55,12 @@ public class StorehouseServiceImpl extends ServiceImpl<StorehouseMapper, Storeho
     }
 
     @Override
-    public void update(StorehouseParam param) {
+    public Storehouse update(StorehouseParam param) {
         Storehouse oldEntity = getOldEntity(param);
         Storehouse newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+        return newEntity;
     }
 
     @Override

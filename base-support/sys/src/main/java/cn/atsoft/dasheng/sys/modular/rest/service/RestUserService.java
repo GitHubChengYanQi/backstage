@@ -73,7 +73,14 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
      */
     @Transactional(rollbackFor = Exception.class)
     public void addUser(UserDto user) {
-
+        if (ToolUtil.isEmpty(user.getPhone())) {
+            throw new ServiceException(500, "请填写手机号");
+        } else {
+            Integer count = this.lambdaQuery().eq(RestUser::getPhone, user.getPhone()).count();
+            if (count > 0) {
+                throw new ServiceException(500, "手机号不能重复");
+            }
+        }
         // 判断账号是否重复
         RestUser theUser = this.getByAccount(user.getAccount());
         if (theUser != null) {
@@ -100,7 +107,14 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
     @Transactional(rollbackFor = Exception.class)
     public void editUser(UserDto user) {
         RestUser oldUser = this.getById(user.getUserId());
-
+        if (ToolUtil.isEmpty(user.getPhone())) {
+            throw new ServiceException(500, "请填写手机号");
+        } else {
+            Integer count = this.lambdaQuery().eq(RestUser::getPhone, user.getPhone()).ne(RestUser::getUserId, oldUser.getUserId()).count();
+            if (count > 0) {
+                throw new ServiceException(500, "手机号不能重复");
+            }
+        }
         if (oldUser == null) {
             throw new ServiceException(BizExceptionEnum.NO_THIS_USER);
         }
@@ -393,14 +407,16 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
 
         List<Map<String, Object>> menus = this.getUserMenuNodes(roleList);
         List<Map<String, Object>> mobielMenus = this.getUserMobielMenuNodes(roleList);
-
-        String portrait = this.baseMapper.headPortrait(LoginContextHolder.getContext().getUserId()); //获取企业微信头像
+//        String portrait = this.baseMapper.headPortrait(LoginContextHolder.getContext().getUserId()); //获取企业微信头像
         HashMap<String, Object> result = new HashMap<>();
         result.put("menus", menus);
         result.put("mobielMenus", mobielMenus);
 //        result.put("avatar", DefaultImages.defaultAvatarUrl());
-        result.put("avatar", portrait);
+        result.put("avatar", ToolUtil.isNotEmpty(user.getAvatar()) ? user.getAvatar() : DefaultImages.defaultAvatarUrl());
         result.put("name", user.getName());
+        if (ToolUtil.isNotEmpty(user.getPhone())) {
+            result.put("phone", user.getPhone());
+        }
         result.put("id", user.getId());
         result.put("dept", deptNames);
         result.put("role", roleName);
@@ -414,6 +430,7 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
      * @author fengshuonan
      * @Date 2019-05-04 17:12
      */
+
     public Map<String, Object> getUserInfo(Long userId) {
         RestUser user = this.getById(userId);
         Map<String, Object> map = RestUserFactory.removeUnSafeFieldsRest(user);
