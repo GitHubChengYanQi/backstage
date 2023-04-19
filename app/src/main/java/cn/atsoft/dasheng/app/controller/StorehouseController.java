@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -67,12 +68,13 @@ public class StorehouseController extends BaseController {
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody StorehouseParam storehouseParam) {
 
-        this.storehouseService.update(storehouseParam);
+        Storehouse update = this.storehouseService.update(storehouseParam);
+        StorehouseParam result = BeanUtil.copyProperties(update, StorehouseParam.class);
         if (storehouseParam.getCapacity() == null && storehouseParam.getMeasure() == null) {
-            return ResponseData.success();
+            return ResponseData.success(result);
         } else {
             if (storehouseParam.getCapacity() > 0 && storehouseParam.getMeasure() > 0) {
-                return ResponseData.success();
+                return ResponseData.success(result);
             } else {
                 return ResponseData.error("请输入正确值");
             }

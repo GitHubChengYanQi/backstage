@@ -23,6 +23,7 @@ import cn.atsoft.dasheng.sys.core.constant.state.ManagerStatus;
 import cn.atsoft.dasheng.sys.core.listener.ConfigListener;
 import cn.atsoft.dasheng.sys.core.util.SaltUtil;
 import cn.atsoft.dasheng.sys.modular.system.mapper.UserMapper;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.convert.Convert;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
@@ -181,7 +182,7 @@ public class AuthServiceImpl implements AuthService {
         if (ToolUtil.isEmpty(user)) {
             return null;
         }
-
+        List<UserResult> userResults = userMapper.listUserByIds(Collections.singletonList(user.getUserId()));
         LoginUser loginUser = UserFactory.createLoginUser(user);
 
         if (loginUser.getStatus().equals(CommonStatus.DISABLE.getCode())) {
@@ -215,7 +216,12 @@ public class AuthServiceImpl implements AuthService {
         //通过字典编码
         List<Map<String, Object>> dictsByCodes = dictService.getDictsByCodes(systemTypes);
         loginUser.setSystemTypes(dictsByCodes);
-
+        if (ToolUtil.isNotEmpty(userResults.get(0).getPhone())) {
+            loginUser.setPhone(userResults.get(0).getPhone());
+        }
+        if (ToolUtil.isNotEmpty(userResults.get(0).getAvatar())) {
+            loginUser.setAvatar(userResults.get(0).getAvatar());
+        }
         //设置权限列表
         Set<String> permissionSet = new HashSet<>();
         for (Long roleId : roleList) {

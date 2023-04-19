@@ -28,6 +28,7 @@ import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
@@ -200,6 +201,12 @@ public class StorehousePositionsController extends BaseController {
         List<Map<String, Object>> list = this.storehousePositionsService.listMaps();
         List<String> parentValue = StorehousePositionsSelectWrapper.fetchParentKey(list, Convert.toStr(detail.getPid()));
         result.setPidValue(parentValue);
+        if (ToolUtil.isNotEmpty(detail.getPid())){
+            StorehousePositions parent = this.storehousePositionsService.getById(detail.getPid());
+            if (ToolUtil.isNotEmpty(parent)){
+                result.setParent(BeanUtil.copyProperties(parent, StorehousePositionsResult.class));
+            }
+        }
         return ResponseData.success(result);
     }
 
