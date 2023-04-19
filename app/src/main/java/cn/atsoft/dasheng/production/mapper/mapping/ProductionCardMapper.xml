@@ -15,6 +15,7 @@
         <result column="theme" property="theme" />
         <result column="origin" property="origin" />
         <result column="display" property="display" />
+        <result column="status" property="status" />
         <result column="update_time" property="updateTime" />
         <result column="create_time" property="createTime" />
         <result column="update_user" property="updateUser" />
@@ -22,7 +23,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        production_card_id AS "productionCardId",source AS "source",source_id AS "sourceId", theme AS "theme" , origin AS "origin" ,work_order_id AS "workOrderId", sku_id AS "skuId", create_user AS "createUser",  deptId AS "deptId",tenant_id AS "tenantId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
+        production_card_id AS "productionCardId",status AS "status",source AS "source",source_id AS "sourceId", theme AS "theme" , origin AS "origin" ,work_order_id AS "workOrderId", sku_id AS "skuId", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser",`card_coding` AS "cardCoding"
     </sql>
     <sql id="grupByProducitonPlan">
         count(*) as grupByPlanId,production_card_id AS "productionCardId",source AS "source",source_id AS "sourceId", theme AS "theme" , origin AS "origin" ,work_order_id AS "workOrderId", sku_id AS "skuId", create_user AS "createUser",  deptId AS "deptId",tenant_id AS "tenantId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
@@ -58,6 +59,15 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_production_card where 1 = 1
+        <if test="paramCondition.source!=null and paramCondition.source!=''">
+            and source = #{paramCondition.source}
+        </if>
+        <if test="paramCondition.sourceId!=null">
+            and source_id = #{paramCondition.sourceId}
+        </if>
+        <if test="paramCondition.cardCoding!=null and paramCondition.cardCoding!=''">
+            and card_coding like CONCAT('%',#{paramCondition.cardCoding},'%')
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.ProductionCardParam">

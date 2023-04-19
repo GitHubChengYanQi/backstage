@@ -127,6 +127,12 @@ public class ProductionPlan implements Serializable {
     @TableField("files")
     private String files;
 
+    /**
+     * 文件
+     */
+    @TableField("bom_count")
+    private Integer bomCount;
+
     public String getType() {
         return type;
     }
@@ -169,6 +175,13 @@ public class ProductionPlan implements Serializable {
     @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
+    public Integer getBomCount() {
+        return bomCount;
+    }
+
+    public void setBomCount(Integer bomCount) {
+        this.bomCount = bomCount;
+    }
 
     public String getCoding() {
         return coding;

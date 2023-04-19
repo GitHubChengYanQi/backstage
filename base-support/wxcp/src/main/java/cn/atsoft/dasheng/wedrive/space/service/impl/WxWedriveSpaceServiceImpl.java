@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static me.chanjar.weixin.cp.constant.WxCpApiPathConsts.Oa.SPACE_DISMISS;
 import static me.chanjar.weixin.cp.constant.WxCpApiPathConsts.Oa.SPACE_INFO;
 
 /**
@@ -60,12 +61,18 @@ public class WxWedriveSpaceServiceImpl extends ServiceImpl<WxWedriveSpaceMapper,
         if (ToolUtil.isEmpty(param.getType())){
             throw new ServiceException(500,"类型格式错误");
         }
-        Integer count = this.lambdaQuery().eq(WxWedriveSpace::getType, param.getType()).eq(WxWedriveSpace::getSpaceName, param.getSpaceName()).eq(WxWedriveSpace::getDisplay, 1).count();
+        Integer count = this.lambdaQuery().eq(WxWedriveSpace::getType, param.getType()).eq(WxWedriveSpace::getDisplay, 1).count();
+        count += this.lambdaQuery().eq(WxWedriveSpace::getSpaceName,param.getSpaceName()).eq(WxWedriveSpace::getDisplay,1).count();
         if (count>0){
-            throw new ServiceException(500,"此分类此名称文件夹已经存在");
+            throw new ServiceException(500,"此分类或此名称文件夹 已经存在");
         }
 
         List<UserResult> userResultsByIds = userService.getUserResultsByIds(param.getUserIds());
+        for (UserResult userResultsById : userResultsByIds) {
+            if (ToolUtil.isEmpty(userResultsById.getOpenId())){
+                throw new ServiceException(500,userResultsById.getName()+" 的账号没绑定微信");
+            }
+        }
 //        配置
         List<WxCpSpaceCreateRequest.AuthInfo> infoList = new ArrayList<>();
         for (UserResult userResultsById : userResultsByIds) {
@@ -98,7 +105,7 @@ public class WxWedriveSpaceServiceImpl extends ServiceImpl<WxWedriveSpaceMapper,
 
 
         if (ToolUtil.isEmpty(spaceId)) {
-            throw new ServiceException(500, "参数出错误");
+            throw new ServiceException(500, "参数错误");
         }
         WxWedriveSpace entity = this.getById(spaceId);
         if (ToolUtil.isEmpty(entity)) {
@@ -118,11 +125,19 @@ public class WxWedriveSpaceServiceImpl extends ServiceImpl<WxWedriveSpaceMapper,
     @Override
     public WxCpBaseResp spaceAclAdd(WxWedriveSpaceParam param) throws WxErrorException {
         if (ToolUtil.isEmpty(param.getSpaceId())) {
-            throw new ServiceException(500, "参数出错误");
+            throw new ServiceException(500, "参数错误");
+        }
+        if (ToolUtil.isEmpty(param.getUserIds())){
+            throw new ServiceException(500,"请选择人员");
         }
         WxCpSpaceAclAddRequest request = new WxCpSpaceAclAddRequest();
 
         List<UserResult> userResultsByIds = userService.getUserResultsByIds(param.getUserIds());
+        for (UserResult userResultsById : userResultsByIds) {
+            if (ToolUtil.isEmpty(userResultsById.getOpenId())){
+                throw new ServiceException(500,userResultsById.getName()+" 的账号没绑定微信");
+            }
+        }
 //        配置
         List<WxCpSpaceAclAddRequest.AuthInfo> infoList = new ArrayList<>();
         for (UserResult userResultsById : userResultsByIds) {
@@ -146,10 +161,14 @@ public class WxWedriveSpaceServiceImpl extends ServiceImpl<WxWedriveSpaceMapper,
     @Override
     public WxCpBaseResp spaceAclDelete(WxWedriveSpaceParam param) throws WxErrorException {
         if (ToolUtil.isEmpty(param.getSpaceId())) {
-            throw new ServiceException(500, "参数出错误");
+            throw new ServiceException(500, "参数错误");
+        }
+        if (ToolUtil.isEmpty(param.getUserIds())){
+            throw new ServiceException(500,"请选择人员");
         }
         List<UserResult> userResultsByIds = userService.getUserResultsByIds(param.getUserIds());
         WxCpSpaceAclDelRequest request = new WxCpSpaceAclDelRequest();
+
 
         List<WxCpSpaceAclDelRequest.AuthInfo> infoList = new ArrayList<>();
         for (UserResult userResultsById : userResultsByIds) {
@@ -169,8 +188,22 @@ public class WxWedriveSpaceServiceImpl extends ServiceImpl<WxWedriveSpaceMapper,
     }
 
     @Override
-    public void delete(WxWedriveSpaceParam param) {
-        this.removeById(getKey(param));
+    public void delete(WxWedriveSpaceParam param) throws WxErrorException {
+        WxWedriveSpace oldEntity = this.getOldEntity(param);
+        if (ToolUtil.isEmpty(oldEntity)){
+            throw new ServiceException(500,"参数错误");
+        }
+        oldEntity.setDisplay(0);
+
+
+        String apiUrl = wxCpService.getWxCpClient().getWxCpConfigStorage().getApiUrl(SPACE_DISMISS);
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("spaceid", oldEntity.getSpaceId());
+        String responseContent = this. wxCpService.getWxCpClient().post(apiUrl, jsonObject.toString());
+        this.updateById(oldEntity);
+        WxCpBaseResp.fromJson(responseContent);
+        log.debug("删除微盘空间" + responseContent);
+
     }
 
     @Override
@@ -214,6 +247,28 @@ public class WxWedriveSpaceServiceImpl extends ServiceImpl<WxWedriveSpaceMapper,
         WxWedriveSpace entity = new WxWedriveSpace();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+    @Override
+    public WxCpBaseResp rename(WxWedriveSpaceParam param) throws WxErrorException {
+        WxWedriveSpace space = this.getById(param.getSpaceId());
+        if (ToolUtil.isEmpty(space)){
+            throw new ServiceException(500,"参数错误");
+        }
+        if (param.getSpaceName().length()>255){
+            throw new ServiceException(500,"名字不能过长");
+        }
+        Integer count = this.lambdaQuery().eq(WxWedriveSpace::getType, param.getType()).eq(WxWedriveSpace::getSpaceName, param.getSpaceName()).eq(WxWedriveSpace::getDisplay, 1).count();
+        if (count>0){
+            throw new ServiceException(500,"此分类此名称文件夹已经存在");
+        }
+        space.setSpaceName(param.getSpaceName());
+
+        WxCpSpaceRenameRequest wxCpSpaceRenameRequest = new WxCpSpaceRenameRequest();
+        wxCpSpaceRenameRequest.setSpaceId(param.getSpaceId());
+        wxCpSpaceRenameRequest.setSpaceName(space.getSpaceName());
+        WxCpBaseResp wxCpBaseResp = wxCpService.getWxCpClient().getOaWeDriveService().spaceRename(wxCpSpaceRenameRequest);
+        this.updateById(space);
+        return wxCpBaseResp;
     }
 
 }

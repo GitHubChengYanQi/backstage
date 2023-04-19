@@ -1,22 +1,19 @@
 package cn.atsoft.dasheng.audit.service;
 
 import cn.atsoft.dasheng.audit.config.RestWxCpProperties;
+import cn.atsoft.dasheng.audit.config.RestWxAppProperties;
 import cn.atsoft.dasheng.audit.handler.MsgHandler;
-import com.google.common.collect.Maps;
+import cn.binarywang.wx.miniapp.api.impl.WxMaServiceImpl;
+import cn.binarywang.wx.miniapp.config.impl.WxMaDefaultConfigImpl;
 import lombok.val;
 import me.chanjar.weixin.common.api.WxConsts;
 import me.chanjar.weixin.cp.api.WxCpService;
 import me.chanjar.weixin.cp.api.impl.WxCpServiceImpl;
 import me.chanjar.weixin.cp.config.impl.WxCpDefaultConfigImpl;
-import me.chanjar.weixin.cp.constant.WxCpConsts;
 import me.chanjar.weixin.cp.message.WxCpMessageRouter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @EnableConfigurationProperties(RestWxCpProperties.class)
@@ -26,6 +23,8 @@ public class RestWxCpService {
     private MsgHandler msgHandler;
 
     private RestWxCpProperties config;
+
+    private RestWxAppProperties miniAppProperties;
 
     public RestWxCpService(RestWxCpProperties restWxCpProperties){
         this.config = restWxCpProperties;
@@ -43,6 +42,18 @@ public class RestWxCpService {
         wxCpService.setWxCpConfigStorage(config);
         return  wxCpService;
     }
+//    public WxMaServiceImpl getWxMiniAppClient(){
+//        WxMaDefaultConfigImpl config = new WxMaDefaultConfigImpl();
+//        config.setAppid(this.miniAppProperties.getAppid());
+//        config.setSecret(this.miniAppProperties.getSecret());
+//        config.setAesKey(this.miniAppProperties.getAesKey());
+//        config.setMsgDataFormat(this.miniAppProperties.getMsgDataFormat());
+//        config.setToken(this.miniAppProperties.getToken());
+//        config.setAesKey(this.miniAppProperties.getAesKey());
+//        WxMaServiceImpl wxCpService = new WxMaServiceImpl();
+//        wxCpService.setWxMaConfig(config);
+//        return  wxCpService;
+//    }
 
 
 

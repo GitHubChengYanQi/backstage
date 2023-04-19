@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.wedrive.space.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.response.SuccessResponseData;
 import cn.atsoft.dasheng.wedrive.space.model.params.WxWedriveSpaceParam;
 import cn.atsoft.dasheng.wedrive.space.model.result.WxWedriveSpaceResult;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -63,7 +64,7 @@ public class WxWedriveSpaceController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody WxWedriveSpaceParam wxWedriveSpaceParam)  {
+    public ResponseData delete(@RequestBody WxWedriveSpaceParam wxWedriveSpaceParam) throws WxErrorException {
         this.wxWedriveSpaceService.delete(wxWedriveSpaceParam);
         return ResponseData.success();
     }
@@ -106,6 +107,19 @@ public class WxWedriveSpaceController extends BaseController {
 
 
         return ResponseData.success(this.wxWedriveSpaceService.spaceAclDelete(wxWedriveSpaceParam));
+    }
+    /**
+     * 重命名空间
+     *
+     * @author Captain_Jazz
+     * @Date 2023-03-31
+     */
+    @RequestMapping(value = "/rename", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public SuccessResponseData rename(@RequestBody WxWedriveSpaceParam wxWedriveSpaceParam) throws WxErrorException {
+
+
+        return ResponseData.success(this.wxWedriveSpaceService.rename(wxWedriveSpaceParam));
     }
 
     /**

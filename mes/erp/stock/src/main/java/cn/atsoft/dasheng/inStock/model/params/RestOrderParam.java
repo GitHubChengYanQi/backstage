@@ -27,6 +27,8 @@ public class RestOrderParam implements Serializable, BaseValidatingParam {
 
     private String keywords;
 
+    private String skuName;
+
 
     @Override
     public String checkParam() {

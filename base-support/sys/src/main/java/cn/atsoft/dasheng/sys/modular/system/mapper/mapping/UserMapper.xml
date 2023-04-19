@@ -349,8 +349,7 @@
             parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.UserParam">
         SELECT
         users.user_id AS "userId",
-        userInfo.avatar AS "avatar",
-        userInfo.uuid AS "openId",
+        wechat.avatar AS "avatar",
         users.`name` AS "name",
         users.`role_id` AS "roleId",
         users.`dept_id` AS "deptId",
@@ -363,6 +362,7 @@
         users.`birthday` AS "birthday",
         users.`sex` AS "sex",
         users.`status` AS "status",
+        wechat.`uuid` AS "openId",
         users.`create_time` AS "createTime",
         users.`create_user` AS "createUser",
         users.`update_time` AS "updateTime",
@@ -370,32 +370,12 @@
         users.`version` AS "version",
         users.`tenant_id` AS "tenantId"
         FROM
-        sys_user users
-        LEFT JOIN (
-        SELECT
-        a.*
-        FROM
-        daoxin_portal_wxuser_info a,(
-        SELECT
-        user_id,
-        max( create_time ) AS create_time
-        FROM
-        daoxin_portal_wxuser_info
-        GROUP BY
-        user_id
-        ) AS b
-        WHERE
-        a.user_id = b.user_id
-        AND a.create_time = b.create_time
-        AND a.source = 'wxCp'
-        GROUP BY
-        a.user_id
-        ) AS wxuserInfo ON users.user_id = wxuserInfo.user_id
-        LEFT JOIN uc_open_user_info userInfo ON userInfo.member_id = wxuserInfo.member_id
-        AND userInfo.source = "WxCp"
-        WHERE
-        1 = 1
-        and users.status = 'ENABLE'
+        `sys_user` users
+        LEFT JOIN daoxin_portal_wxuser_info bind ON users.user_id = bind.user_id
+        AND bind.display = 1
+        LEFT JOIN uc_open_user_info wechat ON bind.member_id = wechat.member_id
+        AND wechat.source = 'wxCp'
+        WHERE 1 = 1
         <if test="paramCondition.userName!=null and paramCondition.userName!= ''">
             and users.name like CONCAT('%',#{paramCondition.userName},'%')
         </if>
@@ -407,7 +387,7 @@
             parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.UserParam">
         SELECT
         users.user_id AS "userId",
-        userInfo.avatar AS "avatar",
+        wechat.avatar AS "avatar",
         users.`name` AS "name",
         users.`role_id` AS "roleId",
         users.`dept_id` AS "deptId",
@@ -420,6 +400,7 @@
         users.`birthday` AS "birthday",
         users.`sex` AS "sex",
         users.`status` AS "status",
+        wechat.`uuid` AS "openId",
         users.`create_time` AS "createTime",
         users.`create_user` AS "createUser",
         users.`update_time` AS "updateTime",
@@ -427,29 +408,12 @@
         users.`version` AS "version",
         users.`tenant_id` AS "tenantId"
         FROM
-        sys_user users
-        LEFT JOIN (
-        SELECT
-        a.*
-        FROM
-        daoxin_portal_wxuser_info a,(
-        SELECT
-        user_id,
-        max( create_time ) AS create_time
-        FROM
-        daoxin_portal_wxuser_info
-        GROUP BY
-        user_id
-        ) AS b
-        WHERE
-        a.user_id = b.user_id
-        AND a.create_time = b.create_time
-        GROUP BY
-        a.user_id
-        ) AS wxuserInfo ON users.user_id = wxuserInfo.user_id
-        LEFT JOIN uc_open_user_info userInfo ON userInfo.member_id = wxuserInfo.member_id
-        WHERE
-        1 = 1
+        `sys_user` users
+        LEFT JOIN daoxin_portal_wxuser_info bind ON users.user_id = bind.user_id
+        AND bind.display = 1
+        LEFT JOIN uc_open_user_info wechat ON bind.member_id = wechat.member_id
+        AND wechat.source = 'wxCp'
+        WHERE 1 = 1
         and users.status = 'ENABLE'
 
         <if test="paramCondition.userName!=null and paramCondition.userName!= ''">
@@ -475,8 +439,9 @@
     <select id="getUserResultByOpenId"  resultType="cn.atsoft.dasheng.sys.modular.system.model.result.UserResult"
             parameterType="String">
         SELECT
+        SELECT
             users.user_id AS "userId",
-            userInfo.avatar AS "avatar",
+            wechat.avatar AS "avatar",
             users.`name` AS "name",
             users.`role_id` AS "roleId",
             users.`dept_id` AS "deptId",
@@ -489,6 +454,7 @@
             users.`birthday` AS "birthday",
             users.`sex` AS "sex",
             users.`status` AS "status",
+            wechat.`uuid` AS "openId",
             users.`create_time` AS "createTime",
             users.`create_user` AS "createUser",
             users.`update_time` AS "updateTime",
@@ -496,30 +462,12 @@
             users.`version` AS "version",
             users.`tenant_id` AS "tenantId"
         FROM
-            sys_user users
-                LEFT JOIN (
-                SELECT
-                    a.*
-                FROM
-                    daoxin_portal_wxuser_info a,(
-                    SELECT
-                        user_id,
-                        max( create_time ) AS create_time
-                    FROM
-                        daoxin_portal_wxuser_info
-                    GROUP BY
-                        user_id
-                ) AS b
-                WHERE
-                    a.user_id = b.user_id
-                  AND a.create_time = b.create_time
-                GROUP BY
-                    a.user_id
-            ) AS wxuserInfo ON users.user_id = wxuserInfo.user_id
-                LEFT JOIN uc_open_user_info userInfo ON userInfo.member_id = wxuserInfo.member_id
-                AND userInfo.display = 1
-        WHERE
-            1 = 1
+            `sys_user` users
+                LEFT JOIN daoxin_portal_wxuser_info bind ON users.user_id = bind.user_id
+                AND bind.display = 1
+                LEFT JOIN uc_open_user_info wechat ON bind.member_id = wechat.member_id
+                AND wechat.source = 'wxCp'
+        WHERE 1 = 1
           and users.status = 'ENABLE'
         and user_id = (SELECT user_id from daoxin_portal_wxuser_info WHERE member_id = (SELECT member_id FROM `uc_open_user_info` WHERE uuid = #{openId}) and display = 1 )
     </select>

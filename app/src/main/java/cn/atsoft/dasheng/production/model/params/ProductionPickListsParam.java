@@ -28,6 +28,8 @@ public class ProductionPickListsParam implements Serializable, BaseValidatingPar
 
     private static final long serialVersionUID = 1L;
     private Long taskId;
+    private Long partsId;
+    private Integer number;
     private List<ProductionPickListsDetailParam> pickListsDetailParams;
     private List<ProductionPickListsCartParam> cartsParams;
     private List<Long> pickListsIds;
@@ -38,6 +40,7 @@ public class ProductionPickListsParam implements Serializable, BaseValidatingPar
     private String theme;
     private String type;
     private List<Long> remarkUserIds;
+    private List<Long> sourceIds;
     @ApiModelProperty("redisCode")
     private String code;
     @ApiModelProperty("主任务id")

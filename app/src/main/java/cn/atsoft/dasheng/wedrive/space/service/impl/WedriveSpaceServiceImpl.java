@@ -98,7 +98,7 @@ public class WedriveSpaceServiceImpl extends ServiceImpl<WedriveSpaceMapper, Wed
 
 
         if (ToolUtil.isEmpty(spaceId)) {
-            throw new ServiceException(500, "参数出错误");
+            throw new ServiceException(500, "参数错误");
         }
         WedriveSpace entity = this.getById(spaceId);
         if (ToolUtil.isEmpty(entity)) {
@@ -118,7 +118,7 @@ public class WedriveSpaceServiceImpl extends ServiceImpl<WedriveSpaceMapper, Wed
     @Override
     public WxCpBaseResp spaceAclAdd(WxWedriveSpaceParam param) throws WxErrorException {
         if (ToolUtil.isEmpty(param.getSpaceId())) {
-            throw new ServiceException(500, "参数出错误");
+            throw new ServiceException(500, "参数错误");
         }
         WxCpSpaceAclAddRequest request = new WxCpSpaceAclAddRequest();
 
@@ -146,7 +146,7 @@ public class WedriveSpaceServiceImpl extends ServiceImpl<WedriveSpaceMapper, Wed
     @Override
     public WxCpBaseResp spaceAclDelete(WxWedriveSpaceParam param) throws WxErrorException {
         if (ToolUtil.isEmpty(param.getSpaceId())) {
-            throw new ServiceException(500, "参数出错误");
+            throw new ServiceException(500, "参数错误");
         }
         List<UserResult> userResultsByIds = userService.getUserResultsByIds(param.getUserIds());
         WxCpSpaceAclDelRequest request = new WxCpSpaceAclDelRequest();

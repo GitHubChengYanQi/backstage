@@ -1,8 +1,8 @@
 package cn.atsoft.dasheng.production.service.impl;
 
 
-import ch.qos.logback.classic.jmx.MBeanUtil;
 import cn.atsoft.dasheng.action.Enum.OutStockActionEnum;
+import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.params.InventoryCorrectionParam;
@@ -19,6 +19,11 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.bom.entity.RestBom;
+import cn.atsoft.dasheng.bom.entity.RestBomDetail;
+import cn.atsoft.dasheng.bom.model.result.RestBomResult;
+import cn.atsoft.dasheng.bom.service.RestBomDetailService;
+import cn.atsoft.dasheng.bom.service.RestBomService;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -38,6 +43,7 @@ import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.*;
 import cn.atsoft.dasheng.production.mapper.ProductionPickListsMapper;
+import cn.atsoft.dasheng.production.model.CreateProductionTask;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsDetailParam;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
@@ -87,6 +93,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
     @Autowired
     private ProductionTaskService productionTaskService;
+    @Autowired
+    private ProductionPlanDetailService planDetailService;
 
     @Autowired
     private ProductionWorkOrderService workOrderService;
@@ -111,6 +119,8 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
     @Autowired
     private ErpPartsDetailService partsDetailService;
+    @Autowired
+    private RestBomDetailService restBomDetailService;
 
     @Autowired
     private StockDetailsService stockDetailsService;
@@ -202,6 +212,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     private StockLogDetailService stockLogDetailService;
     @Autowired
     private OutstockListingService outstockListingService;
+
+    @Autowired
+    private RestBomService restBomService;
 
 
     @Override
@@ -376,6 +389,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             this.format(page.getRecords());
         }
         return PageFactory.createPageInfo(page);
+    }
+    @Override
+    public List<ProductionPickListsResult> countNumber(ProductionPickListsParam param) {
+        return this.baseMapper.countNumber(param);
     }
 
     @Override
@@ -629,7 +646,17 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
 
         return null;
     }
-
+    @Override
+    @Transactional
+    public void addByProductionTasks(List<CreateProductionTask> tasks, Long userId){
+        for (CreateProductionTask task : tasks) {
+            ProductionPickListsParam param = new ProductionPickListsParam();
+            param.setUserId(userId);
+            List<ProductionPickListsDetailParam> productionPickListsDetailParams = BeanUtil.copyToList(task.getDetails(), ProductionPickListsDetailParam.class);
+            param.setPickListsDetailParams(productionPickListsDetailParams);
+            this.add(param);
+        }
+    }
 
     @Override
     public String sendPersonPick(ProductionPickListsParam param) {
@@ -1941,5 +1968,76 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     public List<StockView> outStockView(DataStatisticsViewParam param) {
         return this.baseMapper.outstockView(param);
 
+    }
+
+    @Override
+    public void createByBom(Long bomId, Integer num, Long userId, String source, Long courseId) {
+        RestBom parts = restBomService.getById(bomId);
+
+        List<ProductionPickListsParam> tasks = new ArrayList<>();
+        ProductionPlanDetail detail = planDetailService.lambdaQuery().eq(ProductionPlanDetail::getProductionPlanId, courseId).eq(ProductionPlanDetail::getPartsId, bomId).eq(ProductionPlanDetail::getDisplay, 1).one();
+        if (detail.getMakingNumber()+num>detail.getPlanNumber()){
+            throw new ServiceException(500,"数量超出总数");
+        }
+        detail.setMakingNumber(detail.getMakingNumber()+num);
+        planDetailService.updateById(detail);
+
+        this.loopAddTask(tasks, parts, num);
+
+        List<RestBomResult> boms = restBomService.getByBomId(parts.getBomId(),num);
+        ProductionCard productionCard = new ProductionCard() {{
+            setSkuId(parts.getSkuId());
+        }};
+
+        for (ProductionPickListsParam task : tasks) {
+            task.setSource("productionCard");
+            task.setSourceId(productionCard.getProductionCardId());
+        }
+        for (ProductionPickListsParam task : tasks) {
+            task.setSource(source);
+            task.setSourceId(courseId);
+            task.setUserId(userId);
+            this.add(task);
+        }
+
+//        TODO 生产卡片  以及出库单
+
+
+    }
+
+    public void loopAddTask(List<ProductionPickListsParam> tasks, RestBom parts, Integer number) {
+        List<RestBomDetail> partsDetails = restBomDetailService.lambdaQuery().eq(RestBomDetail::getBomId,parts.getBomId()).list();
+        List<RestBomDetail> havePartDetailList = new ArrayList<>();
+
+
+        List<Long> childrenBomIds = partsDetails.stream().map(RestBomDetail::getVersionBomId).collect(Collectors.toList());
+        List<RestBom> childrenPartList = childrenBomIds.size() == 0 ? new ArrayList<>() : restBomService.listByIds(childrenBomIds);
+
+
+        for (RestBomDetail partsDetail : partsDetails) {
+            for (RestBom children : childrenPartList) {
+                if (children.getBomId().equals(partsDetail.getVersionBomId())) {
+                    havePartDetailList.add(partsDetail);
+                    loopAddTask(tasks, children, (int) (number * partsDetail.getNumber()));
+                }
+            }
+        }
+
+
+        partsDetails.removeAll(havePartDetailList);
+        ProductionPickListsParam productionTask = new ProductionPickListsParam();
+        List<ProductionPickListsDetailParam> details = new ArrayList<>();
+        for (RestBomDetail partsDetail : partsDetails) {
+            if (partsDetail.getAutoOutstock().equals(1)) {
+                details.add(new ProductionPickListsDetailParam() {{
+                    setSkuId(partsDetail.getSkuId());
+                    setNumber((number * partsDetail.getNumber()));
+                }});
+            }
+        }
+        productionTask.setPickListsDetailParams(details);
+        if(details.size()>0){
+            tasks.add(productionTask);
+        }
     }
 }

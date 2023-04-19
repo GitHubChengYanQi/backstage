@@ -26,6 +26,7 @@ import cn.atsoft.dasheng.uc.config.AppWxConfiguration;
 import cn.atsoft.dasheng.uc.config.AppWxProperties;
 import cn.atsoft.dasheng.uc.config.ShanyanConfiguration;
 import cn.atsoft.dasheng.uc.config.Shanyanproperties;
+import cn.atsoft.dasheng.uc.entity.UcMember;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.httpRequest.request.AppleRequest;
 import cn.atsoft.dasheng.uc.httpRequest.request.ShanyanRequest;
@@ -41,8 +42,11 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.uc.service.UcMemberService;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.atsoft.dasheng.uc.utils.UserUtils;
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.code.kaptcha.Constants;
@@ -67,6 +71,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.lang.reflect.Member;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,6 +104,8 @@ public class AuthLoginController extends BaseController {
 
     @Autowired
     private SessionManager sessionManager;
+    @Autowired
+    private OpenUserInfoService openUserInfoService;
 
     protected static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
@@ -280,6 +287,32 @@ public class AuthLoginController extends BaseController {
         }
         String token = ucMemberAuth.loginByPhone(miniAppLoginParam);
 //        String token = ucMemberAuth.getUserProfile(miniAppLoginParam, sessionKey);
+
+        UcJwtPayLoad uc = UcJwtTokenUtil.getJwtPayLoad(token);
+        WxuserInfo wxuserInfo = wxuserInfoService.lambdaQuery().eq(WxuserInfo::getMemberId, uc.getMemberId()).eq(WxuserInfo::getDisplay, 1).last("limit 1").one();
+        //如果wxuserInfo为空，说明绑定表没有绑定user，再去user表查询是否有该手机号的用户，如果有
+        User user = new User();
+        if (ToolUtil.isEmpty(wxuserInfo)) {
+            String mobile = uc.getMobile();
+            user = userService.getByPhone(mobile);
+            if(ToolUtil.isNotEmpty(user)){
+                wxuserInfo = new WxuserInfo();
+                wxuserInfo.setMemberId(uc.getMemberId());
+                wxuserInfo.setUserId(user.getUserId());
+                wxuserInfo.setSource("wxMiniApp");
+                wxuserInfo.setUuid(uc.getAccount());
+                wxuserInfoService.save(wxuserInfo);
+            }
+        }else {
+             user = userService.getById(wxuserInfo.getUserId());
+        }
+
+        if (ToolUtil.isNotEmpty(user)) {
+            JwtPayLoad payLoad = new JwtPayLoad(user.getUserId(), user.getAccount(), "xxxx");
+            token = JwtTokenUtil.generateToken(payLoad);
+            //创建登录会话
+            sessionManager.createSession(token, authService.user(user.getAccount()));
+        }
         return ResponseData.success(token);
     }
 

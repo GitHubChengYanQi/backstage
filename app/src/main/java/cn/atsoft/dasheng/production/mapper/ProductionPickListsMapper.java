@@ -47,6 +47,8 @@ public interface ProductionPickListsMapper extends BaseMapper<ProductionPickList
      */
     Page<StockView> outstockUserView(@Param("page") Page page, @Param("paramCondition") DataStatisticsViewParam paramCondition);
     List<StockView> outstockView(@Param("paramCondition") DataStatisticsViewParam paramCondition);
+    Page<ProductionPickListsResult> customPageList(@Param("page") Page page, @Param("paramCondition") ProductionPickListsParam paramCondition);
+    List<ProductionPickListsResult> countNumber( @Param("paramCondition") ProductionPickListsParam paramCondition);
     Page<ProductionPickListsResult> customPageList(@Param("page") Page page, @Param("paramCondition") ProductionPickListsParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**

@@ -146,6 +146,11 @@ public class ProductionPlanDetail implements Serializable {
      */
     @TableField("parts_id")
     private Long partsId;
+    /**
+     * bom清单id
+     */
+    @TableField("sku_count")
+    private Integer skuCount;
 
     public Long getPartsId() {
         return partsId;
@@ -276,6 +281,14 @@ public class ProductionPlanDetail implements Serializable {
         this.status = status;
     }
 
+    public Integer getSkuCount() {
+        return skuCount;
+    }
+
+    public void setSkuCount(Integer skuCount) {
+        this.skuCount = skuCount;
+    }
+
     @Override
     public String toString() {
         return "ProductionPlanDetail{" +
@@ -296,6 +309,7 @@ public class ProductionPlanDetail implements Serializable {
                 ", contractCoding='" + contractCoding + '\'' +
                 ", customerName='" + customerName + '\'' +
                 ", partsId=" + partsId +
+                ", skuCount=" + skuCount +
                 '}';
     }
 }

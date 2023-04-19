@@ -26,8 +26,10 @@ public class ProductionTaskParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
     List<ProductionTaskDetailParam> detailParams;
     List<Long> userIdList;
-
+    private  Long  bomId;
     private Boolean noUser;
+    private String  source;
+    private Long  sourceId;
 
     /**
      * 生产任务id

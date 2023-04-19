@@ -112,4 +112,8 @@ public interface PartsService extends IService<Parts> {
     void format(List<PartsResult> data);
 
     List<InStockByBom> getByBomId(Long bomId, Integer number);
+
+
+
+    List<PartsResult> listByBomId(Long bomId, Long cartId);
 }

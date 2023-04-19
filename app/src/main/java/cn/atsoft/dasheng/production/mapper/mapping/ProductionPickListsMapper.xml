@@ -336,5 +336,81 @@
                         and status like CONCAT('%',#{paramCondition.status},'%')
                 </if>
     </select>
+    <select id="countNumber" resultType="cn.atsoft.dasheng.production.model.result.ProductionPickListsResult" parameterType="cn.atsoft.dasheng.production.model.params.ProductionPickListsParam">
+        SELECT
+        a.pick_lists_id AS "pickListsId",
+        a.type AS "type",
+        a.task_id AS "taskId",
+        a.enclosure AS "enclosure",
+        a.pick_lists_name AS "pickListsName",
+        a.user_ids AS "userIds",
+        a.remarks AS "remarks",
+        a.note AS "note",
+        a.coding AS "coding",
+        a.user_id AS "userId",
+        a.source AS "source",
+        a.source_id AS "sourceId",
+        a.create_user AS "createUser",
+        a.update_user AS "updateUser",
+        a.create_time AS "createTime",
+        a.update_time AS "updateTime",
+        a.display AS "display",
+        a.deptId AS "deptId",
+        a.STATUS AS "status",
+        IF(sum( b.number ) is null ,0,sum( b.number )) AS "numberCount",
+        IF(SUM( b.received_number ) is null ,0,SUM( b.received_number )) AS "receivedCount"
+        FROM
+        `daoxin_production_pick_lists` a
+        LEFT JOIN daoxin_production_pick_lists_detail b ON a.pick_lists_id = b.pick_lists_id
+        AND b.display = 1
+        where 1 = 1 and a.display = 1
+        <if test="paramCondition.pickListsId != null">
+            and a.pick_lists_id like CONCAT('%',#{paramCondition.pickListsId},'%')
+        </if>
+        <if test="paramCondition.userId != null">
+            and a.user_id like CONCAT('%',#{paramCondition.userId},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''">
+            and a.source like CONCAT('%',#{paramCondition.source},'%')
+        </if>
+        <if test="paramCondition.sourceId != null">
+            and a.source_id like CONCAT('%',#{paramCondition.sourceId},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and a.create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and a.update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and a.create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and a.update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and a.display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and a.deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.status != null">
+            and a.status like CONCAT('%',#{paramCondition.status},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source != ''">
+            and a.source like CONCAT('%',#{paramCondition.source},'%')
+        </if>
+        <if test="paramCondition.sourceId != null">
+            and a.source_id = #{paramCondition.sourceId}
+        </if>
+        <if test="paramCondition.sourceIds != null">
+            and a.source_id in
+            <foreach collection="paramCondition.sourceIds" open="(" close=")" index="index" item="item" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        GROUP BY
+        a.pick_lists_id
+    </select>
 
 </mapper>

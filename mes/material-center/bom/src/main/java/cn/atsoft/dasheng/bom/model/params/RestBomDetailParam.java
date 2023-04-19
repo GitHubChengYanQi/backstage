@@ -15,6 +15,12 @@ public class RestBomDetailParam {
     @ApiModelProperty("versionBomId")
     private Long versionBomId;
 
+    @ApiModelProperty("version")
+    private String version;
+
     @ApiModelProperty("number")
     private Integer number;
+
+    @ApiModelProperty("autoOutstock")
+    private Integer autoOutstock;
 }

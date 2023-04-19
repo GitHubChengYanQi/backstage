@@ -10,7 +10,6 @@ import java.util.Date;
 public class RestBom {
     @TableId(value = "bom_id" , type = IdType.ID_WORKER)
     private Long bomId;
-
     /**
      * 物料Id
      */

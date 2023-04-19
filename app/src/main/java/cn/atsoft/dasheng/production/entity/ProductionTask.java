@@ -160,8 +160,57 @@ public class ProductionTask implements Serializable {
      */
     @TableField("user_ids")
     private String userIds;
+    /**
+     * 来源
+     */
+    @TableField("source")
+    private String source;
+
+    /**
+     * 来源Id
+     */
+    @TableField("source_id")
+    private Long sourceId;
+    /**
+     * bomId
+     */
+    @TableField("parts_id")
+    private Long partsId;
+    /**
+     * bomId
+     */
+    @TableField("parent_parts_id")
+    private Long parentPartsId;
+    /**
+     * 生产卡片Id
+     */
+    @TableField("production_card_id")
+    private Long productionCardId;
 
 
+    public Long getParentPartsId() {
+        return parentPartsId;
+    }
+
+    public void setParentPartsId(Long parentPartsId) {
+        this.parentPartsId = parentPartsId;
+    }
+
+    public Long getPartsId() {
+        return partsId;
+    }
+
+    public void setPartsId(Long partsId) {
+        this.partsId = partsId;
+    }
+
+    public Long getProductionCardId() {
+        return productionCardId;
+    }
+
+    public void setProductionCardId(Long productionCardId) {
+        this.productionCardId = productionCardId;
+    }
 
     public Integer getStatus() {
         return status;
@@ -339,29 +388,49 @@ public class ProductionTask implements Serializable {
         this.userIds = userIds;
     }
 
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
+    }
+
     @Override
     public String toString() {
         return "ProductionTask{" +
-        "productionTaskId=" + productionTaskId +
-        ", coding=" + coding +
-        ", productionTaskName=" + productionTaskName +
-        ", skuId=" + skuId +
-        ", number=" + number +
-        ", remark=" + remark +
-        ", userId=" + userId +
-        ", workOrderId=" + workOrderId +
-        ", shipSetpId=" + shipSetpId +
-        ", singleProductionCycle=" + singleProductionCycle +
-        ", productionTime=" + productionTime +
-        ", createUser=" + createUser +
-        ", deptId=" + deptId +
-        ", display=" + display +
-        ", updateTime=" + updateTime +
-        ", createTime=" + createTime +
-        ", updateUser=" + updateUser +
-        ", theme=" + theme +
-        ", origin=" + origin +
-        ", userIds=" + userIds +
-        "}";
+                "productionTaskId=" + productionTaskId +
+                ", coding='" + coding + '\'' +
+                ", productionTaskName='" + productionTaskName + '\'' +
+                ", skuId=" + skuId +
+                ", status=" + status +
+                ", number=" + number +
+                ", remark='" + remark + '\'' +
+                ", userId=" + userId +
+                ", workOrderId=" + workOrderId +
+                ", shipSetpId=" + shipSetpId +
+                ", singleProductionCycle=" + singleProductionCycle +
+                ", productionTime=" + productionTime +
+                ", endTime=" + endTime +
+                ", createUser=" + createUser +
+                ", deptId=" + deptId +
+                ", display=" + display +
+                ", updateTime=" + updateTime +
+                ", createTime=" + createTime +
+                ", updateUser=" + updateUser +
+                ", theme='" + theme + '\'' +
+                ", origin='" + origin + '\'' +
+                ", userIds='" + userIds + '\'' +
+                ", source='" + source + '\'' +
+                ", sourceId=" + sourceId +
+                '}';
     }
 }

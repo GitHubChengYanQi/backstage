@@ -76,6 +76,11 @@ public class ProductionCard implements Serializable {
     @TableField("source")
     private String source;
     /**
+     * 卡片编码
+     */
+    @TableField("card_coding")
+    private String cardCoding;
+    /**
      * 状态
      */
     @TableField("source_id")
@@ -92,6 +97,18 @@ public class ProductionCard implements Serializable {
      */
     @TableField("theme")
     private String theme;
+
+    /**
+     * 状态
+     */
+    @TableField("status")
+    private Integer status;
+
+    /**
+     * BOM数量
+     */
+    @TableField("bom_count")
+    private Integer bomCount;
 
     /**
      * 修改时间
@@ -216,19 +233,49 @@ public class ProductionCard implements Serializable {
         this.theme = theme;
     }
 
+    public String getCardCoding() {
+        return cardCoding;
+    }
+
+    public void setCardCoding(String cardCoding) {
+        this.cardCoding = cardCoding;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Integer getBomCount() {
+        return bomCount;
+    }
+
+    public void setBomCount(Integer bomCount) {
+        this.bomCount = bomCount;
+    }
 
     @Override
     public String toString() {
         return "ProductionCard{" +
-        "productionCardId=" + productionCardId +
-        ", workOrderId=" + workOrderId +
-        ", skuId=" + skuId +
-        ", createUser=" + createUser +
-        ", deptId=" + deptId +
-        ", display=" + display +
-        ", updateTime=" + updateTime +
-        ", createTime=" + createTime +
-        ", updateUser=" + updateUser +
-        "}";
+                "productionCardId=" + productionCardId +
+                ", workOrderId=" + workOrderId +
+                ", skuId=" + skuId +
+                ", createUser=" + createUser +
+                ", deptId=" + deptId +
+                ", display=" + display +
+                ", source='" + source + '\'' +
+                ", cardCoding='" + cardCoding + '\'' +
+                ", sourceId=" + sourceId +
+                ", origin='" + origin + '\'' +
+                ", theme='" + theme + '\'' +
+                ", status=" + status +
+                ", bomCount=" + bomCount +
+                ", updateTime=" + updateTime +
+                ", createTime=" + createTime +
+                ", updateUser=" + updateUser +
+                '}';
     }
 }

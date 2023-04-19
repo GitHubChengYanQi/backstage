@@ -43,7 +43,7 @@ public class CodingRulesParam extends AbstractDictMap implements Serializable, B
      */
     private Long sort;
 
-    private Integer module;
+    private String module;
 
     private List<Codings> codings;
 

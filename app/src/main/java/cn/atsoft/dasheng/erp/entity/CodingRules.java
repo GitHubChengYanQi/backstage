@@ -37,11 +37,11 @@ public class CodingRules implements Serializable {
     @TableField("state")
     private Integer state;
 
-    public Integer getModule() {
+    public String getModule() {
         return module;
     }
 
-    public void setModule(Integer module) {
+    public void setModule(String module) {
         this.module = module;
     }
 
@@ -49,7 +49,7 @@ public class CodingRules implements Serializable {
      * 模块
      */
     @TableField("module")
-    private Integer module;
+    private String module;
     /**
      * 排序
      */

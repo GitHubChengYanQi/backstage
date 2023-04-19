@@ -26,6 +26,9 @@ public class RestBomDetail {
     @TableField("note")
     private String note;
 
+    @TableField("auto_outstock")
+    private Integer autoOutstock;
+
     /**
      * 创建时间
      */

@@ -480,4 +480,11 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         }
         return this.baseMapper.getUserResultByOpenIds(openIds);
     }
+    public User getByPhone(String phone){
+
+        if (ToolUtil.isEmpty(phone)){
+            return null;
+        }
+        return this.lambdaQuery().eq(User::getPhone,phone).one();
+    }
 }

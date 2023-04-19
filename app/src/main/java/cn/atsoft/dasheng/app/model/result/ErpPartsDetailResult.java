@@ -33,6 +33,8 @@ public class ErpPartsDetailResult implements Serializable {
 
     private Boolean haveBom;
 
+    private String  version;
+
     private List<BackSku> backSkus;
 
     private SpuResult spuResult;
@@ -48,6 +50,8 @@ public class ErpPartsDetailResult implements Serializable {
     private Sku sku;
 
     private Long id;
+
+    private Long versionBomId;
     /**
      * 清单详情id
      */
