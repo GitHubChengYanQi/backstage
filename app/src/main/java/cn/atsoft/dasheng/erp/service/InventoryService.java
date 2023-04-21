@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.service;
 
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.InventoryDetail;
 import cn.atsoft.dasheng.erp.entity.InventoryStock;
 import cn.atsoft.dasheng.erp.model.params.InventoryDetailParam;
@@ -101,9 +102,9 @@ public interface InventoryService extends IService<Inventory> {
      * @author Captain_Jazz
      * @Date 2021-12-27
      */
-    PageInfo findPageBySpec(InventoryParam param);
+    PageInfo findPageBySpec(InventoryParam param, DataScope dataScope);
 
-    PageInfo pageList(InventoryParam param);
+    PageInfo pageList(InventoryParam param, DataScope dataScope);
 
     /**
      * 扫码 盘点

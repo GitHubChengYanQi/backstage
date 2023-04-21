@@ -22,8 +22,11 @@ import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
 import cn.atsoft.dasheng.sys.core.constant.state.ManagerStatus;
 import cn.atsoft.dasheng.sys.core.listener.ConfigListener;
 import cn.atsoft.dasheng.sys.core.util.SaltUtil;
+import cn.atsoft.dasheng.sys.modular.system.entity.Tenant;
 import cn.atsoft.dasheng.sys.modular.system.mapper.UserMapper;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.TenantService;
+import cn.atsoft.dasheng.sys.modular.system.service.impl.TenantServiceImpl;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.convert.Convert;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
@@ -75,6 +78,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private SessionManager sessionManager;
+    @Autowired
+    private TenantService tenantService;
 
     public static AuthService me() {
         return SpringContextHolder.getBean(AuthService.class);
@@ -209,7 +214,13 @@ public class AuthServiceImpl implements AuthService {
         loginUser.setRoleList(roleList);
         loginUser.setRoleNames(roleNameList);
         loginUser.setRoleTips(roleTipList);
-
+        if (ToolUtil.isNotEmpty(user.getTenantId())) {
+            loginUser.setTenantId(user.getTenantId());
+            Tenant tenant = tenantService.getById(user.getTenantId());
+            if (ToolUtil.isNotEmpty(tenant)) {
+                loginUser.setTenantName(tenant.getName());
+            }
+        }
         //根据角色获取系统的类型
         List<String> systemTypes = this.menuMapper.getMenusTypesByRoleIds(roleList);
 

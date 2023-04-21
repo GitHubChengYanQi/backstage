@@ -30,8 +30,22 @@ public class Stock implements Serializable {
     @TableId(value = "stock_id", type = IdType.ID_WORKER)
     private Long stockId;
 
-    @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
+
+
+
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
+
 
     public Long getDeptId() {
         return deptId;

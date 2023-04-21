@@ -12,11 +12,12 @@
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        bank_id AS "bankId", bank_name AS "bankName", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        bank_id AS "bankId", bank_name AS "bankName", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

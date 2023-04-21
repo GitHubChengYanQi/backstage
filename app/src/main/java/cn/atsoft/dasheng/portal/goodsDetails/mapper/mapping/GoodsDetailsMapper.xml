@@ -23,7 +23,7 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">deptId AS "deptId",
+    <sql id="Base_Column_List"> deptId AS "deptId",tenant_id AS "tenantId",
         good_details_id AS "goodDetailsId", good_id AS "goodId", detail_banner_id AS "detailBannerId", title AS "title", price AS "price", last_price AS "lastPrice", server AS "server", specification_id AS "specificationId", details AS "details", sort AS "sort", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 

@@ -119,6 +119,8 @@ public class UserFactory {
         loginUser.setDeptName(ConstantFactory.me().getDeptName(user.getDeptId()));
         loginUser.setName(user.getName());
         loginUser.setEmail(user.getEmail());
+        //TODO 是否需要判断为空
+        loginUser.setTenantId(user.getTenantId());
 
         loginUser.setAvatar("/api/system/preview/" + user.getAvatar());
 

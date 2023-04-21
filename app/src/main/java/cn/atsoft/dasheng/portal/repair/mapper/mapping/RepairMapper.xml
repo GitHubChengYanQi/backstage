@@ -37,7 +37,7 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">deptId AS "deptId",
+    <sql id="Base_Column_List"> deptId AS "deptId",tenant_id AS "tenantId",
         dynamic_id
         AS "dynamic",wx_area AS "wxArea",name AS "name",power AS "power",
         customer_id AS "customerId", province AS "province", city AS "city", area AS "area", address AS "address",  people AS "people", position AS "position", telephone AS "telephone", number AS "number",repair_id AS "repairId", company_id AS "companyId", item_img_url AS "itemImgUrl", item_id AS "itemId", service_type AS "serviceType", expect_time AS "expectTime", comment AS "comment", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", progress AS "progress", money AS "money", quality_type AS "qualityType", contract_type AS "contractType"

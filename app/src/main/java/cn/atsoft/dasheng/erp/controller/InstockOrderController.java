@@ -2,8 +2,10 @@ package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.action.Enum.InStockActionEnum;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
@@ -170,11 +172,18 @@ public class InstockOrderController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<InstockOrderResult> list(@RequestBody(required = false) InstockOrderParam instockOrderParam) {
+    @Permission
+    public PageInfo list(@RequestBody(required = false) InstockOrderParam instockOrderParam) {
         if (ToolUtil.isEmpty(instockOrderParam)) {
             instockOrderParam = new InstockOrderParam();
         }
-        return this.instockOrderService.findPageBySpec(instockOrderParam);
+
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.instockOrderService.findPageBySpec(instockOrderParam,null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
+            return  this.instockOrderService.findPageBySpec(instockOrderParam,dataScope);
+        }
     }
 
     /**

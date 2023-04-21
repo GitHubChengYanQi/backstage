@@ -27,7 +27,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         pick_lists_cart
-        AS "pickListsCart",type AS "type",inkind_id AS "inkindId",status AS "status", pick_lists_detail_id AS "pickListsDetailId",storehouse_positions_id AS "storehousePositionsId",storehouse_id AS "storehouseId", pick_lists_id AS "pickListsId", sku_id AS "skuId", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        AS "pickListsCart",type AS "type",inkind_id AS "inkindId",status AS "status", pick_lists_detail_id AS "pickListsDetailId",storehouse_positions_id AS "storehousePositionsId",storehouse_id AS "storehouseId", pick_lists_id AS "pickListsId", sku_id AS "skuId", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
     <sql id="Self_Count_List">
         c
@@ -47,7 +47,7 @@
         c.create_time AS "createTime",
         c.update_time AS "updateTime",
         c.display AS "display",
-        c.deptId AS "deptId"
+        c. deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

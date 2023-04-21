@@ -3,6 +3,7 @@ package ${package.ServiceImpl};
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import ${package.Entity}.${entity};
 import ${package.Mapper}.${table.mapperName};
 import ${package.EntitySpecParams}.${entity}Param;
@@ -66,6 +67,13 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
     public PageInfo<${entity}Result> findPageBySpec(${entity}Param param){
         Page<${entity}Result> pageContext = getPageContext();
         IPage<${entity}Result> page = this.baseMapper.customPageList(pageContext, param);
+        return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public PageInfo<${entity}Result> findPageBySpec(${entity}Param param, DataScope dataScope){
+        Page<${entity}Result> pageContext = getPageContext();
+        IPage<${entity}Result> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         return PageFactory.createPageInfo(page);
     }
 

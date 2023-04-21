@@ -10,7 +10,7 @@
             spuClass.create_user AS "createuser",
             spuClass.update_user AS "updateuser",
             spuClass.display AS "display",
-            spuClass.deptId AS "deptId",
+            spuClass. deptId AS "deptId",tenant_id AS "tenantId",
             spuClass.pid AS "pid",
             spuClass.sort AS "sort",
             spuClass.coding_class AS "codingclass",

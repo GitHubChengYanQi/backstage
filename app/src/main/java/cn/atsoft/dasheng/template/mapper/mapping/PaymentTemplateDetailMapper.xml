@@ -19,11 +19,12 @@
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        detail_id AS "detailId", template_id AS "templateId", money AS "money", percentum AS "percentum", pay_type AS "payType", pay_time AS "payTime", date_way AS "dateWay", date_number AS "dateNumber", remark AS "remark", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        detail_id AS "detailId", template_id AS "templateId", money AS "money", percentum AS "percentum", pay_type AS "payType", pay_time AS "payTime", date_way AS "dateWay", date_number AS "dateNumber", remark AS "remark", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

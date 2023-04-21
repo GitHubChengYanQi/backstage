@@ -86,8 +86,21 @@ public class ShipSetpBind implements Serializable {
     /**
      * 部门id
      */
-    @TableField("deptId")
+@TableField(value = "deptId" , fill = FieldFill.INSERT)
     private Long deptId;
+    /**
+     * 租户编号
+     */
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
 
 
     public Long getShipSetpBindId() {

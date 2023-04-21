@@ -51,6 +51,17 @@ public class  PluginsConfig {
             }
 
             @Override
+            protected Long getUserTenantId() {
+                try {
+                    return LoginContextHolder.getContext().getUser().getTenantId();
+                } catch (Exception e) {
+
+                    //如果获取不到当前用户就存空id
+                    return -100L;
+                }
+            }
+
+            @Override
             protected Long getUserUniqueId() {
                 try {
                     return LoginContextHolder.getContext().getUser().getId();
@@ -117,6 +128,21 @@ public class  PluginsConfig {
                 } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }
+
+                Object tenantId = null;
+                try {
+                    tenantId = getFieldValByName(getTenantFieldName(), metaObject);
+                    if (tenantId == null) {
+
+                        //部门
+                        Object userTenantId = getUserTenantId();
+
+                        setFieldValByName(getTenantFieldName(), userTenantId, metaObject);
+                    }
+                } catch (ReflectionException e) {
+                    //没有此字段，则不处理
+                }
+
 //                try {
 //                    printDynamic(metaObject, (Long) userId, 1);
 //                } catch (Exception e) {

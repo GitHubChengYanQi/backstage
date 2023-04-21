@@ -15,6 +15,7 @@
         <result column="done_time" property="doneTime" />
         <result column="status" property="status" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -41,7 +42,7 @@
             p.sp_no AS "spNo",
             p.STATUS AS "status",
             p.filed AS "filed",
-            p.deptId AS "deptId",
+            p. deptId AS "deptId",tenant_id AS "tenantId",
             a.creator_user AS "creatorUser",
             a.msg AS msg,
             a.done_time As "doneTime"
@@ -78,7 +79,7 @@
             a.creator_user AS "creatorUser",
             a.msg AS msg,
             a.done_time As "doneTime",
-            p.deptId AS "deptId"
+            p. deptId AS "deptId",tenant_id AS "tenantId"
         FROM
         `daoxin_crm_order_payment_apply` p
         LEFT JOIN wx_audit a ON p.sp_no = a.sp_no

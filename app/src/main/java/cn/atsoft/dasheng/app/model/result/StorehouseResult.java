@@ -35,6 +35,8 @@ public class StorehouseResult implements Serializable {
     @JSONField(serialize = false)
     private BigDecimal latitude;
 
+    private Object number;
+
 
     private List<StorehousePositionsResult> storehousePositionsResults;
     /**

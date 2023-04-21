@@ -112,5 +112,17 @@ longitude
             and longitude like CONCAT('%',#{paramCondition.longitude},'%')
         </if>
     </select>
+<!--    写一个sql查询 查询daoxin_erp_stock_detail 表  sum(number) group by storehouse_id 并且in storehouse_id-->
 
+    <select id="sumNumberByStorehouseIds" resultType="map">
+        SELECT storehouse_id AS "storehouseId" , IF(SUM(number) is null ,0,SUM(number)) AS "number" FROM
+        `daoxin_erp_stock_details` WHERE 1 = 1 and display = 1 and stage = 1
+        <if test="storehouseIds != null and storehouseIds.size>0" >
+            and storehouse_id in
+            <foreach collection="storehouseIds" separator="," item="item" index="index" open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        GROUP BY storehouse_id
+    </select>
 </mapper>

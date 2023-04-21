@@ -60,7 +60,7 @@ public class CrmOrderPaymentApply implements Serializable {
     private Date doneTime;
 
 
-    @TableField(value = "deptId",fill = FieldFill.INSERT)
+        @TableField(value = "deptId",fill = FieldFill.INSERT)
     private Long deptId;
 
 

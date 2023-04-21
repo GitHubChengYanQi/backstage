@@ -21,13 +21,14 @@
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
         <result column="to_storehouse_positions_id" property="toStorehousePositionsId" />
         <result column="to_storehouse_id" property="toStorehouseId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        allocation_detail_id AS "allocationDetailId",carry_number AS "carryNumber",have_brand AS "haveBrand", params AS "params",status AS "status",allocation_id AS "allocationId", sku_id AS "skuId", number AS "number", storehouse_positions_id AS "storehousePositionsId", storehouse_id AS "storehouseId", brand_id AS "brandId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", to_storehouse_positions_id AS "toStorehousePositionsId", to_storehouse_id AS "toStorehouseId"
+        allocation_detail_id AS "allocationDetailId",carry_number AS "carryNumber",have_brand AS "haveBrand", params AS "params",status AS "status",allocation_id AS "allocationId", sku_id AS "skuId", number AS "number", storehouse_positions_id AS "storehousePositionsId", storehouse_id AS "storehouseId", brand_id AS "brandId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId", to_storehouse_positions_id AS "toStorehousePositionsId", to_storehouse_id AS "toStorehouseId"
     </sql>
 
 

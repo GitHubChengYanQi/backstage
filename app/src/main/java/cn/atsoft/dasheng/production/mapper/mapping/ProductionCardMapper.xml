@@ -9,6 +9,7 @@
         <result column="sku_id" property="skuId" />
         <result column="create_user" property="createUser" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
         <result column="source" property="source" />
         <result column="source_id" property="sourceId" />
         <result column="theme" property="theme" />
@@ -25,7 +26,7 @@
         production_card_id AS "productionCardId",status AS "status",source AS "source",source_id AS "sourceId", theme AS "theme" , origin AS "origin" ,work_order_id AS "workOrderId", sku_id AS "skuId", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser",`card_coding` AS "cardCoding"
     </sql>
     <sql id="grupByProducitonPlan">
-        count(*) as grupByPlanId,production_card_id AS "productionCardId",source AS "source",source_id AS "sourceId", theme AS "theme" , origin AS "origin" ,work_order_id AS "workOrderId", sku_id AS "skuId", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
+        count(*) as grupByPlanId,production_card_id AS "productionCardId",source AS "source",source_id AS "sourceId", theme AS "theme" , origin AS "origin" ,work_order_id AS "workOrderId", sku_id AS "skuId", create_user AS "createUser",  deptId AS "deptId",tenant_id AS "tenantId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
     </sql>
 
 

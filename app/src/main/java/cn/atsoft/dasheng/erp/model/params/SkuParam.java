@@ -42,6 +42,7 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     @ApiModelProperty("skuId")
     private List<Long> brandIds;
     private Long skuId;
+    private String viewFrame;
     private Long customerId;
     private List<Long> skuIds = new ArrayList<>();
     private List<Long> imageIds;

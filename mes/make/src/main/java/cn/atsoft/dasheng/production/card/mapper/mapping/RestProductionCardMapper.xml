@@ -10,6 +10,7 @@
         <result column="production_plan_id" property="productionPlanId" />
         <result column="create_user" property="createUser" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
         <result column="display" property="display" />
         <result column="update_time" property="updateTime" />
         <result column="create_time" property="createTime" />
@@ -24,7 +25,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        production_card_id AS "productionCardId", work_order_id AS "workOrderId", sku_id AS "skuId", production_plan_id AS "productionPlanId", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser", source AS "source", source_id AS "sourceId", theme AS "theme", origin AS "origin", card_coding AS "cardCoding", machine_coding AS "machineCoding"
+        production_card_id AS "productionCardId", work_order_id AS "workOrderId", sku_id AS "skuId", production_plan_id AS "productionPlanId", create_user AS "createUser",  deptId AS "deptId",tenant_id AS "tenantId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser", source AS "source", source_id AS "sourceId", theme AS "theme", origin AS "origin", card_coding AS "cardCoding", machine_coding AS "machineCoding"
     </sql>
 
 

@@ -88,6 +88,18 @@ public class SpeechcraftTypeDetail implements Serializable {
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
     }
+
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
+
     public Long getSpeechcraftTypeDetailId() {
         return speechcraftTypeDetailId;
     }

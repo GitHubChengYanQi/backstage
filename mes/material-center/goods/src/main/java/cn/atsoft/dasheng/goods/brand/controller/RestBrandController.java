@@ -107,7 +107,7 @@ public class RestBrandController extends BaseController {
 //        if (LoginContextHolder.getContext().isAdmin()) {
         return this.restBrandService.findPageBySpec(restBrandParam, null);
 //        } else {
-//            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+//            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
 //            brandService.findPageBySpec(brandParam, dataScope);
 //            return this.brandService.findPageBySpec(brandParam, dataScope);
 //        }

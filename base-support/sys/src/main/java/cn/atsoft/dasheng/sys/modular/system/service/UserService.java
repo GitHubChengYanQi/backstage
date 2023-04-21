@@ -409,7 +409,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
 
         for (UserResult userResult : dataList) {
             for (DeptDto deptDto : deptDtos) {
-                if (userResult.getDeptId().equals(deptDto.getDeptId())) {
+                if (ToolUtil.isNotEmpty(userResult.getDeptId()) && userResult.getDeptId().equals(deptDto.getDeptId())) {
                     userResult.setDeptResult(deptDto);
                     break;
                 }
@@ -479,5 +479,12 @@ public class UserService extends ServiceImpl<UserMapper, User> {
             return new ArrayList<>();
         }
         return this.baseMapper.getUserResultByOpenIds(openIds);
+    }
+    public User getByPhone(String phone){
+
+        if (ToolUtil.isEmpty(phone)){
+            return null;
+        }
+        return this.lambdaQuery().eq(User::getPhone,phone).one();
     }
 }

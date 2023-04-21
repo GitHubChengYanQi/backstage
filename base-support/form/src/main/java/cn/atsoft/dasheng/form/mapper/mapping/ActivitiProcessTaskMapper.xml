@@ -58,7 +58,7 @@
 	    update_time AS "updateTime",
             source AS "source",
             source_id AS "source_id",
-            deptId AS "deptId",
+             deptId AS "deptId",tenant_id AS "tenantId",
             version AS "version"
     </sql>
     <sql id="Left_Join_Column_List">
@@ -87,7 +87,7 @@
 	    activiti_process_task.update_time AS "updateTime",
         activiti_process_task.source AS "source",
         activiti_process_task.source_id AS "source_id",
-        activiti_process_task.deptId AS "deptId",
+        activiti_process_task. deptId AS "deptId",tenant_id AS "tenantId",
           activiti_process_task.version AS "version"
     </sql>
     <sql id="auditColumn">
@@ -733,6 +733,12 @@
             and (participant.user_id = #{paramCondition.participantUser}
             or task.user_id = #{paramCondition.participantUser}
             )
+        </if>
+        <if test="paramCondition.source!=null and paramCondition.source != ''">
+            and task.source = #{paramCondition.source}
+        </if>
+        <if test="paramCondition.sourceId!=null and paramCondition.sourceId != ''">
+            and task.source_id = #{paramCondition.sourceId}
         </if>
         group by task.process_task_id
     </select>

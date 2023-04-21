@@ -19,7 +19,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">rank
-    AS "rank",deptId AS "deptId",remake AS "remake",
+    AS "rank", deptId AS "deptId",tenant_id AS "tenantId",remake AS "remake",
         customer_level_id AS "customerLevelId", level AS "level", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 

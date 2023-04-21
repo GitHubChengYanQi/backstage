@@ -101,6 +101,18 @@ public class Contacts implements Serializable {
     private Long deptId;
 
 
+
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
+
     public Long getContactsId() {
         return contactsId;
     }

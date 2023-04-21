@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -949,16 +950,16 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     }
 
     @Override
-    public PageInfo findPageBySpec(InventoryParam param) {
+    public PageInfo findPageBySpec(InventoryParam param, DataScope dataScope) {
         Page<InventoryResult> pageContext = getPageContext();
-        IPage<InventoryResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<InventoryResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
 
     @Override
-    public PageInfo pageList(InventoryParam param) {
+    public PageInfo pageList(InventoryParam param, DataScope dataScope) {
 
         /**
          * 通过库位查询
@@ -975,7 +976,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         }
 
         Page<InventoryResult> pageContext = getPageContext();
-        IPage<InventoryResult> page = this.baseMapper.pageList(pageContext, param);
+        IPage<InventoryResult> page = this.baseMapper.pageList(pageContext, param,dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

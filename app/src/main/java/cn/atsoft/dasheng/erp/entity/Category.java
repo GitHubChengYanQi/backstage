@@ -82,7 +82,27 @@ public class Category implements Serializable {
 
     @TableField("childrens")
     private String childrens;
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
+    private Long deptId;
 
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
     public String getChildren() {
         return children;
     }

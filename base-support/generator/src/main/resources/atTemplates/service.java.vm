@@ -1,6 +1,7 @@
 package ${package.Service};
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import ${package.Entity}.${entity};
 import ${package.EntitySpecParams}.${entity}Param;
 import ${package.EntitySpecResult}.${entity}Result;
@@ -68,6 +69,14 @@ public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
      * @Date ${date}
      */
      PageInfo<${entity}Result> findPageBySpec(${entity}Param param);
+
+    /**
+     * 查询分页数据，Specification模式
+     *
+     * @author ${author}
+     * @Date ${date}
+     */
+     PageInfo<${entity}Result> findPageBySpec(${entity}Param param,DataScope dataScope);
 
 }
 #end

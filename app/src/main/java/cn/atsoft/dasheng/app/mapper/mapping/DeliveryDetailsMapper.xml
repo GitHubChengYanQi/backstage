@@ -22,7 +22,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">stage
-    AS "stage",quality_type AS "qualityType",brand_id AS "brandId",deptId AS "deptId",sku_id AS"skuId",
+    AS "stage",quality_type AS "qualityType",brand_id AS "brandId", deptId AS "deptId",tenant_id AS "tenantId",sku_id AS"skuId",
         delivery_details_id AS "deliveryDetailsId", item_id AS "itemId",  stock_item_id AS "stockItemId", delivery_id AS "deliveryId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 

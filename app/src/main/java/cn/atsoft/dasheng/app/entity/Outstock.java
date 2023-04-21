@@ -32,8 +32,22 @@ public class Outstock implements Serializable {
     /**
      * 部门Id
      */
-    @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
+
+
+
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
+
 
 
     /**
@@ -118,6 +132,7 @@ public class Outstock implements Serializable {
 
     @TableField("display")
     private Integer display;
+
 
     public Long getOutstockId() {
         return outstockId;

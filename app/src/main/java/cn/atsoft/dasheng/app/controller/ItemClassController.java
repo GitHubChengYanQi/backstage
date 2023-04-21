@@ -105,7 +105,7 @@ if (ToolUtil.isNotEmpty(detail)) {
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.itemClassService.findPageBySpec(itemClassParam, null);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             return this.itemClassService.findPageBySpec(itemClassParam, dataScope);
         }
     }

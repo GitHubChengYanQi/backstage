@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.mapper;
 
 import cn.atsoft.dasheng.app.model.request.StockView;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
@@ -53,7 +54,7 @@ public interface InstockOrderMapper extends BaseMapper<InstockOrder> {
      * @author song
      * @Date 2021-10-06
      */
-    Page<InstockOrderResult> customPageList(@Param("page") Page page, @Param("paramCondition") InstockOrderParam paramCondition);
+    Page<InstockOrderResult> customPageList(@Param("page") Page page, @Param("paramCondition") InstockOrderParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

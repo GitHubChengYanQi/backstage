@@ -33,7 +33,7 @@ public class StorehousePositionsDeptBind implements Serializable {
     /**
      * 部门id
      */
-    @TableField("deptId")
+    @TableField(value = "deptId" , fill = FieldFill.INSERT)
     private String deptId;
 
     /**
@@ -41,7 +41,16 @@ public class StorehousePositionsDeptBind implements Serializable {
      */
       @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
 
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
     /**
      * 创建时间
      */

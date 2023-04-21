@@ -23,7 +23,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         storehouse_positions_id
-        AS "storehousePositionsId", storehouse_id AS "storehouseId",sort AS "sort",note AS "note", sku_id AS "skuId", name AS "name", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", pid AS "pid"
+        AS "storehousePositionsId", storehouse_id AS "storehouseId",sort AS "sort",note AS "note", sku_id AS "skuId", name AS "name", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId", pid AS "pid"
     </sql>
 
 

@@ -89,7 +89,7 @@ public class CrmBusinessSalesProcessController extends BaseController {
             PageInfo pageBySpec = crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam, null);
             return ResponseData.success(pageBySpec.getData().get(0));
         }else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             PageInfo pageBySpec = crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam, dataScope);
             return ResponseData.success(pageBySpec.getData().get(0));
         }
@@ -115,7 +115,7 @@ public class CrmBusinessSalesProcessController extends BaseController {
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam, null);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             return this.crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam, dataScope);
         }
     }

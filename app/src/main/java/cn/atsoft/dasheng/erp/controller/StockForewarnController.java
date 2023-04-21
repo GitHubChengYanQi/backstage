@@ -53,6 +53,17 @@ public class StockForewarnController extends BaseController {
      * @author sjl
      * @Date 2022-12-05
      */
+    @RequestMapping(value = "/view", method = RequestMethod.POST)
+    @ApiOperation("统计")
+    public ResponseData view() {
+        return ResponseData.success(this.stockForewarnService.view());
+    }
+    /**
+     * 新增接口
+     *
+     * @author sjl
+     * @Date 2022-12-05
+     */
     @RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData saveOrUpdate(@RequestBody StockForewarnParam stockForewarnParam) {

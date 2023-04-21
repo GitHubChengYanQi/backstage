@@ -73,7 +73,7 @@ public class Remind implements Serializable {
     /**
      * 部门id
      */
-    @TableField(value = "deptId",fill = FieldFill.INSERT)
+        @TableField(value = "deptId",fill = FieldFill.INSERT)
     private Long deptId;
 
     public Long getDeptId() {

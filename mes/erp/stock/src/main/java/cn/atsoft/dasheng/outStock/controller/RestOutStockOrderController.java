@@ -91,47 +91,7 @@ public class RestOutStockOrderController extends BaseController {
     @Autowired
     private ActivitiProcessTaskService processTaskService;
 
-    /**
-     * 新增接口
-     *
-     * @author Captain_Jazz
-     * @Date 2022-03-25
-     */
-    @RequestMapping(value = "/createOutStockOrder1", method = RequestMethod.POST)
-    @ApiOperation("出库")
-    public ResponseData outStock(@RequestBody RestOutStockOrderParam productionPickListsParam) {
-//        inventoryService.staticState();
-        List<Long> cartIdList = new ArrayList<>();
 
-        try{
-            if (ToolUtil.isEmpty(productionPickListsParam)) {
-                productionPickListsParam = new RestOutStockOrderParam();
-            }
-            List<Object> list = redisSendCheck.getList(RestRedisTemplatePrefixEnum.LLM.getValue()+productionPickListsParam.getCode());
-            cartIdList = new ArrayList<>();
-            for (Object obj : list) {
-                RestOutStockOrderDetailParam rest = JSON.parseObject(JSON.toJSONString(obj), RestOutStockOrderDetailParam.class);
-                if (ToolUtil.isNotEmpty(rest.getCartIds())) {
-                    cartIdList.addAll(rest.getCartIds());
-                }
-            }
-
-
-        }catch (Exception e){
-            Long taskId = (Long)redisSendCheck.getObject(RestRedisTemplatePrefixEnum.LLM.getValue()+productionPickListsParam.getCode());
-            ActivitiProcessTask task = processTaskService.getById(taskId);
-            List<RestOutStockCart> cartList = productionPickListsCartService.lambdaQuery().eq(RestOutStockCart::getPickListsId, task.getFormId()).eq(RestOutStockCart::getStatus, 0).list();
-            cartIdList = cartList.stream().map(RestOutStockCart::getPickListsCart).distinct().collect(Collectors.toList());
-
-        }
-        productionPickListsParam.setCartIds(cartIdList);
-
-        this.productionPickListsService.outStock(productionPickListsParam);
-        redisSendCheck.deleteListOrObject(RestRedisTemplatePrefixEnum.LLM.getValue() + productionPickListsParam.getCode());
-        redisSendCheck.deleteListOrObject(RestRedisTemplatePrefixEnum.LLJCM.getValue() + productionPickListsParam.getCode());
-//        this.productionPickListsService.warnincg(productionPickListsParam);
-        return ResponseData.success();
-    }
     /**
      * 新增接口
      *
@@ -394,13 +354,13 @@ public class RestOutStockOrderController extends BaseController {
 //        return ResponseData.success(productionPickListsService.listByCode(code));
 //    }
 
-    @RequestMapping(value = "/addByProduction", method = RequestMethod.POST)
-    @ApiOperation("详情")
-    public ResponseData addByProduction(@RequestBody RestOutStockOrderParam productionPickListsParam) {
-//        List<Map<String, Object>> maps = productionPickListsService.listByUser(productionPickListsParam);
-//        return ResponseData.success(maps);
-        return ResponseData.success();
-    }
+//    @RequestMapping(value = "/addByProduction", method = RequestMethod.POST)
+//    @ApiOperation("详情")
+//    public ResponseData addByProduction(@RequestBody RestOutStockOrderParam productionPickListsParam) {
+////        List<Map<String, Object>> maps = productionPickListsService.listByUser(productionPickListsParam);
+////        return ResponseData.success(maps);
+//        return ResponseData.success();
+//    }
 
 
 

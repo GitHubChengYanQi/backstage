@@ -33,7 +33,7 @@
     AS "deliveryWay", logistics_company AS "logisticsCompany",logistics_number AS"logisticsNumber",sku_id AS"skuId",
 driver_name AS "driverName", driver_phone AS "driverPhone" , license_plate AS "licensePlate",
 item_id
-    AS "itemId", customer_id AS "customerId", adress_id AS "adressId", contacts_id AS "contactsId", phone_id AS "phoneId",deptId AS "deptId",
+    AS "itemId", customer_id AS "customerId", adress_id AS "adressId", contacts_id AS "contactsId", phone_id AS "phoneId", deptId AS "deptId",tenant_id AS "tenantId",
         delivery_id AS "deliveryId", outstock_order_id AS "outstockOrderId", out_time AS "outTime", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 

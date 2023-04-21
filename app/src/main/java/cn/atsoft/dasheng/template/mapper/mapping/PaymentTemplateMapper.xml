@@ -11,6 +11,7 @@
         <result column="remark" property="remark" />
         <result column="create_user" property="createUser" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
         <result column="display" property="display" />
         <result column="update_time" property="updateTime" />
         <result column="create_time" property="createTime" />
@@ -19,7 +20,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        template_id AS "templateId", name AS "name", often_user AS "oftenUser", pid AS "pid", remark AS "remark", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
+        template_id AS "templateId", name AS "name", often_user AS "oftenUser", pid AS "pid", remark AS "remark", create_user AS "createUser",  deptId AS "deptId",tenant_id AS "tenantId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
     </sql>
 
 

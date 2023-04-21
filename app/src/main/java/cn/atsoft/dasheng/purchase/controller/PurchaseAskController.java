@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.purchase.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 
 import cn.atsoft.dasheng.action.dict.PurchaseAskDictEnum;
@@ -106,7 +108,12 @@ public class PurchaseAskController extends BaseController {
         if (ToolUtil.isEmpty(purchaseAskParam)) {
             purchaseAskParam = new PurchaseAskParam();
         }
-        return this.purchaseAskService.findPageBySpec(purchaseAskParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.purchaseAskService.findPageBySpec(purchaseAskParam,null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
+            return  this.purchaseAskService.findPageBySpec(purchaseAskParam,dataScope);
+        }
     }
 
 

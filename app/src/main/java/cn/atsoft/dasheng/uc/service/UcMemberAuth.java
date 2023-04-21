@@ -220,8 +220,7 @@ public class UcMemberAuth {
     public String loginByPhone(MiniAppUserProfileParam miniAppLoginParam) throws WxErrorException {
 
         String openId = UserUtils.getUserAccount();
-
-        Object sessionKey = redisTemplate.boundValueOps(redisPreKey + "sessionKey").get();
+        Object sessionKey = redisTemplate.boundValueOps(redisPreKey + "sessionKey"+"_"+openId).get();
         UcOpenUserInfo ucOpenUserInfo = new UcOpenUserInfo();
         ucOpenUserInfo.setUuid(openId);
         ucOpenUserInfo.setSource("WXMINIAPP");
@@ -249,7 +248,7 @@ public class UcMemberAuth {
         // TODO 多台服务器负载的情况下应 使用 Redis 保存Session spring-session-data-redis
 //        HttpSession session = Objects.requireNonNull(HttpContext.getRequest()).getSession();
 //        session.setAttribute("wxMiniApp-sessionKey", sessionKey); // 解密 小程序提交的 加密用户信息
-        redisTemplate.boundValueOps(redisPreKey + "sessionKey").set(sessionKey);
+        redisTemplate.boundValueOps(redisPreKey + "sessionKey"+"_"+result.getOpenid()).set(sessionKey);
         userInfo.setUuid(result.getOpenid());
         userInfo.setSource("WXMINIAPP");
         UcOpenUserInfo ucOpenUserInfo = new UcOpenUserInfo();

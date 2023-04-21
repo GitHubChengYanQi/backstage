@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.mapper;
 
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.purchase.entity.RestOrder;
 import cn.atsoft.dasheng.purchase.model.params.RestOrderParam;
 import cn.atsoft.dasheng.purchase.model.result.RestOrderResult;
@@ -52,7 +53,7 @@ public interface RestOrderMapper extends BaseMapper<RestOrder> {
      * @author song
      * @Date 2022-02-23
      */
-    Page<RestOrderSimpleResult> orderList(@Param("page") Page page, @Param("paramCondition") RestOrderParam paramCondition);
+    Page<RestOrderSimpleResult> orderList(@Param("page") Page page, @Param("paramCondition") RestOrderParam paramCondition, @Param("dataScope")DataScope dataScope);
 
     /**
      * 获取分页map列表

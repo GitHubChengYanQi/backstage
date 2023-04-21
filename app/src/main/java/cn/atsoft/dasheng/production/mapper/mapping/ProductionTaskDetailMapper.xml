@@ -8,6 +8,7 @@
         <result column="production_task_id" property="productionTaskId" />
         <result column="create_user" property="createUser" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
         <result column="display" property="display" />
         <result column="update_time" property="updateTime" />
         <result column="create_time" property="createTime" />
@@ -21,7 +22,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        production_task_detail_id AS "productionTaskDetailId",quality_id AS "qualityId",my_quality_id AS "myqualityId",number AS "number",out_sku_id AS "outSkuId", production_task_id AS "productionTaskId", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser", inkind_id AS "inkindId"
+        production_task_detail_id AS "productionTaskDetailId",quality_id AS "qualityId",my_quality_id AS "myqualityId",number AS "number",out_sku_id AS "outSkuId", production_task_id AS "productionTaskId", create_user AS "createUser",  deptId AS "deptId",tenant_id AS "tenantId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser", inkind_id AS "inkindId"
     </sql>
 
 

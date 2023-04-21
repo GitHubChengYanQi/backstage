@@ -106,7 +106,7 @@ if (ToolUtil.isNotEmpty(detail)) {
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.businessDynamicService.findPageBySpec(businessDynamicParam, null);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             return this.businessDynamicService.findPageBySpec(businessDynamicParam, dataScope);
         }
 

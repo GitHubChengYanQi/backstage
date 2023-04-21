@@ -173,7 +173,27 @@ public class ItemAttribute implements Serializable {
     public void setStandard(Long standard) {
         this.standard = standard;
     }
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
+    private Long deptId;
 
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
     @Override
     public String toString() {
         return "ItemAttribute{" +

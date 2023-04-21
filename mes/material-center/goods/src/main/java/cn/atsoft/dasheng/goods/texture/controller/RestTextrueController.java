@@ -115,7 +115,7 @@ public class RestTextrueController extends BaseController {
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.restTextrueService.findPageBySpec(restTextrueParam, null);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             return this.restTextrueService.findPageBySpec(restTextrueParam, dataScope);
         }
     }

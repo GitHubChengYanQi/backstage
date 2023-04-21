@@ -73,7 +73,7 @@ if (ToolUtil.isNotEmpty(detail)) {
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.stockService.findPageBySpec(stockParam, null);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             return this.stockService.findPageBySpec(stockParam, dataScope);
         }
     }

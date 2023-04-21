@@ -18,11 +18,15 @@ package cn.atsoft.dasheng.sys.modular.rest.controller;
 import cn.atsoft.dasheng.base.consts.ConstantsContext;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.core.exception.InvalidKaptchaException;
+import cn.atsoft.dasheng.sys.modular.rest.entity.RestUser;
 import cn.atsoft.dasheng.sys.modular.rest.model.params.LoginParam;
 import cn.atsoft.dasheng.base.auth.service.AuthService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.model.response.SuccessResponseData;
+import cn.atsoft.dasheng.sys.modular.rest.wrapper.RestUserSelectWrapper;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.code.kaptcha.Constants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,6 +35,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Map;
 
 /**
  * rest方式的登录控制器
@@ -42,6 +48,9 @@ public class RestLoginController extends BaseController {
 
     @Resource
     private AuthService authService;
+    @Resource
+    private UserService userService;
+
 
     /**
      * 点击登录执行的动作
@@ -89,4 +98,6 @@ public class RestLoginController extends BaseController {
     public ResponseData refreshToken() {
         return ResponseData.success(authService.refreshToken());
     }
+
+
 }

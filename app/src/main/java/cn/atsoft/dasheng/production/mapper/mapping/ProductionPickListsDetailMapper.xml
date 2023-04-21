@@ -26,7 +26,7 @@
     <sql id="Base_Column_List">inkind_id
     AS "inkindId",
         pick_lists_detail_id
-        AS "pickListsDetailId",received_number AS "receivedNumber",brand_id AS "brandId",status AS "status",storehouse_positions_id AS "storehousePositionsId",storehouse_id AS "storehouseId",pick_lists_id AS "pickListsId", sku_id AS "skuId", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        AS "pickListsDetailId",received_number AS "receivedNumber",brand_id AS "brandId",status AS "status",storehouse_positions_id AS "storehousePositionsId",storehouse_id AS "storehouseId",pick_lists_id AS "pickListsId", sku_id AS "skuId", number AS "number", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
     <sql id="Base_Column_List2">
         a
@@ -45,7 +45,7 @@
 	    a.update_time AS "updateTime",
 	    a.display AS "display",
 	    a.status AS "status",
-	    a.deptId AS "deptId"
+	    a. deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
     <sql id="left_join_stock_details">
         DISTINCTROW
@@ -64,7 +64,7 @@
     	a.create_time AS "createTime",
     	a.update_time AS "updateTime",
     	a.display AS "display",
-    	a.deptId AS "deptId"
+    	a. deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

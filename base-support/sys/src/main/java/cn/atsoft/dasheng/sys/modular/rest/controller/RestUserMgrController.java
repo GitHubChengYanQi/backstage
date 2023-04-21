@@ -139,7 +139,7 @@ public class RestUserMgrController extends BaseController {
             Page wrapped = new UserWrapper(users).wrap();
             return PageFactory.createPageInfo(wrapped);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             Page<Map<String, Object>> users = restUserService.selectUsers(dataScope, userQueryParam.getName(), beginTime, endTime, userQueryParam.getDeptId());
             Page wrapped = new UserWrapper(users).wrap();
             return PageFactory.createPageInfo(wrapped);
@@ -312,4 +312,5 @@ public class RestUserMgrController extends BaseController {
         List<Map<String, Object>> result = restUserSelectWrapper.wrap();
         return ResponseData.success(result);
     }
+
 }

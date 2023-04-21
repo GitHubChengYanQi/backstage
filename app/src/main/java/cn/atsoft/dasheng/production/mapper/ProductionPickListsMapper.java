@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.mapper;
 
 import cn.atsoft.dasheng.app.model.request.StockView;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsParam;
@@ -48,6 +49,7 @@ public interface ProductionPickListsMapper extends BaseMapper<ProductionPickList
     List<StockView> outstockView(@Param("paramCondition") DataStatisticsViewParam paramCondition);
     Page<ProductionPickListsResult> customPageList(@Param("page") Page page, @Param("paramCondition") ProductionPickListsParam paramCondition);
     List<ProductionPickListsResult> countNumber( @Param("paramCondition") ProductionPickListsParam paramCondition);
+    Page<ProductionPickListsResult> customPageList(@Param("page") Page page, @Param("paramCondition") ProductionPickListsParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

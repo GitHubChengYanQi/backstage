@@ -288,6 +288,18 @@ public class GeneratorController {
     private ResponseEntity<InputStreamResource> renderFile(String fileName, byte[] fileBytes) {
         return renderFile(fileName, new ByteArrayInputStream(fileBytes));
     }
+    /**
+     * 执行代码生成
+     */
+    @RequestMapping(value = "/add", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseData add(ExecuteParam executeParam) {
+        MpParam mpContextParam = new MpParam();
+        mpContextParam.setGeneratorInterface(true);
+//        mpContextParam.setIncludeTables(tableArray);
+//        AtApiExecutor.batchAddColumn();
+        return  ResponseData.success();
+    }
 
 
 }

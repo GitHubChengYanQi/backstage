@@ -36,7 +36,7 @@
 spu_id
     AS "spuId", cost_price AS "costPrice" , selling_price AS "sellingPrice" ,brand_id AS "brandId",pid AS "pid",position_id AS "positionId",
         inkind_id
-        AS "inkindId", type AS "type", sku_id AS "skuId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        AS "inkindId", type AS "type", sku_id AS "skuId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 
@@ -211,7 +211,7 @@ spu_id
 	goods_inkind.create_time AS "createTime",
 	goods_inkind.update_time AS "updateTime",
 	goods_inkind.display AS "display",
-	goods_inkind.deptId AS "deptId"
+	goods_inkind. deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
     <select id="stockInkindList" resultType="cn.atsoft.dasheng.model.result.RestTraceabilityResult"
             parameterType="cn.atsoft.dasheng.model.params.RestTraceabilityParam">

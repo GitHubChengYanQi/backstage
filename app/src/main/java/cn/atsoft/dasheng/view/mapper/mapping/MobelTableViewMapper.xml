@@ -15,11 +15,12 @@
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        mobel_table_view_id AS "mobelTableViewId", user_id AS "userId", field AS "field", table_key AS "tableKey", name AS "name", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        mobel_table_view_id AS "mobelTableViewId", user_id AS "userId", field AS "field", table_key AS "tableKey", name AS "name", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

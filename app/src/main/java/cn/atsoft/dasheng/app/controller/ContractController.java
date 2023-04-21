@@ -196,7 +196,7 @@ public class ContractController extends BaseController {
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.contractService.findPageBySpec(contractParam, null);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             return this.contractService.findPageBySpec(contractParam, dataScope);
         }
     }

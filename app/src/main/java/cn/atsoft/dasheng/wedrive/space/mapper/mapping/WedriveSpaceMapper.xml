@@ -9,6 +9,7 @@
         <result column="auth_list" property="authList" />
         <result column="create_user" property="createUser" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
         <result column="display" property="display" />
         <result column="type" property="type" />
         <result column="update_time" property="updateTime" />
@@ -18,7 +19,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        space_id AS "spaceId", type AS "type",space_name AS "spaceName", auth_list AS "authList", create_user AS "createUser", deptId AS "deptId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
+        space_id AS "spaceId", type AS "type",space_name AS "spaceName", auth_list AS "authList", create_user AS "createUser",  deptId AS "deptId",tenant_id AS "tenantId", display AS "display", update_time AS "updateTime", create_time AS "createTime", update_user AS "updateUser"
     </sql>
 
 

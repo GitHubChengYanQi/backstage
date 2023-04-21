@@ -18,7 +18,7 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">deptId AS "deptId",
+    <sql id="Base_Column_List"> deptId AS "deptId",tenant_id AS "tenantId",
         repair_image_id AS "repairImageId", title AS "title", imgUrl AS "imgUrl", repair_id AS "repairId", state AS "state", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 

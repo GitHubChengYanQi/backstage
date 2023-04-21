@@ -78,7 +78,27 @@ public class Supply implements Serializable {
     public void setSupplierModel(String supplierModel) {
         this.supplierModel = supplierModel;
     }
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
+    private Long deptId;
 
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
     public Long getSupplyId() {
         return supplyId;
     }

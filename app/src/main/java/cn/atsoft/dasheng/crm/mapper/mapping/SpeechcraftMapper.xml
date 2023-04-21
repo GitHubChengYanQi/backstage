@@ -19,7 +19,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">speechcraft_type
-    AS "speechcraftType",deptId AS "deptId",
+    AS "speechcraftType", deptId AS "deptId",tenant_id AS "tenantId",
         speechcraft_id AS "speechcraftId", speechcraft_title AS "speechcraftTitle", speechcraft_details AS "speechcraftDetails", speechcraft_key AS "speechcraftKey", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 

@@ -106,7 +106,6 @@ public class UserResult implements Serializable {
     /**
      * 电话
      */
-    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private String phone;
 

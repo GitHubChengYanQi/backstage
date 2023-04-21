@@ -26,7 +26,7 @@
     <sql id="Base_Column_List"> status
     AS "status",realized_number AS "realizedNumber",
         order_detail_id
-        AS "orderDetailId", sku_id AS "skuId", brand_id AS "brandId", money AS "money",customer_id AS "customerId", number AS "number", procurement_order_id AS "procurementOrderId", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", deptId AS "deptId"
+        AS "orderDetailId", sku_id AS "skuId", brand_id AS "brandId", money AS "money",customer_id AS "customerId", number AS "number", procurement_order_id AS "procurementOrderId", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime",  deptId AS "deptId",tenant_id AS "tenantId"
 , detail_id AS "detailId"
     </sql>
 

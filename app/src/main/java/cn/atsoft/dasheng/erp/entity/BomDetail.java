@@ -55,4 +55,12 @@ public class BomDetail {
      */
     @TableField("display")
     private Integer display;
+
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
+    private Long deptId;
+
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
+
+
 }

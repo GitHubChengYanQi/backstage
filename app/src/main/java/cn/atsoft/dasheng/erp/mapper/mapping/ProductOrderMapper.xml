@@ -21,7 +21,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">customer
     AS "customer",state AS "state",
-        product_order_id AS "productOrderId", number AS "number", money AS "money", customer_id AS "customerId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        product_order_id AS "productOrderId", number AS "number", money AS "money", customer_id AS "customerId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

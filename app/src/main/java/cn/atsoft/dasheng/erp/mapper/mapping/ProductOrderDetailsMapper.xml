@@ -16,11 +16,12 @@
         <result column="update_user" property="updateUser" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        product_order_details_id AS "productOrderDetailsId", product_order_id AS "productOrderId", spu_id AS "spuId", sku AS "sku", number AS "number", money AS "money", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        product_order_details_id AS "productOrderDetailsId", product_order_id AS "productOrderId", spu_id AS "spuId", sku AS "sku", number AS "number", money AS "money", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

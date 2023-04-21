@@ -21,7 +21,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         sop_detail_id
-        AS "sopDetailId", sop_id AS "sopId", step_name AS "stepName", img AS "img", instructions AS "instructions", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", sort AS "sort"
+        AS "sopDetailId", sop_id AS "sopId", step_name AS "stepName", img AS "img", instructions AS "instructions", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId", sort AS "sort"
     </sql>
 
 

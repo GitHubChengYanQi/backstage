@@ -37,16 +37,16 @@
 # Mysql数据库
 spring:
   datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://192.168.2.239/daoxin?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
-#    username: daoxin
-#    password: 123qweasd
-#    filters: wall,mergeStat
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.2.239/hh-local?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
-    username: hh-local
-    password: CprNCmi2DDCzztWW
+    url: jdbc:mysql://192.168.2.239/daoxin?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+    username: daoxin
+    password: 123qweasd
     filters: wall,mergeStat
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://192.168.2.239/hh-local?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+#    username: hh-local
+#    password: CprNCmi2DDCzztWW
+#    filters: wall,mergeStat
 
     # 连接池大小根据实际情况调整
     max-active: 20
@@ -71,7 +71,7 @@ spring:
     listener:
       simple:
         acknowledge-mode: manual
-    prefix: jazz
+    prefix: jazz123
 
 # 邮件发送（改为自己的账号）
 mail:
@@ -126,7 +126,13 @@ wx:
     aesKey: 3333
 
 
-
+#  # 小程序相关配置
+#miniapp:
+#  appid: wx4e0e2e89ad2e48ef
+#  secret: fe7c079bea0fe0836ad23a7a865db9d4
+#  aesKey: 3333
+#  token: 11111
+#  msg-data-format: JSON
 # 支付相关配置
 pay:
   notifyUrl: https://dasheng-soft.picp.vip
@@ -161,10 +167,12 @@ wxcp:
   corpId: ww4d053c3a7cebff09
   secret: T_z92-En8k2u-zeJeuK1GYoIPqSA_OnewujNFi8EY_U
   agentId: 1000002
-  token:
-  aesKey:
+  token: OqrSyeq2MbOfvzNpaf2nq
+  aesKey: POS55bE1u1TB9ziYlVPRcbrUCgp54kw5su2XatSPGSh
 
 #手机端跳转路径
 mobile:
-  url: http://192.168.2.111:8001/cp
+  url: http://192.168.2.111:3000/
   apiUrl: http://192.168.2.100:80
+
+templateId: 3WLJEyiwiby2y4STpyuFXsTdTdM9ste9mAbUQBzT

@@ -17,11 +17,18 @@ public class DataScope {
      */
     private List<Long> deptIds;
 
+    private  Long tenantId;
+
     public DataScope() {
     }
 
     public DataScope(List<Long> deptIds) {
         this.deptIds = deptIds;
+    }
+
+    public DataScope(List<Long> deptIds,Long tenantId) {
+        this.deptIds = deptIds;
+        this.tenantId = tenantId;
     }
 
     public DataScope(String scopeName, List<Long> deptIds) {
@@ -43,5 +50,13 @@ public class DataScope {
 
     public void setScopeName(String scopeName) {
         this.scopeName = scopeName;
+    }
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
     }
 }

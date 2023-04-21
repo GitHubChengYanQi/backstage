@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.entity.Stock;
 import cn.atsoft.dasheng.app.model.params.InventoryCorrectionParam;
 import cn.atsoft.dasheng.app.model.request.InstockView;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
@@ -87,7 +88,7 @@ public interface InstockOrderService extends IService<InstockOrder> {
      * @author song
      * @Date 2021-10-06
      */
-    PageInfo findPageBySpec(InstockOrderParam param);
+    PageInfo findPageBySpec(InstockOrderParam param, DataScope dataScope);
 
 
     /**

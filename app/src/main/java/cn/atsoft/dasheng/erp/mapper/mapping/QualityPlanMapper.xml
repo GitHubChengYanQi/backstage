@@ -18,11 +18,12 @@
         <result column="update_user" property="updateUser" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        quality_plan_id AS "qualityPlanId", testing_type AS "testingType",plan_coding AS "planCoding",plan_name AS "planName", plan_status AS "planStatus", plan_type AS "planType", attention_please AS "attentionPlease", plan_adjunct AS "planAdjunct", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        quality_plan_id AS "qualityPlanId", testing_type AS "testingType",plan_coding AS "planCoding",plan_name AS "planName", plan_status AS "planStatus", plan_type AS "planType", attention_please AS "attentionPlease", plan_adjunct AS "planAdjunct", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

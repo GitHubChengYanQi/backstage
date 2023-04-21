@@ -84,8 +84,21 @@ public class SopDetail implements Serializable {
     /**
      * 部门编号
      */
-    @TableField("deptId")
+@TableField(value = "deptId" , fill = FieldFill.INSERT)
     private Long deptId;
+    /**
+     * 租户编号
+     */
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
 
     /**
      * 排序

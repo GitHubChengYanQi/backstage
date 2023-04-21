@@ -57,4 +57,6 @@ public interface StockForewarnMapper extends BaseMapper<StockForewarn> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") StockForewarnParam paramCondition);
 
+    Map<String, Object> view();
+
 }

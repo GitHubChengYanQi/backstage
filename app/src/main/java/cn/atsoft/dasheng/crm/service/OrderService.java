@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.crm.service;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.request.ContractDetailSetRequest;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.Order;
 import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import cn.atsoft.dasheng.crm.model.result.OrderResult;
@@ -66,7 +67,7 @@ public interface OrderService extends IService<Order> {
      * @author song
      * @Date 2022-02-23
      */
-    List<OrderResult> findListBySpec(OrderParam param);
+    List<OrderResult> findListBySpec(OrderParam param, DataScope dataScope);
 
     /**
      * 查询分页数据，Specification模式
@@ -74,7 +75,7 @@ public interface OrderService extends IService<Order> {
      * @author song
      * @Date 2022-02-23
      */
-    PageInfo<OrderResult> findPageBySpec(OrderParam param);
+    PageInfo<OrderResult> findPageBySpec(OrderParam param, DataScope dataScope);
 
     Map<String, Object> mapFormat(Long contractId);
 

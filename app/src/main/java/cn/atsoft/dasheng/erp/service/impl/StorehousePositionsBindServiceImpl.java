@@ -379,7 +379,9 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
 
     @Override
     public List<StorehousePositionsBindResult> findListBySpec(StorehousePositionsBindParam param) {
-        return null;
+        List<StorehousePositionsBindResult> storehousePositionsBindResults = this.baseMapper.customList(param);
+        this.format(storehousePositionsBindResults);
+        return storehousePositionsBindResults;
     }
 
     @Override

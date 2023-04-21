@@ -26,7 +26,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">user_id
-    AS "userId",note AS "note",outstock_apply_id AS "outstockApplyId",deptId AS "deptId",source AS "source",
+    AS "userId",note AS "note",outstock_apply_id AS "outstockApplyId", deptId AS "deptId",tenant_id AS "tenantId",source AS "source",
           source_id AS "sourceId",
         storehouse_id
         AS "storehouseId" ,outstock_order_id AS "outstockOrderId", state AS "state",  coding AS "coding", time AS "time", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"

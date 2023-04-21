@@ -38,7 +38,7 @@
 type
     AS "type", customer_id AS "customerId", receipt_id  AS "receiptId",anomaly_id AS "anomalyId",real_number AS "realNumber",
         instock_log_detail_id
-        AS "instockLogDetailId", instock_log_id AS "instockLogId",source AS "source",source_id AS "sourceId", inkind_id AS "inkindId", sku_id AS "skuId", brand_id AS "brandId", number AS "number",  instock_order_id AS "instockOrderId", storehouse_id AS "storehouseId", storehouse_positions_id AS "storehousePositionsId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        AS "instockLogDetailId", instock_log_id AS "instockLogId",source AS "source",source_id AS "sourceId", inkind_id AS "inkindId", sku_id AS "skuId", brand_id AS "brandId", number AS "number",  instock_order_id AS "instockOrderId", storehouse_id AS "storehouseId", storehouse_positions_id AS "storehousePositionsId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
 
     </sql>
 

@@ -19,7 +19,7 @@
     <result column="deptId" property="deptId"/>
   </resultMap>
   <!-- 通用查询结果列 -->
-  <sql id="Base_Column_List">deptId AS "deptId",
+  <sql id="Base_Column_List"> deptId AS "deptId",tenant_id AS "tenantId",
     quantity AS "quantity" ,brand_id  AS "brandId" ,total_price AS "totalPrice", sale_price AS "salePrice",id AS "id", package_id AS "packageId", item_id AS "itemId",create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
   </sql>
   <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.ErpPackageTableResult"

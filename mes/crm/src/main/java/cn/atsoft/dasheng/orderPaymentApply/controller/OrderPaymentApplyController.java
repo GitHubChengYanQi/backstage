@@ -37,7 +37,7 @@ public class OrderPaymentApplyController {
         if (LoginContextHolder.getContext().isAdmin()) {
         return this.crmOrderPaymentApplyService.findPageBySpec(null,param);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             return this.crmOrderPaymentApplyService.findPageBySpec(dataScope, param);
         }
     }

@@ -52,5 +52,6 @@ public interface StorehouseMapper extends BaseMapper<Storehouse> {
      * @Date 2021-07-15
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") StorehouseParam paramCondition);
+    List<Map<String, Object>> sumNumberByStorehouseIds(@Param("storehouseIds") List<Long> storehouseIds);
 
 }

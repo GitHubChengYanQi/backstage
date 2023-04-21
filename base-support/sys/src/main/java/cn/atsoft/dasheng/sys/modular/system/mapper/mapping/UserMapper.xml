@@ -16,6 +16,7 @@
         <result column="phone" property="phone"/>
         <result column="role_id" property="roleId"/>
         <result column="dept_id" property="deptId"/>
+        <result column="tenant_id" property="tenantId"/>
         <result column="status" property="status"/>
         <result column="create_time" property="createTime"/>
         <result column="create_user" property="createUser"/>
@@ -27,12 +28,12 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         user_id
-        AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", name AS "name", birthday AS "birthday", sex AS "sex", email AS "email", phone AS "phone", role_id AS "roleId", dept_id AS "deptId", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", version AS "version"
+        AS "userId", avatar AS "avatar", tenant_id AS "tenantId",account AS "account", salt AS "salt", name AS "name", birthday AS "birthday", sex AS "sex", email AS "email", phone AS "phone", role_id AS "roleId", dept_id AS "deptId", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", version AS "version"
     </sql>
 
     <sql id="Base_Column_List_With_Pwd">
         user_id
-        AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", password AS "password", name AS "name", birthday AS "birthday", sex AS "sex", email AS "email", phone AS "phone", role_id AS "roleId", dept_id AS "deptId", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", version AS "version"
+        AS "userId", avatar AS "avatar", account AS "account", tenant_id AS "tenantId", salt AS "salt", password AS "password", name AS "name", birthday AS "birthday", sex AS "sex", email AS "email", phone AS "phone", role_id AS "roleId", dept_id AS "deptId", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", version AS "version"
     </sql>
 
     <select id="selectUsers" resultType="map">
@@ -322,13 +323,14 @@
         users.`create_user` AS "createUser",
         users.`update_time` AS "updateTime",
         users.`update_user` AS "updateUser",
-        users.`version` AS "version"
+        users.`version` AS "version",
+        users.`tenant_id` AS "tenantId"
         FROM
         `sys_user` users
         LEFT JOIN daoxin_portal_wxuser_info bind ON users.user_id = bind.user_id
         AND bind.display = 1
         LEFT JOIN uc_open_user_info wechat ON bind.member_id = wechat.member_id
-        AND wechat.source = 'wxCp'
+        AND (wechat.source = 'wxCp' or wechat.source = 'WXMINIAPP')
         WHERE 1 = 1
         <if test=" userIds!=null and userIds.size()>0">
             AND users.user_id IN
@@ -365,7 +367,8 @@
         users.`create_user` AS "createUser",
         users.`update_time` AS "updateTime",
         users.`update_user` AS "updateUser",
-        users.`version` AS "version"
+        users.`version` AS "version",
+        users.`tenant_id` AS "tenantId"
         FROM
         `sys_user` users
         LEFT JOIN daoxin_portal_wxuser_info bind ON users.user_id = bind.user_id
@@ -402,7 +405,8 @@
         users.`create_user` AS "createUser",
         users.`update_time` AS "updateTime",
         users.`update_user` AS "updateUser",
-        users.`version` AS "version"
+        users.`version` AS "version",
+        users.`tenant_id` AS "tenantId"
         FROM
         `sys_user` users
         LEFT JOIN daoxin_portal_wxuser_info bind ON users.user_id = bind.user_id
@@ -455,7 +459,8 @@
             users.`create_user` AS "createUser",
             users.`update_time` AS "updateTime",
             users.`update_user` AS "updateUser",
-            users.`version` AS "version"
+            users.`version` AS "version",
+            users.`tenant_id` AS "tenantId"
         FROM
             `sys_user` users
                 LEFT JOIN daoxin_portal_wxuser_info bind ON users.user_id = bind.user_id
@@ -487,7 +492,8 @@
             u.`create_user` AS "createUser",
             u.`update_time` AS "updateTime",
             u.`update_user` AS "updateUser",
-            u.`version` AS "version"
+            u.`version` AS "version",
+            u.`tenant_id` AS "tenantId"
         FROM
             sys_user u
                 LEFT JOIN daoxin_portal_wxuser_info wx ON u.user_id = wx.user_id

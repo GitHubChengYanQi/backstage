@@ -22,7 +22,16 @@ public class Plan implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 跟单计划id
+     * 跟单计划id    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+     *     private Long tenantId;
+     *
+     *     public Long getTenantId() {
+     *         return tenantId;
+     *     }
+     *
+     *     public void setTenantId(Long tenantId) {
+     *         this.tenantId = tenantId;
+     *     }
      */
       @TableId(value = "sales_process_plan_id", type = IdType.ID_WORKER)
     private Long salesProcessPlanId;
@@ -75,6 +84,19 @@ public class Plan implements Serializable {
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
     }
+
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
+
+
 
     public Long getSalesProcessPlanId() {
         return salesProcessPlanId;

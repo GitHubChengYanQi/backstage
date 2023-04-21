@@ -29,7 +29,7 @@
     <sql id="Base_Column_List"> inkind_id
     AS "inkindId",
         inventory_stock_id
-        AS "inventoryStockId", inventory_id AS "inventoryId", detail_id AS "detailId", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", position_id AS "positionId", anomaly_id AS "anomalyId", number AS "number", lock_status AS "lockStatus", real_number AS "realNumber", status AS "status", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", deptId AS "deptId", display AS "display"
+        AS "inventoryStockId", inventory_id AS "inventoryId", detail_id AS "detailId", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", position_id AS "positionId", anomaly_id AS "anomalyId", number AS "number", lock_status AS "lockStatus", real_number AS "realNumber", status AS "status", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime",  deptId AS "deptId",tenant_id AS "tenantId", display AS "display"
     </sql>
 
 
@@ -54,7 +54,7 @@
 	daoxin_erp_inventory_stock.	update_user AS "updateUser",
 	daoxin_erp_inventory_stock.	create_time AS "createTime",
 	daoxin_erp_inventory_stock.	update_time AS "updateTime",
-	daoxin_erp_inventory_stock.	deptId AS "deptId",
+	daoxin_erp_inventory_stock.	 deptId AS "deptId",tenant_id AS "tenantId",
 	daoxin_erp_inventory_stock.	display AS "display",
 	daoxin_erp_storehouse_positions.pid as 'positionPid',
 	 daoxin_erp_storehouse_positions.sort as 'positionSort'

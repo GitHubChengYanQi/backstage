@@ -26,7 +26,7 @@
     <sql id="Base_Column_List">detail_location
     AS "detailLocation",type AS "type",
         region
-        AS "region" , adress_id AS "adressId", address_name AS "addressName",location AS "location", longitude AS "longitude", latitude AS "latitude", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", customer_id AS "customerId"
+        AS "region" , adress_id AS "adressId", address_name AS "addressName",location AS "location", longitude AS "longitude", latitude AS "latitude", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId", customer_id AS "customerId"
     </sql>
 
 

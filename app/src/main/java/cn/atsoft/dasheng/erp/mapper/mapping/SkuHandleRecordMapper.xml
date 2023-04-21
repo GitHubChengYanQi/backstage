@@ -29,7 +29,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">customer_id
-    AS "customerId",task_id AS "taskId",receipt_id AS "receiptId",create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId",
+    AS "customerId",task_id AS "taskId",receipt_id AS "receiptId",create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId",
          record_id
         AS "recordId", source AS "source", source_id AS "sourceId", now_stock_number AS "nowStockNumber", operation_number AS "operationNumber", balance_number AS "balanceNumber", sku_id AS "skuId", brand_id AS "brandId", position_id AS "positionId", theme AS "theme", operation_time AS "operationTime", operation_user_id AS "operationUserId"
     </sql>

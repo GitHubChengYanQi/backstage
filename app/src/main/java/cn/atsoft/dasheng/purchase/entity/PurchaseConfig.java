@@ -20,7 +20,27 @@ import java.io.Serializable;
 public class PurchaseConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
+    private Long deptId;
 
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
       @TableId(value = "purchase_config_id", type = IdType.ID_WORKER)
     private Long purchaseConfigId;
 

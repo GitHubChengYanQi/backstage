@@ -22,11 +22,12 @@
         <result column="update_user" property="updateUser" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        purchase_ask_id AS "purchaseAskId", coding AS "coding",  theme AS "theme" , origin AS "origin" , type AS "type", note AS "note", status AS "status", money AS "money", number AS "number", type_number AS "typeNumber", source AS "source", source_id AS "sourceId", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        purchase_ask_id AS "purchaseAskId", coding AS "coding",  theme AS "theme" , origin AS "origin" , type AS "type", note AS "note", status AS "status", money AS "money", number AS "number", type_number AS "typeNumber", source AS "source", source_id AS "sourceId", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

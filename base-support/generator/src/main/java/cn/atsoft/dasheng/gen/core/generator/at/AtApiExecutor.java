@@ -64,4 +64,25 @@ public class AtApiExecutor {
             atPageRouterGenerator.doGeneration();
         }
     }
+    public static void batchAddColumn(ContextParam contextParam, MpParam mpContext) {
+
+        AtMpGenerator atMpGenerator = new AtMpGenerator(mpContext);
+        atMpGenerator.initContext(contextParam);
+        atMpGenerator.doGeneration();
+
+        List<TableInfo> tableInfos = atMpGenerator.getTableInfos();
+        Map<String, Map<String, Object>> everyTableContexts = atMpGenerator.getEveryTableContexts();
+        StringBuffer sqlALl = new StringBuffer();
+        // 遍历所有表
+        for (TableInfo tableInfo : tableInfos) {
+
+            String tableName = tableInfo.getName();
+            Map<String, Object> map = everyTableContexts.get(tableName);
+
+            String sql = "ALTER TABLE `"+tableName+"` \n" +
+                    "ADD COLUMN `tenant_id` bigint(20) NOT NULL AFTER `deptId`;";
+            sqlALl.append(sql);
+        }
+        System.out.println(sqlALl);
+    }
 }

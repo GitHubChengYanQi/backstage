@@ -68,6 +68,32 @@ public class CustomMetaObjectHandler implements MetaObjectHandler {
         } catch (ReflectionException e) {
             //没有此字段，则不处理
         }
+        Object deptId = null;
+        try {
+            deptId = getFieldValByName(getDeptFieldName(), metaObject);
+            if (deptId == null) {
+
+                //部门
+                Object userDeptId = getUserDeptId();
+
+                setFieldValByName(getDeptFieldName(), userDeptId, metaObject);
+            }
+        } catch (ReflectionException e) {
+            //没有此字段，则不处理
+        }
+        Object tenantId = null;
+        try {
+            tenantId = getFieldValByName(getTenantFieldName(), metaObject);
+            if (tenantId == null) {
+
+                //部门
+                Object userTenantId = getUserTenantId();
+
+                setFieldValByName(getTenantFieldName(), userTenantId, metaObject);
+            }
+        } catch (ReflectionException e) {
+            //没有此字段，则不处理
+        }
     }
 
     @Override
@@ -122,6 +148,7 @@ public class CustomMetaObjectHandler implements MetaObjectHandler {
      * 获取用户部门id（注意默认获取的用户部门id为空，如果想填写则需要继承本类）
      */
     protected Long getUserDeptId(){return null;}
+    protected Long getUserTenantId(){return null;}
     /**
      * 获取负责人
      */
@@ -134,6 +161,14 @@ public class CustomMetaObjectHandler implements MetaObjectHandler {
      */
     protected String getCreateUserFieldName() {
         return "createUser";
+    }
+
+    protected String getTenantFieldName() {
+        return "tenantId";
+    }
+
+    protected String getDeptFieldName() {
+        return "deptId";
     }
 
     /**

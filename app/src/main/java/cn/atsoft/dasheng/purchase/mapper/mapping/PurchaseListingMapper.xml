@@ -26,7 +26,7 @@
     <sql id="Base_Column_List">status
     AS "status",brand_id AS "brandId",delivery_time AS "deliveryTime",
         purchase_listing_id
-        AS "purchaseListingId", purchase_ask_id AS "purchaseAskId", sku_id AS "skuId", apply_number AS "applyNumber", available_number AS "availableNumber", delivery_date AS "deliveryDate", note AS "note", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        AS "purchaseListingId", purchase_ask_id AS "purchaseAskId", sku_id AS "skuId", apply_number AS "applyNumber", available_number AS "availableNumber", delivery_date AS "deliveryDate", note AS "note", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

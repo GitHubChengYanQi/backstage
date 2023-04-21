@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.purchase.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.purchase.entity.PurchaseList;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseListParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseListResult;
@@ -56,7 +57,7 @@ public interface PurchaseListService extends IService<PurchaseList> {
      * @author Captain_Jazz
      * @Date 2023-03-04
      */
-    List<PurchaseListResult> findListBySpec(PurchaseListParam param);
+    List<PurchaseListResult> findListBySpec(PurchaseListParam param, DataScope dataScope);
 
     List<PurchaseListResult> listBySkuId(Long skuId);
 

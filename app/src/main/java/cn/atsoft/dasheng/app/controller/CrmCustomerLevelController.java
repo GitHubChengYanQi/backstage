@@ -110,7 +110,7 @@ if (ToolUtil.isNotEmpty(detail)) {
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.crmCustomerLevelService.findPageBySpec(crmCustomerLevelParam, null);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
             return this.crmCustomerLevelService.findPageBySpec(crmCustomerLevelParam, dataScope);
         }
     }

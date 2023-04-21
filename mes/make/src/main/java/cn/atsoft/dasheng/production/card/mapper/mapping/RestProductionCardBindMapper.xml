@@ -9,6 +9,7 @@
         <result column="source" property="source" />
         <result column="sourse_id" property="sourseId" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
         <result column="display" property="display" />
         <result column="create_user" property="createUser" />
         <result column="create_time" property="createTime" />
@@ -18,7 +19,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        production_card_bind_id AS "productionCardBindId", production_card_id AS "productionCardId", source AS "source", sourse_id AS "sourseId", deptId AS "deptId", display AS "display", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime"
+        production_card_bind_id AS "productionCardBindId", production_card_id AS "productionCardId", source AS "source", sourse_id AS "sourseId",  deptId AS "deptId",tenant_id AS "tenantId", display AS "display", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime"
     </sql>
 
 

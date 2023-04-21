@@ -13,11 +13,12 @@
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        maintenance_cycle_id AS "maintenanceCycleId", sku_id AS "skuId", maintenance_period AS "maintenancePeriod", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        maintenance_cycle_id AS "maintenanceCycleId", sku_id AS "skuId", maintenance_period AS "maintenancePeriod", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId"
     </sql>
 
 

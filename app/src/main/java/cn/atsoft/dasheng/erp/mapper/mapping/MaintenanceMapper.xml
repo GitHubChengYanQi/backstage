@@ -20,6 +20,7 @@
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="tenant_id" property="tenantId" />
         <result column="status" property="status" />
         <result column="enclosure" property="enclosure" />
         <result column="note" property="note" />
@@ -28,7 +29,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        maintenance_id AS "maintenanceId", task_id  AS "taskId",notice AS "notice",coding AS "coding",select_params AS "selectParams",maintenance_name AS "maintenanceName", user_id AS "userId", type AS "type", near_maintenance AS "nearMaintenance", start_time AS "startTime", end_time AS "endTime", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display", deptId AS "deptId", status AS "status", enclosure AS "enclosure", note AS "note"
+        maintenance_id AS "maintenanceId", task_id  AS "taskId",notice AS "notice",coding AS "coding",select_params AS "selectParams",maintenance_name AS "maintenanceName", user_id AS "userId", type AS "type", near_maintenance AS "nearMaintenance", start_time AS "startTime", end_time AS "endTime", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display",  deptId AS "deptId",tenant_id AS "tenantId", status AS "status", enclosure AS "enclosure", note AS "note"
     </sql>
 
 
