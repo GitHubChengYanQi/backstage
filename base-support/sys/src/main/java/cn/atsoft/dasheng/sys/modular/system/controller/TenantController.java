@@ -4,8 +4,10 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.sys.modular.system.entity.Tenant;
+import cn.atsoft.dasheng.sys.modular.system.entity.TenantBind;
 import cn.atsoft.dasheng.sys.modular.system.model.params.TenantParam;
 import cn.atsoft.dasheng.sys.modular.system.model.result.TenantResult;
+import cn.atsoft.dasheng.sys.modular.system.service.TenantBindService;
 import cn.atsoft.dasheng.sys.modular.system.service.TenantService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -15,9 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -33,6 +37,9 @@ public class TenantController extends BaseController {
 
     @Autowired
     private TenantService tenantService;
+    @Autowired
+    private TenantBindService tenantBindService;
+
 
     /**
      * 新增接口
@@ -43,8 +50,7 @@ public class TenantController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody TenantParam tenantParam) {
-        this.tenantService.add(tenantParam);
-        return ResponseData.success();
+        return ResponseData.success(this.tenantService.add(tenantParam));
     }
 
     /**
@@ -69,7 +75,7 @@ public class TenantController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody TenantParam tenantParam)  {
+    public ResponseData delete(@RequestBody TenantParam tenantParam) {
         this.tenantService.delete(tenantParam);
         return ResponseData.success();
     }
@@ -102,19 +108,47 @@ public class TenantController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<TenantResult> list(@RequestBody(required = false) TenantParam tenantParam) {
-        if(ToolUtil.isEmpty(tenantParam)){
+        if (ToolUtil.isEmpty(tenantParam)) {
             tenantParam = new TenantParam();
         }
         if (LoginContextHolder.getContext().isAdmin()) {
-             return this.tenantService.findPageBySpec(tenantParam,null);
+            return this.tenantService.findPageBySpec(tenantParam, null);
         } else {
-             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
-             return  this.tenantService.findPageBySpec(tenantParam,dataScope);
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(), LoginContextHolder.getContext().getTenantId());
+            return this.tenantService.findPageBySpec(tenantParam, dataScope);
         }
 //        return this.tenantService.findPageBySpec(tenantParam);
     }
 
+    /**
+     * 更换租户
+     *
+     * @author Captain_Jazz
+     * @Date 2023-04-07
+     */
+    @RequestMapping(value = "/changeTenant", method = RequestMethod.POST)
+    @ApiOperation("更换租户")
+    public ResponseData changeTenant(@RequestBody(required = false) TenantParam tenantParam) {
 
+        return ResponseData.success(this.tenantService.changeTenant(tenantParam));
+    }
+
+    /**
+     * 更换租户
+     *
+     * @author Captain_Jazz
+     * @Date 2023-04-07
+     */
+    @RequestMapping(value = "/getMyTenants", method = RequestMethod.POST)
+    @ApiOperation("更换租户")
+    public ResponseData getMyTenants(@RequestBody(required = false) TenantParam tenantParam) {
+        List<Long> tenantIds = tenantBindService.lambdaQuery().eq(TenantBind::getUserId, LoginContextHolder.getContext().getUserId()).list().stream().map(TenantBind::getTenantId).distinct().collect(Collectors.toList());
+        if (tenantIds.size() == 0) {
+            return ResponseData.success(new ArrayList<>());
+        }
+        tenantParam.setTenantIds(tenantIds);
+        return ResponseData.success(this.tenantService.findListBySpec(tenantParam));
+    }
 
 
 }

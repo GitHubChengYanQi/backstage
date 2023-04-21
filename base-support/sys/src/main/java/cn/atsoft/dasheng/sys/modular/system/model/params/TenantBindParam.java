@@ -22,18 +22,28 @@ public class TenantBindParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private List<Long> tenantBindIds;
 
+    private String keywords;
     /**
      * 租户绑定id
      */
     @ApiModelProperty("租户绑定id")
     private Long tenantBindId;
 
+
+
     /**
      * 租户id
      */
     @ApiModelProperty("租户id")
     private Long tenantId;
+
+    /**
+     * 状态
+     */
+    @ApiModelProperty("状态")
+    private Integer status;
 
     /**
      * 系统用户id

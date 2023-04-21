@@ -2,23 +2,32 @@ package cn.atsoft.dasheng.sys.modular.system.service.impl;
 
 
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.service.AuthService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.Tenant;
+import cn.atsoft.dasheng.sys.modular.system.entity.TenantBind;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.mapper.TenantMapper;
 import cn.atsoft.dasheng.sys.modular.system.model.params.TenantParam;
 import cn.atsoft.dasheng.sys.modular.system.model.result.TenantResult;
+import cn.atsoft.dasheng.sys.modular.system.service.TenantBindService;
 import  cn.atsoft.dasheng.sys.modular.system.service.TenantService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,14 +40,45 @@ import java.util.List;
  */
 @Service
 public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> implements TenantService {
+    @Autowired
+    private TenantBindService tenantBindService;
+
+    @Autowired
+    private UserService userService;
+
+    @Resource
+    private AuthService authService;
 
     @Override
-    public void add(TenantParam param){
-        isAdmin();
-        checkPhone(param.getTelephone());
+    public String  add(TenantParam param){
+//        isAdmin();
+//        checkPhone(param.getTelephone());
         checkName(param.getName());
         Tenant entity = getEntity(param);
         this.save(entity);
+        param.setTenantId(entity.getTenantId());
+        tenantBindService.save(new TenantBind(){{
+            setTenantId(param.getTenantId());
+            setUserId(LoginContextHolder.getContext().getUserId());
+            setStatus(99);
+        }});
+        return changeTenant(param);
+    }
+
+    @Override
+    public String changeTenant(TenantParam param){
+        TenantBind bind = tenantBindService.lambdaQuery().eq(TenantBind::getTenantId, param.getTenantId()).eq(TenantBind::getUserId, LoginContextHolder.getContext().getUserId()).one();
+        if (ToolUtil.isEmpty(bind)){
+            throw new ServiceException(500,"您未在此租户下");
+        }
+        if (!bind.getStatus().equals(99)){
+            throw new ServiceException(500,"您在此租户下已被禁用");
+        }
+        User user = new User();
+        user.setUserId(LoginContextHolder.getContext().getUserId());
+        user.setTenantId(param.getTenantId());
+        userService.updateById(user);
+        return authService.login(LoginContextHolder.getContext().getUser().getAccount());
     }
 
     @Override
@@ -81,7 +121,7 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
 
     @Override
     public List<TenantResult> findListBySpec(TenantParam param){
-        return null;
+        return this.baseMapper.customList(param);
     }
 
     @Override
@@ -131,6 +171,15 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
         if (count>0){
             throw new ServiceException(500,"平台中已有此名称的其他租户");
         }
+    }
+    //写一个根据ids 取出result的方法
+    @Override
+    public List<TenantResult> getTenantResultsByIds(List<Long> ids) {
+        //如果ids为空 返回新集合
+        if (ids == null || ids.size() == 0) {
+            return new ArrayList<>();
+        }
+        return BeanUtil.copyToList(this.listByIds(ids), TenantResult.class);
     }
 
 }

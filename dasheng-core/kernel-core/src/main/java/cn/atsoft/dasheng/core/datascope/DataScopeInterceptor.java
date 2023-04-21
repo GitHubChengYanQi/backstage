@@ -59,12 +59,12 @@ public class DataScopeInterceptor implements Interceptor {
             if (dbType != null && dbType.equals(DbType.POSTGRE_SQL)) {
                 originalSql = "select * from (" + originalSql + ") temp_data_scope where temp_data_scope.\"" + scopeName + "\" in (" + join + ")";
                 if (ToolUtil.isNotEmpty(dataScope.getTenantId())){
-                    originalSql+="and temp_data_scope.tenantId = "+dataScope.getTenantId();
+                    originalSql+=" and temp_data_scope.tenantId = "+dataScope.getTenantId();
                 }
             } else {
                 originalSql = "select * from (" + originalSql + ") temp_data_scope where temp_data_scope." + scopeName + " in (" + join + ")";
                 if (ToolUtil.isNotEmpty(dataScope.getTenantId())){
-                    originalSql+="and temp_data_scope.tenantId = "+dataScope.getTenantId();
+                    originalSql+=" and temp_data_scope.tenantId = "+dataScope.getTenantId();
                 }
             }
 

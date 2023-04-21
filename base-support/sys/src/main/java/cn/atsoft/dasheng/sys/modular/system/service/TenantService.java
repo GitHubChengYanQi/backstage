@@ -25,7 +25,9 @@ public interface TenantService extends IService<Tenant> {
      * @author Captain_Jazz
      * @Date 2023-04-07
      */
-    void add(TenantParam param);
+    String  add(TenantParam param);
+
+    String changeTenant(TenantParam param);
 
     /**
      * 删除
@@ -75,4 +77,6 @@ public interface TenantService extends IService<Tenant> {
      */
      PageInfo<TenantResult> findPageBySpec(TenantParam param,DataScope dataScope);
 
+    //写一个根据ids 取出result的方法
+    List<TenantResult> getTenantResultsByIds(List<Long> ids);
 }

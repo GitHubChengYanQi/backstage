@@ -150,6 +150,20 @@ public class StorehousePositionsBindController extends BaseController {
      * @author song
      * @Date 2022-01-20
      */
+    @RequestMapping(value = "/noPagelist", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData noPagelist(@RequestBody(required = false) StorehousePositionsBindParam storehousePositionsBindParam) {
+        if (ToolUtil.isEmpty(storehousePositionsBindParam)) {
+            storehousePositionsBindParam = new StorehousePositionsBindParam();
+        }
+        return ResponseData.success( this.storehousePositionsBindService.findListBySpec(storehousePositionsBindParam));
+    }
+    /**
+     * 查询列表
+     *
+     * @author song
+     * @Date 2022-01-20
+     */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<StorehousePositionsBindResult> list(@RequestBody(required = false) StorehousePositionsBindParam storehousePositionsBindParam) {

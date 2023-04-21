@@ -1,15 +1,10 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Parts;
-import cn.atsoft.dasheng.app.entity.StockDetails;
-import cn.atsoft.dasheng.app.model.result.CustomerResult;
-import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.app.service.PartsService;
-import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -31,10 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -102,24 +94,24 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
         params.removeIf(i -> ToolUtil.isEmpty(i.getInventoryFloor()) && ToolUtil.isEmpty(i.getInventoryCeiling()));
 
         List<Long> skuIds = params.stream().map(StockForewarnParam::getFormId).collect(Collectors.toList());
-         //TODO 如果物料有bom 将bom中的物品一并进行预警添加
+        //TODO 如果物料有bom 将bom中的物品一并进行预警添加
         List<Parts> parts = skuIds.size() == 0 ? new ArrayList<>() : partsService.lambdaQuery().in(Parts::getSkuId, skuIds).orderByDesc(Parts::getCreateTime).groupBy(Parts::getSkuId).list();
-        if (parts.size()>0){
+        if (parts.size() > 0) {
 
             List<ErpPartsDetail> partsDetails = partsDetailService.listByPartIds(parts.stream().map(Parts::getPartsId).collect(Collectors.toList()));
             List<StockForewarnParam> addParams = new ArrayList<>();
             for (StockForewarnParam param : params) {
                 for (Parts part : parts) {
-                    if (param.getFormId().equals(part.getSkuId())){
+                    if (param.getFormId().equals(part.getSkuId())) {
                         for (ErpPartsDetail partsDetail : partsDetails) {
-                            if (part.getPartsId().equals(partsDetail.getPartsId()) && partsDetail.getAutoOutstock().equals(1)){
-                                addParams.add(new StockForewarnParam(){{
+                            if (part.getPartsId().equals(partsDetail.getPartsId()) && partsDetail.getAutoOutstock().equals(1)) {
+                                addParams.add(new StockForewarnParam() {{
                                     setFormId(partsDetail.getSkuId());
-                                    if (ToolUtil.isNotEmpty(param.getInventoryCeiling())){
-                                        setInventoryCeiling((int) (param.getInventoryCeiling()*partsDetail.getNumber()));
+                                    if (ToolUtil.isNotEmpty(param.getInventoryCeiling())) {
+                                        setInventoryCeiling((int) (param.getInventoryCeiling() * partsDetail.getNumber()));
                                     }
                                     if (ToolUtil.isNotEmpty(param.getInventoryFloor())) {
-                                        setInventoryFloor((int) (param.getInventoryFloor()*partsDetail.getNumber()));
+                                        setInventoryFloor((int) (param.getInventoryFloor() * partsDetail.getNumber()));
                                     }
                                 }});
                             }
@@ -134,8 +126,8 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
                     (id, transfer) -> {
                         transfer.stream().reduce((a, b) -> new StockForewarnParam() {{
                             setFormId(a.getFormId());
-                            setInventoryFloor(Math.max(a.getInventoryFloor(),b.getInventoryFloor()));
-                            setInventoryCeiling(Math.max(a.getInventoryCeiling(),b.getInventoryCeiling()));
+                            setInventoryFloor(Math.max(a.getInventoryFloor(), b.getInventoryFloor()));
+                            setInventoryCeiling(Math.max(a.getInventoryCeiling(), b.getInventoryCeiling()));
                         }}).ifPresent(totalList::add);
                     }
             );
@@ -341,16 +333,23 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
         }
         return PageFactory.createPageInfo(stockForewarnResultPage);
     }
-        @Override
-        public List<StockForewarnResult> listBySkuIds (List < Long > skuIds) {
-            if (ToolUtil.isEmpty(skuIds) || skuIds.size() == 0) {
-                return new ArrayList<>();
-            }
-            return this.baseMapper.warningSkuList(new StockForewarnParam() {{
-                setSkuIds(skuIds);
-            }});
 
-
+    @Override
+    public List<StockForewarnResult> listBySkuIds(List<Long> skuIds) {
+        if (ToolUtil.isEmpty(skuIds) || skuIds.size() == 0) {
+            return new ArrayList<>();
         }
+        return this.baseMapper.warningSkuList(new StockForewarnParam() {{
+            setSkuIds(skuIds);
+        }});
+
 
     }
+
+    @Override
+    public Map<String, Object> view() {
+        return this.baseMapper.view();
+    }
+
+
+}

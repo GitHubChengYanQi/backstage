@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -78,4 +79,6 @@ public interface StockForewarnService extends IService<StockForewarn> {
     PageInfo showWaring(StockForewarnParam param);
 
     List<StockForewarnResult> listBySkuIds(List<Long> skuIds);
+
+    Map<String,Object> view();
 }

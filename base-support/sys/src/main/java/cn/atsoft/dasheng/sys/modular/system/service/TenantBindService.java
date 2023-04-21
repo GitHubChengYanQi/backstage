@@ -27,6 +27,8 @@ public interface TenantBindService extends IService<TenantBind> {
      */
     void add(TenantBindParam param);
 
+    Long getOrSave(TenantBindParam param);
+
     /**
      * 删除
      *

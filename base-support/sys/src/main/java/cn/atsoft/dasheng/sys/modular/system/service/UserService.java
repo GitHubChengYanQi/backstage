@@ -409,7 +409,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
 
         for (UserResult userResult : dataList) {
             for (DeptDto deptDto : deptDtos) {
-                if (userResult.getDeptId().equals(deptDto.getDeptId())) {
+                if (ToolUtil.isNotEmpty(userResult.getDeptId()) && userResult.getDeptId().equals(deptDto.getDeptId())) {
                     userResult.setDeptResult(deptDto);
                     break;
                 }

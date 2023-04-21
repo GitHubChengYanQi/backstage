@@ -312,4 +312,5 @@ public class RestUserMgrController extends BaseController {
         List<Map<String, Object>> result = restUserSelectWrapper.wrap();
         return ResponseData.success(result);
     }
+
 }

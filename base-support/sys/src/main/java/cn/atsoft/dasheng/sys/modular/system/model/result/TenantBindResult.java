@@ -20,6 +20,8 @@ public class TenantBindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private UserResult userResult;
+    private TenantResult tenantResult;
 
     /**
      * 租户绑定id

@@ -24,6 +24,7 @@ public class TenantParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private List<Long> tenantIds;
 
     @ApiModelProperty("")
     private Long tenantId;
@@ -38,21 +39,18 @@ public class TenantParam implements Serializable, BaseValidatingParam {
     /**
      * 租户地址
      */
-    @NotNull
     @ApiModelProperty("租户地址")
     private String address;
 
     /**
      * 租户邮箱
      */
-    @NotNull
     @ApiModelProperty("租户邮箱")
     private String email;
 
     /**
      * 联系方式
      */
-    @NotNull
     @ApiModelProperty("联系方式")
     private String telephone;
 

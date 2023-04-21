@@ -734,6 +734,12 @@
             or task.user_id = #{paramCondition.participantUser}
             )
         </if>
+        <if test="paramCondition.source!=null and paramCondition.source != ''">
+            and task.source = #{paramCondition.source}
+        </if>
+        <if test="paramCondition.sourceId!=null and paramCondition.sourceId != ''">
+            and task.source_id = #{paramCondition.sourceId}
+        </if>
         group by task.process_task_id
     </select>
     <select id="maintenanceTask" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult"

@@ -411,7 +411,8 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
         HashMap<String, Object> result = new HashMap<>();
         result.put("menus", menus);
         result.put("mobielMenus", mobielMenus);
-//        result.put("avatar", DefaultImages.defaultAvatarUrl());
+        result.put("tenantId", ToolUtil.isEmpty(user.getTenantId()) ? "" : user.getTenantId());
+        result.put("tenantName", ToolUtil.isEmpty(user.getTenantName()) ? "" : user.getTenantName());
         result.put("avatar", ToolUtil.isNotEmpty(user.getAvatar()) ? user.getAvatar() : DefaultImages.defaultAvatarUrl());
         result.put("name", user.getName());
         if (ToolUtil.isNotEmpty(user.getPhone())) {
@@ -468,4 +469,5 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
             }
         }
     }
+
 }

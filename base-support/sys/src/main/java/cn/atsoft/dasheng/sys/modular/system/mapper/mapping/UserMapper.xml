@@ -330,7 +330,7 @@
         LEFT JOIN daoxin_portal_wxuser_info bind ON users.user_id = bind.user_id
         AND bind.display = 1
         LEFT JOIN uc_open_user_info wechat ON bind.member_id = wechat.member_id
-        AND wechat.source = 'wxCp'
+        AND (wechat.source = 'wxCp' or wechat.source = 'WXMINIAPP')
         WHERE 1 = 1
         <if test=" userIds!=null and userIds.size()>0">
             AND users.user_id IN

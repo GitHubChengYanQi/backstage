@@ -27,6 +27,7 @@ import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -77,7 +78,27 @@ public class StorehouseServiceImpl extends ServiceImpl<StorehouseMapper, Storeho
     public PageInfo<StorehouseResult> findPageBySpec(StorehouseParam param, DataScope dataScope) {
         Page<StorehouseResult> pageContext = getPageContext();
         IPage<StorehouseResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
+    }
+//    format
+    public void format(List<StorehouseResult> dataList){
+        //取出集合中的storehouseId
+        List<Long> storehouseIds = new ArrayList<>();
+        for (StorehouseResult storehouseResult : dataList) {
+            storehouseIds.add(storehouseResult.getStorehouseId());
+        }
+        //查询仓库库存数量
+        List<Map<String,Object>> storehouseResults = this.baseMapper.sumNumberByStorehouseIds(storehouseIds);
+        //dataList 与 storehouseResults 循环用storehouseId匹配
+        for (StorehouseResult storehouseResult : dataList) {
+            for (Map<String, Object> result : storehouseResults) {
+                if(storehouseResult.getStorehouseId().equals(result.get("storehouseId"))){
+                    storehouseResult.setNumber(result.get("number"));
+                    break;
+                }
+            }
+        }
     }
 
     @Override

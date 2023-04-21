@@ -56,6 +56,12 @@
             <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
                 and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
             </if>
+        <if test="paramCondition.tenantIds != null and paramCondition.tenantIds.size() > 0">
+            and tenant_id in
+            <foreach collection="paramCondition.tenantIds" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.TenantParam">

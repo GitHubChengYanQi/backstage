@@ -18,8 +18,13 @@ import cn.atsoft.dasheng.model.response.SuccessResponseData;
 import cn.atsoft.dasheng.sys.core.auth.AuthServiceImpl;
 import cn.atsoft.dasheng.sys.core.auth.cache.SessionManager;
 import cn.atsoft.dasheng.sys.core.auth.util.TokenUtil;
+import cn.atsoft.dasheng.sys.core.constant.state.ManagerStatus;
 import cn.atsoft.dasheng.sys.core.exception.InvalidKaptchaException;
+import cn.atsoft.dasheng.sys.core.util.SaltUtil;
+import cn.atsoft.dasheng.sys.modular.rest.entity.RestUser;
+import cn.atsoft.dasheng.sys.modular.rest.factory.RestUserFactory;
 import cn.atsoft.dasheng.sys.modular.rest.model.params.LoginParam;
+import cn.atsoft.dasheng.sys.modular.rest.wrapper.RestUserSelectWrapper;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.uc.config.AppWxConfiguration;
@@ -47,6 +52,7 @@ import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.atsoft.dasheng.uc.utils.UserUtils;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
+import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.code.kaptcha.Constants;
@@ -72,9 +78,11 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.lang.reflect.Member;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.action.dict.InStockDictEnum.userId;
 import static cn.atsoft.dasheng.uc.utils.UserUtils.getPayLoad;
@@ -106,6 +114,8 @@ public class AuthLoginController extends BaseController {
     private SessionManager sessionManager;
     @Autowired
     private OpenUserInfoService openUserInfoService;
+    @Autowired
+    private UcMemberService ucMemberService;
 
     protected static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
@@ -285,7 +295,7 @@ public class AuthLoginController extends BaseController {
         if (ToolUtil.isOneEmpty(miniAppLoginParam, miniAppLoginParam.getIv(), miniAppLoginParam.getEncryptedData())) {
             throw new ServiceException(500, "参数错误");
         }
-        String token = ucMemberAuth.loginByPhone(miniAppLoginParam);
+         String token = ucMemberAuth.loginByPhone(miniAppLoginParam);
 //        String token = ucMemberAuth.getUserProfile(miniAppLoginParam, sessionKey);
 
         UcJwtPayLoad uc = UcJwtTokenUtil.getJwtPayLoad(token);
@@ -307,12 +317,27 @@ public class AuthLoginController extends BaseController {
              user = userService.getById(wxuserInfo.getUserId());
         }
 
-        if (ToolUtil.isNotEmpty(user)) {
-            JwtPayLoad payLoad = new JwtPayLoad(user.getUserId(), user.getAccount(), "xxxx");
-            token = JwtTokenUtil.generateToken(payLoad);
-            //创建登录会话
-            sessionManager.createSession(token, authService.user(user.getAccount()));
+        if (ToolUtil.isEmpty(user)) {
+            user = new User();
+            user.setAccount(uc.getMobile());
+            user.setPhone(uc.getMobile());
+            String salt = SaltUtil.getRandomSalt();
+            user.setSalt(salt);
+            String password = SaltUtil.md5Encrypt(uc.getMobile(), salt);
+            user.setPassword(password);
+            user.setCreateTime(new Date());
+            user.setStatus(ManagerStatus.OK.getCode());
+            user.setName(RandomUtil.randomString(6));
+            user.setRoleId("2");
+            userService.save(user);
+            wxuserInfo = new WxuserInfo();
+            wxuserInfo.setMemberId(uc.getMemberId());
+            wxuserInfo.setUserId(user.getUserId());
+            wxuserInfo.setSource("wxMiniApp");
+            wxuserInfo.setUuid(uc.getAccount());
+            wxuserInfoService.save(wxuserInfo);
         }
+        token = authService.login(user.getAccount());
         return ResponseData.success(token);
     }
 
@@ -413,4 +438,42 @@ public class AuthLoginController extends BaseController {
     public ResponseData refreshToken() {
         return ResponseData.success(ucMemberAuth.refreshToken());
     }
+
+    @RequestMapping(value = "/addUserByPhone", method = RequestMethod.GET)
+    @ApiOperation("使用电话号码添加用户")
+    public ResponseData addUserByPhone(String phone) {
+        //判断phone格式
+        if (ToolUtil.isEmpty(phone)) {
+            return ResponseData.error("电话号码不能为空");
+        }
+        //验证手机号格式正则
+        String phoneReg = "^1[3|4|5|7|8][0-9]\\d{8}$";
+        if (!phone.matches(phoneReg)) {
+            return ResponseData.error("电话号码格式不正确");
+        }
+
+        //判断手机号是否已经注册
+        Integer count = this.userService.lambdaQuery().eq(User::getPhone, phone).count();
+        List<Long> memberIds = ucMemberService.lambdaQuery().eq(UcMember::getPhone, phone).list().stream().map(UcMember::getMemberId).distinct().collect(Collectors.toList());
+        count+= wxuserInfoService.lambdaQuery().in(WxuserInfo::getMemberId,memberIds).count();
+        if(count>0){
+            throw new ServiceException(500, "该手机号已经注册");
+        }
+
+        User user = new User();
+        user.setAccount(phone);
+        user.setPhone(phone);
+        String salt = SaltUtil.getRandomSalt();
+        user.setSalt(salt);
+        String password = SaltUtil.md5Encrypt(phone, salt);
+        user.setPassword(password);
+        user.setCreateTime(new Date());
+        user.setStatus(ManagerStatus.OK.getCode());
+        user.setName(RandomUtil.randomString(6));
+        userService.save(user);
+        String token = authService.login(user.getAccount());
+        // 完善账号信息
+        return ResponseData.success(token);
+    }
+
 }

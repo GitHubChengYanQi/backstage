@@ -24,13 +24,13 @@ public class TenantBind implements Serializable {
     /**
      * 租户绑定id
      */
-    @TableField("tenant_bind_id")
+    @TableId(value = "tenant_bind_id", type = IdType.ID_WORKER)
     private Long tenantBindId;
 
     /**
      * 租户id
      */
-      @TableId(value = "tenant_id", type = IdType.ID_WORKER)
+      @TableField(value = "tenant_id")
     private Long tenantId;
 
     /**
@@ -38,6 +38,11 @@ public class TenantBind implements Serializable {
      */
     @TableField("user_id")
     private Long userId;
+    /**
+     * 是否启用
+     */
+    @TableField("status")
+    private Integer status;
 
     /**
      * 删除状态
@@ -133,18 +138,25 @@ public class TenantBind implements Serializable {
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+    public Integer getStatus() {
+        return status;
+    }
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     @Override
     public String toString() {
         return "TenantBind{" +
-        "tenantBindId=" + tenantBindId +
-        ", tenantId=" + tenantId +
-        ", userId=" + userId +
-        ", display=" + display +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        "}";
+                "tenantBindId=" + tenantBindId +
+                ", tenantId=" + tenantId +
+                ", userId=" + userId +
+                ", status=" + status +
+                ", display=" + display +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                '}';
     }
 }

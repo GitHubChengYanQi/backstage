@@ -351,5 +351,21 @@
             and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
         </if>
     </select>
+    <select id="view" resultType="map">
+        SELECT
+        (SELECT IF(sum(number) IS NULL, 0, sum(number)) - IF(sum(received_number) IS NULL, 0, sum(received_number))
+        FROM daoxin_production_pick_lists_detail
+        WHERE display = 1 AND status != 99) AS outStockNumber,
 
+        (SELECT IF(sum(number) IS NULL, 0, sum(number)) - IF(sum(delivery) IS NULL, 0, sum(delivery))
+        FROM daoxin_erp_outstock_listing) AS instockNumber,
+
+        (SELECT count(*) AS number
+        FROM view_forewarn_sku_and_stock_number
+        WHERE number &gt;= inventoryFloor) AS floorNumber,
+
+        (SELECT count(*) AS number
+        FROM view_forewarn_sku_and_stock_number
+        WHERE number &lt;= inventoryCeiling) AS ceilingNumber
+    </select>
 </mapper>
