@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.model.params.Values;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.ItemAttribute;
@@ -46,9 +47,9 @@ public class SkuListServiceImpl extends ServiceImpl<SkuListMapper, SkuList> impl
     @Autowired
     private ItemAttributeService itemAttributeService;
     @Override
-    public PageInfo pageListByKeyWord(SkuListParam skuListParam) {
+    public PageInfo pageListByKeyWord(SkuListParam skuListParam, DataScope dataScope) {
         Page<SkuListResult> pageContext = getPageContext();
-        IPage<SkuListResult> page = this.baseMapper.customPageListBySkuView(pageContext, skuListParam);
+        IPage<SkuListResult> page = this.baseMapper.customPageListBySkuView(pageContext, skuListParam, dataScope);
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

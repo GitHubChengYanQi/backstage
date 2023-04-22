@@ -80,5 +80,5 @@ public interface StockForewarnService extends IService<StockForewarn> {
 
     List<StockForewarnResult> listBySkuIds(List<Long> skuIds);
 
-    Map<String,Object> view();
+    Map<String,Object> view(Long tenantId);
 }

@@ -143,6 +143,7 @@ if (ToolUtil.isNotEmpty(detail)) {
     public ResponseData listSelect(@RequestBody(required = false) StorehouseParam storehouseParam) {
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
         storehouseQueryWrapper.in("display", 1);
+        storehouseQueryWrapper.eq("tenant_id", LoginContextHolder.getContext().getTenantId());
         if (ToolUtil.isNotEmpty(storehouseParam) && ToolUtil.isNotEmpty(storehouseParam.getName())) {
             storehouseQueryWrapper.like("name", storehouseParam.getName());
         }

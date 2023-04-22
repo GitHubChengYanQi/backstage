@@ -53,7 +53,9 @@
 	    specifications AS "specifications",
 	    is_ban AS "isBan",
 	    sku_value_md5 AS "skuValueMd5",
-        create_time AS "createTime"
+        create_time AS "createTime",
+        deptId AS "deptId",
+        tenantId AS "tenantId"
     </sql>
 
     <select id="customListBySkuView" resultType="cn.atsoft.dasheng.erp.model.result.SkuListResult">

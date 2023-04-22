@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.StockForewarn;
 import cn.atsoft.dasheng.erp.model.params.StockForewarnParam;
@@ -56,7 +57,7 @@ public class StockForewarnController extends BaseController {
     @RequestMapping(value = "/view", method = RequestMethod.POST)
     @ApiOperation("统计")
     public ResponseData view() {
-        return ResponseData.success(this.stockForewarnService.view());
+        return ResponseData.success(this.stockForewarnService.view(LoginContextHolder.getContext().getTenantId()));
     }
     /**
      * 新增接口
