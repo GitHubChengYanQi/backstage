@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.BatchSkuParam;
 import cn.atsoft.dasheng.erp.model.params.SkuListParam;
@@ -379,7 +380,7 @@ public class SkuController extends BaseController {
         if (ToolUtil.isNotEmpty(skuListParam.getMinimumInventory()) && ToolUtil.isNotEmpty(skuListParam.getMaximumInventory()) && skuListParam.getMinimumInventory() >= skuListParam.getMaximumInventory()) {
             throw new ServiceException(500,"输入的最小值应大于最大值");
         }
-        return this.skuListService.pageListByKeyWord(skuListParam);
+        return this.skuListService.pageListByKeyWord(skuListParam,new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId()));
     }
 
     /**

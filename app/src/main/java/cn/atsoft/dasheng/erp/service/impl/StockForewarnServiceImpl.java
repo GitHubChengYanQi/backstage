@@ -347,8 +347,8 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
     }
 
     @Override
-    public Map<String, Object> view() {
-        return this.baseMapper.view();
+    public Map<String, Object> view(Long tenanId) {
+        return this.baseMapper.view(tenanId);
     }
 
 

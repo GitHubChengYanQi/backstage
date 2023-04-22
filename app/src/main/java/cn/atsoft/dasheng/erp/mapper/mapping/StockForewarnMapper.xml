@@ -355,17 +355,17 @@
         SELECT
         (SELECT IF(sum(number) IS NULL, 0, sum(number)) - IF(sum(received_number) IS NULL, 0, sum(received_number))
         FROM daoxin_production_pick_lists_detail
-        WHERE display = 1 AND status != 99) AS outStockNumber,
+        WHERE display = 1 AND status != 99 and tenant_id = #{tenantId}) AS outStockNumber,
 
         (SELECT IF(sum(number) IS NULL, 0, sum(number)) - IF(sum(delivery) IS NULL, 0, sum(delivery))
-        FROM daoxin_erp_outstock_listing) AS instockNumber,
+        FROM daoxin_erp_outstock_listing where 1 = 1  and tenant_id = #{tenantId}) AS instockNumber,
 
         (SELECT count(*) AS number
         FROM view_forewarn_sku_and_stock_number
-        WHERE number &gt;= inventoryFloor) AS floorNumber,
+        WHERE number &gt;= inventoryFloor and tenantId = #{tenantId}) AS floorNumber,
 
         (SELECT count(*) AS number
         FROM view_forewarn_sku_and_stock_number
-        WHERE number &lt;= inventoryCeiling) AS ceilingNumber
+        WHERE number &lt;= inventoryCeiling and tenantId = #{tenantId}) AS ceilingNumber
     </select>
 </mapper>

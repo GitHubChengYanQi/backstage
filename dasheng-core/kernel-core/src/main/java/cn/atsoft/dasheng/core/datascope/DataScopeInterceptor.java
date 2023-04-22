@@ -57,17 +57,18 @@ public class DataScopeInterceptor implements Interceptor {
 
             //如果是pgsql，进行一下大小写敏感处理
             if (dbType != null && dbType.equals(DbType.POSTGRE_SQL)) {
-                originalSql = "select * from (" + originalSql + ") temp_data_scope where temp_data_scope.\"" + scopeName + "\" in (" + join + ")";
-                if (ToolUtil.isNotEmpty(dataScope.getTenantId())){
-                    originalSql+=" and temp_data_scope.tenantId = "+dataScope.getTenantId();
-                }
-            } else {
-                originalSql = "select * from (" + originalSql + ") temp_data_scope where temp_data_scope." + scopeName + " in (" + join + ")";
-                if (ToolUtil.isNotEmpty(dataScope.getTenantId())){
-                    originalSql+=" and temp_data_scope.tenantId = "+dataScope.getTenantId();
-                }
-            }
+                originalSql = "select * from (" + originalSql + ") temp_data_scope where 1 = 1";
 
+            } else {
+                originalSql = "select * from (" + originalSql + ") temp_data_scope where 1 = 1 ";
+
+            }
+            if (ToolUtil.isNotEmpty(dataScope.getTenantId())){
+                originalSql+=" and temp_data_scope.tenantId = "+dataScope.getTenantId();
+            }
+            if(ToolUtil.isNotEmpty(join)){
+                originalSql+=" and temp_data_scope.\"" + scopeName + "\" in (" + join + ")";
+            }
             metaStatementHandler.setValue("delegate.boundSql.sql", originalSql);
             return invocation.proceed();
         }

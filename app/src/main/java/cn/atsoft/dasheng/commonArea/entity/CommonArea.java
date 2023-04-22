@@ -42,6 +42,7 @@ public class CommonArea implements Serializable {
     @TableField("region_code")
     private String regionCode;
 
+
     @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
     private Long tenantId;
 
@@ -51,14 +52,6 @@ public class CommonArea implements Serializable {
 
     public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
-    }
-
-    public Long getDeptId() {
-        return deptId;
-    }
-
-    public void setDeptId(Long deptId) {
-        this.deptId = deptId;
     }
 
     /**
