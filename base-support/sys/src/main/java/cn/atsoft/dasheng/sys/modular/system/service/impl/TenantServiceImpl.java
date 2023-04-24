@@ -6,6 +6,8 @@ import cn.atsoft.dasheng.base.auth.service.AuthService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.media.model.result.MediaUrlResult;
+import cn.atsoft.dasheng.media.service.RestMediaService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.Tenant;
 import cn.atsoft.dasheng.sys.modular.system.entity.TenantBind;
@@ -18,6 +20,7 @@ import  cn.atsoft.dasheng.sys.modular.system.service.TenantService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -29,6 +32,8 @@ import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -49,6 +54,8 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
     @Resource
     private AuthService authService;
 
+    @Autowired
+    private RestMediaService mediaService;
     @Override
     public String  add(TenantParam param){
 //        isAdmin();
@@ -90,6 +97,11 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
         }
         oldEntity.setDisplay(0);
         this.updateById(oldEntity);
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("tenant_id",oldEntity.getTenantId());
+        updateWrapper.set("tenant_id",null);
+        userService.update(updateWrapper);
+
     }
 
     @Override
@@ -104,9 +116,9 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
             throw new ServiceException(500,"数据未找到");
         }
         Tenant newEntity = getEntity(param);
-        if (!oldEntity.getTelephone().equals(newEntity.getTelephone())){
-            checkPhone(param.getTelephone());
-        }
+//        if (!oldEntity.getTelephone().equals(newEntity.getTelephone())){
+//            checkPhone(param.getTelephone());
+//        }
         if (!oldEntity.getName().equals(newEntity.getName())){
             checkName(param.getName());
         }
@@ -121,7 +133,9 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
 
     @Override
     public List<TenantResult> findListBySpec(TenantParam param){
-        return this.baseMapper.customList(param);
+        List<TenantResult> tenantResults = this.baseMapper.customList(param);
+        this.format(tenantResults);
+        return tenantResults;
     }
 
     @Override
@@ -135,9 +149,25 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
     public PageInfo<TenantResult> findPageBySpec(TenantParam param, DataScope dataScope){
         Page<TenantResult> pageContext = getPageContext();
         IPage<TenantResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
+    @Override
+    public void format(List<TenantResult> dataList){
+        //取出集合中的logo
+        List<Long> logoList = dataList.stream().map(TenantResult::getLogo).collect(Collectors.toList());
+        //通过logoList去restMediaService中getMediaUrlResults方法获取url
+        List<MediaUrlResult> mediaUrlResults = mediaService.getMediaUrlResults(logoList);
+        //把mediaUrlResults转换成Map<Long, MediaUrlResult> key为mediaId value则是对象
+        Map<Long, MediaUrlResult> logoMap = mediaUrlResults.stream().collect(Collectors.toMap(MediaUrlResult::getMediaId, mediaUrlResult -> mediaUrlResult));
 
+        //遍历dataList 将logMap匹配到dataList中
+        dataList.forEach(data -> {
+            if (logoMap.containsKey(data.getLogo())){
+                data.setLogoResult(logoMap.get(data.getLogo()));
+            }
+        });
+    }
     private Serializable getKey(TenantParam param){
         return param.getTenantId();
     }

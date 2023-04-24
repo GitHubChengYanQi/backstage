@@ -45,7 +45,7 @@
 	    a.update_time AS "updateTime",
 	    a.display AS "display",
 	    a.status AS "status",
-	    a. deptId AS "deptId",tenant_id AS "tenantId"
+	    a. deptId AS "deptId",a.tenant_id AS "tenantId"
     </sql>
     <sql id="left_join_stock_details">
         DISTINCTROW
@@ -64,7 +64,8 @@
     	a.create_time AS "createTime",
     	a.update_time AS "updateTime",
     	a.display AS "display",
-    	a. deptId AS "deptId",tenant_id AS "tenantId"
+    	a. deptId AS "deptId",
+        a.tenant_id AS "tenantId"
     </sql>
 
 

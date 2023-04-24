@@ -4,6 +4,8 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.service.AuthService;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.sys.modular.system.entity.Tenant;
 import cn.atsoft.dasheng.sys.modular.system.entity.TenantBind;
 import cn.atsoft.dasheng.sys.modular.system.model.params.TenantBindParam;
 import cn.atsoft.dasheng.sys.modular.system.model.result.TenantBindResult;
@@ -11,6 +13,7 @@ import cn.atsoft.dasheng.sys.modular.system.service.TenantBindService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.modular.system.service.TenantService;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +39,9 @@ public class TenantBindController extends BaseController {
 
     @Autowired
     private TenantBindService tenantBindService;
+
+    @Autowired
+    private TenantService tenantService;
 
     @Autowired
     private AuthService authService;
@@ -64,6 +70,7 @@ public class TenantBindController extends BaseController {
     public ResponseData shareAdd(@RequestBody TenantBindParam tenantBindParam) {
         tenantBindParam.setUserId(LoginContextHolder.getContext().getUserId());
         this.tenantBindService.add(tenantBindParam);
+
         return ResponseData.success();
     }
 
@@ -92,6 +99,18 @@ public class TenantBindController extends BaseController {
         //主键为空抛出异常
         if (ToolUtil.isEmpty(tenantBindParam.getTenantBindId()) || ToolUtil.isEmpty(tenantBindParam.getStatus())) {
             throw new RuntimeException("参数错误");
+        }
+        TenantBind bind = this.tenantBindService.getById(tenantBindParam.getTenantBindId());
+        if (ToolUtil.isEmpty(bind)) {
+            throw new RuntimeException("参数错误");
+        }
+        Long tenantId = bind.getTenantId();
+        Tenant tenantServiceById = tenantService.getById(tenantId);
+        if (ToolUtil.isEmpty(tenantServiceById)) {
+            throw new RuntimeException("参数错误");
+        }
+        if (LoginContextHolder.getContext().getUserId().equals(tenantServiceById.getCreateUser())) {
+            throw new RuntimeException("非创建者不可操作");
         }
         this.tenantBindService.updateById(new TenantBind() {{
             setTenantBindId(tenantBindParam.getTenantBindId());
@@ -201,8 +220,43 @@ public class TenantBindController extends BaseController {
         if (ToolUtil.isEmpty(tenantBindParam) || ToolUtil.isEmpty(tenantBindParam.getTenantBindIds())) {
             throw new RuntimeException("参数错误");
         }
+        TenantBind bind = this.tenantBindService.getById(tenantBindParam.getTenantBindIds().get(0));
+        Long tenantId = bind.getTenantId();
+        Tenant tenantServiceById = tenantService.getById(tenantId);
+        if (ToolUtil.isEmpty(tenantServiceById)) {
+            throw new RuntimeException("参数错误");
+        }
+        if (LoginContextHolder.getContext().getUserId().equals(tenantServiceById.getCreateUser())) {
+            throw new RuntimeException("非创建者不可操作");
+        }
         //通过tenantBindParam.tenantBindId集合
         this.tenantBindService.lambdaUpdate().in(TenantBind::getTenantBindId, tenantBindParam.getTenantBindIds()).set(TenantBind::getStatus,99).update();
+        return ResponseData.success();
+    }
+    /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2023-04-19
+     */
+    @RequestMapping(value = "/batchRefuseStatus", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData batchRefuseStatus(@RequestBody(required = false) TenantBindParam tenantBindParam) {
+        //防止使用参数为空
+        if (ToolUtil.isEmpty(tenantBindParam) || ToolUtil.isEmpty(tenantBindParam.getTenantBindIds())) {
+            throw new ServiceException(500,"参数错误");
+        }
+        TenantBind bind = this.tenantBindService.getById(tenantBindParam.getTenantBindIds().get(0));
+        Long tenantId = bind.getTenantId();
+        Tenant tenantServiceById = tenantService.getById(tenantId);
+        if (ToolUtil.isEmpty(tenantServiceById)) {
+            throw new ServiceException(500,"参数错误");
+        }
+        if (!LoginContextHolder.getContext().getUserId().equals(tenantServiceById.getCreateUser())) {
+            throw new ServiceException(500,"非创建者不可操作");
+        }
+        //通过tenantBindParam.tenantBindId集合
+        this.tenantBindService.lambdaUpdate().in(TenantBind::getTenantBindId, tenantBindParam.getTenantBindIds()).set(TenantBind::getStatus,50).update();
         return ResponseData.success();
     }
     /**

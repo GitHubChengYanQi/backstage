@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.sys.modular.system.model.result;
 
+import cn.atsoft.dasheng.media.model.result.MediaUrlResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -19,7 +20,8 @@ import java.util.List;
 public class TenantResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    @ApiModelProperty("LOGO返回结果")
+    private MediaUrlResult logoResult;
 
     @ApiModelProperty("")
     private Long tenantId;
@@ -29,6 +31,12 @@ public class TenantResult implements Serializable {
      */
     @ApiModelProperty("租户名称")
     private String name;
+
+    /**
+     * 租户logo
+     */
+    @ApiModelProperty("租户logo")
+    private Long logo;
 
     /**
      * 租户地址

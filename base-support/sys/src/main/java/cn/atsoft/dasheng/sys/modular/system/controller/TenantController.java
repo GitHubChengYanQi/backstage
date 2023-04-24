@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.sys.modular.system.controller;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.Tenant;
 import cn.atsoft.dasheng.sys.modular.system.entity.TenantBind;
 import cn.atsoft.dasheng.sys.modular.system.model.params.TenantParam;
@@ -62,9 +63,15 @@ public class TenantController extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody TenantParam tenantParam) {
-
-        this.tenantService.update(tenantParam);
-        return ResponseData.success();
+        if (LoginContextHolder.getContext().isAdmin() || LoginContextHolder.getContext().getTenantId().equals(tenantParam.getTenantId())) {
+            Tenant tenant = this.tenantService.getById(tenantParam.getTenantId());
+            if (!tenant.getCreateUser().equals(LoginContextHolder.getContext().getUserId())) {
+                throw new ServiceException(500, "非管理员或租户创建者不能编辑租户");
+            }
+            this.tenantService.update(tenantParam);
+            return ResponseData.success();
+        }
+        throw new ServiceException(500, "非管理员或租户创建者不能编辑租户");
     }
 
     /**
@@ -73,12 +80,12 @@ public class TenantController extends BaseController {
      * @author Captain_Jazz
      * @Date 2023-04-07
      */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody TenantParam tenantParam) {
-        this.tenantService.delete(tenantParam);
-        return ResponseData.success();
-    }
+//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+//    @ApiOperation("删除")
+//    public ResponseData delete(@RequestBody TenantParam tenantParam) {
+//        this.tenantService.delete(tenantParam);
+//        return ResponseData.success();
+//    }
 
     /**
      * 查看详情接口
@@ -90,6 +97,7 @@ public class TenantController extends BaseController {
     @ApiOperation("详情")
     public ResponseData<TenantResult> detail(@RequestBody TenantParam tenantParam) {
         Tenant detail = this.tenantService.getById(tenantParam.getTenantId());
+
         TenantResult result = new TenantResult();
         if (ToolUtil.isNotEmpty(detail)) {
             ToolUtil.copyProperties(detail, result);
@@ -129,7 +137,6 @@ public class TenantController extends BaseController {
     @RequestMapping(value = "/changeTenant", method = RequestMethod.POST)
     @ApiOperation("更换租户")
     public ResponseData changeTenant(@RequestBody(required = false) TenantParam tenantParam) {
-
         return ResponseData.success(this.tenantService.changeTenant(tenantParam));
     }
 
@@ -142,7 +149,7 @@ public class TenantController extends BaseController {
     @RequestMapping(value = "/getMyTenants", method = RequestMethod.POST)
     @ApiOperation("更换租户")
     public ResponseData getMyTenants(@RequestBody(required = false) TenantParam tenantParam) {
-        List<Long> tenantIds = tenantBindService.lambdaQuery().eq(TenantBind::getUserId, LoginContextHolder.getContext().getUserId()).list().stream().map(TenantBind::getTenantId).distinct().collect(Collectors.toList());
+        List<Long> tenantIds = tenantBindService.lambdaQuery().eq(TenantBind::getUserId, LoginContextHolder.getContext().getUserId()).eq(TenantBind::getDisplay, 1).eq(TenantBind::getStatus, 99).list().stream().map(TenantBind::getTenantId).distinct().collect(Collectors.toList());
         if (tenantIds.size() == 0) {
             return ResponseData.success(new ArrayList<>());
         }

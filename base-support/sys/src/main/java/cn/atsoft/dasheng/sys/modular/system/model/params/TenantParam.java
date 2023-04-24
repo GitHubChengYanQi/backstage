@@ -37,6 +37,12 @@ public class TenantParam implements Serializable, BaseValidatingParam {
     private String name;
 
     /**
+     * 租户logo
+     */
+    @ApiModelProperty("租户logo")
+    private Long logo;
+
+    /**
      * 租户地址
      */
     @ApiModelProperty("租户地址")
