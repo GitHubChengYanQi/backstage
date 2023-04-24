@@ -1,11 +1,14 @@
 package cn.atsoft.dasheng.sys.modular.system.service.impl;
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.sys.modular.system.entity.Tenant;
 import cn.atsoft.dasheng.sys.modular.system.entity.TenantBind;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.mapper.TenantBindMapper;
 import cn.atsoft.dasheng.sys.modular.system.model.params.TenantBindParam;
 import cn.atsoft.dasheng.sys.modular.system.model.result.TenantBindResult;
@@ -14,6 +17,7 @@ import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import  cn.atsoft.dasheng.sys.modular.system.service.TenantBindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -81,7 +85,32 @@ public class TenantBindServiceImpl extends ServiceImpl<TenantBindMapper, TenantB
     }
     @Override
     public void delete(TenantBindParam param){
-        this.removeById(getKey(param));
+        if (ToolUtil.isEmpty(param.getTenantBindId())) {
+            throw new ServiceException(500,"租户用户绑定表id不能为空");
+        }
+        TenantBind tenantBind = getById(param);
+        if (ToolUtil.isEmpty(tenantBind)) {
+            throw new ServiceException(500,"数据不存在");
+        }
+        if(tenantBind.getUserId().equals(LoginContextHolder.getContext().getUserId())){
+            throw new ServiceException(500,"您不能删除自己的绑定");
+        }
+        if (LoginContextHolder.getContext().getTenantId().equals(tenantBind.getTenantId())){
+            Tenant tenant = tenantService.getById(tenantBind.getTenantId());
+            if (LoginContextHolder.getContext().getUserId().equals(tenant.getCreateUser())){
+                tenantBind.setDisplay(0);
+                this.updateById(tenantBind);
+                userService.update(new UpdateWrapper<User>(){{
+                    eq("tenant_id",tenantBind.getTenantId());
+                    eq("user_id",tenantBind.getUserId());
+                    set("tenant_id",null);
+                }});
+            }else {
+                throw new ServiceException(500,"您没有权限删除该数据");
+            }
+        }else {
+            throw new ServiceException(500,"请切换到此租户内再进行操作");
+        }
     }
 
     @Override
@@ -135,6 +164,9 @@ public class TenantBindServiceImpl extends ServiceImpl<TenantBindMapper, TenantB
             item.setUserResult(userMap.get(item.getUserId()));
             //将tenantId对应的result放入
             item.setTenantResult(tenantMap.get(item.getTenantId()));
+            if(ToolUtil.isNotEmpty(tenantMap.get(item.getTenantId())) && tenantMap.get(item.getTenantId()).getCreateUser().equals(item.getUserId())){
+                item.setIsAdmin(1);
+            }
         });
     }
 

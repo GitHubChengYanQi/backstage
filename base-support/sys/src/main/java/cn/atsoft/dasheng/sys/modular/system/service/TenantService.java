@@ -77,6 +77,8 @@ public interface TenantService extends IService<Tenant> {
      */
      PageInfo<TenantResult> findPageBySpec(TenantParam param,DataScope dataScope);
 
+    void format(List<TenantResult> dataList);
+
     //写一个根据ids 取出result的方法
     List<TenantResult> getTenantResultsByIds(List<Long> ids);
 }

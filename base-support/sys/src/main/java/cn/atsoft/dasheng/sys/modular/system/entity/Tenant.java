@@ -61,6 +61,12 @@ public class Tenant implements Serializable {
     private Long createUser;
 
     /**
+     * 创建人
+     */
+      @TableField("logo")
+    private Long logo;
+
+    /**
      * 更新人
      */
       @TableField(value = "update_user", fill = FieldFill.UPDATE)
@@ -159,19 +165,28 @@ public class Tenant implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public Long getLogo() {
+        return logo;
+    }
+
+    public void setLogo(Long logo) {
+        this.logo = logo;
+    }
+
     @Override
     public String toString() {
         return "Tenant{" +
-        "tenantId=" + tenantId +
-        ", name=" + name +
-        ", address=" + address +
-        ", email=" + email +
-        ", telephone=" + telephone +
-        ", display=" + display +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        "}";
+                "tenantId=" + tenantId +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", email='" + email + '\'' +
+                ", telephone='" + telephone + '\'' +
+                ", display=" + display +
+                ", createUser=" + createUser +
+                ", logo=" + logo +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                '}';
     }
 }

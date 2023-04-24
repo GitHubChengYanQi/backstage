@@ -9,6 +9,7 @@
         <result column="address" property="address" />
         <result column="email" property="email" />
         <result column="telephone" property="telephone" />
+        <result column="logo" property="logo" />
         <result column="display" property="display" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
@@ -18,14 +19,14 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        tenant_id AS "tenantId", name AS "name", address AS "address", email AS "email", telephone AS "telephone", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+        tenant_id AS "tenantId",logo AS "logo",name AS "name", address AS "address", email AS "email", telephone AS "telephone", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>
 
 
     <select id="customList" resultType="cn.atsoft.dasheng.sys.modular.system.model.result.TenantResult" parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.TenantParam">
         select
         <include refid="Base_Column_List"/>
-        from sys_tenant where 1 = 1
+        from sys_tenant where 1 = 1 and display = 1
             <if test="paramCondition.tenantId != null">
                 and tenant_id like CONCAT('%',#{paramCondition.tenantId},'%')
             </if>

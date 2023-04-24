@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.sys.core.auth;
 
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.core.auth.util.TokenUtil;
 import cn.atsoft.dasheng.sys.core.constant.Const;
 import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
@@ -114,6 +115,6 @@ public class LoginContextSpringSecutiryImpl implements LoginContext {
     }
     @Override
     public Long getTenantId() {
-        return getUser().getTenantId();
+        return ToolUtil.isEmpty(getUser().getTenantId())?0L:getUser().getTenantId();
     }
 }

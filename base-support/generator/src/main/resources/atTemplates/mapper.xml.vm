@@ -37,7 +37,7 @@
     <select id="customList" resultType="${package.EntitySpecResult}.${entity}Result" parameterType="${package.EntitySpecParams}.${entity}Param">
         select
         <include refid="Base_Column_List"/>
-        from ${table.name} where 1 = 1
+        from ${table.name} where 1 = 1 and display = 1
         #foreach($field in ${sysFieldConfigs})
             #if($field.isSearch.size() > 0)
             <if test="paramCondition.${field.camelFieldName} != null#if($field.columnType!='LONG' && $field.columnType!='INTEGER') and paramCondition.${field.camelFieldName} != ''#end">
@@ -57,7 +57,7 @@
     <select id="customMapList" resultType="map" parameterType="${package.EntitySpecParams}.${entity}Param">
         select
         <include refid="Base_Column_List"/>
-        from ${table.name} where 1 = 1
+        from ${table.name} where 1 = 1 and display = 1
         #foreach($field in ${sysFieldConfigs})
             #if($field.isSearch.size() > 0)
                 <if test="paramCondition.${field.camelFieldName} != null#if($field.columnType!='LONG' && $field.columnType!='INTEGER') and paramCondition.${field.camelFieldName} != ''#end">
@@ -77,7 +77,7 @@
     <select id="customPageList" resultType="${package.EntitySpecResult}.${entity}Result" parameterType="${package.EntitySpecParams}.${entity}Param">
         select
         <include refid="Base_Column_List"/>
-        from ${table.name} where 1 = 1
+        from ${table.name} where 1 = 1 and display = 1
         #foreach($field in ${sysFieldConfigs})
             #if($field.isSearch.size() > 0)
                 <if test="paramCondition.${field.camelFieldName} != null#if($field.columnType!='LONG' && $field.columnType!='INTEGER') and paramCondition.${field.camelFieldName} != ''#end">
@@ -97,7 +97,7 @@
     <select id="customPageMapList" resultType="map" parameterType="${package.EntitySpecParams}.${entity}Param">
         select
         <include refid="Base_Column_List"/>
-        from ${table.name} where 1 = 1
+        from ${table.name} where 1 = 1 and display = 1
         #foreach($field in ${sysFieldConfigs})
             #if($field.isSearch.size() > 0)
                 <if test="paramCondition.${field.camelFieldName} != null#if($field.columnType!='LONG' && $field.columnType!='INTEGER') and paramCondition.${field.camelFieldName} != ''#end">

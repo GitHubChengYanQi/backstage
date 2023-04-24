@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.sys.modular.rest.service;
 
+import cn.atsoft.dasheng.media.service.RestMediaService;
 import cn.atsoft.dasheng.sys.core.constant.Const;
 import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
 import cn.atsoft.dasheng.sys.core.constant.state.ManagerStatus;
@@ -12,9 +13,11 @@ import cn.atsoft.dasheng.sys.modular.rest.mapper.RestUserMapper;
 import cn.atsoft.dasheng.sys.modular.rest.model.params.MobileUrl;
 import cn.atsoft.dasheng.sys.modular.system.entity.Dept;
 import cn.atsoft.dasheng.sys.modular.system.entity.Role;
+import cn.atsoft.dasheng.sys.modular.system.entity.Tenant;
 import cn.atsoft.dasheng.sys.modular.system.model.UserDto;
 import cn.atsoft.dasheng.sys.modular.system.service.DeptService;
 import cn.atsoft.dasheng.sys.modular.system.service.RoleService;
+import cn.atsoft.dasheng.sys.modular.system.service.TenantService;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -37,10 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -64,6 +64,10 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
 
     @Resource
     private RoleService roleService;
+    @Resource
+    private RestMediaService restMediaService;
+    @Resource
+    private TenantService tenantService;
 
     /**
      * 添加用戶
@@ -411,7 +415,23 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
         HashMap<String, Object> result = new HashMap<>();
         result.put("menus", menus);
         result.put("mobielMenus", mobielMenus);
-        result.put("tenantId", ToolUtil.isEmpty(user.getTenantId()) ? "" : user.getTenantId());
+        if (ToolUtil.isNotEmpty(user.getTenantId())){
+            result.put("tenantId", user.getTenantId());
+            Tenant tenant = tenantService.getById(user.getTenantId());
+            if (tenant.getCreateUser().equals(user.getId())){
+                result.put("isTenantAdmin",true);
+            }else {
+                result.put("isTenantAdmin",false);
+            }
+            if (ToolUtil.isNotEmpty(tenant) && ToolUtil.isNotEmpty(tenant.getLogo())){
+                result.put("tenantLogo",restMediaService.getMediaUrlResults(Collections.singletonList(tenant.getLogo())).get(0));
+            }else {
+                result.put("tenantLogo","");
+            }
+        }else {
+            result.put("tenantId", "");
+            result.put("tenantLogo","");
+        }
         result.put("tenantName", ToolUtil.isEmpty(user.getTenantName()) ? "" : user.getTenantName());
         result.put("avatar", ToolUtil.isNotEmpty(user.getAvatar()) ? user.getAvatar() : DefaultImages.defaultAvatarUrl());
         result.put("name", user.getName());
