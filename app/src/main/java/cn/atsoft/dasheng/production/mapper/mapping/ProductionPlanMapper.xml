@@ -39,7 +39,7 @@
         plan.user_id AS "userId",
         plan.remark AS "remark",
         plan.create_user AS "createUser",
-        plan. deptId AS "deptId",tenant_id AS "tenantId",
+        plan. deptId AS "deptId",
         plan.display AS "display",
         plan.update_time AS "updateTime",
         plan.create_time AS "createTime",
@@ -48,7 +48,9 @@
         plan.type AS "type",
         plan.files AS "files",
         plan.status AS "status",
-        plan.bom_count AS "bomCount"
+        plan.bom_count AS "bomCount",
+        plan.tenant_id AS "tenantId",
+        plan.deptId AS "deptId"
     </sql>
 
 
