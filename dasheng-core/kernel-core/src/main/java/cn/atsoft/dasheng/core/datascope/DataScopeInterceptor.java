@@ -67,7 +67,7 @@ public class DataScopeInterceptor implements Interceptor {
                 originalSql+=" and temp_data_scope.tenantId = "+dataScope.getTenantId();
             }
             if(ToolUtil.isNotEmpty(join)){
-                originalSql+=" and temp_data_scope.\"" + scopeName + "\" in (" + join + ")";
+                originalSql+=" and temp_data_scope." + scopeName + " in (" + join + ")";
             }
             metaStatementHandler.setValue("delegate.boundSql.sql", originalSql);
             return invocation.proceed();

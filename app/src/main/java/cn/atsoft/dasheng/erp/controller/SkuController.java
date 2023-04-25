@@ -380,7 +380,7 @@ public class SkuController extends BaseController {
         if (ToolUtil.isNotEmpty(skuListParam.getMinimumInventory()) && ToolUtil.isNotEmpty(skuListParam.getMaximumInventory()) && skuListParam.getMinimumInventory() >= skuListParam.getMaximumInventory()) {
             throw new ServiceException(500,"输入的最小值应大于最大值");
         }
-        return this.skuListService.pageListByKeyWord(skuListParam,new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId()));
+        return this.skuListService.pageListByKeyWord(skuListParam,new DataScope(null,LoginContextHolder.getContext().getTenantId()));
     }
 
     /**
