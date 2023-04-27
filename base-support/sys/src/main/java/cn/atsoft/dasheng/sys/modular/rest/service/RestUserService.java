@@ -427,7 +427,6 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
         result.put("tenantLogo", "");
         result.put("isTenantAdmin", null);
         Tenant tenant = ToolUtil.isEmpty(user.getTenantId()) ? null : tenantService.getById(user.getTenantId());
-
         if (ToolUtil.isNotEmpty(tenant) && tenant.getDisplay().equals(1)) {
             result.put("tenantId", tenant.getTenantId());
             if (ToolUtil.isNotEmpty(tenant.getCreateUser()) && tenant.getCreateUser().equals(user.getId())) {
@@ -436,7 +435,7 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
                 result.put("isTenantAdmin", false);
             }
             if (ToolUtil.isNotEmpty(tenant.getLogo())) {
-                result.put("tenantLogo", tenant.getLogo());
+                result.put("tenantLogo", restMediaService.getMediaUrlResults(Collections.singletonList(tenant.getLogo())).get(0));
             }
         }
         result.put("haveOtherTenant", true);

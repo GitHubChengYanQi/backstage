@@ -226,7 +226,7 @@ public class TenantBindController extends BaseController {
         if (ToolUtil.isEmpty(tenantServiceById)) {
             throw new RuntimeException("参数错误");
         }
-        if (LoginContextHolder.getContext().getUserId().equals(tenantServiceById.getCreateUser())) {
+        if (!LoginContextHolder.getContext().getUserId().equals(tenantServiceById.getCreateUser())) {
             throw new RuntimeException("非创建者不可操作");
         }
         //通过tenantBindParam.tenantBindId集合
