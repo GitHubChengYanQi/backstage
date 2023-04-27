@@ -127,7 +127,7 @@ if (ToolUtil.isNotEmpty(detail)) {
         }
 //        return this.storehouseService.findPageBySpec(storehouseParam);
 
-        return this.storehouseService.findPageBySpec(storehouseParam, null);
+        return this.storehouseService.findPageBySpec(storehouseParam, new DataScope(null,LoginContextHolder.getContext().getTenantId()));
 
 
     }

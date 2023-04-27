@@ -37,6 +37,7 @@ import me.chanjar.weixin.cp.bean.oa.applydata.ContentValue;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -124,6 +125,7 @@ public class WxAuditServiceImpl extends ServiceImpl<WxAuditMapper, WxAudit> impl
         return entity;
     }
     @Override
+    @Transactional
     public String post(WxAuditParam param) throws WxErrorException, IOException {
         String userWechatOpenId = userService.getUserWechatOpenId(LoginContextHolder.getContext().getUserId());
         if(ToolUtil.isEmpty(userWechatOpenId)){

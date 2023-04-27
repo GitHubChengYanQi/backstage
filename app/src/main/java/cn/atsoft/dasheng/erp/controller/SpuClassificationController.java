@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.node.TreeNode;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -131,7 +132,7 @@ public class SpuClassificationController extends BaseController {
     @ApiOperation("Select数据接口")
     public ResponseData listSelect(@RequestBody(required = false) SpuClassificationParam spuClassificationParam) {
         QueryWrapper<SpuClassification> queryWrapper = new QueryWrapper<>();
-
+        queryWrapper.eq("tenant_id", LoginContextHolder.getContext().getTenantId());
         if (ToolUtil.isNotEmpty(spuClassificationParam) && ToolUtil.isNotEmpty(spuClassificationParam.getSpuClassificationId())) {
             queryWrapper.eq("pid", spuClassificationParam.getSpuClassificationId());
         }

@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.binding.cpUser.model.params.CpuserInfoParam;
 import cn.atsoft.dasheng.binding.cpUser.service.CpuserInfoService;
 import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
+import cn.atsoft.dasheng.miniapp.service.WxMiniAppService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.uc.entity.UcMember;
@@ -74,7 +75,7 @@ public class UcMemberAuth {
     private UcOpenUserInfoService ucOpenUserInfoService;
 
     @Autowired
-    private WxMaService wxMaService;
+    private WxMiniAppService wxMaService;
 
     @Autowired
     private WxMpService wxMpService;
@@ -225,7 +226,7 @@ public class UcMemberAuth {
         ucOpenUserInfo.setUuid(openId);
         ucOpenUserInfo.setSource("WXMINIAPP");
 
-        WxMaPhoneNumberInfo wxMaPhoneNumberInfo = wxMaService.getUserService().getPhoneNoInfo(sessionKey.toString(), miniAppLoginParam.getEncryptedData(), miniAppLoginParam.getIv());
+        WxMaPhoneNumberInfo wxMaPhoneNumberInfo = wxMaService.getWxCpClient().getUserService().getPhoneNoInfo(sessionKey.toString(), miniAppLoginParam.getEncryptedData(), miniAppLoginParam.getIv());
 
         String phoneNumber = wxMaPhoneNumberInfo.getPhoneNumber();
         if (ToolUtil.isEmpty(phoneNumber)) {
@@ -241,7 +242,7 @@ public class UcMemberAuth {
     // TODO unionId 未做处理
     public String code2session(MiniAppLoginParam miniAppLoginParam) throws WxErrorException {
         String code = miniAppLoginParam.getCode();
-        WxMaJscode2SessionResult result = wxMaService.jsCode2SessionInfo(code);
+        WxMaJscode2SessionResult result = wxMaService.getWxCpClient().jsCode2SessionInfo(code);
         AuthUser userInfo = new AuthUser();
         String sessionKey = result.getSessionKey();
 
@@ -268,7 +269,7 @@ public class UcMemberAuth {
                 return token;
             }
 
-            JwtPayLoad    payLoad = new JwtPayLoad(wxuserInfo.getUserId(), user.getAccount(), "xxxx");
+            JwtPayLoad payLoad = new JwtPayLoad(wxuserInfo.getUserId(), user.getAccount(),user.getTenantId(), "xxxx");
 
             return JwtTokenUtil.generateToken(payLoad);
         }catch (Exception e){
@@ -282,7 +283,7 @@ public class UcMemberAuth {
 
         String openId = UserUtils.getUserAccount();
         Object sessionKey = redisTemplate.boundValueOps(redisPreKey + "sessionKey").get();
-        WxMaUserInfo result = wxMaService.getUserService().getUserInfo(sessionKey.toString(), miniAppUserProfileParam.getEncryptedData(), miniAppUserProfileParam.getIv());
+        WxMaUserInfo result = wxMaService.getWxCpClient().getUserService().getUserInfo(sessionKey.toString(), miniAppUserProfileParam.getEncryptedData(), miniAppUserProfileParam.getIv());
         UcOpenUserInfo ucOpenUserInfo = new UcOpenUserInfo();
         ucOpenUserInfo.setUuid(openId);
         ucOpenUserInfo.setSource("WXMINIAPP");
@@ -366,6 +367,11 @@ public class UcMemberAuth {
     public String login(UcOpenUserInfo userInfo) {
 
         Long memberId = 0L;
+
+        HttpServletRequest request = HttpContext.getRequest();
+        //从request中获取appId参数
+        assert request != null;
+        userInfo.setAppid( request.getParameter("appid"));
 
         /**
          * 如果是手机方式登录先创建member数据

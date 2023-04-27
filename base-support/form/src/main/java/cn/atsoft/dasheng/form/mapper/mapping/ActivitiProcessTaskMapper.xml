@@ -150,7 +150,9 @@
 	task.source_id AS "source_id" ,
 	participant.user_id as "participantUser",
 	participant.type as "participantType",
-    task.version AS "version"
+    task.version AS "version",
+    task.tenant_id AS "tenantId",
+    task.deptId AS "deptId"
 
 
     </sql>

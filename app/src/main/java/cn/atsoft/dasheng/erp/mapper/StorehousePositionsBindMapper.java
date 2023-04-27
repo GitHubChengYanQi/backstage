@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.mapper;
 
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsBindParam;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsBindResult;
@@ -27,7 +28,7 @@ public interface StorehousePositionsBindMapper extends BaseMapper<StorehousePosi
      * @author song
      * @Date 2022-01-20
      */
-    List<StorehousePositionsBindResult> customList(@Param("paramCondition") StorehousePositionsBindParam paramCondition);
+    List<StorehousePositionsBindResult> customList(@Param("paramCondition") StorehousePositionsBindParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取map列表

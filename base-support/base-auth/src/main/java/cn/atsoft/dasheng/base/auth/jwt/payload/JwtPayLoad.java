@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.base.auth.jwt.payload;
 
+import cn.afterturn.easypoi.cache.ExcelCache;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -23,6 +24,10 @@ public class JwtPayLoad {
      * 账号
      */
     private String account;
+    /**
+     * 账号
+     */
+    private Long tenantId;
 
     /**
      * 用户的键
@@ -40,6 +45,13 @@ public class JwtPayLoad {
         this.userKey = userKey;
     }
 
+    public JwtPayLoad(Long userId, String account, Long tenantId, String userKey) {
+        this.userId = userId;
+        this.account = account;
+        this.tenantId = tenantId;
+        this.userKey = userKey;
+    }
+
     /**
      * payload转化为map形式
      *
@@ -52,6 +64,7 @@ public class JwtPayLoad {
         map.put("account", this.account);
         map.put("userKey", this.userKey);
         map.put("expiresIn", this.expiresIn);
+        map.put("tenantId", this.tenantId);
         return map;
     }
 
@@ -71,6 +84,11 @@ public class JwtPayLoad {
 
             jwtPayLoad.setAccount((String) map.get("account"));
             jwtPayLoad.setUserKey((String) map.get("userKey"));
+            try{
+                jwtPayLoad.setTenantId((Long) map.get("tenantId"));
+            }catch(Exception e){
+                jwtPayLoad.setTenantId(null);
+            }
             return jwtPayLoad;
         }
     }

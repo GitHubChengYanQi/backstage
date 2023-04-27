@@ -66,6 +66,10 @@ public class LoginUser implements UserDetails, Serializable {
      * 头像
      */
     private String avatar;
+    /**
+     * 头像
+     */
+    private String miniAppAvatar;
 
     /**
      * 部门id

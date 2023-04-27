@@ -36,6 +36,8 @@ public class UserDto {
 
     private Long userId;
 
+    private String nickName;
+
     private String jobNo ;  //工号
 
     @NotBlank

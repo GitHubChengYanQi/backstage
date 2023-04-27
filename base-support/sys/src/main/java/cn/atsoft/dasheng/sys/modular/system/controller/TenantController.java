@@ -42,6 +42,8 @@ public class TenantController extends BaseController {
     private TenantBindService tenantBindService;
 
 
+
+
     /**
      * 新增接口
      *

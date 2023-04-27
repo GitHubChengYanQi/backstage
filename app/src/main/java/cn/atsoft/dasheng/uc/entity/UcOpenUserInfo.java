@@ -102,6 +102,11 @@ public class UcOpenUserInfo implements Serializable {
      */
     @TableField("rawUserInfo")
     private String rawUserInfo;
+    /**
+     * 第三方平台返回的原始用户信息
+     */
+    @TableField("appid")
+    private String appid;
 
     /**
      * 手机号码，关联用户
@@ -245,6 +250,14 @@ public class UcOpenUserInfo implements Serializable {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public String getAppid() {
+        return appid;
+    }
+
+    public void setAppid(String appid) {
+        this.appid = appid;
     }
 
     @Override

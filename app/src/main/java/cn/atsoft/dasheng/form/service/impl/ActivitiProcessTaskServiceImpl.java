@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.result.*;
@@ -263,49 +264,49 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             }
             param.setTimeOutTaskIds(timeOutTaskIds);
         }
-
+        DataScope dataScope = new DataScope(null,LoginContextHolder.getContext().getTenantId());
 
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
         IPage<ActivitiProcessTaskResult> page = new Page<>();
         String type = param.getType();
         ProcessType enumByType = getEnumByType(type);
         if (ToolUtil.isEmpty(enumByType)) {
-            page = this.baseMapper.stocktakingTask(pageContext, param);
+            page = this.baseMapper.stocktakingTask(pageContext, param,new DataScope(null,LoginContextHolder.getContext().getTenantId()));
         } else {
             switch (enumByType) {
                 case ALLOCATION:
-                    page = this.baseMapper.aboutMeTask(pageContext, param);
+                    page = this.baseMapper.aboutMeTask(pageContext, param,dataScope);
                     break;
                 case INSTOCK:
-                    page = this.baseMapper.instockTask(pageContext, param);
+                    page = this.baseMapper.instockTask(pageContext, param,dataScope);
                     break;
                 case MAINTENANCE:
-                    page = this.baseMapper.maintenanceTask(pageContext, param);
+                    page = this.baseMapper.maintenanceTask(pageContext, param,dataScope);
                     break;
                 case ERROR:
-                    page = this.baseMapper.errorTask(pageContext, param);
+                    page = this.baseMapper.errorTask(pageContext, param,dataScope);
                     break;
                 case SHIP:
-                    page = this.baseMapper.aboutMeTask(pageContext, param);
+                    page = this.baseMapper.aboutMeTask(pageContext, param,dataScope);
                     break;
                 case QUALITY:
-                    page = this.baseMapper.aboutMeTask(pageContext, param);
+                    page = this.baseMapper.aboutMeTask(pageContext, param,dataScope);
                     break;
                 case OUTSTOCK:
-                    page = this.baseMapper.outstockTask(pageContext, param);
+                    page = this.baseMapper.outstockTask(pageContext, param,dataScope);
                     break;
                 case PURCHASEASK:
-                    page = this.baseMapper.aboutMeTask(pageContext, param);
+                    page = this.baseMapper.aboutMeTask(pageContext, param,dataScope);
                     break;
                 case Stocktaking:
-                    page = this.baseMapper.stocktakingTask(pageContext, param);
+                    page = this.baseMapper.stocktakingTask(pageContext, param,dataScope);
                     break;
                 case PROCUREMENTORDER:
-                    page = this.baseMapper.aboutMeTask(pageContext, param);
+                    page = this.baseMapper.aboutMeTask(pageContext, param,dataScope);
                     break;
 
                 default:
-                    page = this.baseMapper.aboutMeTask(pageContext, param);
+                    page = this.baseMapper.aboutMeTask(pageContext, param,dataScope);
 
                     break;
             }
@@ -341,7 +342,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             param.setTimeOutTaskIds(timeOutTaskIds);
         }
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
-        IPage<ActivitiProcessTaskResult> page = this.baseMapper.aboutMeTask(pageContext, param);
+        IPage<ActivitiProcessTaskResult> page = this.baseMapper.aboutMeTask(pageContext, param,new DataScope(null,LoginContextHolder.getContext().getTenantId()));
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
 
@@ -349,7 +350,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     @Override
     public PageInfo<ActivitiProcessTaskResult> aboutOrderInStockList(ActivitiProcessTaskParam param) {
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
-        IPage<ActivitiProcessTaskResult> page = this.baseMapper.instockTask(pageContext, param);
+        IPage<ActivitiProcessTaskResult> page = this.baseMapper.instockTask(pageContext, param,new DataScope(null,LoginContextHolder.getContext().getTenantId()));
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
 
@@ -383,7 +384,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         }
 
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
-        IPage<ActivitiProcessTaskResult> page = this.baseMapper.auditList(pageContext, param);
+        IPage<ActivitiProcessTaskResult> page = this.baseMapper.auditList(pageContext, param,new DataScope(null,LoginContextHolder.getContext().getTenantId()));
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
 
@@ -393,7 +394,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     @Override
     public PageInfo LoginStart(ActivitiProcessTaskParam param) {
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
-        IPage<ActivitiProcessTaskResult> page = this.baseMapper.auditList(pageContext, param);
+        IPage<ActivitiProcessTaskResult> page = this.baseMapper.auditList(pageContext, param,new DataScope(null,LoginContextHolder.getContext().getTenantId()));
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

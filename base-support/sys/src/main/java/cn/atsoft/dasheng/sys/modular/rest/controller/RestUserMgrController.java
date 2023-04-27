@@ -172,6 +172,20 @@ public class RestUserMgrController extends BaseController {
         return SUCCESS_TIP;
     }
 
+
+    /**
+     * 修改管理员
+     *
+     * @author fengshuonan
+     * @Date 2018/12/24 22:44
+     */
+    @RequestMapping("/synchronizeAvatar")
+    @BussinessLog(value = "修改管理员", key = "account", dict = UserDict.class)
+    public ResponseData synchronizeAvatar(@RequestBody UserDto user) {
+        this.restUserService.editUser(user);
+        return SUCCESS_TIP;
+    }
+
     /**
      * 删除管理员（逻辑删除）
      *

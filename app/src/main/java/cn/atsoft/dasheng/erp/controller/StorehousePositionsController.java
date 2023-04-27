@@ -262,6 +262,7 @@ public class StorehousePositionsController extends BaseController {
         QueryWrapper<StorehousePositions> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("display", 1);
         queryWrapper.orderByAsc("sort");
+        queryWrapper.eq("tenant_id", LoginContextHolder.getContext().getTenantId());
         if (ToolUtil.isNotEmpty(ids)) {
             queryWrapper.in("storehouse_id", ids);
         }

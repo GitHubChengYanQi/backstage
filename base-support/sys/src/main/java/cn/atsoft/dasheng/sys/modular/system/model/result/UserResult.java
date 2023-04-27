@@ -38,6 +38,13 @@ public class UserResult implements Serializable {
      * 微信openId
      */
     private String  openId;
+
+    /**
+     * miniApp头像
+     */
+
+    private String miniAppAvatar;
+
     /**
      * 角色返回
      */

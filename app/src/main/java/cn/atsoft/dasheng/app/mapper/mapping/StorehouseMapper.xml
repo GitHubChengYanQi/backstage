@@ -17,6 +17,7 @@
         <result column="longitude" property="longitude"/>
         <result column="update_user" property="updateUser"/>
         <result column="deptId" property="deptId"/>
+        <result column="tenant_id" property="tenantId"/>
         <result column="display" property="display"/>
 <!--        <result column="children" property="children"/>-->
 <!--        <result column="childrens" property="childrens"/>-->
@@ -24,7 +25,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">deptId
-    AS "deptId",
+    AS "deptId",tenant_id AS "tenantId",
 longitude
     AS "longitude",storehouse_id AS "storehouseId", name AS "name", coding AS "coding", palce AS "palce",  latitude AS "latitude", measure AS "measure", capacity AS "capacity", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>

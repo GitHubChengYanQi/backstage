@@ -32,6 +32,7 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
     private Date startTime;
 
     private Long orderId;
+    private Long productionPlan;
 
     private Date endTime;
 
@@ -106,6 +107,8 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
 
     @ApiModelProperty("上级任务id")
     private Long pid;
+    @ApiModelProperty("租户id")
+    private Long tenantId;
 
 
     /**

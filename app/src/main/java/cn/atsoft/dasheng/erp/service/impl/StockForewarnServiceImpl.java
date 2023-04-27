@@ -6,8 +6,10 @@ import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.StockForewarnMapper;
 import cn.atsoft.dasheng.erp.model.params.StockForewarnParam;
@@ -319,7 +321,7 @@ public class StockForewarnServiceImpl extends ServiceImpl<StockForewarnMapper, S
     @Override
     public PageInfo showWaring(StockForewarnParam param) {
         Page<StockForewarnResult> pageContext = this.getPageContext();
-        Page<StockForewarnResult> stockForewarnResultPage = this.baseMapper.warningSkuPageList(pageContext, param);
+        Page<StockForewarnResult> stockForewarnResultPage = this.baseMapper.warningSkuPageList(pageContext, param,new DataScope(null, LoginContextHolder.getContext().getTenantId()));
         List<Long> skuIds = stockForewarnResultPage.getRecords().stream().map(StockForewarnResult::getSkuId).distinct().collect(Collectors.toList());
 
         List<SkuSimpleResult> skuResult = stockForewarnResultPage.getRecords().size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(stockForewarnResultPage.getRecords().stream().map(StockForewarnResult::getSkuId).distinct().collect(Collectors.toList()));
