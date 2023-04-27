@@ -79,7 +79,7 @@
             a.creator_user AS "creatorUser",
             a.msg AS msg,
             a.done_time As "doneTime",
-            p. deptId AS "deptId",tenant_id AS "tenantId"
+            p. deptId AS "deptId",p.tenant_id AS "tenantId"
         FROM
         `daoxin_crm_order_payment_apply` p
         LEFT JOIN wx_audit a ON p.sp_no = a.sp_no
