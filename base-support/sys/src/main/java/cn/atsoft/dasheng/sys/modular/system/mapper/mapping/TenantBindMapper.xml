@@ -37,6 +37,9 @@
             <if test="paramCondition.display != null">
                 and display like CONCAT('%',#{paramCondition.display},'%')
             </if>
+            <if test="paramCondition.status != null">
+                and status = #{paramCondition.status}
+            </if>
             <if test="paramCondition.createUser != null">
                 and create_user like CONCAT('%',#{paramCondition.createUser},'%')
             </if>

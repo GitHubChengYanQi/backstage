@@ -20,6 +20,7 @@ public class TenantBindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private Integer isAdmin;
+    private Integer status;
     private UserResult userResult;
     private TenantResult tenantResult;
 
