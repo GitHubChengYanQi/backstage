@@ -127,8 +127,8 @@ public class RestOrderServiceImpl extends ServiceImpl<RestOrderMapper, RestOrder
         if (LoginContextHolder.getContext().isAdmin()) {
             page = this.baseMapper.orderList(pageContext, restOrderParam,null);
         } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
-            page = this.baseMapper.orderList(pageContext, restOrderParam,null);
+            DataScope dataScope = new DataScope(null,LoginContextHolder.getContext().getTenantId());
+            page = this.baseMapper.orderList(pageContext, restOrderParam,dataScope);
         }
         List<Long> userIds = page.getRecords().stream().map(RestOrderSimpleResult::getCreateUser).collect(Collectors.toList());
         List<Long> customerIds = page.getRecords().stream().map(RestOrderSimpleResult::getSellerId).collect(Collectors.toList());

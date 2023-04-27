@@ -11,6 +11,8 @@ import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
@@ -379,10 +381,12 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
 
     @Override
     public List<StorehousePositionsBindResult> findListBySpec(StorehousePositionsBindParam param) {
-        List<StorehousePositionsBindResult> storehousePositionsBindResults = this.baseMapper.customList(param);
+        List<StorehousePositionsBindResult> storehousePositionsBindResults = this.baseMapper.customList(param,new DataScope(null,LoginContextHolder.getContext().getTenantId()));
         this.format(storehousePositionsBindResults);
         return storehousePositionsBindResults;
     }
+
+    //写一个冒泡排序
 
     @Override
     public PageInfo<StorehousePositionsBindResult> findPageBySpec(StorehousePositionsBindParam param) {

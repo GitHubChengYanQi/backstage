@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.mapper;
 
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.erp.entity.StockForewarn;
 import cn.atsoft.dasheng.erp.model.params.StockForewarnParam;
 import cn.atsoft.dasheng.erp.model.result.StockForewarnResult;
@@ -45,7 +47,7 @@ public interface StockForewarnMapper extends BaseMapper<StockForewarn> {
      * @Date 2022-12-05
      */
     Page<StockForewarnResult> customPageList(@Param("page") Page page, @Param("paramCondition") StockForewarnParam paramCondition);
-    Page<StockForewarnResult> warningSkuPageList(@Param("page") Page page, @Param("paramCondition") StockForewarnParam paramCondition);
+    Page<StockForewarnResult> warningSkuPageList(@Param("page") Page page, @Param("paramCondition") StockForewarnParam paramCondition, @Param("dataScope")DataScope dataScope);
     List<StockForewarnResult> warningSkuList( @Param("paramCondition") StockForewarnParam paramCondition);
     List<StockForewarnResult> findSkuIdsByPartsId( @Param("bomId") Long bomId);
 

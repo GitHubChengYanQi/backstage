@@ -58,16 +58,16 @@ public interface ActivitiProcessTaskMapper extends BaseMapper<ActivitiProcessTas
 
 
 
-    Page<ActivitiProcessTaskResult> auditList(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
-    Page<ActivitiProcessTaskResult> aboutMeTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
-    Page<ActivitiProcessTaskResult> instockTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
-    Page<ActivitiProcessTaskResult> outstockTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
-    Page<ActivitiProcessTaskResult> allocationTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
-    Page<ActivitiProcessTaskResult> maintenanceTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
-    Page<ActivitiProcessTaskResult> errorTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
+    Page<ActivitiProcessTaskResult> auditList(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition,@Param("dataScope") DataScope dataScope);
+    Page<ActivitiProcessTaskResult> aboutMeTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition,@Param("dataScope") DataScope dataScope);
+    Page<ActivitiProcessTaskResult> instockTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition,@Param("dataScope") DataScope dataScope);
+    Page<ActivitiProcessTaskResult> outstockTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition,@Param("dataScope") DataScope dataScope);
+    Page<ActivitiProcessTaskResult> allocationTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition,@Param("dataScope") DataScope dataScope);
+    Page<ActivitiProcessTaskResult> maintenanceTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition,@Param("dataScope") DataScope dataScope);
+    Page<ActivitiProcessTaskResult> errorTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition,@Param("dataScope") DataScope dataScope);
 //    Page<ActivitiProcessTaskResult> shipTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
 //    Page<ActivitiProcessTaskResult> qualityTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
 //    Page<ActivitiProcessTaskResult> purchaceTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
-    Page<ActivitiProcessTaskResult> stocktakingTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
+    Page<ActivitiProcessTaskResult> stocktakingTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition,@Param("dataScope") DataScope dataScope);
 //    Page<ActivitiProcessTaskResult> procurementTask(@Param("page") Page page, @Param("paramCondition") ActivitiProcessTaskParam paramCondition);
 }

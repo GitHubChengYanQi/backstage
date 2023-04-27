@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.sys.modular.rest.service;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import cn.atsoft.dasheng.sys.modular.rest.entity.RestDept;
 import cn.atsoft.dasheng.sys.modular.rest.mapper.RestDeptMapper;
@@ -96,7 +97,7 @@ public class RestDeptService extends ServiceImpl<RestDeptMapper, RestDept> {
      * @Date 2018/12/23 5:16 PM
      */
     public List<TreeNode> tree() {
-        return this.baseMapper.tree();
+        return this.baseMapper.tree(LoginContextHolder.getContext().getTenantId());
     }
 
     /**

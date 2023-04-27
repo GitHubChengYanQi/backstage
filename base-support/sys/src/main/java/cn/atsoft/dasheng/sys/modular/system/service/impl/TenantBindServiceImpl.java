@@ -52,13 +52,17 @@ public class TenantBindServiceImpl extends ServiceImpl<TenantBindMapper, TenantB
         this.checkParam(param);
         TenantBind entity = this.lambdaQuery().eq(TenantBind::getTenantId, param.getTenantId()).eq(TenantBind::getUserId, param.getUserId()).one();
         if(entity!=null){
-            throw new ServiceException(500,"该人员已经绑定了租户");
-        }else{
+            switch (entity.getStatus()){
+                case 99:
+                    throw new ServiceException(500,"该用户已在企业中");
+                case 0:
+                    throw new ServiceException(500,"已提交申请，请等待管理员审核");
+            }
+        }
             entity = new TenantBind();
             entity.setTenantId(param.getTenantId());
             entity.setUserId(param.getUserId());
             this.save(entity);
-        }
     }
     @Override
     public Long getOrSave(TenantBindParam param){
@@ -128,6 +132,7 @@ public class TenantBindServiceImpl extends ServiceImpl<TenantBindMapper, TenantB
 
     @Override
     public List<TenantBindResult> findListBySpec(TenantBindParam param){
+        param.setStatus(99);
         List<TenantBindResult> listBySpec = this.baseMapper.customList(param);
         format(listBySpec);
         return listBySpec;

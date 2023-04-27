@@ -14,9 +14,11 @@ import cn.atsoft.dasheng.sys.modular.rest.model.params.MobileUrl;
 import cn.atsoft.dasheng.sys.modular.system.entity.Dept;
 import cn.atsoft.dasheng.sys.modular.system.entity.Role;
 import cn.atsoft.dasheng.sys.modular.system.entity.Tenant;
+import cn.atsoft.dasheng.sys.modular.system.entity.TenantBind;
 import cn.atsoft.dasheng.sys.modular.system.model.UserDto;
 import cn.atsoft.dasheng.sys.modular.system.service.DeptService;
 import cn.atsoft.dasheng.sys.modular.system.service.RoleService;
+import cn.atsoft.dasheng.sys.modular.system.service.TenantBindService;
 import cn.atsoft.dasheng.sys.modular.system.service.TenantService;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
@@ -41,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -68,6 +71,8 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
     private RestMediaService restMediaService;
     @Resource
     private TenantService tenantService;
+    @Resource
+    private TenantBindService tenantBindService;
 
     /**
      * 添加用戶
@@ -415,29 +420,39 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
         HashMap<String, Object> result = new HashMap<>();
         result.put("menus", menus);
         result.put("mobielMenus", mobielMenus);
-        if (ToolUtil.isNotEmpty(user.getTenantId())){
-            result.put("tenantId", user.getTenantId());
-            Tenant tenant = tenantService.getById(user.getTenantId());
-            if (tenant.getCreateUser().equals(user.getId())){
-                result.put("isTenantAdmin",true);
-            }else {
-                result.put("isTenantAdmin",false);
+
+
+
+        result.put("tenantId", "");
+        result.put("tenantLogo", "");
+        result.put("isTenantAdmin", null);
+        Tenant tenant = ToolUtil.isEmpty(user.getTenantId()) ? null : tenantService.getById(user.getTenantId());
+
+        if (ToolUtil.isNotEmpty(tenant) && tenant.getDisplay().equals(1)) {
+            result.put("tenantId", tenant.getTenantId());
+            if (ToolUtil.isNotEmpty(tenant.getCreateUser()) && tenant.getCreateUser().equals(user.getId())) {
+                result.put("isTenantAdmin", true);
+            } else {
+                result.put("isTenantAdmin", false);
             }
-            if (ToolUtil.isNotEmpty(tenant) && ToolUtil.isNotEmpty(tenant.getLogo())){
-                result.put("tenantLogo",restMediaService.getMediaUrlResults(Collections.singletonList(tenant.getLogo())).get(0));
-            }else {
-                result.put("tenantLogo","");
+            if (ToolUtil.isNotEmpty(tenant.getLogo())) {
+                result.put("tenantLogo", tenant.getLogo());
             }
-        }else {
-            result.put("tenantId", "");
-            result.put("tenantLogo","");
+        }
+        result.put("haveOtherTenant", true);
+        if (ToolUtil.isEmpty(result.get("tenantId"))){
+            List<Long> tenantIds = tenantBindService.lambdaQuery().eq(TenantBind::getUserId, user.getId()).eq(TenantBind::getStatus, 99).list().stream().map(TenantBind::getTenantId).distinct().collect(Collectors.toList());
+            Integer count = tenantIds.size() == 0 ? 0 : tenantService.lambdaQuery().in(Tenant::getTenantId, tenantIds).eq(Tenant::getDisplay, 1).count();
+            if (count>0){
+                result.put("haveOtherTenant", true);
+            }else {
+                result.put("haveOtherTenant", false);
+            }
         }
         result.put("tenantName", ToolUtil.isEmpty(user.getTenantName()) ? "" : user.getTenantName());
         result.put("avatar", ToolUtil.isNotEmpty(user.getAvatar()) ? user.getAvatar() : DefaultImages.defaultAvatarUrl());
         result.put("name", user.getName());
-        if (ToolUtil.isNotEmpty(user.getPhone())) {
-            result.put("phone", user.getPhone());
-        }
+        result.put("phone", ToolUtil.isEmpty(user.getPhone()) ? "" : user.getPhone());
         result.put("id", user.getId());
         result.put("dept", deptNames);
         result.put("role", roleName);

@@ -79,6 +79,8 @@ public class NoneAuthedResources {
             //获取租户列表的接口
             "/tenantInfo/listTenants",
 
+            "/tenant/detail",
+
             "/swagger-ui.html",
             "/webjars/**",
             "/swagger-resources/**",

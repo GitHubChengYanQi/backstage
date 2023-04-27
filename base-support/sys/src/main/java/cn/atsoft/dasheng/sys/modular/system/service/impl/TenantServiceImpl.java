@@ -60,12 +60,12 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
     public String  add(TenantParam param){
 //        isAdmin();
 //        checkPhone(param.getTelephone());
-        checkName(param.getName());
+//        checkName(param.getName());
         Tenant entity = getEntity(param);
         this.save(entity);
         param.setTenantId(entity.getTenantId());
         tenantBindService.save(new TenantBind(){{
-            setTenantId(param.getTenantId());
+            setTenantId(entity.getTenantId());
             setUserId(LoginContextHolder.getContext().getUserId());
             setStatus(99);
         }});

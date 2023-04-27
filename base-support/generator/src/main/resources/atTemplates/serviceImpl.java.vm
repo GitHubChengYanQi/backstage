@@ -42,7 +42,10 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
 
     @Override
     public void delete(${entity}Param param){
-        this.removeById(getKey(param));
+        //this.removeById(getKey(param));
+        ${entity} entity = this.getOldEntity(param);
+        entity.setDisplay(0);
+        this.updateById(entity);
     }
 
     @Override

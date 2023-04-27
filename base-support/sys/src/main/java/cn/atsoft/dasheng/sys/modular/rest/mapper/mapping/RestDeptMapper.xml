@@ -32,7 +32,7 @@
 		ELSE
 		'false'
 		END
-		) as "open" from sys_dept
+		) as "open" from sys_dept where  1 = 1 and tenant_id = #{tenantId}
 	</select>
 
     <select id="tree" resultType="cn.atsoft.dasheng.base.pojo.node.ZTreeNode" databaseId="oracle">
@@ -44,7 +44,7 @@
 		ELSE
 		'0'
 		END
-		) as "open" from sys_dept
+		) as "open" from sys_dept  and tenant_id = #{tenantId}
 	</select>
 
     <select id="list" resultType="map">
