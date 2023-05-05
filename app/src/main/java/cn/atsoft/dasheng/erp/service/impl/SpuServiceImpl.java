@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.SpuMapper;
 import cn.atsoft.dasheng.erp.model.params.*;
@@ -354,9 +355,9 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     }
 
     @Override
-    public PageInfo<SpuResult> findPageBySpec(SpuParam param) {
+    public PageInfo<SpuResult> findPageBySpec(SpuParam param, DataScope dataScope) {
         Page<SpuResult> pageContext = getPageContext();
-        IPage<SpuResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<SpuResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

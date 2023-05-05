@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.OutstockOrderService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -1229,5 +1230,23 @@ public class DataStatisticsViewController extends BaseController {
         }
         return ResponseData.success();
     }
+    /**
+     * 库存总额统计
+     */
 
+//    @RequestMapping(value = "/stockTotalView", method = RequestMethod.POST)
+//    @ApiOperation("库存总额统计")
+//    public ResponseData stockTotalView(@RequestBody DataStatisticsViewParam param) {
+//        Double stockMoney = stockDetailsMapper.stockTotalView(LoginContextHolder.getContext().getTenantId());
+//        List<SkuSimpleResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
+//        for (StockTotalView stockTotalView : stockTotalViews) {
+//            for (SkuSimpleResult skuResult : skuResults) {
+//                if (stockTotalView.getSkuId().equals(skuResult.getSkuId())) {
+//                    stockTotalView.setSkuSimpleResult(skuResult);
+//                    break;
+//                }
+//            }
+//        }
+//        return ResponseData.success(stockTotalViews);
+//    }
 }

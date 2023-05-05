@@ -95,6 +95,20 @@ public class Dept implements Serializable {
     @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
+    /**
+     * 租户编号
+     */
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
+
 
     public Long getDeptId() {
         return deptId;

@@ -36,6 +36,11 @@ public class OpenUserInfo implements Serializable {
      */
     @TableField("uuid")
     private String uuid;
+    /**
+     * 用户第三方系统的唯一id
+     */
+    @TableField("appid")
+    private String appid;
 
     /**
      * 用户来源
@@ -115,6 +120,18 @@ public class OpenUserInfo implements Serializable {
       @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
+
+    @TableField(value ="tenant_id", fill = FieldFill.INSERT)
+    private Long tenantId;
+
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
 
     public String getPrimaryKey() {
         return primaryKey;
@@ -242,6 +259,14 @@ public class OpenUserInfo implements Serializable {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public String getAppid() {
+        return appid;
+    }
+
+    public void setAppid(String appid) {
+        this.appid = appid;
     }
 
     @Override

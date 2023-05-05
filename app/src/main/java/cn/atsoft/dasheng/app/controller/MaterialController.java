@@ -126,6 +126,7 @@ if (ToolUtil.isNotEmpty(detail)) {
     public ResponseData listSelect() {
         QueryWrapper<Material> materialQueryWrapper = new QueryWrapper<>();
         materialQueryWrapper.in("display",1);
+        materialQueryWrapper.eq("tenant_id",LoginContextHolder.getContext().getTenantId());
         List<Map<String,Object>> list = this.materialService.listMaps(materialQueryWrapper);
 
         MaterialSelectWrapper factory = new MaterialSelectWrapper(list);

@@ -80,8 +80,7 @@ public class PositionController extends BaseController {
      */
     @RequestMapping(value = "/addItem", method = RequestMethod.POST)
     public ResponseData addItem(@RequestBody PositionParam positionParam) {
-        this.positionService.add(positionParam);
-        return ResponseData.success();
+        return ResponseData.success(this.positionService.add(positionParam));
     }
 
     /**

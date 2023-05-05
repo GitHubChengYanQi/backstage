@@ -75,6 +75,7 @@ public class DraftsServiceImpl extends ServiceImpl<DraftsMapper, Drafts> impleme
             param.setStartDay(sdf.format(param.getDates().get(0)));
             param.setEndDay(sdf.format(param.getDates().get(1)));
         }
+
         Page<DraftsResult> pageContext = getPageContext();
         IPage<DraftsResult> page = this.baseMapper.customPageList(pageContext, param);
         this.format(page.getRecords());

@@ -67,7 +67,7 @@ public interface UserMapper extends BaseMapper<User> {
      * 查询部门负责人
      */
     List<User> listUserByPositionAndDept(@Param("deptId")Long deptId, @Param("positionIds")List<Long> positionIds);
-    List<UserResult> listUserByIds(@Param("userIds")List<Long> userIds);
+    List<UserResult> listUserByIds(@Param("userIds")List<Long> userIds,@Param("appid") String appid);
     Page<UserResult> userResultPageList (@Param("page") Page page,@Param("paramCondition")UserParam param);
     String getUserOpenId (@Param("userId")Long userId);
     UserResult getUserResultByOpenId (@Param("openId")String openId);

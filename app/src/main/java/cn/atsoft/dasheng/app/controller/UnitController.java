@@ -119,7 +119,9 @@ if (ToolUtil.isNotEmpty(detail)) {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     public ResponseData listSelect() {
-        List<Map<String, Object>> list = this.unitService.listMaps();
+        List<Map<String, Object>> list = this.unitService.listMaps(new QueryWrapper<Unit>(){{
+            eq("tenant_id", LoginContextHolder.getContext().getTenantId());
+        }});
         UnitSelectWrapper unitSelectWrapper = new UnitSelectWrapper(list);
         List<Map<String, Object>> result = unitSelectWrapper.wrap();
         return ResponseData.success(result);

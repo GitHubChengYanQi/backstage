@@ -35,6 +35,11 @@
             <artifactId>media-service</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>cn.atsoft</groupId>
+            <artifactId>message</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
         <!--swagger-->
         <dependency>

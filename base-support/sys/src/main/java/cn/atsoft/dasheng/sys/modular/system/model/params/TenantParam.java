@@ -26,6 +26,8 @@ public class TenantParam implements Serializable, BaseValidatingParam {
 
     private List<Long> tenantIds;
 
+    private Long userId;
+
     @ApiModelProperty("")
     private Long tenantId;
 

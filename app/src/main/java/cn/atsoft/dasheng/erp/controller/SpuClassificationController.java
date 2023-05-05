@@ -155,6 +155,7 @@ public class SpuClassificationController extends BaseController {
 
         spuClassificationQueryWrapper.eq("display", 1);
         spuClassificationQueryWrapper.orderByDesc("sort");
+        spuClassificationQueryWrapper.eq("tenant_id",LoginContextHolder.getContext().getTenantId());
 
         List<Map<String, Object>> list = this.spuClassificationService.listMaps(spuClassificationQueryWrapper);
 

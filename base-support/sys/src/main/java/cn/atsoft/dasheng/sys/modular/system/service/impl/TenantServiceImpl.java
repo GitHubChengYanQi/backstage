@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.mapper.TenantMapper;
 import cn.atsoft.dasheng.sys.modular.system.model.params.TenantParam;
 import cn.atsoft.dasheng.sys.modular.system.model.result.TenantResult;
+import cn.atsoft.dasheng.sys.modular.system.service.RestInitTenantService;
 import cn.atsoft.dasheng.sys.modular.system.service.TenantBindService;
 import  cn.atsoft.dasheng.sys.modular.system.service.TenantService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -56,6 +57,8 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
 
     @Autowired
     private RestMediaService mediaService;
+    @Autowired
+    private RestInitTenantService initTenantService;
     @Override
     public String  add(TenantParam param){
 //        isAdmin();
@@ -69,7 +72,10 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
             setUserId(LoginContextHolder.getContext().getUserId());
             setStatus(99);
         }});
-        return changeTenant(param);
+        String token = changeTenant(param);
+        initTenantService.init(entity.getTenantId());
+        return token;
+
     }
 
     @Override
@@ -106,11 +112,11 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
 
     @Override
     @Transactional
-    public void update(TenantParam param){
+    public String update(TenantParam param){
         if (ToolUtil.isEmpty(param.getTenantId())){
             throw new ServiceException(500,"参数错误");
         }
-        isAdmin();
+//        isAdmin();
         Tenant oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)){
             throw new ServiceException(500,"数据未找到");
@@ -124,6 +130,7 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
         }
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+        return authService.login(LoginContextHolder.getContext().getUser().getAccount());
     }
 
     @Override
@@ -210,6 +217,30 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
             return new ArrayList<>();
         }
         return BeanUtil.copyToList(this.listByIds(ids), TenantResult.class);
+    }
+
+    @Override
+    public void changeUser(Long tenantId, Long userId){
+        Tenant tenant = this.getById(tenantId);
+        if(ToolUtil.isEmpty(tenant)){
+            throw new ServiceException(500,"租户不存在");
+        }
+        if(!tenant.getCreateUser().equals(LoginContextHolder.getContext().getUserId())){
+            throw new ServiceException(500,"您没有权力操作");
+        }
+
+        User user = userService.getById(userId);
+        if(ToolUtil.isEmpty(user)){
+            throw new ServiceException(500,"用户不存在");
+        }
+
+        //如果用户不在此团队里不操作
+        tenantBindService.lambdaQuery().eq(TenantBind::getTenantId,tenantId).eq(TenantBind::getUserId,userId).eq(TenantBind::getStatus,99).oneOpt().orElseThrow(()->new ServiceException(500,"用户未在此租户下"));
+        //更新数据
+        tenant.setCreateUser(userId);
+        this.updateById(tenant);
+
+
     }
 
 }

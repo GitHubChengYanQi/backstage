@@ -10,6 +10,8 @@
         <result column="value" property="value" />
         <result column="source_id" property="sourceId" />
         <result column="source" property="source" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="deptId" property="deptId" />
         <result column="display" property="display" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
@@ -19,7 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-         id AS "id", table_name AS "tableName", field_name AS "fieldName", value AS "value", source_id AS "sourceId", source AS "source", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+         id AS "id", tenant_id AS "tenantId",deptId AS "deptId",table_name AS "tableName", field_name AS "fieldName", value AS "value", source_id AS "sourceId", source AS "source", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>
 
 

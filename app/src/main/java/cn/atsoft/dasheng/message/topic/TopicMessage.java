@@ -56,14 +56,14 @@ public class TopicMessage {
         MessageEntity messageEntity = JSON.parseObject(message.getBody(), MessageEntity.class);
         switch (messageEntity.getType()) {
             case CP:
-                try {
-                    wxCpService.getWxCpClient().getMessageService().send(messageEntity.getCpData());
-                    logger.info("接收" + JSON.toJSONString(messageEntity.getCpData().getContent()));
-                } catch (WxErrorException e) {
-                    e.printStackTrace();
-                }
-                break;
-
+//                try {
+//                    wxCpService.getWxCpClient().getMessageService().send(messageEntity.getCpData());
+//                    logger.info("接收" + JSON.toJSONString(messageEntity.getCpData().getContent()));
+//                } catch (WxErrorException e) {
+//                    e.printStackTrace();
+//                }
+//                break;
+//
             case MP:
 
 

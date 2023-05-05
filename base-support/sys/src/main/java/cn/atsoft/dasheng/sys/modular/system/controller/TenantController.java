@@ -70,8 +70,8 @@ public class TenantController extends BaseController {
             if (!tenant.getCreateUser().equals(LoginContextHolder.getContext().getUserId())) {
                 throw new ServiceException(500, "非管理员或租户创建者不能编辑租户");
             }
-            this.tenantService.update(tenantParam);
-            return ResponseData.success();
+
+            return ResponseData.success(this.tenantService.update(tenantParam));
         }
         throw new ServiceException(500, "非管理员或租户创建者不能编辑租户");
     }
@@ -140,6 +140,21 @@ public class TenantController extends BaseController {
     @ApiOperation("更换租户")
     public ResponseData changeTenant(@RequestBody(required = false) TenantParam tenantParam) {
         return ResponseData.success(this.tenantService.changeTenant(tenantParam));
+    }
+    /**
+     * 更换租户
+     *
+     * @author Captain_Jazz
+     * @Date 2023-04-07
+     */
+    @RequestMapping(value = "/changeUser", method = RequestMethod.POST)
+    @ApiOperation("更换租户")
+    public ResponseData changeUser(@RequestBody(required = false) TenantParam tenantParam) {
+        if (ToolUtil.isEmpty(tenantParam.getTenantId()) || ToolUtil.isEmpty(tenantParam.getUserId())) {
+            throw new ServiceException(500, "参数错误");
+        }
+        this.tenantService.changeUser(tenantParam.getTenantId(), tenantParam.getUserId());
+        return ResponseData.success();
     }
 
     /**

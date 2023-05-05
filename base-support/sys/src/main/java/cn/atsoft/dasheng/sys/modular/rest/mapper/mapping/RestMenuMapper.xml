@@ -331,12 +331,12 @@
             sys_relation rela
             WHERE
             rela.role_id IN
-            <foreach collection="list" index="index" item="i" open="(" separator="," close=")">
+            <foreach collection="roleIds" index="index" item="i" open="(" separator="," close=")">
                 #{i}
             </foreach>
             )
             ) m3 ON m1.menu_id = m3.menu_id
-            where 1=1 and m1.type = 1
+            where 1=1 and m1.type = #{type}
             order by levels,m1.sort asc
         </select>
 

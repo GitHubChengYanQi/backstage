@@ -23,7 +23,19 @@ public class Customer implements Serializable {
      */
     @TableId(value = "customer_id", type = IdType.ID_WORKER)
     private Long customerId;
+    /**
+     * 租户编号
+     */
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
 
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
     @TableField("agent")
     private Integer agent;
 

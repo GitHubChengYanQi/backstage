@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.service;
 
 import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
@@ -67,7 +68,7 @@ public interface SpuService extends IService<Spu> {
      * @author
      * @Date 2021-10-18
      */
-    PageInfo<SpuResult> findPageBySpec(SpuParam param);
+    PageInfo<SpuResult> findPageBySpec(SpuParam param, DataScope dataScope);
 
     ResponseData detail (SpuParam spuParam);
 

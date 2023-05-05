@@ -231,7 +231,17 @@ public class UcOpenUserInfo implements Serializable {
 
 
     }
+    @TableField(value ="tenant_id", fill = FieldFill.INSERT)
+    private Long tenantId;
 
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
     public void setRawUserInfo(String rawUserInfo) {
         this.rawUserInfo = rawUserInfo;
     }

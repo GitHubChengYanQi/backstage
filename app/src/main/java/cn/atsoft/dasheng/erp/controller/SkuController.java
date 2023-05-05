@@ -173,6 +173,11 @@ public class SkuController extends BaseController {
     @BussinessLog(value = "修改sku", key = "name", dict = SkuParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody SkuParam skuParam) {
+        Sku sku = skuService.getById(skuParam.getSkuId());
+        if (!LoginContextHolder.getContext().getTenantId().equals(sku.getTenantId())){
+            throw new ServiceException(500,"您无权操作该数据");
+        }
+
         if (ToolUtil.isNotEmpty(skuParam.getGeneralFormDataParams()) && skuParam.getGeneralFormDataParams().size() > 0) {
             for (GeneralFormDataParam generalFormDataParam : skuParam.getGeneralFormDataParams()) {
                 generalFormDataParam.setTableName("goods_sku");
@@ -273,6 +278,9 @@ public class SkuController extends BaseController {
     public ResponseData detail(@RequestBody SkuParam skuParam) {
 
         SkuResult sku = skuService.getSku(skuParam.getSkuId());
+        if (!LoginContextHolder.getContext().getTenantId().equals(sku.getTenantId())){
+            throw new ServiceException(500,"您无权查看该数据");
+        }
         if (ToolUtil.isNotEmpty(sku.getSpuId())) {
             Spu spu = spuService.getById(sku.getSpuId());
             if (ToolUtil.isNotEmpty(spu.getUnitId())) {
@@ -313,6 +321,9 @@ public class SkuController extends BaseController {
     public ResponseData detailV1(@RequestBody SkuParam skuParam) {
 
         SkuResult sku = skuService.getSku(skuParam.getSkuId());
+        if (!LoginContextHolder.getContext().getTenantId().equals(sku.getTenantId())){
+            throw new ServiceException(500,"您无权查看该数据");
+        }
         if (ToolUtil.isNotEmpty(sku.getSpuId())) {
             Spu spu = spuService.getById(sku.getSpuId());
             if (ToolUtil.isNotEmpty(spu.getUnitId())) {

@@ -110,13 +110,13 @@ if (ToolUtil.isNotEmpty(detail)) {
             brandParam = new BrandParam();
         }
 
-//        if (LoginContextHolder.getContext().isAdmin()) {
+        if (LoginContextHolder.getContext().isAdmin()) {
             return this.brandService.findPageBySpec(brandParam, null);
-//        } else {
-//            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
-//            brandService.findPageBySpec(brandParam, dataScope);
-//            return this.brandService.findPageBySpec(brandParam, dataScope);
-//        }
+        } else {
+            DataScope dataScope = new DataScope(null,LoginContextHolder.getContext().getTenantId());
+            brandService.findPageBySpec(brandParam, dataScope);
+            return this.brandService.findPageBySpec(brandParam, dataScope);
+        }
     }
 
 
@@ -141,6 +141,7 @@ if (ToolUtil.isNotEmpty(detail)) {
     public ResponseData listSelect(@RequestBody(required = false) BrandParam brandParam) {
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
         brandQueryWrapper.eq("display", 1);
+        brandQueryWrapper.eq("tenant_id", LoginContextHolder.getContext().getTenantId());
         if (ToolUtil.isNotEmpty(brandParam)){
             if (brandParam.getIds() != null){
                 if (brandParam.getIds().size() == 0){

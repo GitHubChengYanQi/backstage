@@ -183,6 +183,8 @@ public class WxuserInfo implements Serializable {
         this.source = source;
     }
 
+
+
     @Override
     public String toString() {
         return "WxuserInfo{" +

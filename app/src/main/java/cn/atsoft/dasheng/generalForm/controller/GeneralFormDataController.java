@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.generalForm.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.generalForm.entity.GeneralFormData;
 import cn.atsoft.dasheng.generalForm.model.params.GeneralFormDataParam;
 import cn.atsoft.dasheng.generalForm.model.result.GeneralFormDataResult;
@@ -102,7 +104,7 @@ public class GeneralFormDataController extends BaseController {
         if(ToolUtil.isEmpty(generalFormDataParam)){
             generalFormDataParam = new GeneralFormDataParam();
         }
-        return this.generalFormDataService.findPageBySpec(generalFormDataParam);
+        return this.generalFormDataService.findPageBySpec(generalFormDataParam,new DataScope(null, LoginContextHolder.getContext().getTenantId()));
     }
 
 

@@ -55,6 +55,7 @@ public class SkuResult implements Serializable {
     private String skuTextValue;
     private Long spuClass;
     private Long skuId;
+    private Long tenantId;
     private QualityPlan qualityPlan;
     private Unit unit;
     private SpuClassification spuClassification;
