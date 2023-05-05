@@ -1,8 +1,9 @@
 package cn.atsoft.dasheng.topic;
 
-import cn.atsoft.dasheng.audit.service.RestWxCpService;
+//import cn.atsoft.dasheng.audit.service.RestWxCpService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.entity.MessageEntity;
+import cn.atsoft.dasheng.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.service.RestAuditMessageService;
 import cn.atsoft.dasheng.service.RestMicroMessageService;
 import cn.atsoft.dasheng.service.RestRemarksMessageService;
@@ -23,8 +24,8 @@ import static cn.atsoft.dasheng.config.RestDirectQueueConfig.*;
 
 @Component
 public class RestTopicMessage {
-    @Autowired
-    private RestWxCpService wxCpService;
+//    @Autowired
+//    private RestWxCpService wxCpService;
 //
 //    @Autowired
 //    private MessageService messageService;
@@ -53,12 +54,12 @@ public class RestTopicMessage {
         MessageEntity messageEntity = JSON.parseObject(message.getBody(), MessageEntity.class);
         switch (messageEntity.getType()) {
             case CP:
-                try {
-                    wxCpService.getWxCpClient().getMessageService().send(messageEntity.getCpData());
-                    logger.info("接收" + JSON.toJSONString(messageEntity.getCpData().getContent()));
-                } catch (WxErrorException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    wxCpService.getWxCpClient().getMessageService().send(messageEntity.getCpData());
+//                    logger.info("接收" + JSON.toJSONString(messageEntity.getCpData().getContent()));
+//                } catch (WxErrorException e) {
+//                    e.printStackTrace();
+//                }
                 break;
 
             case MP:
@@ -79,7 +80,7 @@ public class RestTopicMessage {
             default:
         }
     }
-
+//
 //    /**
 //     * 内部调用创建单据等
 //     * @param message

@@ -85,4 +85,7 @@ public interface StockDetailsMapper extends BaseMapper<StockDetails> {
     List<StockDetails> getStockNumber(@Param("paramConditions")List<InventoryCorrectionParam> paramConditions);
     List<StockDetails> getStockNumberDetail(@Param("paramConditions")List<InventoryCorrectionParam> paramConditions);
     List<StockDetails> getNumberCountEntityBySkuId(@Param("skuIds") List<Long> skuIds);
+    Double stockTotalView(@Param("tenantId") Long tenantId);
+
+
 }

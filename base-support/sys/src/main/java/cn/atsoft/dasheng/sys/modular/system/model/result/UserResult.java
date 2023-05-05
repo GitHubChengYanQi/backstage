@@ -30,6 +30,7 @@ public class UserResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private String nickName;
     /**
      * 部门返回
      */

@@ -22,6 +22,10 @@ public class MenuDto implements Serializable {
      */
     private Long menuId;
     /**
+     * 是否是小程序菜单
+     */
+    private Integer miniapp;
+    /**
      * 菜单编号
      */
     private String code;

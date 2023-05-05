@@ -87,7 +87,7 @@ public interface RestMenuMapper extends BaseMapper<RestMenu> {
      */
     List<MenuNode> getMenusByRoleIds(List<Long> roleIds);
 
-    List<MenuNode> getMobileMenusByRoleIds(List<Long> roleIds);
+    List<MenuNode> getMobileMenusByRoleIds(@Param("roleIds")List<Long> roleIds,@Param("type")Integer type);
 
     /**
      * 根据角色获取菜单的类型列表

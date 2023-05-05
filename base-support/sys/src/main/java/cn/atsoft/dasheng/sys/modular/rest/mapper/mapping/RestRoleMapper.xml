@@ -24,10 +24,11 @@
     <select id="selectRoles" resultType="map">
         select
         <include refid="Base_Column_List"/>
-        from sys_role
+        from sys_role where 1 = 1
         <if test="condition != null">
-            where name like CONCAT('%',#{condition},'%')
+            and name like CONCAT('%',#{condition},'%')
         </if>
+        and tenant_id = #{tenantId}
         order by sort asc
     </select>
 
@@ -35,9 +36,12 @@
         select
         <include refid="Base_Column_List"/>
         from sys_role
+        where 1 = 1
         <if test="condition != null">
-            where name like '%' || #{condition} || '%'
+            and  name like '%' || #{condition} || '%'
         </if>
+        and tenant_id = #{tenantId}
+
         order by sort asc
     </select>
 
@@ -47,7 +51,7 @@
 
     <select id="roleTree" resultType="cn.atsoft.dasheng.base.pojo.node.TreeNode">
 		select role_id AS "key", pid as "parentId",
-		name as "title" from sys_role
+		name as "title" from sys_role where 1 = 1 and tenant_id = #{tenantId}
 	</select>
 
     <select id="roleTreeList" resultType="cn.atsoft.dasheng.base.pojo.node.CascaderNode">

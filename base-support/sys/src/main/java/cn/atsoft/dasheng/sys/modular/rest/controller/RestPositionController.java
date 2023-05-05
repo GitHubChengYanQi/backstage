@@ -42,8 +42,7 @@ public class RestPositionController extends BaseController {
      */
     @RequestMapping("/addItem")
     public ResponseData addItem(@RequestBody PositionParam positionParam) {
-        this.restPositionService.add(positionParam);
-        return ResponseData.success();
+        return ResponseData.success(this.restPositionService.add(positionParam));
     }
 
     /**

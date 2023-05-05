@@ -76,8 +76,7 @@ public class RestDeptController extends BaseController {
     @BussinessLog(value = "添加部门", key = "simpleName", dict = DeptDict.class)
     @RequestMapping(value = "/add")
     public ResponseData add(@RequestBody RestDept restDept) {
-        this.restDeptService.addDept(restDept);
-        return SUCCESS_TIP;
+        return ResponseData.success(this.restDeptService.addDept(restDept));
     }
 
     /**

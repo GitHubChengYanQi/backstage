@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.generalForm.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.generalForm.entity.GeneralFormData;
 import cn.atsoft.dasheng.generalForm.model.params.GeneralFormDataParam;
 import cn.atsoft.dasheng.generalForm.model.result.GeneralFormDataResult;
@@ -66,6 +67,6 @@ public interface GeneralFormDataService extends IService<GeneralFormData> {
      * @author Captain_Jazz
      * @Date 2022-09-08
      */
-     PageInfo<GeneralFormDataResult> findPageBySpec(GeneralFormDataParam param);
+     PageInfo<GeneralFormDataResult> findPageBySpec(GeneralFormDataParam param, DataScope dataScope);
 
 }

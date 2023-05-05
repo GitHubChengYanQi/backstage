@@ -27,7 +27,7 @@ public interface RestRoleMapper extends BaseMapper<RestRole> {
      * @return
      * @date 2017年2月12日 下午9:14:34
      */
-    Page<Map<String, Object>> selectRoles(@Param("page") Page page, @Param("condition") String condition);
+    Page<Map<String, Object>> selectRoles(@Param("page") Page page, @Param("condition") String condition,@Param("tenantId") Long tenantId);
 
     /**
      * 删除某个角色的所有权限
@@ -46,7 +46,7 @@ public interface RestRoleMapper extends BaseMapper<RestRole> {
      */
     List<CascaderNode> roleTreeList();
 
-    List<TreeNode> roleTree();
+    List<TreeNode> roleTree(@Param("tenantId") Long tenantId);
     /**
      * 获取角色列表树
      *

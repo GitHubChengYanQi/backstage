@@ -9,8 +9,11 @@ import cn.atsoft.dasheng.base.pojo.node.TreeviewNode;
 import cn.atsoft.dasheng.base.pojo.page.LayuiPageFactory;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.sys.modular.system.entity.DeptBind;
+import cn.atsoft.dasheng.sys.modular.system.service.DeptBindService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +35,8 @@ public class RestDeptService extends ServiceImpl<RestDeptMapper, RestDept> {
     @Resource
     private RestDeptMapper restDeptMapper;
 
+    @Autowired
+    private DeptBindService deptBindService;
     /**
      * 新增部门
      *
@@ -39,7 +44,7 @@ public class RestDeptService extends ServiceImpl<RestDeptMapper, RestDept> {
      * @Date 2018/12/23 5:00 PM
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addDept(RestDept dept) {
+    public Long addDept(RestDept dept) {
 
         if (ToolUtil.isOneEmpty(dept, dept.getSimpleName(), dept.getFullName(), dept.getPid(), dept.getDescription())) {
             throw new ServiceException(BizExceptionEnum.REQUEST_NULL);
@@ -49,6 +54,7 @@ public class RestDeptService extends ServiceImpl<RestDeptMapper, RestDept> {
         this.deptSetPids(dept);
 
         this.save(dept);
+        return dept.getDeptId();
     }
 
     /**
@@ -82,10 +88,16 @@ public class RestDeptService extends ServiceImpl<RestDeptMapper, RestDept> {
 
         //根据like查询删除所有级联的部门
         List<RestDept> subDepts = restDeptMapper.likePids(dept.getDeptId());
-
-        for (RestDept temp : subDepts) {
-            this.removeById(temp.getDeptId());
+        Integer count = deptBindService.lambdaQuery().eq(DeptBind::getDeptId, deptId).count();
+        if (subDepts.size()>0){
+            throw new ServiceException(500,"请先删除子部门");
         }
+        if (count>0){
+            throw new ServiceException(500,"此部门下还有人员，不能删除");
+        }
+//        for (RestDept temp : subDepts) {
+//            this.removeById(temp.getDeptId());
+//        }
 
         this.removeById(dept.getDeptId());
     }

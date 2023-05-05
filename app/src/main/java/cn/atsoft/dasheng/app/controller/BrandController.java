@@ -141,6 +141,7 @@ if (ToolUtil.isNotEmpty(detail)) {
     public ResponseData listSelect(@RequestBody(required = false) BrandParam brandParam) {
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
         brandQueryWrapper.eq("display", 1);
+        brandQueryWrapper.eq("tenant_id", LoginContextHolder.getContext().getTenantId());
         if (ToolUtil.isNotEmpty(brandParam)){
             if (brandParam.getIds() != null){
                 if (brandParam.getIds().size() == 0){

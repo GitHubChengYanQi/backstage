@@ -10,6 +10,8 @@ import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.MaterialService;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.app.service.UnitService;
+import cn.atsoft.dasheng.base.auth.context.LoginContext;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Data;
@@ -20,6 +22,7 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.wrapper.SpuSelectWrapper;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
@@ -98,7 +101,10 @@ public class SpuController extends BaseController {
     @BussinessLog(value = "修改spu", key = "name", dict = SpuParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody SpuParam spuParam) {
-
+        Spu spu = spuService.getById(spuParam.getSpuId());
+        if (!LoginContextHolder.getContext().getTenantId().equals(spu.getTenantId())){
+            throw new ServiceException(500,"您无权操作该数据");
+        }
         this.spuService.update(spuParam);
         return ResponseData.success();
     }
@@ -127,7 +133,9 @@ public class SpuController extends BaseController {
     @ApiOperation("详情")
     public ResponseData detail(@RequestBody SpuParam spuParam) {
         Spu detail = this.spuService.getById(spuParam.getSpuId());
-
+        if (!LoginContextHolder.getContext().getTenantId().equals(detail.getTenantId())){
+            throw new ServiceException(500,"您无权查看该数据");
+        }
         if (ToolUtil.isNotEmpty(detail)) {
             SkuRequest skuRequest = new SkuRequest();
 
@@ -372,7 +380,7 @@ public class SpuController extends BaseController {
     public ResponseData listSelect(@RequestBody(required = false) SpuParam spuParam) {
 
         QueryWrapper<Spu> spuQueryWrapper = new QueryWrapper<>();
-
+        spuQueryWrapper.eq("tenant_id", LoginContextHolder.getContext().getTenantId());
         if (ToolUtil.isNotEmpty(spuParam)) {
             if (ToolUtil.isNotEmpty(spuParam.getSpuClassificationId())) {
                 spuQueryWrapper.in("spu_classification_id", spuParam.getSpuClassificationId());

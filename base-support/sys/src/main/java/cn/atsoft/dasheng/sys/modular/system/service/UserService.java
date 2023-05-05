@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.sys.modular.system.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
+import cn.atsoft.dasheng.core.util.HttpContext;
+import cn.atsoft.dasheng.media.service.RestMediaService;
 import cn.atsoft.dasheng.sys.core.constant.Const;
 import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
 import cn.atsoft.dasheng.sys.core.constant.state.ManagerStatus;
@@ -41,6 +43,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.relation.RoleResult;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -66,6 +69,9 @@ public class UserService extends ServiceImpl<UserMapper, User> {
 
     @Autowired
     private DeptService deptService;
+
+    @Autowired
+    private RestMediaService mediaService;
 
     /**
      * 添加用戶
@@ -377,7 +383,10 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         if (ToolUtil.isEmpty(ids) || ids.size() == 0) {
             return new ArrayList<>();
         }
-        List<UserResult> results = this.baseMapper.listUserByIds(ids);
+        HttpServletRequest request = HttpContext.getRequest();
+        assert request != null;
+        String appid = request.getParameter("appid");
+        List<UserResult> results = this.baseMapper.listUserByIds(ids,appid);
          this.format(results);
         return results;
     }
@@ -413,6 +422,12 @@ public class UserService extends ServiceImpl<UserMapper, User> {
                     userResult.setDeptResult(deptDto);
                     break;
                 }
+            }
+            try{
+                String mediaUrl = mediaService.getMediaUrl(Long.parseLong(userResult.getMiniAppAvatar()), 0L);
+                userResult.setMiniAppAvatar(mediaUrl);
+            }catch (Exception e){
+
             }
             List<RoleDto> roleResultList = new ArrayList<>();
             for (RoleDto role : roleDtos) {

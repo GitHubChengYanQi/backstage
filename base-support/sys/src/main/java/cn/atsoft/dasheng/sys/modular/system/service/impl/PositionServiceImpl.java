@@ -37,9 +37,10 @@ public class PositionServiceImpl extends ServiceImpl<PositionMapper, Position> i
     private UserPosService userPosService;
 
     @Override
-    public void add(PositionParam param) {
+    public Long add(PositionParam param) {
         Position entity = getEntity(param);
         this.save(entity);
+        return entity.getPositionId();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.sys.modular.rest.service;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.sys.core.constant.Const;
 import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
@@ -150,7 +151,7 @@ public class RestRoleService extends ServiceImpl<RestRoleMapper, RestRole> {
      */
     public Page<Map<String, Object>> selectRoles(String condition) {
         Page page = LayuiPageFactory.defaultPage();
-        return this.baseMapper.selectRoles(page, condition);
+        return this.baseMapper.selectRoles(page, condition,LoginContextHolder.getContext().getTenantId());
     }
 
     /**
@@ -175,7 +176,7 @@ public class RestRoleService extends ServiceImpl<RestRoleMapper, RestRole> {
     }
 
     public List<TreeNode> roleTree() {
-        return this.baseMapper.roleTree();
+        return this.baseMapper.roleTree(LoginContextHolder.getContext().getTenantId());
     }
 
     /**

@@ -49,6 +49,8 @@ public class RestSkuParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty(value = "spu分类")
     private RestSpuParam spu;
 
+    private Integer initialNumber;
+
     /**
      * 编码
      */

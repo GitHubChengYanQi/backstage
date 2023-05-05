@@ -325,13 +325,14 @@
         users.`tenant_id` AS "tenantId",
         wxAvatar.avatar AS avatar,
         wxAvatar.uuid AS openId,
-        miniAppAvatar.avatar AS miniAppAvatar
+        miniAppAvatar.avatar AS miniAppAvatar,
+        miniAppAvatar.nickname AS nickName
         FROM
         sys_user AS users
         LEFT JOIN (SELECT * from daoxin_portal_wxuser_info WHERE display  = 1) i ON users.user_id = i.user_id
         AND i.display = 1
-        LEFT JOIN ( SELECT wxUserInfo.member_id AS memberId, uuid AS uuid,wxUserInfo.avatar AS avatar FROM uc_open_user_info AS wxUserInfo WHERE wxUserInfo.source = 'wxCp' ) AS wxAvatar ON wxAvatar.memberId = i.member_id
-        LEFT JOIN ( SELECT miniAppUserInfo.member_id AS memberId, miniAppUserInfo.avatar AS avatar FROM uc_open_user_info AS miniAppUserInfo WHERE miniAppUserInfo.source = 'wxMiniApp' ) AS miniAppAvatar ON miniAppAvatar.memberId = i.member_id
+        LEFT JOIN ( SELECT wxUserInfo.member_id AS memberId, uuid AS uuid,wxUserInfo.avatar AS avatar FROM uc_open_user_info AS wxUserInfo WHERE wxUserInfo.source = 'wxCp' <if test="appid != null and appid != ''"> and appid = #{appid}</if>) AS wxAvatar ON wxAvatar.memberId = i.member_id
+        LEFT JOIN ( SELECT miniAppUserInfo.member_id AS memberId,nickname AS nickname, miniAppUserInfo.avatar AS avatar FROM uc_open_user_info AS miniAppUserInfo WHERE miniAppUserInfo.source = 'WXMINIAPP' <if test="appid != null and appid != ''"> and appid = #{appid}</if>) AS miniAppAvatar ON miniAppAvatar.memberId = i.member_id
         WHERE
         1 = 1
         <if test=" userIds!=null and userIds.size()>0">

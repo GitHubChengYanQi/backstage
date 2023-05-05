@@ -117,7 +117,7 @@ public class CustomerController extends BaseController {
             return ResponseData.success(detail);
         } else {
             CustomerResult customerResult = new CustomerResult();
-            Customer customer = customerService.query().eq("status", 99).eq("display", 1).one();
+            Customer customer = customerService.query().eq("status", 99).eq("display", 1).eq("tenant_id",LoginContextHolder.getContext().getTenantId()). one();
             if (ToolUtil.isNotEmpty(customer)) {
                 customerResult = customerService.detail(customer.getCustomerId());
             } else {

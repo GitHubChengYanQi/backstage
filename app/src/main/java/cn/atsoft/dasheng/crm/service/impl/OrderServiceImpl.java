@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ContractResult;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
@@ -37,6 +38,7 @@ import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -115,9 +117,24 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         String coding = entity.getCoding();
         String theme = entity.getTheme();
 
+        LambdaQueryChainWrapper<Order> orderLambdaQueryChainWrapper1 = this.lambdaQuery();
+        orderLambdaQueryChainWrapper1.eq(Order::getCoding, coding);
+        orderLambdaQueryChainWrapper1.eq(Order::getDisplay, 1);
+        if (ToolUtil.isNotEmpty(param.getTenantId())) {
+            orderLambdaQueryChainWrapper1.eq(Order::getTenantId, param.getTenantId());
+        }else {
+            orderLambdaQueryChainWrapper1.eq(Order::getTenantId, LoginContextHolder.getContext().getTenantId());
+        }
 
-        int codingCount = ToolUtil.isEmpty(coding) ? 0 : this.lambdaQuery().eq(Order::getCoding, coding).eq(Order::getDisplay, 1).count();
-        int themeCount = ToolUtil.isEmpty(theme) ? 0 : this.lambdaQuery().eq(Order::getTheme, theme).eq(Order::getDisplay, 1).count();
+        int codingCount = ToolUtil.isEmpty(coding) ? 0 : orderLambdaQueryChainWrapper1.count();
+        LambdaQueryChainWrapper<Order> orderLambdaQueryChainWrapper = this.lambdaQuery();
+        orderLambdaQueryChainWrapper.eq(Order::getTheme, theme).eq(Order::getDisplay, 1);
+        if (ToolUtil.isNotEmpty(param.getTenantId())) {
+            orderLambdaQueryChainWrapper.eq(Order::getTenantId, param.getTenantId());
+        }else {
+            orderLambdaQueryChainWrapper.eq(Order::getTenantId, LoginContextHolder.getContext().getTenantId());
+        }
+        int themeCount = ToolUtil.isEmpty(theme) ? 0 : orderLambdaQueryChainWrapper.count();
 
         if (codingCount > 0) {
             throw new ServiceException(500, "编码不可重复");

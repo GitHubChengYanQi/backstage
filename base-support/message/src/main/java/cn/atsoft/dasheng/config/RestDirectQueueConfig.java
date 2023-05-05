@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
 
-//@Configuration
+@Configuration
 public class RestDirectQueueConfig {
 
     protected static final Logger logger = LoggerFactory.getLogger(RestDirectQueueConfig.class);
@@ -77,8 +77,8 @@ public class RestDirectQueueConfig {
 
 
 
-    //@Bean
-    public void init() {
+    @Bean
+    public void restInit() {
         mqPrefix = tmpPrefix;
     }
 
@@ -165,16 +165,16 @@ public class RestDirectQueueConfig {
      *
      * @return Queue
      */
-    //@Bean
-    public Queue microServiceQueue() {
+    @Bean
+    public Queue microServiceQueue2() {
         logger.info(mqPrefix);
         logger.info(getMicroServiceRealQueue());
         return new Queue(getMicroServiceRealQueue());
     }
 
 
-    //@Bean
-    public Queue microServiceDelayQueue() {
+    @Bean
+    public Queue microServiceDelayQueue2() {
 
         Map<String, Object> argsMap = Maps.newHashMap();
         argsMap.put("x-dead-letter-exchange", getMicroServiceRealExchange()); //真正的交换机
@@ -187,29 +187,29 @@ public class RestDirectQueueConfig {
      *
      * @return TopicExchange
      */
-    //@Bean
-    public TopicExchange microServiceExchange() {
+    @Bean
+    public TopicExchange microServiceExchange2() {
         return new TopicExchange(getMicroServiceRealExchange());
     }
 
-    //@Bean
-    public TopicExchange microServiceDelayExchange() {
+    @Bean
+    public TopicExchange microServiceDelayExchange2() {
         return new TopicExchange(getMicroServiceDelayExchange());
     }
 
     /**
      * 绑定交换机
      */
-    //@Bean
-    Binding microServiceTopicExchange() {
+//    @Bean
+    Binding microServiceTopicExchange2() {
         logger.info("绑定队列");
-        return BindingBuilder.bind(microServiceQueue()).to(microServiceExchange()).with(getMicroServiceRealRoute());
+        return BindingBuilder.bind(microServiceQueue2()).to(microServiceExchange2()).with(getMicroServiceRealRoute());
     }
 
-    //@Bean
-    Binding microServiceTopicDelayExchange() {
+    @Bean
+    Binding microServiceTopicDelayExchange2() {
         logger.info("绑定延迟队列");
-        return BindingBuilder.bind(microServiceDelayQueue()).to(microServiceDelayExchange()).with(getMicroServiceRealRoute());
+        return BindingBuilder.bind(microServiceDelayQueue2()).to(microServiceDelayExchange2()).with(getMicroServiceRealRoute());
     }
 
 

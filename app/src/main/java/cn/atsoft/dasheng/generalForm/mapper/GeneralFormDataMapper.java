@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.generalForm.mapper;
 
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.generalForm.entity.GeneralFormData;
 import cn.atsoft.dasheng.generalForm.model.params.GeneralFormDataParam;
 import cn.atsoft.dasheng.generalForm.model.result.GeneralFormDataResult;
@@ -43,7 +44,7 @@ public interface GeneralFormDataMapper extends BaseMapper<GeneralFormData> {
      * @author Captain_Jazz
      * @Date 2022-09-08
      */
-    Page<GeneralFormDataResult> customPageList(@Param("page") Page page, @Param("paramCondition") GeneralFormDataParam paramCondition);
+    Page<GeneralFormDataResult> customPageList(@Param("page") Page page, @Param("paramCondition") GeneralFormDataParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

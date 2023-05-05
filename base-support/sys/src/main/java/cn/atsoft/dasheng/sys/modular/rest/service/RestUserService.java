@@ -16,10 +16,8 @@ import cn.atsoft.dasheng.sys.modular.system.entity.Role;
 import cn.atsoft.dasheng.sys.modular.system.entity.Tenant;
 import cn.atsoft.dasheng.sys.modular.system.entity.TenantBind;
 import cn.atsoft.dasheng.sys.modular.system.model.UserDto;
-import cn.atsoft.dasheng.sys.modular.system.service.DeptService;
-import cn.atsoft.dasheng.sys.modular.system.service.RoleService;
-import cn.atsoft.dasheng.sys.modular.system.service.TenantBindService;
-import cn.atsoft.dasheng.sys.modular.system.service.TenantService;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.*;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -73,6 +71,8 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
     private TenantService tenantService;
     @Resource
     private TenantBindService tenantBindService;
+    @Resource
+    private UserService userService;
 
     /**
      * 添加用戶
@@ -116,14 +116,10 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
     @Transactional(rollbackFor = Exception.class)
     public void editUser(UserDto user) {
         RestUser oldUser = this.getById(user.getUserId());
-        if (ToolUtil.isEmpty(user.getPhone())) {
-            throw new ServiceException(500, "请填写手机号");
-        } else {
-            Integer count = this.lambdaQuery().eq(RestUser::getPhone, user.getPhone()).ne(RestUser::getUserId, oldUser.getUserId()).count();
-            if (count > 0) {
-                throw new ServiceException(500, "手机号不能重复");
-            }
+        if (oldUser == null) {
+            throw new ServiceException(BizExceptionEnum.NO_THIS_USER);
         }
+        user.setPhone(null);
         if (oldUser == null) {
             throw new ServiceException(BizExceptionEnum.NO_THIS_USER);
         }
@@ -296,11 +292,11 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
     /**
      * 获取用户菜单列表
      */
-    public List<Map<String, Object>> getUserMobielMenuNodes(List<Long> roleList) {
+    public List<Map<String, Object>> getUserMobielMenuNodes(List<Long> roleList,Integer type) {
         if (roleList == null || roleList.size() == 0) {
             return new ArrayList<>();
         } else {
-            List<MenuNode> menus = restMenuService.getMobileMenusByRoleIds(roleList);
+            List<MenuNode> menus = restMenuService.getMobileMenusByRoleIds(roleList,type);
 
             //定义不同系统分类的菜单集合
             ArrayList<Map<String, Object>> lists = new ArrayList<>();
@@ -389,7 +385,6 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
 
         //获取当前用户角色列表
         LoginUser user = LoginContextHolder.getContext().getUser();
-
         List<Long> roleList = user.getRoleList();
         //用户没有角色无法显示首页信息
         if (roleList == null || roleList.size() == 0) {
@@ -413,15 +408,19 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
         for (Role role : roles) {
             roleName.add(role.getName());
         }
+        List<UserResult> userResultsByIds = userService.getUserResultsByIds(Collections.singletonList(user.getId()));
+
 
         List<Map<String, Object>> menus = this.getUserMenuNodes(roleList);
-        List<Map<String, Object>> mobielMenus = this.getUserMobielMenuNodes(roleList);
+        List<Map<String, Object>> mobielMenus = this.getUserMobielMenuNodes(roleList,1);
+        List<Map<String, Object>> miniAppMenus = this.getUserMobielMenuNodes(roleList,2);
 //        String portrait = this.baseMapper.headPortrait(LoginContextHolder.getContext().getUserId()); //获取企业微信头像
         HashMap<String, Object> result = new HashMap<>();
         result.put("menus", menus);
         result.put("mobielMenus", mobielMenus);
-
-
+        result.put("miniAppMenus", miniAppMenus);
+        result.put("miniAppAvatar",ToolUtil.isEmpty(userResultsByIds.get(0).getMiniAppAvatar())?"":userResultsByIds.get(0).getMiniAppAvatar());
+        result.put("nickName",ToolUtil.isEmpty(userResultsByIds.get(0).getNickName())?"":userResultsByIds.get(0).getNickName());
 
         result.put("tenantId", "");
         result.put("tenantLogo", "");
@@ -469,9 +468,11 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
     public Map<String, Object> getUserInfo(Long userId) {
         RestUser user = this.getById(userId);
         Map<String, Object> map = RestUserFactory.removeUnSafeFieldsRest(user);
-
+        List<UserResult> userResultsByIds = userService.getUserResultsByIds(Collections.singletonList(userId));
         HashMap<String, Object> hashMap = MapUtil.newHashMap();
         hashMap.putAll(map);
+        hashMap.put("nickName", ToolUtil.isEmpty(userResultsByIds.get(0).getNickName()) ? "" : userResultsByIds.get(0).getNickName());
+        hashMap.put("miniAppAvatar", ToolUtil.isEmpty(userResultsByIds.get(0).getMiniAppAvatar()) ? "" : userResultsByIds.get(0).getMiniAppAvatar());
         hashMap.put("roleName", ConstantFactory.me().getRoleName(user.getRoleId()));
         hashMap.put("deptName", ConstantFactory.me().getDeptName(user.getDeptId()));
 

@@ -32,6 +32,7 @@ public class OrderParam implements Serializable, BaseValidatingParam {
     private String fileId;
 
     private String leadTime;
+    private Long tenantId;
 
 
 

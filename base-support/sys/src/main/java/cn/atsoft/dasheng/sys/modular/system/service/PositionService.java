@@ -24,7 +24,7 @@ public interface PositionService extends IService<Position> {
      * @author stylefeng
      * @Date 2019-06-27
      */
-    void add(PositionParam param);
+    Long add(PositionParam param);
 
     /**
      * 删除

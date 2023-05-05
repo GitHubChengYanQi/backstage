@@ -3,8 +3,12 @@ package cn.atsoft.dasheng.userInfo.controller;
 import cn.atsoft.dasheng.api.uc.entity.OpenUserInfo;
 import cn.atsoft.dasheng.api.uc.service.OpenUserInfoService;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
+import cn.atsoft.dasheng.base.auth.context.LoginContext;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.service.AuthService;
 import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
+import cn.atsoft.dasheng.core.util.HttpContext;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -30,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,6 +55,8 @@ public class UserinfoController extends BaseController {
     private UcMemberService memberService;
     @Autowired
     private OpenUserInfoService openUserInfoService;
+    @Autowired
+    private AuthService authService;
 
     /**
      * 返回二维码
@@ -65,8 +72,10 @@ public class UserinfoController extends BaseController {
     @Transactional
     @RequestMapping(value = "/synchronizeAvatar", method = RequestMethod.POST)
 
-    public void synchronizeAvatar(@RequestBody UserDto user) {
+    public ResponseData synchronizeAvatar(@RequestBody UserDto user) {
         Long userId = user.getUserId();
+        HttpServletRequest request = HttpContext.getRequest();
+        String appid = request.getParameter("appid");
         List<WxuserInfo> userInfoList = wxuserInfoService.lambdaQuery().eq(WxuserInfo::getUserId, userId).eq(WxuserInfo::getDisplay, 1).list();
         //取出userInfoList种的memberIds
         List<Long> memberIds = userInfoList.stream().map(WxuserInfo::getMemberId).distinct().collect(Collectors.toList());
@@ -74,8 +83,8 @@ public class UserinfoController extends BaseController {
         String avatar = user.getAvatar();
         String nickName = user.getNickName();
         user.setAvatar(null);
-
-        List<OpenUserInfo> list =memberIds.size() == 0 ? new ArrayList<>() : openUserInfoService.lambdaQuery().in(OpenUserInfo::getMemberId, memberIds).eq(OpenUserInfo::getSource,"WXMINIAPP").list();
+        Long tenantId = LoginContextHolder.getContext().getTenantId();
+        List<OpenUserInfo> list =memberIds.size() == 0 ? new ArrayList<>() : openUserInfoService.lambdaQuery().eq(OpenUserInfo::getAppid,appid).in(OpenUserInfo::getMemberId, memberIds).eq(OpenUserInfo::getSource,"WXMINIAPP").list();
         for (OpenUserInfo openUserInfo : list) {
             openUserInfo.setAvatar(avatar);
             openUserInfo.setNickname(nickName);
@@ -83,6 +92,7 @@ public class UserinfoController extends BaseController {
         openUserInfoService.updateBatchById(list);
         User user1 = BeanUtil.copyProperties(user, User.class);
         userService.updateById(user1);
+        return ResponseData.success( authService.login(LoginContextHolder.getContext().getUser().getAccount()));
 
 
 //        String avatar = user.getAvatar();

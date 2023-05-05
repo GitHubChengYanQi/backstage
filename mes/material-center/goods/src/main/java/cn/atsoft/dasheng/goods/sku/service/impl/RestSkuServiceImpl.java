@@ -105,6 +105,7 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
     @Autowired
     private RestAttributeService attributeService; //材质
 
+
 //    @Autowired
 //    private StockForewarnService stockForewarnService; //库存预警
 
@@ -269,6 +270,10 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 //                    maintenanceCycleService.save(maintenanceCycle);
 //                }
                 skuId = entity.getSkuId();
+                if(param.getInitialNumber()>0){
+
+                }
+
                 ToolUtil.copyProperties(entity, result);
 //                /**
 //                 * 绑定品牌（多个）

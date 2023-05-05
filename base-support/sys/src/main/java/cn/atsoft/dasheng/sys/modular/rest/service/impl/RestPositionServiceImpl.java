@@ -37,9 +37,10 @@ public class RestPositionServiceImpl extends ServiceImpl<RestPositionMapper, Res
     private RestUserPosService restUserPosService;
 
     @Override
-    public void add(PositionParam param) {
+    public Long add(PositionParam param) {
         RestPosition entity = getEntity(param);
         this.save(entity);
+        return entity.getPositionId();
     }
 
     @Override

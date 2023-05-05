@@ -32,6 +32,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 
+import static cn.atsoft.dasheng.enmu.MicroServiceType.INIT;
+
 @Service
 public class MicroMessageService {
 
@@ -71,6 +73,9 @@ public class MicroMessageService {
 
     @Autowired
     private OutStockViewExcel outStockViewExcel;
+//
+    @Autowired
+    private InitTenantService initTenantService;
 
 
     public void microServiceDo(MicroServiceEntity microServiceEntity) throws IOException {
@@ -185,7 +190,15 @@ public class MicroMessageService {
                         break;
                 }
                 break;
-            default:
+            case INIT:
+                switch (microServiceEntity.getOperationType()) {
+                    case DEFAULT:
+                        //初始化
+                        initTenantService.initTenant((Long) microServiceEntity.getObject());
+                        break;
+                }
+                default:
+                    break;
         }
     }
 }

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.generalForm.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.generalForm.entity.GeneralFormData;
 import cn.atsoft.dasheng.generalForm.mapper.GeneralFormDataMapper;
 import cn.atsoft.dasheng.generalForm.model.params.GeneralFormDataParam;
@@ -76,9 +77,9 @@ public class GeneralFormDataServiceImpl extends ServiceImpl<GeneralFormDataMappe
     }
 
     @Override
-    public PageInfo<GeneralFormDataResult> findPageBySpec(GeneralFormDataParam param){
+    public PageInfo<GeneralFormDataResult> findPageBySpec(GeneralFormDataParam param, DataScope dataScope){
         Page<GeneralFormDataResult> pageContext = getPageContext();
-        IPage<GeneralFormDataResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<GeneralFormDataResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         return PageFactory.createPageInfo(page);
     }
 

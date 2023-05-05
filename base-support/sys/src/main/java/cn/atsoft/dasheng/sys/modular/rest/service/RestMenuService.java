@@ -262,8 +262,8 @@ public class RestMenuService extends ServiceImpl<RestMenuMapper, RestMenu> {
 
         return menus;
     }
-    public List<MenuNode> getMobileMenusByRoleIds(List<Long> roleIds) {
-            List<MenuNode> menus = this.baseMapper.getMobileMenusByRoleIds(roleIds);
+    public List<MenuNode> getMobileMenusByRoleIds(List<Long> roleIds,Integer type) {
+            List<MenuNode> menus = this.baseMapper.getMobileMenusByRoleIds(roleIds,type);
 
             //给所有的菜单url加上ctxPath
             for (MenuNode menuItem : menus) {

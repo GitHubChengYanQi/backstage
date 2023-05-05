@@ -187,7 +187,7 @@ public class AuthServiceImpl implements AuthService {
         if (ToolUtil.isEmpty(user)) {
             return null;
         }
-        List<UserResult> userResults = userMapper.listUserByIds(Collections.singletonList(user.getUserId()));
+        List<UserResult> userResults = userMapper.listUserByIds(Collections.singletonList(user.getUserId()),null);
         LoginUser loginUser = UserFactory.createLoginUser(user);
 
         if (loginUser.getStatus().equals(CommonStatus.DISABLE.getCode())) {

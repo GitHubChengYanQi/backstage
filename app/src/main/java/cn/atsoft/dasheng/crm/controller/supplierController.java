@@ -7,8 +7,10 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.wrapper.CustomerSelectWrapper;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
@@ -138,16 +140,17 @@ public class supplierController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     @Permission
-    public PageInfo<CustomerResult> list(@RequestBody(required = false) CustomerParam customerParam) {
+    public PageInfo list(@RequestBody(required = false) CustomerParam customerParam) {
         if (ToolUtil.isEmpty(customerParam)) {
             customerParam = new CustomerParam();
         }
 
 //        if (LoginContextHolder.getContext().isAdmin()) {
-        return this.customerService.findPageBySpec(null, customerParam);
+//        return this.customerService.findPageBySpec(null, customerParam);
 //        }else{
-//            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
-//            PageInfo<CustomerResult> customer= customerService.findPageBySpec(dataScope,customerParam);
+            DataScope dataScope = new DataScope(null, LoginContextHolder.getContext().getTenantId());
+            customerParam.setSupply(1);
+            return customerService.findPageBySpec(dataScope,customerParam);
 //            return this.customerService.findPageBySpec(dataScope,customerParam);
 //        }
     }

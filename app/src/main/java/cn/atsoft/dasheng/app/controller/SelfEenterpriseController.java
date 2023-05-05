@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.model.params.CustomerParam;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
@@ -53,7 +54,7 @@ public class SelfEenterpriseController {
             return ResponseData.success(detail);
         }else {
             CustomerResult customerResult = new CustomerResult();
-            Customer customer = customerService.query().eq("status", 99).eq("display", 1).one();
+            Customer customer = customerService.query().eq("status", 99).eq("display", 1).eq("tenant_id", LoginContextHolder.getContext().getTenantId()).one();
             if (ToolUtil.isNotEmpty(customer)){
                 customerResult = customerService.detail(customer.getCustomerId());
             }else {

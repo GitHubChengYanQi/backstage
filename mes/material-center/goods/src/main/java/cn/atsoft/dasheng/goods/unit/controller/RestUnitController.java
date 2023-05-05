@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.goods.unit.model.result.RestUnitResult;
 import cn.atsoft.dasheng.goods.unit.service.RestUnitService;
 import cn.atsoft.dasheng.goods.unit.wrapper.RestUnitSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Param;
@@ -104,7 +105,9 @@ public class RestUnitController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     public ResponseData listSelect() {
-        List<Map<String, Object>> list = this.restUnitService.listMaps();
+        List<Map<String, Object>> list = this.restUnitService.listMaps(new QueryWrapper<RestUnit>(){{
+            eq("tenant_id", LoginContextHolder.getContext().getTenantId());
+        }});
         RestUnitSelectWrapper unitSelectWrapper = new RestUnitSelectWrapper(list);
         List<Map<String, Object>> result = unitSelectWrapper.wrap();
         return ResponseData.success(result);

@@ -25,7 +25,6 @@ public class RestMenu implements Serializable {
      */
     @TableId(value = "menu_id", type = IdType.ID_WORKER)
     private Long menuId;
-
     /**
      * 菜单编号
      */

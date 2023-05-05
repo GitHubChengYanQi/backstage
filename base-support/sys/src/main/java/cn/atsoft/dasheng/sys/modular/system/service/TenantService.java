@@ -43,7 +43,7 @@ public interface TenantService extends IService<Tenant> {
      * @author Captain_Jazz
      * @Date 2023-04-07
      */
-    void update(TenantParam param);
+    String update(TenantParam param);
 
     /**
      * 查询单条数据，Specification模式
@@ -81,4 +81,6 @@ public interface TenantService extends IService<Tenant> {
 
     //写一个根据ids 取出result的方法
     List<TenantResult> getTenantResultsByIds(List<Long> ids);
+
+    void changeUser(Long tenantId, Long userId);
 }

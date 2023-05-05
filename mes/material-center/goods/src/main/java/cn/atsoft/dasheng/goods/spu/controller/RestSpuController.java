@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.goods.spu.controller;
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -324,6 +325,7 @@ public class RestSpuController extends BaseController {
     public ResponseData listSelect(@RequestBody(required = false) RestSpuParam spuParam) {
 
         QueryWrapper<RestSpu> spuQueryWrapper = new QueryWrapper<>();
+        spuQueryWrapper.eq("tenant_id", LoginContextHolder.getContext().getTenantId());
 
         if (ToolUtil.isNotEmpty(spuParam) && ToolUtil.isNotEmpty(spuParam.getSpuClassificationId()) && ToolUtil.isNotEmpty(spuParam.getProductionType()) && ToolUtil.isNotEmpty(spuParam.getName()) && ToolUtil.isNotEmpty(spuParam.getType())) {
             if (ToolUtil.isNotEmpty(spuParam.getSpuClassificationId())) {

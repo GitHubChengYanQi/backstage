@@ -75,7 +75,9 @@ public class RestMenuController extends BaseController {
     @RequestMapping(value = "/edit")
     @BussinessLog(value = "修改菜单", key = "name", dict = MenuDict.class)
     public ResponseData edit(@RequestBody MenuDto menu) {
-
+        if (ToolUtil.isNotEmpty(menu.getMiniapp()) && menu.getMiniapp().equals(2)){
+            menu.setType(2);
+        }
         //如果修改了编号，则该菜单的子菜单也要修改对应编号
         this.restMenuService.updateMenu(menu);
 
@@ -133,6 +135,9 @@ public class RestMenuController extends BaseController {
     @RequestMapping(value = "/add")
     @BussinessLog(value = "菜单新增", key = "name", dict = MenuDict.class)
     public ResponseData add(@RequestBody MenuDto menu) {
+        if (ToolUtil.isNotEmpty(menu.getMiniapp()) && menu.getMiniapp().equals(2)){
+            menu.setType(2);
+        }
         this.restMenuService.addMenu(menu);
         return SUCCESS_TIP;
     }
@@ -170,7 +175,14 @@ public class RestMenuController extends BaseController {
             throw new ServiceException(BizExceptionEnum.REQUEST_NULL);
         }
         RestMenu menu = this.restMenuService.getById(menuId);
-        return ResponseData.success(menu);
+        Map<String, Object> stringObjectMap = BeanUtil.beanToMap(menu);
+        stringObjectMap.put("miniapp",0);
+
+        if  (menu.getType().equals("2")){
+
+            stringObjectMap.put("miniapp",2);
+        }
+        return ResponseData.success(stringObjectMap);
     }
 
     /**

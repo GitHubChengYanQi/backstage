@@ -565,6 +565,12 @@ stage
         </foreach>
         group by sku_id
     </select>
+    <select id="stockTotalView" resultType="double" parameterType="Long">
+        SELECT
+            ROUND(sum(number.number * money.money), 2)
+        from (SELECT sku_id, sum(number) as number from daoxin_erp_stock_details WHERE display = 1 and tenant_id = #{tenantId} and stage = 1 GROUP BY sku_id) number
+        LEFT JOIN (SELECT avg(one_price / 100) as money, sku_id from view_order_detail WHERE tenantId = #{tenantId} GROUP BY sku_id) money on number.sku_id = money.sku_id
+    </select>
     <select id="getStockNumber" resultType="cn.atsoft.dasheng.app.entity.StockDetails" parameterType="cn.atsoft.dasheng.app.model.params.InventoryCorrectionParam">
         SELECT IF(SUM(number) is null , 0 , SUM(number)) AS number,sku_id AS "skuId",brand_id AS "brandId",customer_id AS "customerId",storehouse_positions_id AS "storehousePositionsId"  FROM `daoxin_erp_stock_details`
         WHERE
