@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.mapper;
 
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
@@ -43,7 +44,7 @@ public interface SpuMapper extends BaseMapper<Spu> {
      * @author 
      * @Date 2021-10-18
      */
-    Page<SpuResult> customPageList(@Param("page") Page page, @Param("paramCondition") SpuParam paramCondition);
+    Page<SpuResult> customPageList(@Param("page") Page page, @Param("paramCondition") SpuParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

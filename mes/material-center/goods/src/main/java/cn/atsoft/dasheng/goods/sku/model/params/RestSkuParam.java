@@ -59,6 +59,7 @@ public class RestSkuParam implements Serializable, BaseValidatingParam {
 
     @ApiModelProperty("spuId")
     private Long spuId;
+    private Long spuClass;
 
     @ApiModelProperty("skuId")
     private Long skuId;

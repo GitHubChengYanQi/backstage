@@ -110,13 +110,13 @@ if (ToolUtil.isNotEmpty(detail)) {
             brandParam = new BrandParam();
         }
 
-//        if (LoginContextHolder.getContext().isAdmin()) {
+        if (LoginContextHolder.getContext().isAdmin()) {
             return this.brandService.findPageBySpec(brandParam, null);
-//        } else {
-//            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
-//            brandService.findPageBySpec(brandParam, dataScope);
-//            return this.brandService.findPageBySpec(brandParam, dataScope);
-//        }
+        } else {
+            DataScope dataScope = new DataScope(null,LoginContextHolder.getContext().getTenantId());
+            brandService.findPageBySpec(brandParam, dataScope);
+            return this.brandService.findPageBySpec(brandParam, dataScope);
+        }
     }
 
 

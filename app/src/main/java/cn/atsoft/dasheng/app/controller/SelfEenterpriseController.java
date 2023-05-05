@@ -59,6 +59,8 @@ public class SelfEenterpriseController {
                 customerResult = customerService.detail(customer.getCustomerId());
             }else {
                 Customer entity = new Customer();
+                entity.setCustomerName(LoginContextHolder.getContext().getUser().getTenantName());
+
                 entity.setStatus(99);
                 entity.setSupply(99);
                 this.customerService.save(entity);

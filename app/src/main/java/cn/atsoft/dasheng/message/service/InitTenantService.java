@@ -237,7 +237,7 @@ public class InitTenantService {
 
         //初始化规格
         SpuClassification spuClassification = new SpuClassification();
-        spuClassification.setName("默认规格");
+        spuClassification.setName("默认分类");
         spuClassification.setTenantId(tenantId);
         spuClassificationService.save(spuClassification);
 

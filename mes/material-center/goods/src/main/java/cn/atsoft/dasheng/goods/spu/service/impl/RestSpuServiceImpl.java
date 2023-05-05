@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.goods.spu.service.impl;
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -96,7 +97,7 @@ public class RestSpuServiceImpl extends ServiceImpl<RestSpuMapper, RestSpu> impl
 
         if (ToolUtil.isEmpty(entity.getSpuId())){
             //查询判断是否有相同名称spu
-            entity = this.query().eq("name", param.getName()).eq("display", 1).one();
+            entity = this.query().eq("name", param.getName()).eq("display", 1).eq("tenant_id", LoginContextHolder.getContext().getTenantId()).one();
             if (ToolUtil.isEmpty(entity)) {
                 entity = getEntity(param);
                 this.save(entity);

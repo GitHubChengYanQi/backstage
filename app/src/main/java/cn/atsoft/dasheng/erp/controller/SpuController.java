@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.base.auth.context.LoginContext;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.*;
@@ -366,7 +367,7 @@ public class SpuController extends BaseController {
         if (ToolUtil.isEmpty(spuParam)) {
             spuParam = new SpuParam();
         }
-        return this.spuService.findPageBySpec(spuParam);
+        return this.spuService.findPageBySpec(spuParam,new DataScope(null,LoginContextHolder.getContext().getTenantId()));
     }
 
     /**

@@ -129,7 +129,7 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 
 //            Long spuClassificationId = this.getOrSaveSpuClass(param);
 //            RestCategory spuClassification = spuClassificationService.getById(param.getSpuClass());
-            RestCategory spuClassification = spuClassificationService.getById(param.getSpuClassificationId());
+            RestCategory spuClassification = spuClassificationService.getById(param.getSpuClass());
             Integer parentSpuClassifications = spuClassificationService.query().eq("pid", spuClassification.getSpuClassificationId()).eq("display", 1).count();
             if (parentSpuClassifications > 0) {
                 throw new ServiceException(500, "物料必须添加在最底级分类中");
