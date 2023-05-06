@@ -29,7 +29,7 @@ public interface StorehousePositionsService extends IService<StorehousePositions
      * @author song
      * @Date 2021-10-29
      */
-    void add(StorehousePositionsParam param);
+    Long add(StorehousePositionsParam param);
 
     //判断当前库位是否为最下级
     Long judgePosition(Long positionId);

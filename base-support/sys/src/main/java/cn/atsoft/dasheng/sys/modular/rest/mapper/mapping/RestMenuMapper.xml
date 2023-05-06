@@ -296,49 +296,52 @@
         order by levels,m1.sort asc
     </select>
      <select id="getMobileMenusByRoleIds" resultType="cn.atsoft.dasheng.base.pojo.node.MenuNode">
-            SELECT
-            m1.menu_id AS id,
-            m1.icon AS icon,
-            m1.code As code,
-            m1.type As type,
-            (
-            CASE
-            WHEN (m2.menu_id = 0 OR m2.menu_id IS NULL) THEN
-            0
-            ELSE
-            m2.menu_id
-            END
-            ) AS "parentId",
-            m1.name as name,
-            m1.url as url,
-            m1.levels as levels,
-            m1.menu_flag as ismenu,
-            m1.system_type as systemType,
-            m1.sort as num
-            FROM
-            sys_menu m1
-            LEFT join sys_menu m2 ON m1.pcode = m2.code
-            INNER JOIN (
-            SELECT
-            menu_id
-            FROM
-            sys_menu
-            WHERE
-            menu_id IN (
-            SELECT
-            menu_id
-            FROM
-            sys_relation rela
-            WHERE
-            rela.role_id IN
-            <foreach collection="roleIds" index="index" item="i" open="(" separator="," close=")">
-                #{i}
-            </foreach>
-            )
-            ) m3 ON m1.menu_id = m3.menu_id
-            where 1=1 and m1.type = #{type}
-            order by levels,m1.sort asc
-        </select>
+         SELECT
+         m1.menu_id AS id,
+         m1.icon AS icon,
+         m1.code As code,
+         m1.type As type,
+         (
+         CASE
+         WHEN (m2.menu_id = 0 OR m2.menu_id IS NULL) THEN
+         0
+         ELSE
+         m2.menu_id
+         END
+         ) AS "parentId",
+         m1.name as name,
+         m1.url as url,
+         m1.levels as levels,
+         m1.menu_flag as ismenu,
+         m1.system_type as systemType,
+         m1.sort as num
+         FROM
+         sys_menu m1
+         LEFT join sys_menu m2 ON m1.pcode = m2.code
+         INNER JOIN (
+         SELECT
+         menu_id
+         FROM
+         sys_menu
+         WHERE
+         menu_id IN (
+         SELECT
+         menu_id
+         FROM
+         sys_relation rela
+         WHERE
+         1 = 1
+             <if test="roleIds !=null and roleIds.size() > 0">
+                 and  rela.role_id IN
+                 <foreach collection="roleIds" index="index" item="i" open="(" separator="," close=")">
+                     #{i}
+                 </foreach>
+             </if>
+         )
+         ) m3 ON m1.menu_id = m3.menu_id
+         where 1=1 and m1.type = #{type}
+         order by levels,m1.sort asc
+     </select>
 
     <select id="selectMenuTree" resultType="java.util.Map">
         select

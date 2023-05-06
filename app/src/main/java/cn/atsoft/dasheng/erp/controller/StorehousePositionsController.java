@@ -75,8 +75,7 @@ public class StorehousePositionsController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody StorehousePositionsParam storehousePositionsParam) {
-        this.storehousePositionsService.add(storehousePositionsParam);
-        return ResponseData.success();
+        return ResponseData.success(this.storehousePositionsService.add(storehousePositionsParam));
     }
 
 
