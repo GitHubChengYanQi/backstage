@@ -293,9 +293,9 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
      * 获取用户菜单列表
      */
     public List<Map<String, Object>> getUserMobielMenuNodes(List<Long> roleList,Integer type) {
-        if (roleList == null || roleList.size() == 0) {
-            return new ArrayList<>();
-        } else {
+//        if (roleList == null || roleList.size() == 0) {
+//            return new ArrayList<>();
+//        } else {
             List<MenuNode> menus = restMenuService.getMobileMenusByRoleIds(roleList,type);
 
             //定义不同系统分类的菜单集合
@@ -333,7 +333,7 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
             }
 
             return lists;
-        }
+//        }
 
     }
 
@@ -413,7 +413,7 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
 
         List<Map<String, Object>> menus = this.getUserMenuNodes(roleList);
         List<Map<String, Object>> mobielMenus = this.getUserMobielMenuNodes(roleList,1);
-        List<Map<String, Object>> miniAppMenus = this.getUserMobielMenuNodes(roleList,2);
+        List<Map<String, Object>> miniAppMenus = this.getUserMobielMenuNodes(null,2);
 //        String portrait = this.baseMapper.headPortrait(LoginContextHolder.getContext().getUserId()); //获取企业微信头像
         HashMap<String, Object> result = new HashMap<>();
         result.put("menus", menus);

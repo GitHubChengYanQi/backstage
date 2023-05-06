@@ -92,7 +92,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     private ProductionPickListsCartService cartService;
 
     @Override
-    public void add(StorehousePositionsParam param) {
+    public Long add(StorehousePositionsParam param) {
         if (ToolUtil.isNotEmpty(param.getPid())) {
             List<StockDetails> stockDetails = stockDetailsService.query().eq("storehouse_positions_id", param.getPid()).eq("display", 1).list();
             if (ToolUtil.isNotEmpty(stockDetails)) {
@@ -108,6 +108,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         StorehousePositions entity = getEntity(param);
         this.save(entity);
         updateChildren(entity.getPid());
+        return entity.getStorehousePositionsId();
     }
 
     /**
