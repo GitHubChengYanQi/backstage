@@ -31,9 +31,6 @@ public class DeptBind implements Serializable {
     @TableField("main_dept")
     private Integer mainDept;
 
-    @TableField("main_dept")
-    private Integer mainDept;
-
       @TableField(value = "tenant_id", fill = FieldFill.INSERT)
     private Long tenantId;
 
