@@ -35,7 +35,7 @@ import java.util.Set;
 public class LoginUser implements UserDetails, Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    List<Long> deptIds;
     /**
      * 用户主键ID
      */

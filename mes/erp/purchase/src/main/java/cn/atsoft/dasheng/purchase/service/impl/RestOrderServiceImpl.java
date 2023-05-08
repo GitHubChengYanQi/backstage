@@ -60,8 +60,69 @@ public class RestOrderServiceImpl extends ServiceImpl<RestOrderMapper, RestOrder
 
     @Override
     @Transactional
-    public RestOrder add(RestOrderParam param) {
-        return null ;
+    public cn.atsoft.dasheng.entity.RestOrder add(Map<String, Object> paramMap) {
+        RestOrderParam param = BeanUtil.mapToBean(paramMap, RestOrderParam.class, true);
+
+        RestOrder entity = getEntity(param);
+
+        String orderType = null;
+        switch (param.getType()) {
+            case 1:
+                orderType = "采购";
+                break;
+            case 2:
+                orderType = "销售";
+                break;
+        }
+        String coding = entity.getCoding();
+        String theme = entity.getTheme();
+
+        LambdaQueryChainWrapper<RestOrder> orderLambdaQueryChainWrapper1 = this.lambdaQuery();
+        orderLambdaQueryChainWrapper1.eq(RestOrder::getCoding, coding);
+        orderLambdaQueryChainWrapper1.eq(RestOrder::getDisplay, 1);
+        if (ToolUtil.isNotEmpty(param.getTenantId())) {
+            orderLambdaQueryChainWrapper1.eq(RestOrder::getTenantId, param.getTenantId());
+        }else {
+            orderLambdaQueryChainWrapper1.eq(RestOrder::getTenantId, LoginContextHolder.getContext().getTenantId());
+        }
+
+        int codingCount = ToolUtil.isEmpty(coding) ? 0 : orderLambdaQueryChainWrapper1.count();
+        LambdaQueryChainWrapper<RestOrder> orderLambdaQueryChainWrapper = this.lambdaQuery();
+        orderLambdaQueryChainWrapper.eq(RestOrder::getTheme, theme).eq(RestOrder::getDisplay, 1);
+        if (ToolUtil.isNotEmpty(param.getTenantId())) {
+            orderLambdaQueryChainWrapper.eq(RestOrder::getTenantId, param.getTenantId());
+        }else {
+            orderLambdaQueryChainWrapper.eq(RestOrder::getTenantId, LoginContextHolder.getContext().getTenantId());
+        }
+        int themeCount = ToolUtil.isEmpty(theme) ? 0 : orderLambdaQueryChainWrapper.count();
+
+        if (codingCount > 0) {
+            throw new ServiceException(500, "编码不可重复");
+        }
+        if (themeCount > 0) {
+            throw new ServiceException(500, "主题不可重复");
+        }
+
+
+        this.save(entity);
+
+//        if (ToolUtil.isNotEmpty(param.getGenerateContract()) && param.getGenerateContract() == 1) {   //创建合同
+//            Contract contract = contractService.orderAddContract(entity.getOrderId(), param.getContractParam(), param, orderType);
+//            entity.setContractId(contract.getContractId());
+//            if (ToolUtil.isNotEmpty(contract.getContractId())) {
+//                entity.setContractId(contract.getContractId());
+//            }
+//        }
+
+//        param.getPaymentParam().setOrderId(entity.getOrderId());
+//        supplyService.OrdersBackFill(param.getSellerId(), param.getDetailParams());  //回填
+        Integer totalAmount = orderDetailService.addList(entity.getOrderId(), param.getSellerId(), param.getDetailParams());    //返回添加所有物料总价
+        if (ToolUtil.isNotEmpty(param.getPaymentParam()) && ToolUtil.isNotEmpty(param.getPaymentParam().getFloatingAmount())) {
+            totalAmount = totalAmount + param.getPaymentParam().getFloatingAmount();
+        }
+        entity.setTotalAmount(totalAmount);  //订单总金额
+        this.updateById(entity);
+        return BeanUtil.copyProperties(entity, cn.atsoft.dasheng.entity.RestOrder.class);
     }
 
     @Override

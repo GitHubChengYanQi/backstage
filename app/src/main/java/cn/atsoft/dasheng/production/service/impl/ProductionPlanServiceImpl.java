@@ -107,7 +107,7 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
                 String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
                 param.setCoding(coding);
             } else {
-                throw new ServiceException(500, "请配置生产计划单据编码规则");
+                param.setCoding(codingRulesService.genSerial());
             }
         }
         List<Long> skuIds = new ArrayList<>();
@@ -165,7 +165,7 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
                 String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
                 param.setCoding(coding);
             } else {
-                throw new ServiceException(500, "请配置生产计划单据编码规则");
+                param.setCoding(codingRulesService.genSerial());
             }
         }
         List<ProductionPlanDetail> details = new ArrayList<>();

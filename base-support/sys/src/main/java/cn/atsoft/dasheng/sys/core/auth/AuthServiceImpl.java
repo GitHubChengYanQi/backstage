@@ -22,9 +22,11 @@ import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
 import cn.atsoft.dasheng.sys.core.constant.state.ManagerStatus;
 import cn.atsoft.dasheng.sys.core.listener.ConfigListener;
 import cn.atsoft.dasheng.sys.core.util.SaltUtil;
+import cn.atsoft.dasheng.sys.modular.system.entity.DeptBind;
 import cn.atsoft.dasheng.sys.modular.system.entity.Tenant;
 import cn.atsoft.dasheng.sys.modular.system.mapper.UserMapper;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.DeptBindService;
 import cn.atsoft.dasheng.sys.modular.system.service.TenantService;
 import cn.atsoft.dasheng.sys.modular.system.service.impl.TenantServiceImpl;
 import cn.hutool.core.collection.CollectionUtil;
@@ -57,6 +59,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.base.consts.ConstantsContext.getJwtSecretExpireSec;
 import static cn.atsoft.dasheng.base.consts.ConstantsContext.getTokenHeaderName;
@@ -80,6 +83,8 @@ public class AuthServiceImpl implements AuthService {
     private SessionManager sessionManager;
     @Autowired
     private TenantService tenantService;
+    @Autowired
+    private DeptBindService deptBindService;
 
     public static AuthService me() {
         return SpringContextHolder.getBean(AuthService.class);
@@ -124,7 +129,7 @@ public class AuthServiceImpl implements AuthService {
         LogManager.me().executeLog(LogTaskFactory.loginLog(user.getUserId(), getIp()));
 
         //TODO key的作用
-        JwtPayLoad payLoad = new JwtPayLoad(user.getUserId(), user.getAccount(),ToolUtil.isEmpty(user.getTenantId())?null:user.getTenantId(), "xxxx");
+        JwtPayLoad payLoad = new JwtPayLoad(user.getUserId(), user.getAccount(),ToolUtil.isEmpty(user.getTenantId())?null:user.getTenantId().toString(), "xxxx");
 
         //创建token
         String token = JwtTokenUtil.generateToken(payLoad);
@@ -189,6 +194,13 @@ public class AuthServiceImpl implements AuthService {
         }
         List<UserResult> userResults = userMapper.listUserByIds(Collections.singletonList(user.getUserId()),null);
         LoginUser loginUser = UserFactory.createLoginUser(user);
+
+        //存入主部门id
+        DeptBind mainDept = deptBindService.lambdaQuery().eq(DeptBind::getTenantId, user.getTenantId()).eq(DeptBind::getUserId,user.getUserId()).eq(DeptBind::getMainDept, 1).one();
+        loginUser.setDeptId(ToolUtil.isEmpty(mainDept)?-100:mainDept.getDeptId());
+        //存入部门id集合
+        List<Long> deptBinds = deptBindService.lambdaQuery().eq(DeptBind::getTenantId, user.getTenantId()).eq(DeptBind::getUserId,user.getUserId()).list().stream().map(DeptBind::getDeptId).distinct().collect(Collectors.toList());
+        loginUser.setDeptIds(deptBinds);
 
         if (loginUser.getStatus().equals(CommonStatus.DISABLE.getCode())) {
             return null;

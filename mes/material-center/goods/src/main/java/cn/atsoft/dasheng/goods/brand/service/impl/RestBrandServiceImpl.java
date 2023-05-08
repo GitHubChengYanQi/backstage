@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.goods.brand.service.impl;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
@@ -47,7 +48,7 @@ public class RestBrandServiceImpl extends ServiceImpl<RestBrandMapper, RestBrand
 
     @Override
     public Long add(RestBrandParam param) {
-        Integer brandName = this.query().eq("brand_name", param.getBrandName()).eq("display", 1).count();
+        Integer brandName = this.query().eq("brand_name", param.getBrandName()).eq("tenant_id", LoginContextHolder.getContext().getTenantId()).eq("display", 1).count();
         if (brandName > 0) {
             throw new ServiceException(500, "名字已重复");
         }
@@ -76,7 +77,7 @@ public class RestBrandServiceImpl extends ServiceImpl<RestBrandMapper, RestBrand
 
     @Override
     public void update(RestBrandParam param) {
-        Integer brandName = this.query().eq("brand_name", param.getBrandName()).count();
+        Integer brandName = this.query().eq("brand_name", param.getBrandName()).eq("tenant_id", LoginContextHolder.getContext().getTenantId()).count();
         if (brandName > 1) {
             throw new ServiceException(500, "名字已重复");
         }

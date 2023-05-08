@@ -57,6 +57,7 @@ import cn.atsoft.dasheng.sendTemplate.RedisSendCheck;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.pojo.MarkDownTemplateTypeEnum;
 import cn.atsoft.dasheng.sendTemplate.pojo.RedisTemplatePrefixEnum;
+import cn.atsoft.dasheng.serial.service.SerialNumberService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.RoleService;
@@ -216,6 +217,9 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
     @Autowired
     private RestBomService restBomService;
 
+    @Autowired
+    private SerialNumberService serialNumberService;
+
 
     @Override
     @Transactional
@@ -225,9 +229,10 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             CodingRules codingRules = codingRulesService.query().eq("module", "2").eq("state", 1).one();
             if (ToolUtil.isNotEmpty(codingRules)) {
                 String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+
                 entity.setCoding(coding);
             } else {
-                throw new ServiceException(500, "请配置出库单据自动生成编码规则");
+                param.setCoding(codingRulesService.genSerial());
             }
         }
         entity.setStatus(0L);

@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.core.util.SpringContextHolder;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.entity.RestOrder;
 import cn.atsoft.dasheng.inStock.model.params.RestInstockOrderParam;
 import cn.atsoft.dasheng.inStock.model.params.RestOrderDetailParam;
 import cn.atsoft.dasheng.inStock.model.params.RestOrderParam;
@@ -45,6 +46,7 @@ public class RestInstockOrderController extends BaseController {
     private RestInstockOrderService instockOrderService;
     @Autowired
     private RestStorehousePositionsBindService positionsBindService;
+
     /**
      * 订单查询接口
      *
@@ -76,7 +78,15 @@ public class RestInstockOrderController extends BaseController {
     @ApiOperation("根据订单入库")
     @Permission
     public ResponseData showOrderList(@RequestBody RestInstockOrderParam param){
-
+        //如果没有订单id 根据物料生成订单
+        if(ToolUtil.isEmpty(param.getOrderId())){
+            if (ToolUtil.isEmpty(param.getOrderParam())){
+                throw new ServiceException(500,"订单参数不能为空");
+            }
+            IErpBase restOrderService = SpringContextHolder.getBean("RestOrderService");
+            RestOrder add = restOrderService.add(BeanUtil.beanToMap(param.getOrderParam()));
+            param.setOrderId(add.getOrderId());
+        }
         return  ResponseData.success(instockOrderService.autoInStock(param));
     }
 

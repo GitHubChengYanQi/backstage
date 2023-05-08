@@ -24,6 +24,8 @@ public class RestOrderParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private PaymentParam paymentParam;
+
     private String keywords;
 
     private String fileId;
@@ -35,6 +37,8 @@ public class RestOrderParam implements Serializable, BaseValidatingParam {
     private String customerName;
 
     private Long userId;
+
+    private Long tenantId;
 
     private Long adressId;
 
@@ -297,5 +301,8 @@ public class RestOrderParam implements Serializable, BaseValidatingParam {
     public String checkParam() {
         return null;
     }
-
+    @Data
+    public static class PaymentParam{
+        private Integer floatingAmount;
+    }
 }

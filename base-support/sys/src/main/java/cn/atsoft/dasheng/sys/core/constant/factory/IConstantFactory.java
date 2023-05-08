@@ -135,6 +135,8 @@ public interface IConstantFactory {
      */
     String getCacheObject(String para);
 
+    List<Long> getSubDeptIds(List<Long> deptId);
+
     /**
      * 获取子部门id
      */

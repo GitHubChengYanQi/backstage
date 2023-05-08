@@ -41,6 +41,7 @@ import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.serial.service.SerialNumberService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
@@ -142,6 +143,9 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     @Autowired
     private DocumentStatusService statusService;
 
+    @Autowired
+    private SerialNumberService serialNumberService;
+
     @Override
     @Transactional
     public Inventory add(InventoryParam param) {
@@ -152,7 +156,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
                 param.setCoding(coding);
             } else {
-                throw new ServiceException(500, "请配置入库单据自动生成编码规则");
+                param.setCoding(codingRulesService.genSerial());
             }
         }
 
@@ -205,7 +209,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
                 param.setCoding(coding);
             } else {
-                throw new ServiceException(500, "请配置入库单据自动生成编码规则");
+                param.setCoding(codingRulesService.genSerial());
             }
         }
         param.setComplete(99);  //提交直接完成
@@ -384,7 +388,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
                 String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
                 param.setCoding(coding);
             } else {
-                throw new ServiceException(500, "请配置入库单据自动生成编码规则");
+                param.setCoding(codingRulesService.genSerial());
             }
         }
 

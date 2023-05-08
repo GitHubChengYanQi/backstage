@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.app.service.impl;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.app.service.PartsService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Brand;
@@ -58,7 +59,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
 
     @Override
     public Long add(BrandParam param) {
-        Integer brandName = this.query().eq("brand_name", param.getBrandName()).eq("display",1).count();
+        Integer brandName = this.query().eq("brand_name", param.getBrandName()).eq("tenant_id", LoginContextHolder.getContext().getTenantId()).eq("display",1).count();
         if (brandName > 0) {
             throw new ServiceException(500, "名字已重复");
         }
@@ -87,7 +88,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
 
     @Override
     public void update(BrandParam param) {
-        Integer brandName = this.query().eq("brand_name", param.getBrandName()).count();
+        Integer brandName = this.query().eq("brand_name", param.getBrandName()).eq("tenant_id", LoginContextHolder.getContext().getTenantId()).count();
         if (brandName > 1) {
             throw new ServiceException(500, "名字已重复");
         }

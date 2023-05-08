@@ -86,4 +86,6 @@ public interface CodingRulesService extends IService<CodingRules> {
     String defaultEncoding();
 
     String encoding(int module);
+
+    String genSerial();
 }

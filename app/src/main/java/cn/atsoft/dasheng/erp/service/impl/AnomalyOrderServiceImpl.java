@@ -41,6 +41,7 @@ import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsDetailService;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.serial.service.SerialNumberService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
@@ -140,6 +141,8 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
     @Autowired
     private ProductionPickListsCartService pickListsCartService;
 
+    @Autowired
+    private SerialNumberService serialNumberService;
 
     @Override
     @Transactional
@@ -160,7 +163,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                 String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
                 param.setCoding(coding);
             } else {
-                throw new ServiceException(500, "请配置入库异常单据自动生成编码规则");
+                param.setCoding(codingRulesService.genSerial());
             }
         }
 
@@ -416,7 +419,7 @@ public class AnomalyOrderServiceImpl extends ServiceImpl<AnomalyOrderMapper, Ano
                 String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
                 param.setCoding(coding);
             } else {
-                throw new ServiceException(500, "请配置异常单据自动生成编码规则");
+                param.setCoding(codingRulesService.genSerial());
             }
         }
 

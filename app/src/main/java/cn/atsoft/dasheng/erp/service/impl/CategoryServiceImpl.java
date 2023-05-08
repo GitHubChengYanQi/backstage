@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -178,7 +179,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 
         Category category = this.getById(param.getCategoryId());
         if (!category.getCategoryName().equals(param.getCategoryName())) {
-            Integer count = this.query().in("display", 1).in("category_name", param.getCategoryName()).count();
+            Integer count = this.query().in("display", 1).eq("tenant_id", LoginContextHolder.getContext().getTenantId()).in("category_name", param.getCategoryName()).count();
             if (count > 0) {
                 throw new ServiceException(500, "名字已重复");
             }

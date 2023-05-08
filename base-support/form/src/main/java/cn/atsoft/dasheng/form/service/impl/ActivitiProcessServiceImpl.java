@@ -45,7 +45,7 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
 
     @Override
     public void add(ActivitiProcessParam param) {
-        ActivitiProcess process = this.query().eq("process_name", param.getProcessName()).eq("display", 1).one();
+        ActivitiProcess process = this.query().eq("process_name", param.getProcessName()).eq("tenant_id",LoginContextHolder.getContext().getTenantId()).eq("display", 1).one();
         if (ToolUtil.isNotEmpty(process)) {
             throw new ServiceException(500, "名字已重复");
         }

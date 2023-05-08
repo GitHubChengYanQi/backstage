@@ -27,6 +27,8 @@ public interface SerialNumberService extends IService<SerialNumber> {
      */
     String add(SerialNumberParam param);
 
+    String genNumber();
+
     /**
      * 指定数量新增
      * @param param

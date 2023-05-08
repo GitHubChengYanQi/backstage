@@ -28,6 +28,8 @@ public interface RestOrderDetailService extends IService<RestOrderDetail> {
      */
     void add(RestOrderDetailParam param);
 
+    Integer addList(Long orderId, Long customerId, List<RestOrderDetailParam> params);
+
     /**
      * 删除
      *

@@ -29,13 +29,13 @@ import cn.atsoft.dasheng.sys.modular.system.service.UserPosService;
 import cn.atsoft.dasheng.core.util.SpringContextHolder;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 快捷查询方法
@@ -333,6 +333,26 @@ public class ConstantFactory implements IConstantFactory {
         return LogObjectHolder.me().get().toString();
     }
 
+    @Override
+    public List<Long> getSubDeptIds(List<Long> deptId) {
+        ArrayList<Long> deptIds = new ArrayList<>();
+
+        if (deptId == null) {
+            return deptIds;
+        } else {
+            List<Dept> depts = new ArrayList<>();
+            for (Long id : deptId) {
+                depts.addAll(this.deptMapper.likePids(id));
+            }
+            if (depts != null && depts.size() > 0) {
+                for (Dept dept : depts) {
+                    deptIds.add(dept.getDeptId());
+                }
+            }
+
+            return deptIds.stream().distinct().collect(Collectors.toList());
+        }
+    }
     @Override
     public List<Long> getSubDeptId(Long deptId) {
         ArrayList<Long> deptIds = new ArrayList<>();

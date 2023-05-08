@@ -59,6 +59,7 @@ import cn.atsoft.dasheng.production.entity.ProductionPickLists;
 import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.serial.service.SerialNumberService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -194,6 +195,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Autowired
     private StockLogDetailService stockLogDetailService;
 
+    @Autowired
+    private SerialNumberService serialNumberService;
+
 
     @Override
     @Transactional
@@ -237,7 +241,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
                 param.setCoding(coding);
             } else {
-                throw new ServiceException(500, "请配置入库单据自动生成编码规则");
+                param.setCoding(codingRulesService.genSerial());
             }
         }
 

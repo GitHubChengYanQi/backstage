@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.goods.category.service.impl;
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -54,7 +55,7 @@ public class RestCategoryServiceImpl extends ServiceImpl<RestCategoryMapper, Res
     @Override
     @Transactional
     public Long add(RestCategoryParam param) {
-        Integer count = this.lambdaQuery().in(RestCategory::getDisplay, 1).in(RestCategory::getName, param.getName()).and(i -> i.eq(RestCategory::getType, 1)).count();
+        Integer count = this.lambdaQuery().in(RestCategory::getDisplay, 1).in(RestCategory::getName, param.getName()).eq(RestCategory::getTenantId, LoginContextHolder.getContext().getTenantId()).and(i -> i.eq(RestCategory::getType, 1)).count();
         if (count > 0) {
             throw new ServiceException(500, "名字已重复");
         }
