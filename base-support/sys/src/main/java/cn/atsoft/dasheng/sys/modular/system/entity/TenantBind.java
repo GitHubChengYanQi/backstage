@@ -49,6 +49,11 @@ public class TenantBind implements Serializable {
      */
     @TableField("display")
     private Integer display;
+    /**
+     * 部门
+     */
+    @TableField(value = "deptId" , fill = FieldFill.INSERT)
+    private Long deptId;
 
     /**
      * 创建人
@@ -81,6 +86,14 @@ public class TenantBind implements Serializable {
 
     public void setTenantBindId(Long tenantBindId) {
         this.tenantBindId = tenantBindId;
+    }
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
     }
 
     public Long getTenantId() {

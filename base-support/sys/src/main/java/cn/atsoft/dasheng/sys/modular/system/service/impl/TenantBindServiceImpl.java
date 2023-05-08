@@ -6,17 +6,21 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.sys.modular.system.entity.DeptBind;
 import cn.atsoft.dasheng.sys.modular.system.entity.Tenant;
 import cn.atsoft.dasheng.sys.modular.system.entity.TenantBind;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.mapper.TenantBindMapper;
 import cn.atsoft.dasheng.sys.modular.system.model.params.TenantBindParam;
+import cn.atsoft.dasheng.sys.modular.system.model.result.DeptBindResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.TenantBindResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.TenantResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.DeptBindService;
 import  cn.atsoft.dasheng.sys.modular.system.service.TenantBindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -25,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,6 +51,8 @@ public class TenantBindServiceImpl extends ServiceImpl<TenantBindMapper, TenantB
     private UserService userService;
     @Autowired
     private TenantServiceImpl tenantService;
+    @Autowired
+    private DeptBindService deptBindService;
 
     @Override
     public void add(TenantBindParam param){
@@ -59,10 +66,24 @@ public class TenantBindServiceImpl extends ServiceImpl<TenantBindMapper, TenantB
                     throw new ServiceException(500,"已提交申请，请等待管理员审核");
             }
         }
-            entity = new TenantBind();
-            entity.setTenantId(param.getTenantId());
-            entity.setUserId(param.getUserId());
-            this.save(entity);
+        entity = new TenantBind();
+        entity.setTenantId(param.getTenantId());
+        entity.setUserId(param.getUserId());
+        this.save(entity);
+
+        //绑定部门
+        if (ToolUtil.isNotEmpty(param.getDeptId())){
+            deptBindService.remove(new UpdateWrapper<DeptBind>(){{
+                eq("user_id",param.getUserId());
+                eq("tenant_id",param.getTenantId());
+            }});
+            deptBindService.save(new DeptBind(){{
+                setUserId(param.getUserId());
+                setTenantId(param.getTenantId());
+                setDeptId(param.getDeptId());
+                setMainDept(1);
+            }});
+        }
     }
     @Override
     public Long getOrSave(TenantBindParam param){
@@ -131,9 +152,8 @@ public class TenantBindServiceImpl extends ServiceImpl<TenantBindMapper, TenantB
     }
 
     @Override
-    public List<TenantBindResult> findListBySpec(TenantBindParam param){
-        param.setStatus(99);
-        List<TenantBindResult> listBySpec = this.baseMapper.customList(param);
+    public List<TenantBindResult> findListBySpec(TenantBindParam param,DataScope dataScope){
+        List<TenantBindResult> listBySpec = this.baseMapper.customList(param,dataScope);
         format(listBySpec);
         return listBySpec;
     }
@@ -154,10 +174,20 @@ public class TenantBindServiceImpl extends ServiceImpl<TenantBindMapper, TenantB
         //取出参数集合中的userId和tenantId
         List<Long> userIds = dataList.stream().map(TenantBindResult::getUserId).distinct().collect(Collectors.toList());
         List<Long> tenantIds = dataList.stream().map(TenantBindResult::getTenantId).distinct().collect(Collectors.toList());
-
+        userIds.addAll(dataList.stream().map(TenantBindResult::getUpdateUser).distinct().collect(Collectors.toList()));
+        userIds = userIds.stream().distinct().collect(Collectors.toList());
         //用mybatis-plus的listByIds查询租户和用户
         List<TenantResult> tenantResult = tenantService.getTenantResultsByIds(tenantIds);
         List<UserResult> userResult = userService.getUserResultsByIds(userIds);
+        List<DeptBindResult> deptList = new ArrayList<>();
+        if (userIds.size() > 0 && tenantIds.size() > 0){
+            deptList = BeanUtil.copyToList(deptBindService.lambdaQuery().in(DeptBind::getUserId, userIds).in(DeptBind::getTenantId, tenantIds).list(),DeptBindResult.class);
+            deptBindService.format(deptList);
+        }
+        //将部门放入map中，一个userId会对应多个部门，所以用list
+        Map<Long, List<DeptBindResult>> deptMap = deptList.stream().collect(Collectors.groupingBy(DeptBindResult::getUserId));
+
+
 
         //将用户和租户放入map中，方便后续的关联
         Map<Long, UserResult> userMap = userResult.stream().collect(Collectors.toMap(UserResult::getUserId, Function.identity()));
@@ -172,6 +202,14 @@ public class TenantBindServiceImpl extends ServiceImpl<TenantBindMapper, TenantB
             if(ToolUtil.isNotEmpty(tenantMap.get(item.getTenantId())) && tenantMap.get(item.getTenantId()).getCreateUser().equals(item.getUserId())){
                 item.setIsAdmin(1);
             }
+            if (ToolUtil.isNotEmpty(item.getUpdateUser())){
+                item.setUpdateUserResult(userMap.get(item.getUpdateUser()));
+            }
+            //将部门放入
+            if (ToolUtil.isNotEmpty(deptMap.get(item.getUserId()))){
+                item.setDeptList(deptMap.get(item.getUserId()).stream().map(DeptBindResult::getDept).collect(Collectors.toList()));
+            }
+
         });
     }
 

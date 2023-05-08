@@ -40,6 +40,12 @@ public class TenantBindParam implements Serializable, BaseValidatingParam {
     private Long tenantId;
 
     /**
+     * 部门id
+     */
+    @ApiModelProperty("部门id")
+    private Long deptId;
+
+    /**
      * 状态
      */
     @ApiModelProperty("状态")

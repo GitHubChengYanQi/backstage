@@ -59,7 +59,7 @@ public interface TenantBindService extends IService<TenantBind> {
      * @author Captain_Jazz
      * @Date 2023-04-19
      */
-    List<TenantBindResult> findListBySpec(TenantBindParam param);
+    List<TenantBindResult> findListBySpec(TenantBindParam param,DataScope dataScope);
 
     /**
      * 查询分页数据，Specification模式

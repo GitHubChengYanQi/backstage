@@ -4,19 +4,25 @@ package cn.atsoft.dasheng.sys.modular.system.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.sys.modular.system.entity.Dept;
 import cn.atsoft.dasheng.sys.modular.system.entity.DeptBind;
 import cn.atsoft.dasheng.sys.modular.system.mapper.DeptBindMapper;
 import cn.atsoft.dasheng.sys.modular.system.model.params.DeptBindParam;
 import cn.atsoft.dasheng.sys.modular.system.model.result.DeptBindResult;
-import  cn.atsoft.dasheng.sys.modular.system.service.DeptBindService;
+import cn.atsoft.dasheng.sys.modular.system.service.DeptBindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.service.DeptService;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -29,14 +35,17 @@ import java.util.List;
 @Service
 public class DeptBindServiceImpl extends ServiceImpl<DeptBindMapper, DeptBind> implements DeptBindService {
 
+    @Autowired
+    private DeptService deptService;
+
     @Override
-    public void add(DeptBindParam param){
+    public void add(DeptBindParam param) {
         DeptBind entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(DeptBindParam param){
+    public void delete(DeptBindParam param) {
         //this.removeById(getKey(param));
         DeptBind entity = this.getOldEntity(param);
 //        entity.setDisplay(0);
@@ -44,7 +53,7 @@ public class DeptBindServiceImpl extends ServiceImpl<DeptBindMapper, DeptBind> i
     }
 
     @Override
-    public void update(DeptBindParam param){
+    public void update(DeptBindParam param) {
         DeptBind oldEntity = getOldEntity(param);
         DeptBind newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -52,30 +61,54 @@ public class DeptBindServiceImpl extends ServiceImpl<DeptBindMapper, DeptBind> i
     }
 
     @Override
-    public DeptBindResult findBySpec(DeptBindParam param){
+    public DeptBindResult findBySpec(DeptBindParam param) {
         return null;
     }
 
     @Override
-    public List<DeptBindResult> findListBySpec(DeptBindParam param){
+    public List<DeptBindResult> findListBySpec(DeptBindParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<DeptBindResult> findPageBySpec(DeptBindParam param){
+    public PageInfo<DeptBindResult> findPageBySpec(DeptBindParam param) {
         Page<DeptBindResult> pageContext = getPageContext();
         IPage<DeptBindResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
     @Override
-    public PageInfo<DeptBindResult> findPageBySpec(DeptBindParam param, DataScope dataScope){
+    public PageInfo<DeptBindResult> findPageBySpec(DeptBindParam param, DataScope dataScope) {
         Page<DeptBindResult> pageContext = getPageContext();
-        IPage<DeptBindResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<DeptBindResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(DeptBindParam param){
+    /**
+     * 序列化List<DeptBindResult>
+     *
+     * @param dataList
+     */
+    @Override
+    public void format(List<DeptBindResult> dataList) {
+        //取出deptIds集合
+        List<Long> deptIds = dataList.stream().map(DeptBindResult::getDeptId).distinct().collect(Collectors.toList());
+        //根据deptIds查询deptResult
+        List<Dept> deptResults = deptIds.size() == 0 ? new ArrayList<>() : deptService.listByIds(deptIds);
+
+        //匹配数据
+        dataList.forEach(deptBindResult -> {
+            deptResults.forEach(deptResult -> {
+                if (deptBindResult.getDeptId().equals(deptResult.getDeptId())) {
+                    deptBindResult.setDept(deptResult);
+                }
+            });
+        });
+
+
+    }
+
+    private Serializable getKey(DeptBindParam param) {
         return param.getDeptBindId();
     }
 

@@ -132,9 +132,9 @@
         SELECT
         tableTmp.`YEAR`  AS "year",
         tableTmp.`MONTH`  AS "month",
-        pay.total_amount AS "totalPrice",
+        tableTmp.total_amount AS "totalPrice",
         pay.payment_amount AS "paymentPrice",
-        pay.total_amount - pay.payment_amount AS "deficientPrice",
+        tableTmp.total_amount - pay.payment_amount AS "deficientPrice",
         customerCount.customerCount AS "sellerCount",
         skuCount.skuCount AS "skuCount",
         tableTmp.purchase_number AS "purchaseNumber",
@@ -148,13 +148,17 @@
         `month`,
         `year`,
         SUM( total_amount ) AS total_amount,
-        sum( one_price ) AS one_price,
         sum( purchase_number ) AS purchase_number,
         sum( inStock_number ) AS inStock_number,
         ROUND( sum( inStock_number )/ sum( purchase_number )* 100 ) AS instockRate ,
-        create_time
+        sum(money) AS money,
+        create_time,
+        tenantId
         FROM
-        view_order_detail
+        view_order
+        where
+        1 = 1
+        and tenantId = #{paramCondition.tenantId}
         GROUP BY
         `MONTH`
         ) tableTmp
@@ -163,19 +167,20 @@
         MONTH LEFT JOIN (
         SELECT
         payment.`MONTH`,
-        sum( payment.payment_amount ) AS payment_amount,
-        sum( payment.total_amount ) AS total_amount
+        IF(sum( payment.payment_amount ) is null ,0,sum( payment.payment_amount )) AS payment_amount,
+        IF(sum( payment.total_amount ) is null ,0,sum( payment.total_amount )) AS total_amount
         FROM
         (
         SELECT
         v.`MONTH`,
         v.total_amount,
-        p.payment_amount
+        p.payment_amount,
+        v.tenantId
         FROM
         view_order_detail v
         LEFT JOIN (
         SELECT
-        SUM( payment_amount ) AS payment_amount,
+        IF(SUM( payment_amount ) is null ,0,SUM( payment_amount )) AS payment_amount,
         order_id AS order_id
         FROM
         daoxin_crm_payment_record
@@ -183,9 +188,14 @@
         1 = 1
         AND display = 1
         AND `status` = 0
+        and tenant_id = #{paramCondition.tenantId}
         GROUP BY
         order_id
         ) p ON v.order_id = p.order_id
+
+        where
+        1 = 1
+        and v.tenantId = #{paramCondition.tenantId}
         GROUP BY
         v.order_id
         ) payment
@@ -194,7 +204,6 @@
         ) pay ON tableTmp.`MONTH` = pay.MONTH
         )
         WHERE 1 = 1
-
         <if test="paramCondition.year != null and paramCondition.year!= ''">
             and year = #{paramCondition.year}
         </if>
@@ -204,9 +213,9 @@
         SELECT
         tableTmp.`YEAR` AS "year",
         tableTmp.`MONTH` AS "month",
-        pay.total_amount AS "totalPrice",
+        tableTmp.total_amount AS "totalPrice",
         pay.payment_amount AS "paymentPrice",
-        pay.total_amount - pay.payment_amount AS "deficientPrice",
+        tableTmp.total_amount - IF(pay.payment_amount is null ,0,pay.payment_amount) AS "deficientPrice",
         customerCount.customerCount AS "sellerCount",
         skuCount.skuCount AS "skuCount",
         tableTmp.purchase_number AS "purchaseNumber",
@@ -222,47 +231,52 @@
         `month`,
         `year`,
         SUM( total_amount ) AS total_amount,
-        sum( one_price ) AS one_price,
         sum( purchase_number ) AS purchase_number,
         sum( inStock_number ) AS inStock_number,
         ROUND( sum( inStock_number )/ sum( purchase_number )* 100 ) AS instockRate,
-        money AS money,
+        sum(money) AS money,
         create_time
         FROM
-        view_order_detail
+        view_order
+        where  1 = 1 and tenantId = #{paramCondition.tenantId}
         GROUP BY
         `year`
         ) tableTmp
-        LEFT JOIN ( SELECT `year`, COUNT( DISTINCT sku_id ) AS skuCount FROM view_order_detail GROUP BY `year` ) AS
+        LEFT JOIN ( SELECT `year`, COUNT( DISTINCT sku_id ) AS skuCount FROM view_order_detail where  1 = 1 and tenantId = #{paramCondition.tenantId} GROUP BY `year` ) AS
         skuCount ON tableTmp.`year` = skuCount.
-        year LEFT JOIN ( SELECT `year`, COUNT( DISTINCT customer_id ) AS customerCount FROM view_order_detail GROUP BY
+        year LEFT JOIN ( SELECT `year`, COUNT( DISTINCT customer_id ) AS customerCount FROM view_order_detail where  1 = 1 and tenantId = #{paramCondition.tenantId} GROUP BY
         `year` ) AS customerCount ON tableTmp.`year` = customerCount.
         year LEFT JOIN (
         SELECT
         payment.`year`,
-        sum( payment.payment_amount ) AS payment_amount,
-        sum( payment.total_amount ) AS total_amount
+        IF(sum( payment.payment_amount ) is null ,0,sum( payment.payment_amount )) AS payment_amount,
+        IF(sum( payment.total_amount ) is null ,0,sum( payment.total_amount )) AS total_amount
         FROM
         (
         SELECT
         v.`year`,
         v.total_amount,
-        p.payment_amount
+        p.payment_amount,
+        v.tenantId
         FROM
         view_order_detail v
         LEFT JOIN (
         SELECT
         SUM( payment_amount ) AS payment_amount,
-        order_id AS order_id
+        order_id AS order_id,
+        tenant_id AS tenantId
         FROM
         daoxin_crm_payment_record
         WHERE
         1 = 1
         AND display = 1
         AND `status` = 0
+        and tenant_id = #{paramCondition.tenantId}
         GROUP BY
         order_id
         ) p ON v.order_id = p.order_id
+        where 1 = 1 and p.tenantId = #{paramCondition.tenantId}
+        and v.tenantId = #{paramCondition.tenantId}
         GROUP BY
         v.order_id
         ) payment

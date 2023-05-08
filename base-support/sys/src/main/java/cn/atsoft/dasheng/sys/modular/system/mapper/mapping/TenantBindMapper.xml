@@ -9,6 +9,7 @@
         <result column="user_id" property="userId" />
         <result column="display" property="display" />
         <result column="status" property="status" />
+        <result column="deptId" property="deptId" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
         <result column="create_time" property="createTime" />
@@ -17,7 +18,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        tenant_bind_id AS "tenantBindId", tenant_id AS "tenantId", user_id AS "userId", status AS "status", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+        tenant_bind_id AS "tenantBindId",deptId AS "deptId", tenant_id AS "tenantId", user_id AS "userId", status AS "status", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>
 
 
@@ -25,33 +26,37 @@
         select
         <include refid="Base_Column_List"/>
         from sys_tenant_bind where 1 = 1 and display = 1
-            <if test="paramCondition.tenantBindId != null">
-                and tenant_bind_id like CONCAT('%',#{paramCondition.tenantBindId},'%')
-            </if>
-            <if test="paramCondition.tenantId != null">
-                and tenant_id like CONCAT('%',#{paramCondition.tenantId},'%')
-            </if>
-            <if test="paramCondition.userId != null">
-                and user_id like CONCAT('%',#{paramCondition.userId},'%')
-            </if>
-            <if test="paramCondition.display != null">
-                and display like CONCAT('%',#{paramCondition.display},'%')
-            </if>
-            <if test="paramCondition.status != null">
-                and status = #{paramCondition.status}
-            </if>
-            <if test="paramCondition.createUser != null">
-                and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-            </if>
-            <if test="paramCondition.updateUser != null">
-                and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-            </if>
-            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-            </if>
-            <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-            </if>
+        <if test="paramCondition.tenantBindId != null">
+            and tenant_bind_id like CONCAT('%',#{paramCondition.tenantBindId},'%')
+        </if>
+        <if test="paramCondition.tenantId != null">
+            and tenant_id = #{paramCondition.tenantId}
+        </if>
+        <if test="paramCondition.userId != null">
+            and user_id = #{paramCondition.userId}
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user = #{paramCondition.createUser}
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user = #{paramCondition.updateUser}
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time = #{paramCondition.createTime}
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time = #{paramCondition.updateTime}
+        </if>
+        <if test="paramCondition.status != null">
+            and status = #{paramCondition.status}
+        </if>
+
+        <if test="paramCondition.keywords != null and paramCondition.keywords != ''">
+            and (
+            user_id in (select user_id from sys_user where name like CONCAT('%',#{paramCondition.keywords},'%') or phone
+            like CONCAT('%',#{paramCondition.keywords},'%'))
+            )
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.TenantBindParam">
@@ -87,40 +92,36 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.sys.modular.system.model.result.TenantBindResult" parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.TenantBindParam">
         select
         <include refid="Base_Column_List"/>
-        from sys_tenant_bind where 1 = 1
+        from sys_tenant_bind where 1 = 1 and display = 1
                 <if test="paramCondition.tenantBindId != null">
                         and tenant_bind_id like CONCAT('%',#{paramCondition.tenantBindId},'%')
                 </if>
                 <if test="paramCondition.tenantId != null">
-                        and tenant_id like CONCAT('%',#{paramCondition.tenantId},'%')
+                        and tenant_id = #{paramCondition.tenantId}
                 </if>
                 <if test="paramCondition.userId != null">
-                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
+                        and user_id = #{paramCondition.userId}
                 </if>
                 <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                        and create_user = #{paramCondition.createUser}
                 </if>
                 <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                        and update_user = #{paramCondition.updateUser}
                 </if>
                 <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                        and create_time = #{paramCondition.createTime}
                 </if>
                 <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                        and update_time = #{paramCondition.updateTime}
                 </if>
                 <if test="paramCondition.status != null">
                         and status = #{paramCondition.status}
                 </if>
-    --         关键字查询寻
+
                 <if test="paramCondition.keywords != null and paramCondition.keywords != ''">
                     and (
                         user_id in (select user_id from sys_user where name like CONCAT('%',#{paramCondition.keywords},'%') or phone like CONCAT('%',#{paramCondition.keywords},'%'))
                     )
-
                 </if>
     </select>
 

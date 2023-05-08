@@ -20,6 +20,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -104,7 +105,7 @@ public class TenantController extends BaseController {
         if (ToolUtil.isNotEmpty(detail)) {
             ToolUtil.copyProperties(detail, result);
         }
-
+        this.tenantService.format(Collections.singletonList(result));
 //        result.setValue(parentValue);
         return ResponseData.success(result);
     }

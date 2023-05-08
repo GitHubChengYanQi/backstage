@@ -28,7 +28,7 @@ public interface RestDeptMapper extends BaseMapper<RestDept> {
     /**
      * 获取所有部门列表
      */
-    Page<Map<String, Object>> list(@Param("page") Page page, @Param("condition") String condition, @Param("deptId") Long deptId);
+    Page<Map<String, Object>> list(@Param("page") Page page, @Param("condition") String condition, @Param("deptId") Long deptId,@Param("tenantId") Long tenantId);
 
     /**
      * 获取所有部门列表(不分页)

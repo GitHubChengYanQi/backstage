@@ -75,4 +75,5 @@ public interface DeptBindService extends IService<DeptBind> {
      */
      PageInfo<DeptBindResult> findPageBySpec(DeptBindParam param,DataScope dataScope);
 
+    void format(List<DeptBindResult> dataList);
 }

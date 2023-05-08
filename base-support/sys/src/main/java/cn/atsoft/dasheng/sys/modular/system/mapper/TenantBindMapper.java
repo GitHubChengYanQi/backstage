@@ -28,7 +28,7 @@ public interface TenantBindMapper extends BaseMapper<TenantBind> {
      * @author Captain_Jazz
      * @Date 2023-04-19
      */
-    List<TenantBindResult> customList(@Param("paramCondition") TenantBindParam paramCondition);
+    List<TenantBindResult> customList(@Param("paramCondition") TenantBindParam paramCondition,@Param("dataScope")DataScope dataScope);
 
     /**
      * 获取map列表

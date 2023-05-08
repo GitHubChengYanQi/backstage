@@ -125,7 +125,7 @@ public class RestDeptService extends ServiceImpl<RestDeptMapper, RestDept> {
      */
     public Page<Map<String, Object>> list(String condition, Long deptId) {
         Page page = LayuiPageFactory.defaultPage();
-        return this.baseMapper.list(page, condition, deptId);
+        return this.baseMapper.list(page, condition, deptId,LoginContextHolder.getContext().getTenantId());
     }
 
     /**

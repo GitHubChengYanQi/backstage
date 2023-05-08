@@ -113,14 +113,15 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
     }
     @Override
     public List<ViewResult> viewOrderDetail(ViewParam param) {
-            List<ViewResult> list = this.baseMapper.viewOrderDetail( param);
+        param.setTenantId(LoginContextHolder.getContext().getTenantId());
+        List<ViewResult> list = this.baseMapper.viewOrderDetail( param);
 
 //        format(result);
         return list;
     }
     @Override
     public ViewResult view(ViewParam param) {
-
+        param.setTenantId(LoginContextHolder.getContext().getTenantId());
 //        format(result);
         return this.baseMapper.view( param);
     }

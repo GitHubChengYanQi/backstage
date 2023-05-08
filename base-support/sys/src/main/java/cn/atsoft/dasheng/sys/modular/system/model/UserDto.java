@@ -15,6 +15,8 @@
  */
 package cn.atsoft.dasheng.sys.modular.system.model;
 
+import cn.atsoft.dasheng.sys.modular.system.entity.DeptBind;
+import cn.atsoft.dasheng.sys.modular.system.model.params.DeptBindParam;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -33,6 +35,8 @@ import java.util.List;
 public class UserDto {
 
     List<String> openIds;
+
+    List<DeptBindParam> deptList;
 
     private Long userId;
 
@@ -70,7 +74,6 @@ public class UserDto {
 
     @NotBlank
     private String position;
-
 
 
 }
