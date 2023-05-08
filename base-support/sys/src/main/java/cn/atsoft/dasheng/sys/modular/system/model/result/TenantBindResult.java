@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.sys.modular.system.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.entity.Dept;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -19,11 +20,18 @@ import java.util.List;
 public class TenantBindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @ApiModelProperty("是否是管理员")
     private Integer isAdmin;
+    @ApiModelProperty("状态")
     private Integer status;
+    @ApiModelProperty("用户")
     private UserResult userResult;
+    @ApiModelProperty("操作人")
+    private UserResult updateUserResult;
+    @ApiModelProperty("租户")
     private TenantResult tenantResult;
-
+    @ApiModelProperty("部门集合")
+    private List<Dept> deptList;
     /**
      * 租户绑定id
      */

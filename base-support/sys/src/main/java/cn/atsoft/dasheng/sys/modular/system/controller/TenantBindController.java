@@ -21,6 +21,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -199,7 +200,29 @@ public class TenantBindController extends BaseController {
             tenantBindParam = new TenantBindParam();
         }
 //        if (LoginContextHolder.getContext().isAdmin()) {
-        return ResponseData.success(this.tenantBindService.findListBySpec(tenantBindParam));
+             DataScope dataScope = new DataScope(null,LoginContextHolder.getContext().getTenantId());
+        return ResponseData.success(this.tenantBindService.findListBySpec(tenantBindParam,dataScope));
+//        } else {
+//             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
+//             return  this.tenantBindService.findPageBySpec(tenantBindParam,dataScope);
+//        }
+//        return this.tenantBindService.findPageBySpec(tenantBindParam);
+    }
+
+    /**
+     * 计数
+     *
+     * @author Captain_Jazz
+     * @Date 2023-04-19
+     */
+    @RequestMapping(value = "/statusCount", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData statusCount(@RequestBody(required = false) TenantBindParam tenantBindParam) {
+        if (ToolUtil.isEmpty(tenantBindParam)) {
+            tenantBindParam = new TenantBindParam();
+        }
+//        if (LoginContextHolder.getContext().isAdmin()) {
+        return ResponseData.success(this.tenantBindService.lambdaQuery().eq(TenantBind::getTenantId,LoginContextHolder.getContext().getTenantId()).eq(TenantBind::getStatus, tenantBindParam.getStatus()).count());
 //        } else {
 //             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope(),LoginContextHolder.getContext().getTenantId());
 //             return  this.tenantBindService.findPageBySpec(tenantBindParam,dataScope);
@@ -230,7 +253,7 @@ public class TenantBindController extends BaseController {
             throw new RuntimeException("非创建者不可操作");
         }
         //通过tenantBindParam.tenantBindId集合
-        this.tenantBindService.lambdaUpdate().in(TenantBind::getTenantBindId, tenantBindParam.getTenantBindIds()).set(TenantBind::getStatus,99).update();
+        this.tenantBindService.lambdaUpdate().in(TenantBind::getTenantBindId, tenantBindParam.getTenantBindIds()).eq(TenantBind::getStatus,0).set(TenantBind::getStatus,99).update();
         return ResponseData.success();
     }
     /**
@@ -256,7 +279,7 @@ public class TenantBindController extends BaseController {
             throw new ServiceException(500,"非创建者不可操作");
         }
         //通过tenantBindParam.tenantBindId集合
-        this.tenantBindService.lambdaUpdate().in(TenantBind::getTenantBindId, tenantBindParam.getTenantBindIds()).set(TenantBind::getStatus,50).update();
+        this.tenantBindService.lambdaUpdate().in(TenantBind::getTenantBindId, tenantBindParam.getTenantBindIds()).set(TenantBind::getStatus,50).set(TenantBind::getUpdateUser,LoginContextHolder.getContext().getUserId()).set(TenantBind::getUpdateTime,new Date()).update();
         return ResponseData.success();
     }
     /**

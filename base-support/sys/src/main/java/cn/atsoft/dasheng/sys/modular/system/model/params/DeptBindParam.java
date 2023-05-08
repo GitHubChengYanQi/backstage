@@ -35,6 +35,9 @@ public class DeptBindParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("")
     private Long tenantId;
 
+    @ApiModelProperty("")
+    private Integer mainDept;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 

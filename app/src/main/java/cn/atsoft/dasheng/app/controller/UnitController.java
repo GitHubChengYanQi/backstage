@@ -121,6 +121,7 @@ if (ToolUtil.isNotEmpty(detail)) {
     public ResponseData listSelect() {
         List<Map<String, Object>> list = this.unitService.listMaps(new QueryWrapper<Unit>(){{
             eq("tenant_id", LoginContextHolder.getContext().getTenantId());
+            eq("display", 1);
         }});
         UnitSelectWrapper unitSelectWrapper = new UnitSelectWrapper(list);
         List<Map<String, Object>> result = unitSelectWrapper.wrap();

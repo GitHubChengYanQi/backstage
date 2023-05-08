@@ -28,10 +28,20 @@ public class DeptBind implements Serializable {
 
     @TableField("user_id")
     private Long userId;
+    @TableField("main_dept")
+    private Integer mainDept;
 
       @TableField(value = "tenant_id", fill = FieldFill.INSERT)
     private Long tenantId;
 
+
+    public Integer getMainDept() {
+        return mainDept;
+    }
+
+    public void setMainDept(Integer mainDept) {
+        this.mainDept = mainDept;
+    }
 
     public Long getDeptBindId() {
         return deptBindId;

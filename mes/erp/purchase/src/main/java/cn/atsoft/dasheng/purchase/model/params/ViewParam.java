@@ -13,5 +13,6 @@ public class ViewParam {
     private String theme;
     private Long sellerId;
     private Integer status;
+    private Long tenantId;
 
 }

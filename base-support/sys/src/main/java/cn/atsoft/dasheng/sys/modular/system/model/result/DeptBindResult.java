@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.sys.modular.system.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.entity.Dept;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -20,6 +21,7 @@ public class DeptBindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Dept dept;
 
     @ApiModelProperty("")
     private Long deptBindId;
@@ -32,6 +34,8 @@ public class DeptBindResult implements Serializable {
 
     @ApiModelProperty("")
     private Long tenantId;
+    @ApiModelProperty("")
+    private Integer mainDept;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }
