@@ -269,7 +269,7 @@ public class UcMemberAuth {
                 return token;
             }
 
-            JwtPayLoad payLoad = new JwtPayLoad(wxuserInfo.getUserId(), user.getAccount(),user.getTenantId(), "xxxx");
+            JwtPayLoad payLoad = new JwtPayLoad(wxuserInfo.getUserId(), user.getAccount(),user.getTenantId().toString(), "xxxx");
 
             return JwtTokenUtil.generateToken(payLoad);
         }catch (Exception e){

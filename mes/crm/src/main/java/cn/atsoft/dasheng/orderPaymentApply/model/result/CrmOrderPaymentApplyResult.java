@@ -39,6 +39,9 @@ public class CrmOrderPaymentApplyResult implements Serializable {
     private Long orderId;
 
     @ApiModelProperty("")
+    private Long tenantId;
+
+    @ApiModelProperty("")
     private Double newMoney;
 
     /**

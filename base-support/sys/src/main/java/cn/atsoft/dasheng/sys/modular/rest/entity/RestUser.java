@@ -67,6 +67,12 @@ public class RestUser implements Serializable {
     private Date birthday;
 
     /**
+     * 租户
+     */
+    @TableField("tenant_id")
+    private Long tenantId;
+
+    /**
      * 性别(字典)
      */
     @TableField("sex")
@@ -284,27 +290,37 @@ public class RestUser implements Serializable {
         this.version = version;
     }
 
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
+
     @Override
     public String toString() {
-        return "User{" +
-                "userId=" + userId +
-                ", avatar=" + avatar +
-                ", account=" + account +
-                ", password=" + password +
-                ", salt=" + salt +
-                ", name=" + name +
+        return "RestUser{" +
+                "jobNo='" + jobNo + '\'' +
+                ", userId=" + userId +
+                ", avatar='" + avatar + '\'' +
+                ", account='" + account + '\'' +
+                ", password='" + password + '\'' +
+                ", salt='" + salt + '\'' +
+                ", name='" + name + '\'' +
                 ", birthday=" + birthday +
-                ", sex=" + sex +
-                ", email=" + email +
-                ", phone=" + phone +
-                ", roleId=" + roleId +
+                ", tenantId='" + tenantId + '\'' +
+                ", sex='" + sex + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", roleId='" + roleId + '\'' +
                 ", deptId=" + deptId +
-                ", status=" + status +
+                ", status='" + status + '\'' +
                 ", createTime=" + createTime +
                 ", createUser=" + createUser +
                 ", updateTime=" + updateTime +
                 ", updateUser=" + updateUser +
                 ", version=" + version +
-                "}";
+                '}';
     }
 }

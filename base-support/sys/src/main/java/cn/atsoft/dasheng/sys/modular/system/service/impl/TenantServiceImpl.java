@@ -80,7 +80,7 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
 
     @Override
     public String changeTenant(TenantParam param){
-        TenantBind bind = tenantBindService.lambdaQuery().eq(TenantBind::getTenantId, param.getTenantId()).eq(TenantBind::getUserId, LoginContextHolder.getContext().getUserId()).one();
+        TenantBind bind = tenantBindService.lambdaQuery().eq(TenantBind::getTenantId, param.getTenantId()).eq(TenantBind::getUserId, LoginContextHolder.getContext().getUserId()).eq(TenantBind::getStatus,99).one();
         if (ToolUtil.isEmpty(bind)){
             throw new ServiceException(500,"您未在此租户下");
         }

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.goods.classz.service.impl;
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -145,7 +146,7 @@ public class RestClassServiceImpl extends ServiceImpl<RestClassMapper, RestClass
 
         RestClass category = this.getById(param.getClassId());
         if (!category.getCategoryName().equals(param.getName())) {
-            Integer count = this.query().in("display", 1).in("category_name", param.getClassId()).count();
+            Integer count = this.query().in("display", 1).eq("tenant_id", LoginContextHolder.getContext().getTenantId()).in("category_name", param.getClassId()).count();
             if (count > 0) {
                 throw new ServiceException(500, "名字已重复");
             }

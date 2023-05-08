@@ -398,4 +398,9 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
 
         return coding;
     }
+
+    @Override
+    public String genSerial() {
+        return serialNumberService.genNumber();
+    }
 }

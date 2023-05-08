@@ -11,13 +11,13 @@ import cn.atsoft.dasheng.sys.modular.rest.entity.RestUser;
 import cn.atsoft.dasheng.sys.modular.rest.entity.RestUserPos;
 import cn.atsoft.dasheng.sys.modular.rest.mapper.RestUserMapper;
 import cn.atsoft.dasheng.sys.modular.rest.model.params.MobileUrl;
-import cn.atsoft.dasheng.sys.modular.system.entity.Dept;
-import cn.atsoft.dasheng.sys.modular.system.entity.Role;
-import cn.atsoft.dasheng.sys.modular.system.entity.Tenant;
-import cn.atsoft.dasheng.sys.modular.system.entity.TenantBind;
+import cn.atsoft.dasheng.sys.modular.system.entity.*;
 import cn.atsoft.dasheng.sys.modular.system.model.UserDto;
+import cn.atsoft.dasheng.sys.modular.system.model.params.DeptBindParam;
+import cn.atsoft.dasheng.sys.modular.system.model.result.DeptBindResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.*;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -62,6 +62,8 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
 
     @Resource
     private DeptService deptService;
+    @Resource
+    private DeptBindService deptBindService;
 
     @Resource
     private RoleService roleService;
@@ -90,6 +92,8 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
                 throw new ServiceException(500, "手机号不能重复");
             }
         }
+        deptBind(user);
+
         // 判断账号是否重复
         RestUser theUser = this.getByAccount(user.getAccount());
         if (theUser != null) {
@@ -123,18 +127,18 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
         if (oldUser == null) {
             throw new ServiceException(BizExceptionEnum.NO_THIS_USER);
         }
-
-        if (LoginContextHolder.getContext().hasRole(Const.ADMIN_NAME)) {
+        deptBind(user);
+//        if (LoginContextHolder.getContext().hasRole(Const.ADMIN_NAME)) {
             this.updateById(RestUserFactory.editRestUser(user, oldUser));
-        } else {
-            this.assertAuth(user.getUserId());
-            LoginUser shiroUser = LoginContextHolder.getContext().getUser();
-            if (shiroUser.getId().equals(user.getUserId())) {
-                this.updateById(RestUserFactory.editRestUser(user, oldUser));
-            } else {
-                throw new ServiceException(BizExceptionEnum.NO_PERMITION);
-            }
-        }
+//        } else {
+//            this.assertAuth(user.getUserId());
+//            LoginUser shiroUser = LoginContextHolder.getContext().getUser();
+//            if (shiroUser.getId().equals(user.getUserId())) {
+//                this.updateById(RestUserFactory.editRestUser(user, oldUser));
+//            } else {
+//                throw new ServiceException(BizExceptionEnum.NO_PERMITION);
+//            }
+//        }
 
         //删除职位关联
         restUserPosService.remove(new QueryWrapper<RestUserPos>().eq("user_id", user.getUserId()));
@@ -142,7 +146,35 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
         //添加职位关联
         addPosition(user.getPosition(), user.getUserId());
     }
+    public void deptBind(UserDto user){
+        //删除部门关联
+        deptBindService.remove(new QueryWrapper<DeptBind>().eq("user_id", user.getUserId()).eq("tenant_id", LoginContextHolder.getContext().getTenantId()));
 
+        if (ToolUtil.isNotEmpty(user.getDeptList())){
+            //添加部门关联
+            List<DeptBind> deptBinds = new ArrayList<>();
+            int i = 0;
+            for (DeptBindParam deptParam : user.getDeptList()) {
+                DeptBind deptBind = new DeptBind();
+                deptBind.setUserId(user.getUserId());
+                deptBind.setDeptId(deptParam.getDeptId());
+                deptBind.setTenantId(LoginContextHolder.getContext().getTenantId());
+                deptBind.setMainDept(deptParam.getMainDept());
+                if (ToolUtil.isNotEmpty(deptParam.getMainDept()) && deptParam.getMainDept().equals(1)){
+                    i++;
+                }
+                deptBinds.add(deptBind);
+            }
+            if (i == 0){
+                throw new ServiceException(500,"请选择一个主部门");
+            }
+            if (i > 1){
+                throw new ServiceException(500,"主部门只能选择一个");
+            }
+
+            deptBindService.saveBatch(deptBinds);
+        }
+    }
     /**
      * 删除用户
      *
@@ -353,7 +385,9 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
         if (deptDataScope.contains(deptId)) {
             return;
         } else {
-            throw new ServiceException(BizExceptionEnum.NO_PERMITION);
+//            throw new ServiceException(BizExceptionEnum.NO_PERMITION);
+
+            return;
         }
 
     }
@@ -475,7 +509,13 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
         hashMap.put("miniAppAvatar", ToolUtil.isEmpty(userResultsByIds.get(0).getMiniAppAvatar()) ? "" : userResultsByIds.get(0).getMiniAppAvatar());
         hashMap.put("roleName", ConstantFactory.me().getRoleName(user.getRoleId()));
         hashMap.put("deptName", ConstantFactory.me().getDeptName(user.getDeptId()));
+        hashMap.put("deptList", new ArrayList<>());
+        if (ToolUtil.isNotEmpty(user.getTenantId())){
+            List<DeptBindResult> deptBindResults = BeanUtil.copyToList(deptBindService.lambdaQuery().eq(DeptBind::getUserId, user.getUserId()).eq(DeptBind::getTenantId, user.getTenantId()).list(), DeptBindResult.class);
+            deptBindService.format(deptBindResults);
+            hashMap.put("deptList",deptBindResults);
 
+        }
         hashMap.put("positionIds", ConstantFactory.me().getPositionIds(userId).split(","));
         hashMap.put("positionNames", ConstantFactory.me().getPositionName(userId));
 

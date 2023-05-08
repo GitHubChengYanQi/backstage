@@ -20,7 +20,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        order_id AS "orderId",done_time AS doneTime, new_money AS "newMoney", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", sp_no AS "spNo", status AS "status"
+        order_id AS "orderId",done_time AS doneTime, new_money AS "newMoney", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", sp_no AS "spNo", status AS "status",tenant_id AS "tenantId",deptId AS "deptId"
     </sql>
 
 
@@ -45,7 +45,8 @@
             p. deptId AS "deptId",tenant_id AS "tenantId",
             a.creator_user AS "creatorUser",
             a.msg AS msg,
-            a.done_time As "doneTime"
+            a.done_time As "doneTime",
+            p.tenant_id AS "tenantId"
         FROM
             `daoxin_crm_order_payment_apply` p
             LEFT JOIN wx_audit a ON p.sp_no = a.sp_no

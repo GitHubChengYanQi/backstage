@@ -29,6 +29,13 @@ public class RestInstockOrderDetailParam extends AbstractDictMap implements Seri
 
     private Long detailId;
 
+    private Long customerId;
+
+    private Long brandId;
+
+    private Long skuId;
+
+
     /**
      * 数量
      */

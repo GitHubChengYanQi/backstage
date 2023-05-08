@@ -24,7 +24,7 @@ public class RestInstockOrderParam extends AbstractDictMap implements Serializab
 
     private static final long serialVersionUID = 1L;
     //跳转路径
-
+    private RestOrderParam orderParam;
     private Boolean directInStock = false;   //是否直接入库
 
     List<RestInstockOrderDetailParam> detailParams;

@@ -21,13 +21,13 @@ import java.util.Set;
  */
 public interface RestOrderService extends IService<RestOrder>   {
 
-    /**
-     * 新增
-     *
-     * @author song
-     * @Date 2022-02-23
-     */
-    RestOrder add(RestOrderParam param);
+//    /**
+//     * 新增
+//     *
+//     * @author song
+//     * @Date 2022-02-23
+//     */
+//    RestOrder add(RestOrderParam param);
 
     /**
      * 删除

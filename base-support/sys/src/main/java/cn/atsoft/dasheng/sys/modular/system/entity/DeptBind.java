@@ -23,11 +23,14 @@ public class DeptBind implements Serializable {
       @TableId(value = "dept_bind_id", type = IdType.ID_WORKER)
     private Long deptBindId;
 
-    @TableField("dept_id")
+    @TableField("deptId")
     private Long deptId;
 
     @TableField("user_id")
     private Long userId;
+    @TableField("main_dept")
+    private Integer mainDept;
+
     @TableField("main_dept")
     private Integer mainDept;
 

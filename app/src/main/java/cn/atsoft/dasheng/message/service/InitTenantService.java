@@ -113,6 +113,12 @@ public class InitTenantService {
         customer.setTenantId(tenantId);
         customer.setCreateUser(tenant.getCreateUser());
         customerService.save(customer);
+        brandBindService.save(skuBrandBind);
+        Customer customer1 = new Customer();
+        customer1.setCustomerName("默认客户");
+        customer1.setTenantId(tenantId);
+        customer1.setCreateUser(tenant.getCreateUser());
+        customerService.save(customer1);
 
         supplyService.save(new Supply() {{
             setTenantId(tenantId);
@@ -222,6 +228,19 @@ public class InitTenantService {
         unit.setUnitName("个");
         unit.setTenantId(tenantId);
         unitService.save(unit);
+        Unit unit1 = new Unit();
+        unit1.setUnitName("台");
+        unit1.setTenantId(tenantId);
+        unitService.save(unit1);
+        Unit unit2 = new Unit();
+        unit2.setUnitName("套");
+        unit2.setTenantId(tenantId);
+        unitService.save(unit2);
+        Unit unit3 = new Unit();
+        unit3.setUnitName("米");
+        unit3.setTenantId(tenantId);
+        unitService.save(unit3);
+
 
         //初始化分类
         Category category = new Category();
@@ -233,9 +252,25 @@ public class InitTenantService {
         Material material = new Material();
         material.setName("默认材质");
         material.setTenantId(tenantId);
-        materialService.save(material);
+        materialService.save(material);   //初始化材质
+        Material material1 = new Material();
+        material1.setName("钢");
+        material1.setTenantId(tenantId);
+        materialService.save(material1);   //初始化材质
+        Material material2 = new Material();
+        material2.setName("木");
+        material2.setTenantId(tenantId);
+        materialService.save(material2);   //初始化材质
+        Material material3 = new Material();
+        material3.setName("铝");
+        material3.setTenantId(tenantId);
+        materialService.save(material3);   //初始化材质
+        Material material4 = new Material();
+        material4.setName("铁");
+        material4.setTenantId(tenantId);
+        materialService.save(material4);
 
-        //初始化规格
+        //初始化分类
         SpuClassification spuClassification = new SpuClassification();
         spuClassification.setName("默认分类");
         spuClassification.setTenantId(tenantId);
@@ -275,10 +310,29 @@ public class InitTenantService {
         storehouseService.save(storehouse);
         //创建库位
         StorehousePositions storehousePositions = new StorehousePositions();
-        storehousePositions.setName("默认库位");
+        storehousePositions.setName("库位1");
         storehousePositions.setTenantId(tenantId);
         storehousePositions.setStorehouseId(storehouse.getStorehouseId());
         storehousePositionsService.save(storehousePositions);
+        //创建库位
+        StorehousePositions child1 = new StorehousePositions();
+        child1.setName("货架1");
+        child1.setTenantId(tenantId);
+        child1.setPid(storehousePositions.getStorehousePositionsId());
+        child1.setStorehouseId(storehouse.getStorehouseId());
+        storehousePositionsService.save(child1);
+        //创建库位
+        StorehousePositions storehousePositions2 = new StorehousePositions();
+        storehousePositions2.setName("库位2");
+        storehousePositions2.setTenantId(tenantId);
+        storehousePositions2.setStorehouseId(storehouse.getStorehouseId());
+        storehousePositionsService.save(storehousePositions2);
+        //创建库位
+        StorehousePositions storehousePositions3 = new StorehousePositions();
+        storehousePositions3.setName("库位3");
+        storehousePositions3.setTenantId(tenantId);
+        storehousePositions3.setStorehouseId(storehouse.getStorehouseId());
+        storehousePositionsService.save(storehousePositions3);
         return storehousePositions.getStorehousePositionsId();
     }
 }

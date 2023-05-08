@@ -108,9 +108,9 @@ public class LoginContextSpringSecutiryImpl implements LoginContext {
 
     @Override
     public List<Long> getDeptDataScope() {
-        Long deptId = getUser().getDeptId();
-        List<Long> subDeptIds = ConstantFactory.me().getSubDeptId(deptId);
-        subDeptIds.add(deptId);
+        List<Long> deptId = getUser().getDeptIds();
+        List<Long> subDeptIds = ConstantFactory.me().getSubDeptIds(deptId);
+        subDeptIds.addAll(deptId);
         return subDeptIds;
     }
     @Override

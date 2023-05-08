@@ -59,7 +59,29 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
         RestOrderDetail entity = getEntity(param);
         this.save(entity);
     }
-
+    @Override
+    public Integer addList(Long orderId, Long customerId, List<RestOrderDetailParam> params){
+        List<RestOrderDetail> details = new ArrayList<>();
+        int totalAmount = 0;   //所有物料总价
+        if (ToolUtil.isEmpty(params)) {
+            return totalAmount;
+        }
+        for (RestOrderDetailParam param : params) {
+            RestOrderDetail orderDetail = new RestOrderDetail();
+            ToolUtil.copyProperties(param, orderDetail);
+            orderDetail.setDetailId(null);
+            int detailAmount = Math.toIntExact(orderDetail.getOnePrice() * orderDetail.getPurchaseNumber());
+            orderDetail.setOrderId(orderId);
+            orderDetail.setCustomerId(customerId);
+            orderDetail.setTotalPrice(detailAmount);
+            orderDetail.setInStockNumber(0);
+            orderDetail.setArrivalNumber(0);
+            totalAmount = totalAmount + detailAmount;
+            details.add(orderDetail);
+        }
+        this.saveBatch(details);
+        return totalAmount;
+    }
     @Override
     public void delete(RestOrderDetailParam param) {
         param.setDisplay(0);
@@ -207,6 +229,11 @@ public class RestOrderDetailServiceImpl extends ServiceImpl<RestOrderDetailMappe
 
     @Override
     public RestOrder getOrderById(Long orderId) {
+        return null;
+    }
+
+    @Override
+    public RestOrder add(Map<String, Object> param) {
         return null;
     }
 

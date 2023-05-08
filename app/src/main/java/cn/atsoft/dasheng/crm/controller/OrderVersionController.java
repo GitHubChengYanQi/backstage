@@ -81,7 +81,7 @@ public class OrderVersionController extends BaseController {
                 String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
                 orderParam.setCoding(coding);
             } else {
-                throw new ServiceException(500, "请配置采购单据自动生成编码规则");
+                orderParam.setCoding(codingRulesService.genSerial());
             }
         }
         /**

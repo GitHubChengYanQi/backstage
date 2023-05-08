@@ -27,7 +27,7 @@ public class JwtPayLoad {
     /**
      * 账号
      */
-    private Long tenantId;
+    private String tenantId;
 
     /**
      * 用户的键
@@ -45,7 +45,7 @@ public class JwtPayLoad {
         this.userKey = userKey;
     }
 
-    public JwtPayLoad(Long userId, String account, Long tenantId, String userKey) {
+    public JwtPayLoad(Long userId, String account, String tenantId, String userKey) {
         this.userId = userId;
         this.account = account;
         this.tenantId = tenantId;
@@ -85,7 +85,7 @@ public class JwtPayLoad {
             jwtPayLoad.setAccount((String) map.get("account"));
             jwtPayLoad.setUserKey((String) map.get("userKey"));
             try{
-                jwtPayLoad.setTenantId((Long) map.get("tenantId"));
+                jwtPayLoad.setTenantId( map.get("tenantId").toString());
             }catch(Exception e){
                 jwtPayLoad.setTenantId(null);
             }

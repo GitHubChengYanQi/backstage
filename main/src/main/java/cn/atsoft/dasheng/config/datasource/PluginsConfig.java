@@ -90,7 +90,17 @@ public class  PluginsConfig {
                 } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }
-
+                Object userId = null;
+                try {
+                    userId = getFieldValByName(getUserIdFieldName(), metaObject);
+                    IConstantFactory iConstantFactory = new ConstantFactory();
+                    Long deptId1 = iConstantFactory.getDeptId((Long) userId);
+                    if (userId != null && getFieldValByName(getDeptIdFieldName(), metaObject) == null) {
+                        setFieldValByName(getDeptIdFieldName(), deptId1, metaObject);
+                    }
+                } catch (ReflectionException e) {
+                    //没有此字段，则不处理
+                }
                 try {
                     //获取当前登录用户
                     Object accountId = getUserUniqueId();
@@ -112,17 +122,7 @@ public class  PluginsConfig {
                     //没有此字段，则不处理
                 }
 
-                Object userId = null;
-                try {
-                    userId = getFieldValByName(getUserIdFieldName(), metaObject);
-                    IConstantFactory iConstantFactory = new ConstantFactory();
-                    Long deptId1 = iConstantFactory.getDeptId((Long) userId);
-                    if (userId != null) {
-                        setFieldValByName(getDeptIdFieldName(), deptId1, metaObject);
-                    }
-                } catch (ReflectionException e) {
-                    //没有此字段，则不处理
-                }
+
                 try {
                     setFieldValByName(getUpdateTimeFieldName(), null, metaObject);
                 } catch (ReflectionException e) {
@@ -143,11 +143,6 @@ public class  PluginsConfig {
                     //没有此字段，则不处理
                 }
 
-//                try {
-//                    printDynamic(metaObject, (Long) userId, 1);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
             }
 
             @Override
@@ -183,109 +178,8 @@ public class  PluginsConfig {
                 } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }
-//                try {
-//                    printDynamic(metaObject, (Long) userId, 2);
-//                } catch (Exception e) {
-//
-//
-//                }
             }
         };
     }
 
-    public void printDynamic(MetaObject object, Long userId, Integer type) {
-        for (String simpleName : WHITE_LIST) {
-            if (simpleName.equals(object.getOriginalObject().getClass().getSimpleName()) && (!userId.equals(-100L) || ToolUtil.isNotEmpty(userId))) {
-                DynamicParam dynamic = new DynamicParam();
-                dynamic.setAfter(JSON.toJSONString(object.getOriginalObject()));
-                dynamic.setType(type.toString());
-                dynamic.setUserId(userId);
-                this.formatDynamic(object, dynamic);
-                messageProducer.microService(new MicroServiceEntity() {{
-                    setType(DYNAMIC);
-                    setObject(dynamic);
-                    setOperationType(OperationType.SAVE);
-                    setMaxTimes(2);
-                    setTimes(1);
-                    ;
-                }});
-            }
-        }
-
-    }
-
-    static final String[] WHITE_LIST = {
-            "Sku",
-            "ActivitiProcessTask",
-            "ActivitiProcessLog",
-            "InstockOrder",
-            "ProductionPickLists",
-            "ProductionPickListsCart",
-            "Maintenance",
-            "Allocation",
-
-    };
-
-    private void formatDynamic(MetaObject object, DynamicParam dynamic) {
-
-        if (ToolUtil.isNotEmpty(object.getValue("skuId"))) {
-            dynamic.setSkuId((Long) object.getValue("skuId"));
-        }
-        if (ToolUtil.isNotEmpty(object.getValue("spuId"))) {
-            dynamic.setSkuId((Long) object.getValue("spuId"));
-        }
-        dynamic.setSourceId((Long) object.getValue("skuId"));
-
-        if (ToolUtil.isNotEmpty(object.getValue("processTaskId"))) {
-            dynamic.setTaskId((Long) object.getValue("processTaskId"));
-        }
-        dynamic.setSourceId((Long) object.getValue("processTaskId"));
-
-        if (ToolUtil.isNotEmpty(object.getValue("taskId"))) {
-            dynamic.setTaskId((Long) object.getValue("taskId"));
-        }
-        if (ToolUtil.isNotEmpty(object.getValue("spuId"))) {
-            dynamic.setSpuId((Long) object.getValue("spuId"));
-        }
-        if (ToolUtil.isNotEmpty(object.getValue("storehouseId"))) {
-            dynamic.setStorehouseId((Long) object.getValue("storehouseId"));
-        }
-        if (ToolUtil.isNotEmpty(object.getValue("storeHouseId"))) {
-            dynamic.setStorehouseId((Long) object.getValue("storeHouseId"));
-        }
-        if (ToolUtil.isNotEmpty(object.getValue("positionsId"))) {
-            dynamic.setStorehousePositionsId((Long) object.getValue("positionsId"));
-        }
-        if (ToolUtil.isNotEmpty(object.getValue("storehousePositionsId"))) {
-            dynamic.setStorehousePositionsId((Long) object.getValue("storehousePositionsId"));
-        }
-        switch (object.getOriginalObject().getClass().getSimpleName()) {
-            case "ActivitiProcessTask":
-                dynamic.setSourceId((Long) object.getValue("ProcessTask"));
-                dynamic.setSource(object.getOriginalObject().getClass().getSimpleName());
-                break;
-            case "ActivitiProcessLog":
-                dynamic.setSourceId((Long) object.getValue("ActivitiProcessLog"));
-                dynamic.setSource(object.getOriginalObject().getClass().getSimpleName());
-                break;
-            case "InstockOrder":
-                dynamic.setSourceId((Long) object.getValue("InstockOrder"));
-                dynamic.setSource(object.getOriginalObject().getClass().getSimpleName());
-                break;
-            case "ProductionPickLists":
-                dynamic.setSourceId((Long) object.getValue("ProductionPickLists"));
-                break;
-             case "ProductionPickListsCart":
-                dynamic.setSourceId((Long) object.getValue("ProductionPickListsCart"));
-                break;
-            case "Maintenance":
-                dynamic.setSourceId((Long) object.getValue("Maintenance"));
-                break;
-            case "Allocation":
-                dynamic.setSourceId((Long) object.getValue("Allocation"));
-                break;
-        }
-        dynamic.setSource(object.getOriginalObject().getClass().getSimpleName());
-
-    }
 }

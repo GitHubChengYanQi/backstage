@@ -13,7 +13,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.commons.collections.list.SynchronizedList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +58,10 @@ public class SerialNumberServiceImpl extends ServiceImpl<SerialNumberMapper, Ser
         nf.setMinimumIntegerDigits(max);
         Long snum = entity.getNum();
         return nf.format(snum);
+    }
+    @Override
+    public String genNumber(){
+       return this.add(new SerialNumberParam());
     }
 
     @Override

@@ -214,7 +214,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
                     }
                 } else {
-                    throw new ServiceException(500, "当前无此规则");
+                    param.setCoding(codingRulesService.genSerial());
                 }
             }
             /**
@@ -810,7 +810,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
                     }
                 } else {
-                    throw new ServiceException(500, "当前无此规则");
+                    param.setCoding(codingRulesService.genSerial());
                 }
             }
             /**

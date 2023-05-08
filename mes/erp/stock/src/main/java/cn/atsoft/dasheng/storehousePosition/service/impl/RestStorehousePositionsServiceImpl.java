@@ -9,6 +9,7 @@ package cn.atsoft.dasheng.storehousePosition.service.impl;
 //import cn.atsoft.dasheng.app.service.BrandService;
 //import cn.atsoft.dasheng.app.service.StockDetailsService;
 //import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
@@ -106,7 +107,7 @@ public class RestStorehousePositionsServiceImpl extends ServiceImpl<RestStorehou
 //            }
 //        }
 
-        Integer count = this.query().eq("name", param.getName()).eq("pid", param.getPid()).eq("display", 1).count();
+        Integer count = this.query().eq("name", param.getName()).eq("tenant_id", LoginContextHolder.getContext().getTenantId()).eq("pid", param.getPid()).eq("display", 1).count();
         if (count > 0) {
             throw new ServiceException(500, "名字已重复");
         }

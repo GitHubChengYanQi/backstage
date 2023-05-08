@@ -32,6 +32,7 @@ import cn.atsoft.dasheng.production.service.ProductionPickListsService;
 import cn.atsoft.dasheng.purchase.service.GetOrigin;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.pojo.MarkDownTemplateTypeEnum;
+import cn.atsoft.dasheng.serial.service.SerialNumberService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -122,6 +123,8 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
     @Autowired
     private AnnouncementsService announcementsService;
 
+    @Autowired
+    private SerialNumberService serialNumberService;
 
     @Override
     @Transactional
@@ -132,7 +135,7 @@ public class AllocationServiceImpl extends ServiceImpl<AllocationMapper, Allocat
                 String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
                 param.setCoding(coding);
             } else {
-                throw new ServiceException(500, "请配置养护单据自动生成编码规则");
+                param.setCoding(codingRulesService.genSerial());
             }
         }
 

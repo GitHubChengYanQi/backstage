@@ -16,6 +16,7 @@ public interface IErpBase {
     void updateDetailList(List<RestOrderDetail> dataList);
     RestOrder getOrderById(Long orderId);
 
+    RestOrder add(Map<String, Object> param);
 
     void checkStatus(Long orderId);
 }

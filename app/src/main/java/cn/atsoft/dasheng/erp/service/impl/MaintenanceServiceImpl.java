@@ -36,6 +36,7 @@ import cn.atsoft.dasheng.message.entity.RemarksEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.service.ProductionPickListsCartService;
+import cn.atsoft.dasheng.serial.service.SerialNumberService;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
@@ -131,6 +132,9 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
     @Autowired
     private ShopCartService shopCartService;
 
+    @Autowired
+    private SerialNumberService serialNumberService;
+
     @Override
 
     public Maintenance add(MaintenanceParam param) {
@@ -141,7 +145,7 @@ public class MaintenanceServiceImpl extends ServiceImpl<MaintenanceMapper, Maint
                 String coding = codingRulesService.backCoding(codingRules.getCodingRulesId());
                 param.setCoding(coding);
             } else {
-                throw new ServiceException(500, "请配置养护单据自动生成编码规则");
+                param.setCoding(codingRulesService.genSerial());
             }
         }
 
