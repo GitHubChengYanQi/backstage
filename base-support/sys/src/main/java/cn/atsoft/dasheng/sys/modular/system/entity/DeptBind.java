@@ -28,6 +28,8 @@ public class DeptBind implements Serializable {
 
     @TableField("user_id")
     private Long userId;
+    @TableField("main_dept")
+    private Integer mainDept;
 
     @TableField("main_dept")
     private Integer mainDept;

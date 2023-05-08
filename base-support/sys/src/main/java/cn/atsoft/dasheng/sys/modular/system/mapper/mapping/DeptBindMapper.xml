@@ -13,7 +13,9 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
+
         dept_bind_id AS "deptBindId", deptId AS "deptId", user_id AS "userId", tenant_id AS "tenantId",main_dept AS "mainDept"
+
     </sql>
 
 
