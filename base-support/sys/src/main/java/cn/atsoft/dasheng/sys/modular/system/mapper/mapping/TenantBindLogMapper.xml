@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.sys.modular.system.mapper.TenantBindLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.sys.modular.system.entity.TenantBindLog">
+        <id column="tenant_bind_log_id" property="tenantBindLogId" />
+        <result column="user_id" property="userId" />
+        <result column="audit_user" property="auditUser" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="type" property="type" />
+        <result column="status" property="status" />
+        <result column="delete_user" property="deleteUser" />
+        <result column="delete_time" property="deleteTime" />
+        <result column="display" property="display" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="inviter_user" property="inviterUser" />
+        <result column="deptId" property="deptId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        tenant_bind_log_id AS "tenantBindLogId",status AS "status", user_id AS "userId", audit_user AS "auditUser", tenant_id AS "tenantId", type AS "type", delete_user AS "deleteUser", delete_time AS "deleteTime", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", inviter_user AS "inviterUser", deptId AS "deptId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.sys.modular.system.model.result.TenantBindLogResult" parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.TenantBindLogParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_tenant_bind_log where 1 = 1 and display = 1
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.TenantBindLogParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_tenant_bind_log where 1 = 1 and display = 1
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.sys.modular.system.model.result.TenantBindLogResult" parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.TenantBindLogParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_tenant_bind_log where 1 = 1 and display = 1
+        <if test="paramCondition.userId != null">
+            and user_id = #{paramCondition.userId}
+        </if>
+        <if test="paramCondition.tenantId != null">
+            and tenant_id = #{paramCondition.tenantId}
+        </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type = #{paramCondition.type}
+        </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.TenantBindLogParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_tenant_bind_log where 1 = 1 and display = 1
+    </select>
+
+</mapper>

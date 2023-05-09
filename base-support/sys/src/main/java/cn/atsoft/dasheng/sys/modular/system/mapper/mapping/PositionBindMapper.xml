@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.sys.modular.system.mapper.PositionBindMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.sys.modular.system.entity.PositionBind">
+        <id column="position_bind_id" property="positionBindId" />
+        <result column="position_id" property="positionId" />
+        <result column="user_id" property="userId" />
+        <result column="tenant_id" property="tenantId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        position_bind_id AS "positionBindId", position_id AS "positionId", user_id AS "userId", tenant_id AS "tenantId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.sys.modular.system.model.result.PositionBindResult" parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.PositionBindParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_position_bind where 1 = 1 and display = 1
+            <if test="paramCondition.positionBindId != null">
+                and position_bind_id like CONCAT('%',#{paramCondition.positionBindId},'%')
+            </if>
+            <if test="paramCondition.positionId != null">
+                and position_id like CONCAT('%',#{paramCondition.positionId},'%')
+            </if>
+            <if test="paramCondition.userId != null">
+                and user_id like CONCAT('%',#{paramCondition.userId},'%')
+            </if>
+            <if test="paramCondition.tenantId != null">
+                and tenant_id like CONCAT('%',#{paramCondition.tenantId},'%')
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.PositionBindParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_position_bind where 1 = 1 and display = 1
+                <if test="paramCondition.positionBindId != null">
+                        and position_bind_id like CONCAT('%',#{paramCondition.positionBindId},'%')
+                </if>
+                <if test="paramCondition.positionId != null">
+                        and position_id like CONCAT('%',#{paramCondition.positionId},'%')
+                </if>
+                <if test="paramCondition.userId != null">
+                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
+                </if>
+                <if test="paramCondition.tenantId != null">
+                        and tenant_id like CONCAT('%',#{paramCondition.tenantId},'%')
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.sys.modular.system.model.result.PositionBindResult" parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.PositionBindParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_position_bind where 1 = 1 and display = 1
+                <if test="paramCondition.positionBindId != null">
+                        and position_bind_id like CONCAT('%',#{paramCondition.positionBindId},'%')
+                </if>
+                <if test="paramCondition.positionId != null">
+                        and position_id like CONCAT('%',#{paramCondition.positionId},'%')
+                </if>
+                <if test="paramCondition.userId != null">
+                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
+                </if>
+                <if test="paramCondition.tenantId != null">
+                        and tenant_id like CONCAT('%',#{paramCondition.tenantId},'%')
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.sys.modular.system.model.params.PositionBindParam">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_position_bind where 1 = 1 and display = 1
+                <if test="paramCondition.positionBindId != null">
+                        and position_bind_id like CONCAT('%',#{paramCondition.positionBindId},'%')
+                </if>
+                <if test="paramCondition.positionId != null">
+                        and position_id like CONCAT('%',#{paramCondition.positionId},'%')
+                </if>
+                <if test="paramCondition.userId != null">
+                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
+                </if>
+                <if test="paramCondition.tenantId != null">
+                        and tenant_id like CONCAT('%',#{paramCondition.tenantId},'%')
+                </if>
+    </select>
+
+</mapper>

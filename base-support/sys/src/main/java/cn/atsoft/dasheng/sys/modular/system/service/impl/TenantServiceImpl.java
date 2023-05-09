@@ -11,15 +11,13 @@ import cn.atsoft.dasheng.media.service.RestMediaService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.Tenant;
 import cn.atsoft.dasheng.sys.modular.system.entity.TenantBind;
+import cn.atsoft.dasheng.sys.modular.system.entity.TenantBindLog;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.mapper.TenantMapper;
 import cn.atsoft.dasheng.sys.modular.system.model.params.TenantParam;
 import cn.atsoft.dasheng.sys.modular.system.model.result.TenantResult;
-import cn.atsoft.dasheng.sys.modular.system.service.RestInitTenantService;
-import cn.atsoft.dasheng.sys.modular.system.service.TenantBindService;
-import  cn.atsoft.dasheng.sys.modular.system.service.TenantService;
+import cn.atsoft.dasheng.sys.modular.system.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -59,6 +57,8 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
     private RestMediaService mediaService;
     @Autowired
     private RestInitTenantService initTenantService;
+    @Autowired
+    private TenantBindLogService tenantBindLogService;
     @Override
     public String  add(TenantParam param){
 //        isAdmin();
@@ -74,13 +74,18 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
         }});
         String token = changeTenant(param);
         initTenantService.init(entity.getTenantId());
+        tenantBindLogService.save(new TenantBindLog(){{
+            setTenantId(entity.getTenantId());
+            setUserId(LoginContextHolder.getContext().getUserId());
+            setStatus(99);
+        }});
         return token;
 
     }
 
     @Override
     public String changeTenant(TenantParam param){
-        TenantBind bind = tenantBindService.lambdaQuery().eq(TenantBind::getTenantId, param.getTenantId()).eq(TenantBind::getUserId, LoginContextHolder.getContext().getUserId()).eq(TenantBind::getStatus,99).one();
+        TenantBind bind = tenantBindService.lambdaQuery().eq(TenantBind::getTenantId, param.getTenantId()).eq(TenantBind::getUserId, LoginContextHolder.getContext().getUserId()).eq(TenantBind::getDisplay,1).eq(TenantBind::getStatus,99).one();
         if (ToolUtil.isEmpty(bind)){
             throw new ServiceException(500,"您未在此租户下");
         }

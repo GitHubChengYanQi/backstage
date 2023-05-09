@@ -9,55 +9,44 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 各租户内 部门绑定表
+ * 租户用户位置绑定表
  * </p>
  *
  * @author Captain_Jazz
- * @since 2023-05-04
+ * @since 2023-05-09
  */
-@TableName("sys_dept_bind")
-public class DeptBind implements Serializable {
+@TableName("sys_position_bind")
+public class PositionBind implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-      @TableId(value = "dept_bind_id", type = IdType.ID_WORKER)
-    private Long deptBindId;
+      @TableId(value = "position_bind_id", type = IdType.ID_WORKER)
+    private Long positionBindId;
 
-    @TableField("deptId")
-    private Long deptId;
+    @TableField("position_id")
+    private Long positionId;
 
     @TableField("user_id")
     private Long userId;
-    @TableField("main_dept")
-    private Integer mainDept;
 
       @TableField(value = "tenant_id", fill = FieldFill.INSERT)
     private Long tenantId;
 
 
-
-    public Integer getMainDept() {
-        return mainDept;
+    public Long getPositionBindId() {
+        return positionBindId;
     }
 
-    public void setMainDept(Integer mainDept) {
-        this.mainDept = mainDept;
+    public void setPositionBindId(Long positionBindId) {
+        this.positionBindId = positionBindId;
     }
 
-    public Long getDeptBindId() {
-        return deptBindId;
+    public Long getPositionId() {
+        return positionId;
     }
 
-    public void setDeptBindId(Long deptBindId) {
-        this.deptBindId = deptBindId;
-    }
-
-    public Long getDeptId() {
-        return deptId;
-    }
-
-    public void setDeptId(Long deptId) {
-        this.deptId = deptId;
+    public void setPositionId(Long positionId) {
+        this.positionId = positionId;
     }
 
     public Long getUserId() {
@@ -78,9 +67,9 @@ public class DeptBind implements Serializable {
 
     @Override
     public String toString() {
-        return "DeptBind{" +
-        "deptBindId=" + deptBindId +
-        ", deptId=" + deptId +
+        return "PositionBind{" +
+        "positionBindId=" + positionBindId +
+        ", positionId=" + positionId +
         ", userId=" + userId +
         ", tenantId=" + tenantId +
         "}";
