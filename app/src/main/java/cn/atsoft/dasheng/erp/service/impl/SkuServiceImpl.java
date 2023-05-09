@@ -882,7 +882,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
 
         } else {
-            throw new ServiceException(500, "当前无此规则");
+            SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
+
         }
     }
 

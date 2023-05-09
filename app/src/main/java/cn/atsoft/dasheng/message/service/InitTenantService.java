@@ -113,7 +113,6 @@ public class InitTenantService {
         customer.setTenantId(tenantId);
         customer.setCreateUser(tenant.getCreateUser());
         customerService.save(customer);
-        brandBindService.save(skuBrandBind);
         Customer customer1 = new Customer();
         customer1.setCustomerName("默认客户");
         customer1.setTenantId(tenantId);
@@ -306,7 +305,7 @@ public class InitTenantService {
         Storehouse storehouse = new Storehouse();
         storehouse.setName("默认仓库");
         storehouse.setTenantId(tenantId);
-        storehouse.setCoding("default");
+        storehouse.setCoding("mrck");
         storehouseService.save(storehouse);
         //创建库位
         StorehousePositions storehousePositions = new StorehousePositions();

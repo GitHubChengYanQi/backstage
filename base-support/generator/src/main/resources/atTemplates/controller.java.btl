@@ -3,6 +3,7 @@ package ${controllerPackage};
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import ${package.Entity}.${entity};
 import ${package.EntitySpecParams}.${entity}Param;
 import ${package.EntitySpecResult}.${entity}Result;
@@ -88,7 +89,10 @@ public class ${entity}Controller extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody ${entity}Param ${lowerEntity}Param) {
-
+        ${entity} detail = this.${lowerEntity}Service.getById(${lowerEntity}Param.get${bigKeyPropertyName}());
+        if (!LoginContextHolder.getContext().getTenantId().equals(detail.getTenantId())){
+            throw new ServiceException(500,"您无权操作该数据");
+        }
         <%
         if(titleField!=""){
         if(parentField!=""){
@@ -134,6 +138,9 @@ public class ${entity}Controller extends BaseController {
     @ApiOperation("详情")
     public ResponseData<${entity}Result> detail(@RequestBody ${entity}Param ${lowerEntity}Param) {
         ${entity} detail = this.${lowerEntity}Service.getById(${lowerEntity}Param.get${bigKeyPropertyName}());
+        if (!LoginContextHolder.getContext().getTenantId().equals(detail.getTenantId())){
+            throw new ServiceException(500,"您无权查看该数据");
+        }
         ${entity}Result result = new ${entity}Result();
         if (ToolUtil.isNotEmpty(detail)) {
             ToolUtil.copyProperties(detail, result);
