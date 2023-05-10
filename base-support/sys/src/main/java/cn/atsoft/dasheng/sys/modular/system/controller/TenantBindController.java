@@ -84,7 +84,7 @@ public class TenantBindController extends BaseController {
     @RequestMapping(value = "/getStatus", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData getStatus(@RequestBody TenantBindParam tenantBindParam) {
-        TenantBind one = this.tenantBindService.lambdaQuery().eq(TenantBind::getTenantId, tenantBindParam.getTenantId()).eq(TenantBind::getUserId, LoginContextHolder.getContext().getUserId()).orderByDesc(TenantBind::getCreateTime).last(" limit 1" ).one();
+        TenantBind one = this.tenantBindService.lambdaQuery().eq(TenantBind::getTenantId, tenantBindParam.getTenantId()).eq(TenantBind::getUserId, LoginContextHolder.getContext().getUserId()).eq(TenantBind::getDisplay,1).orderByDesc(TenantBind::getCreateTime).last(" limit 1" ).one();
         return ResponseData.success(ToolUtil.isNotEmpty(one) ? one.getStatus() : null);
     }
 

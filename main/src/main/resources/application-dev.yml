@@ -37,10 +37,15 @@
 # Mysql数据库
 spring:
   datasource:
+    #    driver-class-name: com.mysql.cj.jdbc.Driver
+    #    url: jdbc:mysql://192.168.2.239/daoxin?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+    #    username: daoxin
+    #    password: 123qweasd
+    #    filters: wall,mergeStat
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.0.220/daoxin?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
-    username: daoxin
-    password: 123QWEasd
+    url: jdbc:mysql://192.168.2.239/hh-local?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+    username: hh-local
+    password: CprNCmi2DDCzztWW
     filters: wall,mergeStat
 
     # 连接池大小根据实际情况调整
@@ -48,7 +53,7 @@ spring:
     max-pool-prepared-statement-per-connection-size: 20
 
   redis:
-    host: 192.168.0.244
+    host: 192.168.2.244
     password: 123qweasd
 
   # 邮件发送配置（改为自己的账号和密码）
@@ -59,14 +64,14 @@ spring:
     password: xxxpassword
 
   rabbitmq:
-    addresses: 192.168.0.245
+    addresses: 192.168.2.245
     username: guest
     password: guest
     port: 5672
     listener:
       simple:
         acknowledge-mode: manual
-    prefix: Captain_Jazz
+    prefix: jazz123333
 
 # 邮件发送（改为自己的账号）
 mail:
@@ -108,8 +113,14 @@ freed-template:
 wx:
   # 小程序相关配置
   miniapp:
-    appid: wxec126d7b5337447a
-    secret: 63d936d430de5bc1783408a50ed05376
+    appid: wx4e0e2e89ad2e48ef
+    secret: fe7c079bea0fe0836ad23a7a865db9d4
+    aesKey: 3333
+    token: 11111
+    msg-data-format: JSON
+  miniapp2:
+    appid: wx8f5e5bc74c513993
+    secret: 24ceffa9f196bb99c12e04155c82c2c6
     aesKey: 3333
     token: 11111
     msg-data-format: JSON
@@ -121,7 +132,13 @@ wx:
     aesKey: 3333
 
 
-
+#  # 小程序相关配置
+#miniapp:
+#  appid: wx4e0e2e89ad2e48ef
+#  secret: fe7c079bea0fe0836ad23a7a865db9d4
+#  aesKey: 3333
+#  token: 11111
+#  msg-data-format: JSON
 # 支付相关配置
 pay:
   notifyUrl: https://dasheng-soft.picp.vip
@@ -136,25 +153,32 @@ pay:
 pushPayInfo: false
 
 aliyun:
-  accessId: LTAIypr5IqQ1tvpM
-  accessKey: TKG3sSvijsG4sq0q1b7Y9aQVYtMk7b
+  accessId: LTAI5tRtx3bPozdsUhbF6PS1
+  accessKey: h7yO2s07LOseh8OONvDpJgPwHcBtIn
 
   Sms:
     SignName: 工业服务网
     templateCode: SMS_137360127
   oss:
     endpoint: oss-cn-beijing.aliyuncs.com
-    bucket: gpkx
+    bucket: hunts-cnc
+    callbackUrl: https://dasheng-soft.picp.vip/v1
+    path: upload/
+  oss2:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    bucket: hunts-file
     callbackUrl: https://dasheng-soft.picp.vip/v1
     path: upload/
 wxcp:
-  corpId: wwac1139dc197ffe88
-  secret: 03QfUze77kkLavSSzG_AOwRwIM8AsPjGvxm3NLJe2l0
-  agentId: 1000008
-  token:
-  aesKey:
+  corpId: ww4d053c3a7cebff09
+  secret: T_z92-En8k2u-zeJeuK1GYoIPqSA_OnewujNFi8EY_U
+  agentId: 1000002
+  token: OqrSyeq2MbOfvzNpaf2nq
+  aesKey: POS55bE1u1TB9ziYlVPRcbrUCgp54kw5su2XatSPGSh
 
 #手机端跳转路径
 mobile:
-  url: http://192.168.0.111:8001/cp
-  apiUrl: http://192.168.0.100:80
+  url: http://192.168.2.111:3000/
+  apiUrl: http://192.168.2.100:80
+
+templateId: 3WLJEyiwiby2y4STpyuFXsTdTdM9ste9mAbUQBzT

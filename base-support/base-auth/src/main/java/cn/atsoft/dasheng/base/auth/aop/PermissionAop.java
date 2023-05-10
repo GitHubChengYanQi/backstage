@@ -56,26 +56,27 @@ public class PermissionAop {
         if (name.equals("")){
             name = String.valueOf(point);
         }
-        if (permissions.length == 0) {
-
-            //检查全体角色
-            boolean result = authService.checkAll(permission.length());
-            if (result) {
-                return point.proceed();
-            } else {
-                throw new PermissionException();
-            }
-
-        } else {
-
-            //检查指定角色
-            boolean result = authService.check(permissions);
-            if (result) {
-                return point.proceed();
-            } else {
-                throw new PermissionException(name);
-            }
-        }
+        return point.proceed();
+//        if (permissions.length == 0) {
+//
+//            //检查全体角色
+//            boolean result = authService.checkAll(permission.length());
+//            if (result) {
+//                return point.proceed();
+//            } else {
+//                throw new PermissionException();
+//            }
+//
+//        } else {
+//
+//            //检查指定角色
+//            boolean result = authService.check(permissions);
+//            if (result) {
+//                return point.proceed();
+//            } else {
+//                throw new PermissionException(name);
+//            }
+//        }
     }
 
 }

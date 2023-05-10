@@ -33,18 +33,18 @@ public class RestInitTenantService {
         deptService.addDept(new Dept(){{
             setSimpleName("生产部");
             setFullName("生产部");
-            setTenantId(getTenantId());
+            setTenantId(tenantId);
             setPid(0L);
         }});
         deptService.addDept(new Dept(){{
             setSimpleName("采购部");
             setFullName("采购部");
-            setTenantId(getTenantId());
+            setTenantId(tenantId);
             setPid(0L);
         }});
         deptService.addDept(new Dept(){{
             setSimpleName("营销部");
-            setTenantId(getTenantId());
+            setTenantId(tenantId);
             setFullName("营销部");
             setPid(0L);
         }});

@@ -341,7 +341,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userMapper.getByAccount(jwtPayLoad.getAccount());
 
         // TODO key的作用
-        JwtPayLoad payLoad = new JwtPayLoad(jwtPayLoad.getUserId(), jwtPayLoad.getAccount(),user.getTenantId().toString() ,"xxxx");
+        JwtPayLoad payLoad = new JwtPayLoad(jwtPayLoad.getUserId(), jwtPayLoad.getAccount(),ToolUtil.isNotEmpty(user.getTenantId())?user.getTenantId().toString():"" ,"xxxx");
 
         //创建token
         token = JwtTokenUtil.generateToken(payLoad);

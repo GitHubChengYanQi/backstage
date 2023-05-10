@@ -29,7 +29,7 @@
         o
         .
         coding
-        AS "coding" ,b.invoice_bill_id AS "invoiceBillId", b.invoice_bill_no AS "invoiceBillNo", b.money AS "money", b.enclosure_id AS "enclosureId", b.name AS "name", b.Invoice_date AS "invoiceDate", b.create_time AS "createTime", b.create_user AS "createUser", b.update_time AS "updateTime", b.update_user AS "updateUser", b.display AS "display", b. deptId AS "deptId",tenant_id AS "tenantId", b.order_id AS "orderId"
+        AS "coding" ,b.invoice_bill_id AS "invoiceBillId", b.invoice_bill_no AS "invoiceBillNo", b.money AS "money", b.enclosure_id AS "enclosureId", b.name AS "name", b.Invoice_date AS "invoiceDate", b.create_time AS "createTime", b.create_user AS "createUser", b.update_time AS "updateTime", b.update_user AS "updateUser", b.display AS "display", b. deptId AS "deptId",b.tenant_id AS "tenantId", b.order_id AS "orderId"
     </sql>
 
 

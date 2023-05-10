@@ -170,7 +170,7 @@ public class  PluginsConfig {
                     if (!(metaObject.getOriginalObject() instanceof User) && !(metaObject.getOriginalObject() instanceof RestUser)) {
                         IConstantFactory iConstantFactory = new ConstantFactory();
                         Long deptId1 = iConstantFactory.getDeptId((Long) userId);
-                        if (userId != null) {
+                        if (userId != null && getFieldValByName(getDeptIdFieldName(), metaObject) == null) {
                             setFieldValByName(getDeptIdFieldName(), deptId1, metaObject);
                         }
                     }

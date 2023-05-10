@@ -6,10 +6,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.sys.modular.system.entity.DeptBind;
-import cn.atsoft.dasheng.sys.modular.system.entity.Tenant;
-import cn.atsoft.dasheng.sys.modular.system.entity.TenantBind;
-import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.entity.*;
 import cn.atsoft.dasheng.sys.modular.system.mapper.TenantBindMapper;
 import cn.atsoft.dasheng.sys.modular.system.model.params.TenantBindParam;
 import cn.atsoft.dasheng.sys.modular.system.model.result.DeptBindResult;
@@ -17,6 +14,7 @@ import cn.atsoft.dasheng.sys.modular.system.model.result.TenantBindResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.TenantResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.DeptBindService;
+import cn.atsoft.dasheng.sys.modular.system.service.TenantBindLogService;
 import  cn.atsoft.dasheng.sys.modular.system.service.TenantBindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -29,10 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -53,11 +48,13 @@ public class TenantBindServiceImpl extends ServiceImpl<TenantBindMapper, TenantB
     private TenantServiceImpl tenantService;
     @Autowired
     private DeptBindService deptBindService;
+    @Autowired
+    private TenantBindLogService tenantBindLogService;
 
     @Override
     public void add(TenantBindParam param){
         this.checkParam(param);
-        TenantBind entity = this.lambdaQuery().eq(TenantBind::getTenantId, param.getTenantId()).eq(TenantBind::getUserId, param.getUserId()).one();
+        TenantBind entity = this.lambdaQuery().eq(TenantBind::getTenantId, param.getTenantId()).eq(TenantBind::getUserId, param.getUserId()).ne(TenantBind::getStatus,50).eq(TenantBind::getDisplay,1).one();
         if(entity!=null){
             switch (entity.getStatus()){
                 case 99:
@@ -66,9 +63,7 @@ public class TenantBindServiceImpl extends ServiceImpl<TenantBindMapper, TenantB
                     throw new ServiceException(500,"已提交申请，请等待管理员审核");
             }
         }
-        entity = new TenantBind();
-        entity.setTenantId(param.getTenantId());
-        entity.setUserId(param.getUserId());
+        entity = getEntity(param);
         this.save(entity);
 
         //绑定部门
@@ -124,18 +119,25 @@ public class TenantBindServiceImpl extends ServiceImpl<TenantBindMapper, TenantB
             Tenant tenant = tenantService.getById(tenantBind.getTenantId());
             if (LoginContextHolder.getContext().getUserId().equals(tenant.getCreateUser())){
                 tenantBind.setDisplay(0);
+                tenantBind.setStatus(-1);
                 this.updateById(tenantBind);
                 userService.update(new UpdateWrapper<User>(){{
                     eq("tenant_id",tenantBind.getTenantId());
                     eq("user_id",tenantBind.getUserId());
                     set("tenant_id",null);
                 }});
+                TenantBindLog tenantBindLog = tenantBindLogService.lambdaQuery().eq(TenantBindLog::getTenantId, tenantBind.getTenantId()).eq(TenantBindLog::getUserId, tenantBind.getUserId()).orderByDesc(TenantBindLog::getCreateTime).last("limit 1").one();
+                tenantBindLog.setStatus(-1);
+                tenantBindLog.setDeleteTime(new Date());
+                tenantBindLog.setDeleteUser(LoginContextHolder.getContext().getUserId());
+                tenantBindLogService.updateById(tenantBindLog);
             }else {
                 throw new ServiceException(500,"您没有权限删除该数据");
             }
         }else {
             throw new ServiceException(500,"请切换到此租户内再进行操作");
         }
+
     }
 
     @Override
