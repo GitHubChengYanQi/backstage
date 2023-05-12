@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.miniapp.mapper.WxMaMessageMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.miniapp.entity.WxMaMessage">
+        <result column="ma_message_id" property="maMessageId" />
+        <result column="event_type" property="eventType" />
+        <result column="event" property="event" />
+        <result column="to_user_name" property="toUserName" />
+        <result column="from_user_name" property="fromUserName" />
+        <result column="msg_id" property="msgId" />
+        <result column="template_id" property="templateId" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="node" property="node" />
+        <result column="create_time" property="createTime" />
+        <result column="subscribe_status_string" property="subscribeStatusString" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ma_message_id AS "maMessageId", event_type AS "eventType", event AS "event", to_user_name AS "toUserName", from_user_name AS "fromUserName", msg_id AS "msgId", template_id AS "templateId", tenant_id AS "tenantId", node AS "node", create_time AS "createTime", subscribe_status_string AS "subscribeStatusString"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.miniapp.model.result.WxMaMessageResult" parameterType="cn.atsoft.dasheng.miniapp.model.params.WxMaMessageParam">
+        select
+        <include refid="Base_Column_List"/>
+        from wx_ma_message where 1 = 1 and display = 1
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.miniapp.model.params.WxMaMessageParam">
+        select
+        <include refid="Base_Column_List"/>
+        from wx_ma_message where 1 = 1 and display = 1
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.miniapp.model.result.WxMaMessageResult" parameterType="cn.atsoft.dasheng.miniapp.model.params.WxMaMessageParam">
+        select
+        <include refid="Base_Column_List"/>
+        from wx_ma_message where 1 = 1 and display = 1
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.miniapp.model.params.WxMaMessageParam">
+        select
+        <include refid="Base_Column_List"/>
+        from wx_ma_message where 1 = 1 and display = 1
+    </select>
+
+</mapper>

@@ -235,7 +235,7 @@
             and stock_num &lt; #{params.maximumInventory}
         </if>
         <if test="params.categoryId != null">
-            and category_id like CONCAT('%',#{params.categoryId},'%')
+            and category_id  = #{params.categoryId}
         </if>
         <if test="params.bomNum != null">
             and bom_num &gt; 0

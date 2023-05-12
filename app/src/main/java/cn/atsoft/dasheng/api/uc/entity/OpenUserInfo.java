@@ -115,6 +115,12 @@ public class OpenUserInfo implements Serializable {
     private String mobile;
 
     /**
+     * 用户在开放平台的唯一标识符
+     */
+    @TableField("unionid")
+    private String unionid;
+
+    /**
      * 创建时间
      */
       @TableField(value = "create_time", fill = FieldFill.INSERT)
@@ -269,25 +275,36 @@ public class OpenUserInfo implements Serializable {
         this.appid = appid;
     }
 
+    public String getUnionid() {
+        return unionid;
+    }
+
+    public void setUnionid(String unionid) {
+        this.unionid = unionid;
+    }
+
     @Override
     public String toString() {
         return "OpenUserInfo{" +
-        "primaryKey=" + primaryKey +
-        ", memberId=" + memberId +
-        ", uuid=" + uuid +
-        ", source=" + source +
-        ", username=" + username +
-        ", nickname=" + nickname +
-        ", avatar=" + avatar +
-        ", blog=" + blog +
-        ", company=" + company +
-        ", location=" + location +
-        ", email=" + email +
-        ", remark=" + remark +
-        ", gender=" + gender +
-        ", rawUserInfo=" + rawUserInfo +
-        ", mobile=" + mobile +
-        ", createTime=" + createTime +
-        "}";
+                "primaryKey='" + primaryKey + '\'' +
+                ", memberId=" + memberId +
+                ", uuid='" + uuid + '\'' +
+                ", appid='" + appid + '\'' +
+                ", source='" + source + '\'' +
+                ", username='" + username + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", avatar='" + avatar + '\'' +
+                ", blog='" + blog + '\'' +
+                ", company='" + company + '\'' +
+                ", location='" + location + '\'' +
+                ", email='" + email + '\'' +
+                ", remark='" + remark + '\'' +
+                ", gender=" + gender +
+                ", rawUserInfo='" + rawUserInfo + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", unionid='" + unionid + '\'' +
+                ", createTime=" + createTime +
+                ", tenantId=" + tenantId +
+                '}';
     }
 }

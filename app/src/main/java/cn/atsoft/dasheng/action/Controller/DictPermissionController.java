@@ -13,7 +13,7 @@ import static cn.atsoft.dasheng.model.response.ResponseData.success;
 
 @RestController
 @RequestMapping("/permission")
-public class PermissionController {
+public class DictPermissionController {
 
 
     @RequestMapping(value = "/selectDict", method = RequestMethod.GET)

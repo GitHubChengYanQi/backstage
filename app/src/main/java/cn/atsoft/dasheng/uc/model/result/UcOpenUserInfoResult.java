@@ -73,6 +73,12 @@ public class UcOpenUserInfoResult implements Serializable {
     private String email;
 
     /**
+     * 用户在开放平台的唯一标识符
+     */
+    @ApiModelProperty("用户在开放平台的唯一标识符")
+    private String unionid;
+
+    /**
      * 用户备注（各平台中的用户个人介绍）
      */
     @ApiModelProperty("用户备注（各平台中的用户个人介绍）")

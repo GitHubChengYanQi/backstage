@@ -169,9 +169,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //            Long spuClassificationId = this.getOrSaveSpuClass(param);
             SpuClassification spuClassification = spuClassificationService.getById(param.getSpuClass());
             Integer parentSpuClassifications = spuClassificationService.query().eq("pid", spuClassification.getSpuClassificationId()).eq("display", 1).count();
-            if (parentSpuClassifications > 0) {
-                throw new ServiceException(500, "物料必须添加在最底级分类中");
-            }
+//            if (parentSpuClassifications > 0) {
+//                throw new ServiceException(500, "物料必须添加在最底级分类中");
+//            }
             Long spuClassificationId = spuClassification.getSpuClassificationId();
             /**
              * sku名称（skuName）加型号(spuName)判断防止重复
@@ -916,7 +916,14 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<AttributeValues> list = ToolUtil.isEmpty(param.getSku()) ? new ArrayList<>() : this.addAttributeAndValue(param.getSku(), categoryId);
 
         SpuClassification spuClassification = spuClassificationService.getById(param.getSpuClass());
-        Long spuClassificationId = spuClassification.getSpuClassificationId();
+        Long spuClassificationId =0L;
+        if  (ToolUtil.isEmpty(param.getSpuClass())){
+            throw new ServiceException(500, "产品分类不能为空");
+        }
+
+        if (!param.getSpuClass().equals(0L)){
+            spuClassificationId = spuClassification.getSpuClassificationId();
+        }
         Spu orSaveSpu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
 
         Long spuId = oldEntity.getSpuId();
@@ -933,7 +940,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Dict dict = dictService.query().eq("code", "editSku").one();
         boolean editSkuFlag = ToolUtil.isNotEmpty(dict) && dict.getStatus().equals("ENABLE");
 //        String md5 = SecureUtil.md5(newEntity.getSpuId() + newEntity.getSkuValue());
-        String md5 = SecureUtil.md5(newEntity.getSkuValue() + newEntity.getSpuId().toString() + newEntity.getSkuName() + spuClassification.getSpuClassificationId());
+        String md5 = SecureUtil.md5(newEntity.getSkuValue() + newEntity.getSpuId().toString() + newEntity.getSkuName() + spuClassificationId);
         if ((
 //                !oldEntity.getSkuValueMd5().equals(md5)
                 (ToolUtil.isNotEmpty(oldEntity.getSkuName()) && ToolUtil.isNotEmpty(param.getSkuName()) &&
@@ -2210,7 +2217,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Spu spu = new Spu();
 
         if (ToolUtil.isNotEmpty(param.getSpu().getSpuId())) {
-            spu = spuService.lambdaQuery().eq(Spu::getSpuId, param.getSpu().getSpuId()).and(i -> i.eq(Spu::getSpuClassificationId, spuClassificationId)).and(i -> i.eq(Spu::getDisplay, 1)).one();
+            spu = spuService.lambdaQuery().eq(Spu::getSpuId, param.getSpu().getSpuId()).and(i -> i.eq(Spu::getDisplay, 1)).one();
         } else if (ToolUtil.isNotEmpty(param.getSpu().getName())) {
             spu = spuService.lambdaQuery().eq(Spu::getName, param.getSpu().getName()).and(i -> i.eq(Spu::getSpuClassificationId, spuClassificationId)).and(i -> i.eq(Spu::getDisplay, 1)).one();
         }
