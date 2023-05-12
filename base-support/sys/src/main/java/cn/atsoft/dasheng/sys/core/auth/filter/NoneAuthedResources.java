@@ -84,6 +84,7 @@ public class NoneAuthedResources {
 
             "/tenant/detail",
             "/tenantBindLog/detail",
+            "/tenantInviteLog/detail",
 
             "/swagger-ui.html",
             "/webjars/**",

@@ -6,10 +6,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.sys.modular.system.entity.Dept;
-import cn.atsoft.dasheng.sys.modular.system.entity.DeptBind;
-import cn.atsoft.dasheng.sys.modular.system.entity.TenantBind;
-import cn.atsoft.dasheng.sys.modular.system.entity.TenantBindLog;
+import cn.atsoft.dasheng.sys.modular.system.entity.*;
 import cn.atsoft.dasheng.sys.modular.system.mapper.TenantBindLogMapper;
 import cn.atsoft.dasheng.sys.modular.system.model.params.TenantBindLogParam;
 import cn.atsoft.dasheng.sys.modular.system.model.params.TenantBindParam;
@@ -58,6 +55,19 @@ public class TenantBindLogServiceImpl extends ServiceImpl<TenantBindLogMapper, T
     @Override
     public Long  add(TenantBindLogParam param){
         TenantBindLog entity = getEntity(param);
+        entity.setUserId(LoginContextHolder.getContext().getUserId());
+        if (param.getType().equals("申请")){
+            Integer count = tenantBindService.lambdaQuery().eq(TenantBind::getUserId, LoginContextHolder.getContext().getUserId()).eq(TenantBind::getTenantId, param.getTenantId()).eq(TenantBind::getStatus, 99).count();
+            if (count>0){
+                throw new ServiceException(500,"您已经在企业中了，不能重复申请");
+            }
+            Tenant tenant = tenantService.getById(param.getTenantId());
+            if (tenant.getCreateUser().equals(LoginContextHolder.getContext().getUserId())) {
+                throw new ServiceException(500,"您已经是企业管理员了，不能重复申请");
+            }
+        }
+
+
         this.save(entity);
         return entity.getTenantBindLogId();
     }
