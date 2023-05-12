@@ -95,7 +95,7 @@ public class TenantBindLogController extends BaseController {
     @RequestMapping(value = "/addLog", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addLog(@RequestBody TenantBindLogParam tenantBindLogParam) {
-        Long logId = this.tenantBindLogService.addLog(tenantBindLogParam.getUserId(), tenantBindLogParam.getTenantId(), ToolUtil.isEmpty(tenantBindLogParam.getDeptId()) ? null : tenantBindLogParam.getDeptId(), tenantBindLogParam.getType());
+        Long logId = this.tenantBindLogService.addLog(tenantBindLogParam.getUserId(), tenantBindLogParam.getTenantId(), ToolUtil.isEmpty(tenantBindLogParam.getInviteDeptId()) ? null : tenantBindLogParam.getInviteDeptId(), tenantBindLogParam.getType());
         return ResponseData.success(logId);
     }
 

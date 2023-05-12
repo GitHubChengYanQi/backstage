@@ -100,7 +100,7 @@ public class TenantBindLogResult implements Serializable {
      * 部门id
      */
     @ApiModelProperty("部门id")
-    private Long deptId;
+    private Long inviteDeptId;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

@@ -18,12 +18,12 @@
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
         <result column="inviter_user" property="inviterUser" />
-        <result column="deptId" property="deptId" />
+        <result column="invite_deptId" property="inviteDeptId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        tenant_bind_log_id AS "tenantBindLogId",status AS "status", user_id AS "userId", audit_user AS "auditUser", tenant_id AS "tenantId", type AS "type", delete_user AS "deleteUser", delete_time AS "deleteTime", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", inviter_user AS "inviterUser", deptId AS "deptId"
+        tenant_bind_log_id AS "tenantBindLogId",status AS "status", user_id AS "userId", audit_user AS "auditUser", tenant_id AS "tenantId", type AS "type", delete_user AS "deleteUser", delete_time AS "deleteTime", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", inviter_user AS "inviterUser", invite_deptId AS "inviteDeptId"
     </sql>
 
 

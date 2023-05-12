@@ -34,6 +34,9 @@ public class TenantInviteLogServiceImpl extends ServiceImpl<TenantInviteLogMappe
     public Long add(TenantInviteLogParam param){
         TenantInviteLog entity = getEntity(param);
         entity.setInviterUser(LoginContextHolder.getContext().getUserId());
+        if(ToolUtil.isEmpty(param.getDeptId())){
+            param.setDeptId(0L);
+        }
         this.save(entity);
         return entity.getTenantInviteLogId();
     }
