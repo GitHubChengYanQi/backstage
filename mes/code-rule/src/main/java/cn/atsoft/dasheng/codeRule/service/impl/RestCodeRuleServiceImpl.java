@@ -52,6 +52,9 @@ public class RestCodeRuleServiceImpl extends ServiceImpl<RestCodeRuleMapper, Res
     private RestSerialNumberService serialNumberService;
 
 
+    public String genSerial() {
+        return serialNumberService.genNumber();
+    }
 
     @Override
     @Transactional
@@ -287,7 +290,7 @@ public class RestCodeRuleServiceImpl extends ServiceImpl<RestCodeRuleMapper, Res
     public String getCodingByModule(String module) {
         RestCodeRule rules = this.query().eq("module", module).eq("state", 1).one();
         if (ToolUtil.isEmpty(rules)) {
-                throw new ServiceException(500,"无编码规则");
+            return this.genSerial();
         }
         return rules.getCodingRules();
 

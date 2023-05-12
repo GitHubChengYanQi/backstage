@@ -20,8 +20,7 @@ import java.io.Serializable;
 public class TenantBindLog implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-      @TableId(value = "tenant_bind_log_id", type = IdType.ID_WORKER)
+    @TableId(value = "tenant_bind_log_id", type = IdType.ID_WORKER)
     private Long tenantBindLogId;
 
     @TableField("user_id")

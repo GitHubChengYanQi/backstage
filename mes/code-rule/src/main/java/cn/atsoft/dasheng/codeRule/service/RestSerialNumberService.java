@@ -26,6 +26,8 @@ public interface RestSerialNumberService extends IService<RestSerialNumber> {
      */
     String add(RestSerialNumberParam param);
 
+    String genNumber();
+
     /**
      * 指定数量新增
      * @param param

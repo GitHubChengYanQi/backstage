@@ -287,7 +287,7 @@ public class SkuController extends BaseController {
                 Unit unit = unitService.getById(spu.getUnitId());
                 sku.setUnit(unit);
             }
-            if (ToolUtil.isNotEmpty(spu.getSpuClassificationId())) {
+            if (ToolUtil.isNotEmpty(spu.getSpuClassificationId()) && !spu.getSpuClassificationId().equals(0L)) {
                 //分类
                 SpuClassification spuClassification1 = spuClassificationService.getById(spu.getSpuClassificationId());
                 sku.setSpuClass(spuClassification1.getSpuClassificationId());

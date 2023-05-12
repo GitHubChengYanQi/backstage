@@ -47,6 +47,9 @@ public class RestSerialNumberServiceImpl extends ServiceImpl<RestSerialNumberMap
             entity.setNum(num.getNum()+1L);
 
         }
+        if (ToolUtil.isEmpty(entity.getSerialLength())){
+            entity.setSerialLength(5L);
+        }
         entity.setDate(new Date());
         this.save(entity);
         NumberFormat nf = NumberFormat.getInstance();
@@ -58,7 +61,10 @@ public class RestSerialNumberServiceImpl extends ServiceImpl<RestSerialNumberMap
         Long snum = entity.getNum();
         return nf.format(snum);
     }
-
+    @Override
+    public String genNumber(){
+        return this.add(new RestSerialNumberParam());
+    }
     @Override
     public List<String> addBatch(RestSerialNumberParam param) {
         RestSerialNumber entity = getEntity(param);
