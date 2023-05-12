@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.goods.category.model.result.RestCategoryResult;
 import cn.atsoft.dasheng.goods.category.service.RestCategoryService;
 import cn.atsoft.dasheng.goods.category.wrapper.RestCategorySelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -190,6 +192,19 @@ public class RestCategoryController extends BaseController {
         //DeptTreeWrapper.clearNull(results);
 
         return ResponseData.success(results);
+    }
+    @RequestMapping(value = "/sort", method = RequestMethod.POST)
+    @ApiOperation("排序接口")
+    public void updateSort(@RequestBody RestCategoryParam restCategoryParam) {
+        List<Long> categoryIds = restCategoryParam.getSortParam().stream().map(RestCategoryParam.Sort::getSpuClassificationId).distinct().collect(Collectors.toList());
+        List<RestCategory> restCategories = this.restCategoryService.listByIds(categoryIds);
+        //将restCategoryParam.getSortParam()的spuClassificationId与restCategories中的spuClassificationId 对比 去掉将restCategoryParam.getSortParam中的 restCategories.getSortParam()中没有的数据
+        restCategoryParam.getSortParam().removeIf(sort -> restCategories.stream().noneMatch(restCategory -> restCategory.getSpuClassificationId().equals(sort.getSpuClassificationId())));
+        //将restCategoryParam.getSortParam()中重复的spuClassificationId去掉
+        restCategoryParam.getSortParam().removeIf(sort -> restCategoryParam.getSortParam().stream().filter(sort1 -> sort1.getSpuClassificationId().equals(sort.getSpuClassificationId())).count() > 1);
+        //将restCategoryParam.getSortParam()中的数据copy到restCategories中
+        List<RestCategory> restCategorys = BeanUtil.copyToList(restCategoryParam.getSortParam(), RestCategory.class);
+        this.restCategoryService.updateBatchById(restCategorys);
     }
 }
 

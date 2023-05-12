@@ -13,6 +13,8 @@ public class SkuListParam {
 
     private Long categoryId;
 
+    private Long classId;
+
     private Integer minimumInventory;
     
     private Integer maximumInventory;

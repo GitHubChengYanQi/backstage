@@ -246,6 +246,9 @@ public class UcMemberAuth {
         AuthUser userInfo = new AuthUser();
         String sessionKey = result.getSessionKey();
 
+        // 用户在开放平台的唯一标识符
+        String unionid = result.getUnionid();
+
         // TODO 多台服务器负载的情况下应 使用 Redis 保存Session spring-session-data-redis
 //        HttpSession session = Objects.requireNonNull(HttpContext.getRequest()).getSession();
 //        session.setAttribute("wxMiniApp-sessionKey", sessionKey); // 解密 小程序提交的 加密用户信息
@@ -254,7 +257,7 @@ public class UcMemberAuth {
         userInfo.setSource("WXMINIAPP");
         UcOpenUserInfo ucOpenUserInfo = new UcOpenUserInfo();
         ToolUtil.copyProperties(userInfo, ucOpenUserInfo);
-
+        ucOpenUserInfo.setUnionid(unionid);
         String token = login(ucOpenUserInfo);
 
         try{

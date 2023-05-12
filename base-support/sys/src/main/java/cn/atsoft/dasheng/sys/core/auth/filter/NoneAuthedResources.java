@@ -44,6 +44,8 @@ public class NoneAuthedResources {
 
             //系统公共信息
             "/getPublicInfo",
+            //获取登录信息
+            "/rest/mgr/getMyInfo",
 
             //消息跳转接口
             "/message/jump",
@@ -86,7 +88,12 @@ public class NoneAuthedResources {
             "/swagger-ui.html",
             "/webjars/**",
             "/swagger-resources/**",
-            "/v2/**"
+            "/wxmp/messageCallBack",
+            "/wxma/messageCallBack/*",
+            "/wxma/messageCallBack/**",
+            "/v2/**",
+            //小程序菜单
+            "/mobelTableView/miniappViewDetail"
 
     };
 

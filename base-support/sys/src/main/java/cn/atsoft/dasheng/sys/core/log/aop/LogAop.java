@@ -108,11 +108,20 @@ public class LogAop {
         if (bussinessName.contains("修改") || bussinessName.contains("编辑")) {
             Object obj1 = LogObjectHolder.me().get();
             Map<String, String> obj2 = HttpContext.getRequestParameters();
-            msg = Contrast.contrastObj(dictClass, key, obj1, obj2);
+            try{
+                msg = Contrast.contrastObj(dictClass, key, obj1, obj2);
+            }catch (Exception e){
+                msg = "数据比对异常";
+            }
+//            msg = Contrast.contrastObj(dictClass, key, obj1, obj2);
         } else {
             Map<String, String> parameters = HttpContext.getRequestParameters();
             AbstractDictMap dictMap = (AbstractDictMap) dictClass.newInstance();
-            msg = Contrast.parseMutiKey(dictMap, key, parameters);
+            try{
+                msg = Contrast.parseMutiKey(dictMap, key, parameters);
+            }catch (Exception e){
+                msg = "数据比对异常";
+            }
         }
 
         LogManager.me().executeLog(LogTaskFactory.bussinessLog(user.getId(), bussinessName, className, methodName, msg));

@@ -30,6 +30,8 @@ public class RestCategoryParam extends AbstractDictMap implements Serializable, 
 
     private Integer isNotproduct;
 
+    private List<Sort> sortParam;
+
     private String childrens;
     /**
      * 编码分类
@@ -115,5 +117,10 @@ public class RestCategoryParam extends AbstractDictMap implements Serializable, 
     @Override
     protected void initBeWrapped() {
 
+    }
+    @Data
+    public static class Sort{
+        public Integer sort;
+        public Long spuClassificationId;
     }
 }

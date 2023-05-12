@@ -37,7 +37,7 @@ public class Spu implements Serializable {
     /**
      * 分类id
      */
-    @TableField("spu_classification_id")
+    @TableField( value =  "spu_classification_id" )
     private Long spuClassificationId;
 
     /**
@@ -432,8 +432,13 @@ public class Spu implements Serializable {
     @Override
     public String toString() {
         return "Spu{" +
-                "spuId=" + spuId +
-                ", name=" + name +
+                "specifications='" + specifications + '\'' +
+                ", type=" + type +
+                ", spuClassificationId=" + spuClassificationId +
+                ", spuId=" + spuId +
+                ", model='" + model + '\'' +
+                ", name='" + name + '\'' +
+                ", coding='" + coding + '\'' +
                 ", shelfLife=" + shelfLife +
                 ", inventory=" + inventory +
                 ", productionTime=" + productionTime +
@@ -448,10 +453,14 @@ public class Spu implements Serializable {
                 ", updateUser=" + updateUser +
                 ", display=" + display +
                 ", deptId=" + deptId +
+                ", tenantId=" + tenantId +
                 ", classId=" + classId +
                 ", unitId=" + unitId +
                 ", categoryId=" + categoryId +
-                ", attribute=" + attribute +
-                "}";
+                ", attribute='" + attribute + '\'' +
+                ", curingCycle=" + curingCycle +
+                ", cycleType=" + cycleType +
+                ", productionType=" + productionType +
+                '}';
     }
 }

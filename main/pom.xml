@@ -107,6 +107,11 @@
             <artifactId>crm</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>cn.atsoft</groupId>
+            <artifactId>wxmp</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
 
         <dependency>

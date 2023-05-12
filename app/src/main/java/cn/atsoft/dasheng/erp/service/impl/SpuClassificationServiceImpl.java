@@ -51,21 +51,21 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     @Override
     @Transactional
     public Long add(SpuClassificationParam param) {
-        Integer count = this.lambdaQuery().in(SpuClassification::getDisplay, 1).eq(SpuClassification::getTenantId, LoginContextHolder.getContext().getTenantId()).in(SpuClassification::getName, param.getName()).and(i -> i.eq(SpuClassification::getType, 1)).count();
-        if (count > 0) {
-            throw new ServiceException(500, "名字已重复");
-        }
-        if (ToolUtil.isNotEmpty(param.getPid())) {
-            Integer num = this.query().eq("pid", param.getPid()).eq("type", 2).eq("display", 1).count();
-            if (num > 0) {
-                throw new ServiceException(500, "当前分类下已有产品，不可创建");
-            }
-            Integer spuCount = spuService.query().eq("spu_classification_id", param.getPid()).eq("display", 1).count();
-            if (spuCount > 0) {
-                throw new ServiceException(500, "父级分类下已存在产品,不可添加");
-            }
+//        Integer count = this.lambdaQuery().in(SpuClassification::getDisplay, 1).eq(SpuClassification::getTenantId, LoginContextHolder.getContext().getTenantId()).in(SpuClassification::getName, param.getName()).and(i -> i.eq(SpuClassification::getType, 1)).count();
+//        if (count > 0) {
+//            throw new ServiceException(500, "名字已重复");
+//        }
+//        if (ToolUtil.isNotEmpty(param.getPid())) {
+//            Integer num = this.query().eq("pid", param.getPid()).eq("type", 2).eq("display", 1).count();
+//            if (num > 0) {
+//                throw new ServiceException(500, "当前分类下已有产品，不可创建");
+//            }
+//            Integer spuCount = spuService.query().eq("spu_classification_id", param.getPid()).eq("display", 1).count();
+//            if (spuCount > 0) {
+//                throw new ServiceException(500, "父级分类下已存在产品,不可添加");
+//            }
 
-        }
+//        }
         SpuClassification entity = getEntity(param);
         this.save(entity);
 
@@ -292,6 +292,9 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
      */
     @Override
     public String getCodings(Long classId) {
+        if (classId.equals(0L)){
+            return "";
+        }
         SpuClassification now = this.getById(classId);
         List<SpuClassification> all = this.list();
 //        String codings = now.getCodingClass() ;

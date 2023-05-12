@@ -17,6 +17,7 @@
         <result column="email" property="email" />
         <result column="remark" property="remark" />
         <result column="gender" property="gender" />
+        <result column="unionid" property="unionid" />
         <result column="rawUserInfo" property="rawUserInfo" />
         <result column="mobile" property="mobile" />
         <result column="create_time" property="createTime" />
@@ -24,7 +25,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        primary_key AS "primaryKey", member_id AS "memberId", uuid AS "uuid", source AS "source", username AS "username", nickname AS "nickname", avatar AS "avatar", blog AS "blog", company AS "company", location AS "location", email AS "email", remark AS "remark", gender AS "gender", rawUserInfo AS "rawUserInfo", mobile AS "mobile", create_time AS "createTime"
+        primary_key AS "primaryKey", unionid AS "unionid",member_id AS "memberId", uuid AS "uuid", source AS "source", username AS "username", nickname AS "nickname", avatar AS "avatar", blog AS "blog", company AS "company", location AS "location", email AS "email", remark AS "remark", gender AS "gender", rawUserInfo AS "rawUserInfo", mobile AS "mobile", create_time AS "createTime"
     </sql>
 
 

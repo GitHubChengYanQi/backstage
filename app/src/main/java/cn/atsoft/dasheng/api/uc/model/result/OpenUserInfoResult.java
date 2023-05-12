@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.api.uc.model.result;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -83,6 +84,12 @@ public class OpenUserInfoResult implements Serializable {
      */
     @ApiModelProperty("用户邮箱")
     private String email;
+
+    /**
+     * 用户在开放平台的唯一标识符
+     */
+    @ApiModelProperty("用户在开放平台的唯一标识符")
+    private String unionid;
 
     /**
      * 用户备注（各平台中的用户个人介绍）

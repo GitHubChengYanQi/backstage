@@ -102,11 +102,18 @@ public class UcOpenUserInfo implements Serializable {
      */
     @TableField("rawUserInfo")
     private String rawUserInfo;
+
     /**
      * 第三方平台返回的原始用户信息
      */
     @TableField("appid")
     private String appid;
+
+    /**
+     * 用户在开放平台的唯一标识符
+     */
+    @TableField("unionid")
+    private String unionid;
 
     /**
      * 手机号码，关联用户
@@ -234,6 +241,13 @@ public class UcOpenUserInfo implements Serializable {
     @TableField(value ="tenant_id", fill = FieldFill.INSERT)
     private Long tenantId;
 
+    public String getUnionid() {
+        return unionid;
+    }
+
+    public void setUnionid(String unionid) {
+        this.unionid = unionid;
+    }
 
     public Long getTenantId() {
         return tenantId;
@@ -273,22 +287,25 @@ public class UcOpenUserInfo implements Serializable {
     @Override
     public String toString() {
         return "UcOpenUserInfo{" +
-                "primaryKey=" + primaryKey +
+                "primaryKey='" + primaryKey + '\'' +
                 ", memberId=" + memberId +
-                ", uuid=" + uuid +
-                ", source=" + source +
-                ", username=" + username +
-                ", nickname=" + nickname +
-                ", avatar=" + avatar +
-                ", blog=" + blog +
-                ", company=" + company +
-                ", location=" + location +
-                ", email=" + email +
-                ", remark=" + remark +
+                ", uuid='" + uuid + '\'' +
+                ", source='" + source + '\'' +
+                ", username='" + username + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", avatar='" + avatar + '\'' +
+                ", blog='" + blog + '\'' +
+                ", company='" + company + '\'' +
+                ", location='" + location + '\'' +
+                ", email='" + email + '\'' +
+                ", remark='" + remark + '\'' +
                 ", gender=" + gender +
-                ", rawUserInfo=" + rawUserInfo +
-                ", mobile=" + mobile +
+                ", rawUserInfo='" + rawUserInfo + '\'' +
+                ", appid='" + appid + '\'' +
+                ", unionid='" + unionid + '\'' +
+                ", mobile='" + mobile + '\'' +
                 ", createTime=" + createTime +
-                "}";
+                ", tenantId=" + tenantId +
+                '}';
     }
 }

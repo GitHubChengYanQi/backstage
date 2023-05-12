@@ -5,7 +5,6 @@ import cn.atsoft.dasheng.core.util.HttpContext;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.miniapp.entity.WxMaConfig;
 import cn.atsoft.dasheng.miniapp.model.propertis.WxMaProperties;
-import cn.atsoft.dasheng.miniapp.model.propertis.WxMaProperties2;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.api.impl.WxMaServiceImpl;
@@ -21,11 +20,10 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
-@EnableConfigurationProperties({WxMaProperties.class, WxMaProperties2.class})
+@EnableConfigurationProperties({WxMaProperties.class})
 public class WxMiniAppService {
     @Autowired
     private WxMaProperties config;
-    private WxMaProperties2 config2;
 
     @Autowired
     private WxMaConfigService wxMaConfigService;
@@ -44,6 +42,24 @@ public class WxMiniAppService {
         //根据租户ID获取微信小程序配置
 //        return getWxCpClient(LoginContextHolder.getContext().getTenantId());
 //        return getWxCpClient(LoginContextHolder.getContext().getTenantId());
+    }
+
+    /**
+     * 获取微信小程序客户端
+     *
+     * @return
+     */
+    public WxMaServiceImpl getDefaultWxCpClient() {
+        WxMaDefaultConfigImpl config = new WxMaDefaultConfigImpl();
+        // 未配置微信小程序 走默认application.yml配置
+        config.setAppid(this.config.getMiniapp().getAppid());
+        config.setSecret(this.config.getMiniapp().getSecret());
+        config.setToken(this.config.getMiniapp().getToken());
+        config.setMsgDataFormat(this.config.getMiniapp().getToken());
+        config.setAesKey(this.config.getMiniapp().getAesKey());
+        WxMaServiceImpl wxCpService = new WxMaServiceImpl();
+        wxCpService.setWxMaConfig(config);
+        return wxCpService;
     }
 
     /**
@@ -96,9 +112,9 @@ public class WxMiniAppService {
             config.setMsgDataFormat(this.config.getMiniapp().getToken());
             config.setAesKey(this.config.getMiniapp().getAesKey());
         } else {
-            WxMaConfig dbConfig = wxMaConfigService.lambdaQuery().eq(WxMaConfig::getAppid,appId).orderByDesc(WxMaConfig::getCreateTime).last("limit 1").one();
+            WxMaConfig dbConfig = wxMaConfigService.lambdaQuery().eq(WxMaConfig::getAppid, appId).orderByDesc(WxMaConfig::getCreateTime).last("limit 1").one();
             if (ToolUtil.isEmpty(dbConfig)) {
-                throw new ServiceException(500,"未配置微信小程序");
+                throw new ServiceException(500, "未配置微信小程序");
             }
             //初始化微信小程序配置
             config.setAppid(dbConfig.getAppid());

@@ -7,6 +7,7 @@ import me.chanjar.weixin.cp.bean.message.WxCpXmlMessage;
 import me.chanjar.weixin.cp.bean.message.WxCpXmlOutMessage;
 import me.chanjar.weixin.cp.message.WxCpMessageRouter;
 import me.chanjar.weixin.cp.util.crypto.WxCpCryptUtil;
+import me.chanjar.weixin.mp.api.WxMpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ public class WxController {
 
     @Autowired
     private RestWxCpService wxCpService;
+    @Autowired
+    private WxMpService wxMpService;
 
     @PostMapping(produces = "application/xml; charset=UTF-8")
     public String post(@RequestBody String requestBody,
