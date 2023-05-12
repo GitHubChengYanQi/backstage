@@ -22,6 +22,8 @@ public class TenantBindLogParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private Long tenantInviteLogId;
+
     private Integer status;
 
     @ApiModelProperty("")
@@ -88,7 +90,7 @@ public class TenantBindLogParam implements Serializable, BaseValidatingParam {
      * 部门id
      */
     @ApiModelProperty("部门id")
-    private Long deptId;
+    private Long inviteDeptId;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

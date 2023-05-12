@@ -86,9 +86,16 @@ public class TenantBindLog implements Serializable {
     /**
      * 部门id
      */
-      @TableField(value = "deptId", fill = FieldFill.INSERT)
-    private Long deptId;
+      @TableField(value = "invite_deptId", fill = FieldFill.INSERT)
+    private Long inviteDeptId;
 
+    public Long getInviteDeptId() {
+        return inviteDeptId;
+    }
+
+    public void setInviteDeptId(Long inviteDeptId) {
+        this.inviteDeptId = inviteDeptId;
+    }
 
     public Long getTenantBindLogId() {
         return tenantBindLogId;
@@ -194,13 +201,6 @@ public class TenantBindLog implements Serializable {
         this.inviterUser = inviterUser;
     }
 
-    public Long getDeptId() {
-        return deptId;
-    }
-
-    public void setDeptId(Long deptId) {
-        this.deptId = deptId;
-    }
 
     public Integer getStatus() {
         return status;
@@ -227,7 +227,7 @@ public class TenantBindLog implements Serializable {
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
                 ", inviterUser=" + inviterUser +
-                ", deptId=" + deptId +
+                ", inviteDeptId=" + inviteDeptId +
                 '}';
     }
 }

@@ -86,11 +86,15 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
 
     @Override
 
-    public void delete(SpuClassificationParam param) {
+    public void  delete(SpuClassificationParam param) {
         Integer children = this.query().eq("pid", param.getSpuClassificationId()).eq("display", 1).count();
         if (children > 0) {
             throw new ServiceException(500, "此分类下有下级,无法删除");
         } else {
+            Integer count = spuService.lambdaQuery().eq(Spu::getSpuClassificationId, param.getSpuClassificationId()).eq(Spu::getDisplay, 1).count();
+            if (count> 0) {
+                throw new ServiceException(500, "此分类下有产品,无法删除");
+            }
             SpuClassification spuClassification = new SpuClassification();
             spuClassification.setSpuClassificationId(param.getSpuClassificationId());
             spuClassification.setDisplay(0);
