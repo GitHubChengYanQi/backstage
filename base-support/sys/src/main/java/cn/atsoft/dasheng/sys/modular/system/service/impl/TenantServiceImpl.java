@@ -77,6 +77,7 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
         tenantBindLogService.save(new TenantBindLog(){{
             setTenantId(entity.getTenantId());
             setUserId(LoginContextHolder.getContext().getUserId());
+            setType("申请");
             setStatus(99);
         }});
         return token;

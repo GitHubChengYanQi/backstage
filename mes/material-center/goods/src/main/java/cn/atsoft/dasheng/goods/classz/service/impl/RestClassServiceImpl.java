@@ -52,6 +52,8 @@ public class RestClassServiceImpl extends ServiceImpl<RestClassMapper, RestClass
         RestClass entity = this.getOne(new QueryWrapper<RestClass>() {{
             eq("category_name", param.getName());
             eq("display", 1);
+            eq("tenant_id", LoginContextHolder.getContext().getTenantId());
+            last("limit 1");
         }});
         if (ToolUtil.isEmpty(entity)){
             entity = getEntity(param);

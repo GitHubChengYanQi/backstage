@@ -130,11 +130,15 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 //            Long spuClassificationId = this.getOrSaveSpuClass(param);
 //            RestCategory spuClassification = spuClassificationService.getById(param.getSpuClass());
             RestCategory spuClassification = spuClassificationService.getById(param.getSpuClass());
-            Integer parentSpuClassifications = spuClassificationService.query().eq("pid", spuClassification.getSpuClassificationId()).eq("display", 1).count();
-            if (parentSpuClassifications > 0) {
-                throw new ServiceException(500, "物料必须添加在最底级分类中");
+
+//            Integer parentSpuClassifications = spuClassificationService.query().eq("pid", spuClassification.getSpuClassificationId()).eq("display", 1).count();
+//            if (parentSpuClassifications > 0) {
+//                throw new ServiceException(500, "物料必须添加在最底级分类中");
+//            }
+            Long spuClassificationId = 0L;
+            if (!param.getSpuClass().equals(0L) && ToolUtil.isNotEmpty(spuClassification)){
+                spuClassificationId =  spuClassification.getSpuClassificationId();
             }
-            Long spuClassificationId = spuClassification.getSpuClassificationId();
             /**
              * sku名称（skuName）加型号(spuName)判断防止重复
              */
