@@ -125,7 +125,6 @@ public class TenantBindLogServiceImpl extends ServiceImpl<TenantBindLogMapper, T
         log.setStatus(status);
         log.setAuditUser(LoginContextHolder.getContext().getUserId());
         this.updateById(log);
-
         if (status.equals(99)) {
             tenantBindService.add(new TenantBindParam() {{
                 setTenantId(log.getTenantId());
