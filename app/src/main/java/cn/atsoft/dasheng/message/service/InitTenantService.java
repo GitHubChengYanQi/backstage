@@ -169,7 +169,7 @@ public class InitTenantService {
 
         //入库单
         InstockOrder instockOrder = new InstockOrder();
-        instockOrder.setCoding("defaultCreate_"+new Date().getTime());
+        instockOrder.setCoding("DEFAULT"+new Date().getTime());
         instockOrder.setCustomerId(customer.getCustomerId());
         instockOrder.setStatus(99L);
         instockOrder.setTheme("初始化入库单");
@@ -305,7 +305,7 @@ public class InitTenantService {
         Storehouse storehouse = new Storehouse();
         storehouse.setName("默认仓库");
         storehouse.setTenantId(tenantId);
-        storehouse.setCoding("mrck");
+        storehouse.setCoding("MRCK");
         storehouseService.save(storehouse);
         //创建库位
         StorehousePositions storehousePositions = new StorehousePositions();

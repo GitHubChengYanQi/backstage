@@ -7,6 +7,8 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  * 各租户内 部门绑定表
@@ -21,7 +23,7 @@ public class DeptBindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Dept dept;
+    private Map<String,Object> dept;
 
     @ApiModelProperty("")
     private Long deptBindId;

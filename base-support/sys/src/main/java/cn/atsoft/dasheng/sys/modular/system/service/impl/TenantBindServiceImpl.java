@@ -127,10 +127,12 @@ public class TenantBindServiceImpl extends ServiceImpl<TenantBindMapper, TenantB
                     set("tenant_id",null);
                 }});
                 TenantBindLog tenantBindLog = tenantBindLogService.lambdaQuery().eq(TenantBindLog::getTenantId, tenantBind.getTenantId()).eq(TenantBindLog::getUserId, tenantBind.getUserId()).orderByDesc(TenantBindLog::getCreateTime).last("limit 1").one();
-                tenantBindLog.setStatus(-1);
-                tenantBindLog.setDeleteTime(new Date());
-                tenantBindLog.setDeleteUser(LoginContextHolder.getContext().getUserId());
-                tenantBindLogService.updateById(tenantBindLog);
+                if (ToolUtil.isNotEmpty(tenantBindLog)){
+                    tenantBindLog.setStatus(-1);
+                    tenantBindLog.setDeleteTime(new Date());
+                    tenantBindLog.setDeleteUser(LoginContextHolder.getContext().getUserId());
+                    tenantBindLogService.updateById(tenantBindLog);
+                }
             }else {
                 throw new ServiceException(500,"您没有权限删除该数据");
             }

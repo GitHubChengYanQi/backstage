@@ -7,6 +7,8 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  * 租户用户绑定表
@@ -31,7 +33,7 @@ public class TenantBindResult implements Serializable {
     @ApiModelProperty("租户")
     private TenantResult tenantResult;
     @ApiModelProperty("部门集合")
-    private List<Dept> deptList;
+    private List<Map<String,Object>> deptList;
     /**
      * 租户绑定id
      */
