@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -100,7 +101,9 @@ public class DeptBindServiceImpl extends ServiceImpl<DeptBindMapper, DeptBind> i
         dataList.forEach(deptBindResult -> {
             deptResults.forEach(deptResult -> {
                 if (deptBindResult.getDeptId().equals(deptResult.getDeptId())) {
-                    deptBindResult.setDept(deptResult);
+                    Map<String, Object> stringObjectMap = BeanUtil.beanToMap(deptResult);
+                    stringObjectMap.put("mainDept", deptBindResult.getMainDept());
+                    deptBindResult.setDept(stringObjectMap);
                 }
             });
         });

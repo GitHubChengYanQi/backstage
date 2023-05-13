@@ -16,6 +16,7 @@
 package cn.atsoft.dasheng.sys.modular.rest.controller;
 
 import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.core.constant.dictmap.DeptDict;
 import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
 import cn.atsoft.dasheng.sys.modular.rest.entity.RestDept;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 部门控制器
@@ -59,6 +61,7 @@ public class RestDeptController extends BaseController {
     @RequestMapping(value = "/tree")
     public ResponseData tree() {
         List<TreeNode> tree = this.restDeptService.tree();
+        tree.sort((o1, o2) -> o2.getSort().compareTo(o1.getSort()));
         tree.add(TreeNode.createParent());
         //构建树
         DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();
@@ -115,6 +118,34 @@ public class RestDeptController extends BaseController {
     @RequestMapping(value = "/update")
     public ResponseData update(@RequestBody RestDept restDept) {
         restDeptService.editDept(restDept);
+        return SUCCESS_TIP;
+    }
+
+    /**
+     * sort
+     */
+    @BussinessLog(value = "修改部门排序", key = "sort", dict = DeptDict.class)
+    @RequestMapping(value = "/sort")
+    public ResponseData sort(@RequestBody DeptParam deptParam) {
+        //批量更改排序
+        if (ToolUtil.isEmpty(deptParam) || ToolUtil.isEmpty(deptParam.getSortList())){
+            return ResponseData.error("参数错误");
+        }
+        //校验sortList中的参数 防止空指针
+        for (DeptParam.Sort restDept : deptParam.getSortList()) {
+            if (ToolUtil.isOneEmpty(restDept,restDept.getDeptId(),restDept.getSort())){
+                return ResponseData.error("参数错误");
+            }
+        }
+        //验证sortParam中的id在数据库中是否存在
+        List<Long> ids = deptParam.getSortList().stream().map(DeptParam.Sort::getDeptId).distinct().collect(Collectors.toList());
+        List<RestDept> restDepts = restDeptService.listByIds(ids);
+        if (restDepts.size() != deptParam.getSortList().size()){
+            return ResponseData.error("参数错误");
+        }
+        List<RestDept> updateEntity = BeanUtil.copyToList(deptParam.getSortList(), RestDept.class);
+
+        restDeptService.updateBatchById(updateEntity);
         return SUCCESS_TIP;
     }
 

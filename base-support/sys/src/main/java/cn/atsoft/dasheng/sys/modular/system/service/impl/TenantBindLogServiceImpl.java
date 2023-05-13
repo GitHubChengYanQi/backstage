@@ -219,7 +219,8 @@ public class TenantBindLogServiceImpl extends ServiceImpl<TenantBindLogMapper, T
             }
             //将部门放入
             if (ToolUtil.isNotEmpty(deptMap.get(item.getUserId()))) {
-                item.setDeptList(deptBindMap.get(item.getUserId()).stream().map(DeptBindResult::getDept).collect(Collectors.toList()));
+                List<Map<String, Object>> collect = deptBindMap.get(item.getUserId()).stream().map(DeptBindResult::getDept).collect(Collectors.toList());
+                item.setDeptList(collect);
             }
             if (ToolUtil.isNotEmpty(item.getInviterUser())) {
                 item.setInviterUserResult(userMap.get(item.getInviterUser()));

@@ -24,7 +24,7 @@
     </sql>
 
     <select id="tree" resultType="cn.atsoft.dasheng.base.pojo.node.TreeNode">
-		select dept_id AS id,dept_id AS "key", pid as "pId", pid as "parentId", simple_name as name,simple_name as "title",simple_name as "label",
+		select dept_id AS id,dept_id AS "key", sort AS "sort",pid as "pId", pid as "parentId", simple_name as name,simple_name as "title",simple_name as "label",
 		(
 		CASE
 		WHEN (pid = 0 OR pid IS NULL) THEN
@@ -36,7 +36,7 @@
 	</select>
 
     <select id="tree" resultType="cn.atsoft.dasheng.base.pojo.node.ZTreeNode" databaseId="oracle">
-		select dept_id AS id, pid as "pId", simple_name as name,
+		select dept_id AS id, pid as "pId", simple_name as name,sort AS "sort",
 		(
 		CASE
 		WHEN (pid = 0 OR pid IS NULL) THEN
