@@ -23,6 +23,14 @@ import java.util.List;
 public class RestStorehouseParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+
+    private Long parentId;
+
+    List<Long >spuClassIds;
+
+    private Integer sort;
+
+    private List<Sort> sortList;
     /**
      * 纬度
      */
@@ -40,6 +48,12 @@ public class RestStorehouseParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("仓库id")
     private Long storehouseId;
+
+    /**
+     * 上级id
+     */
+    @ApiModelProperty("pid")
+    private Long pid;
 
     /**
      * 名称
@@ -109,5 +123,10 @@ public class RestStorehouseParam implements Serializable, BaseValidatingParam {
     public String checkParam() {
         return null;
     }
+    @Data
+    public static class Sort{
+        private Long storehouseId;
 
+        private Integer sort;
+    }
 }

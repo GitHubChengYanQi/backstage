@@ -13,7 +13,7 @@ import java.util.Date;
  * @author song
  * @since 2021-10-25
  */
-@TableName("goods_spu_class  ")
+@TableName("goods_spu_class")
 public class RestCategory implements Serializable {
 
 
