@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.storehouse.model.result;
 
 //import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 //import cn.atsoft.dasheng.production.model.request.SkuInStockTree;
+import cn.atsoft.dasheng.goods.category.model.result.RestCategoryResult;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
@@ -27,11 +28,17 @@ public class RestStorehouseResult implements Serializable {
 //    private SkuInStockTree skuInStockTree;
 
     private static final long serialVersionUID = 1L;
+    List<RestStorehouseResult> childrenList;
+
+    private List<RestCategoryResult>spuClassResults;
+
     /**
      * 纬度
      */
-    @JSONField(serialize = false)
     private BigDecimal latitude;
+
+    private Long pid;
+    private Integer sort;
 
 
 //    private List<StorehousePositionsResult> storehousePositionsResults;
@@ -39,7 +46,6 @@ public class RestStorehouseResult implements Serializable {
      * 经度
      */
 
-    @JSONField(serialize = false)
     private BigDecimal longitude;
 
     /**

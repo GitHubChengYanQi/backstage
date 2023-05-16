@@ -38,6 +38,9 @@ public class RestStorehouse implements Serializable {
         this.deptId = deptId;
     }
 
+    private String children;
+    private String childrens;
+
     /**
      * 经度
      */
@@ -71,6 +74,11 @@ public class RestStorehouse implements Serializable {
      */
     @TableField("name")
     private String name;
+    /**
+     * 名称
+     */
+    @TableField("sort")
+    private Integer sort;
 
     @TableField("coding")
     private String coding;
@@ -130,6 +138,25 @@ public class RestStorehouse implements Serializable {
      */
     @TableField("display")
     private Integer display;
+    /**
+     * 上级id
+     */
+    @TableField("pid")
+    private Long pid;
+
+    /**
+     * 租户编号
+     */
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -145,6 +172,14 @@ public class RestStorehouse implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public Long getPid() {
+        return pid;
+    }
+
+    public void setPid(Long pid) {
+        this.pid = pid;
     }
 
     public void setName(String name) {
@@ -215,12 +250,27 @@ public class RestStorehouse implements Serializable {
         this.display = display;
     }
 
+    public String getChildren() {
+        return children;
+    }
+
+    public void setChildren(String children) {
+        this.children = children;
+    }
+
     @Override
     public String toString() {
-        return "Place{" +
-                "palceId=" + storehouseId +
-                ", name=" + name +
-                ", palce=" + palce +
+        return "RestStorehouse{" +
+                "latitude=" + latitude +
+                ", deptId=" + deptId +
+                ", children='" + children + '\'' +
+                ", childrens='" + childrens + '\'' +
+                ", longitude=" + longitude +
+                ", storehouseId=" + storehouseId +
+                ", name='" + name + '\'' +
+                ", sort=" + sort +
+                ", coding='" + coding + '\'' +
+                ", palce='" + palce + '\'' +
                 ", measure=" + measure +
                 ", capacity=" + capacity +
                 ", createTime=" + createTime +
@@ -228,8 +278,7 @@ public class RestStorehouse implements Serializable {
                 ", updateTime=" + updateTime +
                 ", updateUser=" + updateUser +
                 ", display=" + display +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                "}";
+                ", pid=" + pid +
+                '}';
     }
 }

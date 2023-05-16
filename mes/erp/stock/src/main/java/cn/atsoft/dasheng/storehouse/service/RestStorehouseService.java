@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.storehouse.entity.RestStorehouse;
 import cn.atsoft.dasheng.storehouse.model.params.RestStorehouseParam;
 import cn.atsoft.dasheng.storehouse.model.result.RestStorehouseResult;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -43,6 +44,9 @@ public interface RestStorehouseService extends IService<RestStorehouse> {
      */
     void update(RestStorehouseParam param);
 
+    @Transactional
+    void updateRestStorehouse(RestStorehouseParam restStorehouse);
+
     /**
      * 查询单条数据，Specification模式
      *
@@ -71,4 +75,8 @@ public interface RestStorehouseService extends IService<RestStorehouse> {
     RestStorehouseResult getDetail(Long Id);
 
     List<RestStorehouseResult> getDetails(List<Long> ids);
+
+    void sort(List<RestStorehouseParam.Sort> param);
+
+    List<RestStorehouseResult> getRestStorehouseTree();
 }

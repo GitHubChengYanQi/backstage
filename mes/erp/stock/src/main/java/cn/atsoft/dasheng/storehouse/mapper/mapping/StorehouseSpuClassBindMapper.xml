@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.storehouse.mapper.StorehouseSpuClassBindMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.storehouse.entity.StorehouseSpuClassBind">
+        <id column="storehouse_spu_class_bind_id" property="storehouseSpuClassBindId" />
+        <result column="spu_class_id" property="spuClassId" />
+        <result column="storehouse_id" property="storehouseId" />
+        <result column="create_time" property="createTime" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="create_user" property="createUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="display" property="display" />
+        <result column="deptId" property="deptId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        storehouse_spu_class_bind_id AS "storehouseSpuClassBindId", spu_class_id AS "spuClassId", storehouse_id AS "storehouseId", create_time AS "createTime", tenant_id AS "tenantId", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.storehouse.model.result.StorehouseSpuClassBindResult" parameterType="cn.atsoft.dasheng.storehouse.model.params.StorehouseSpuClassBindParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_storehouse_spu_class_bind where 1 = 1 and display = 1
+            <if test="paramCondition.storehouseSpuClassBindId != null">
+                and storehouse_spu_class_bind_id like CONCAT('%',#{paramCondition.storehouseSpuClassBindId},'%')
+            </if>
+            <if test="paramCondition.spuClassId != null">
+                and spu_class_id like CONCAT('%',#{paramCondition.spuClassId},'%')
+            </if>
+            <if test="paramCondition.storehouseId != null">
+                and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
+            </if>
+            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+            </if>
+            <if test="paramCondition.tenantId != null">
+                and tenant_id like CONCAT('%',#{paramCondition.tenantId},'%')
+            </if>
+            <if test="paramCondition.createUser != null">
+                and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+            </if>
+            <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+            </if>
+            <if test="paramCondition.updateUser != null">
+                and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+            </if>
+            <if test="paramCondition.display != null">
+                and display like CONCAT('%',#{paramCondition.display},'%')
+            </if>
+            <if test="paramCondition.deptId != null">
+                and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.storehouse.model.params.StorehouseSpuClassBindParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_storehouse_spu_class_bind where 1 = 1 and display = 1
+                <if test="paramCondition.storehouseSpuClassBindId != null">
+                        and storehouse_spu_class_bind_id like CONCAT('%',#{paramCondition.storehouseSpuClassBindId},'%')
+                </if>
+                <if test="paramCondition.spuClassId != null">
+                        and spu_class_id like CONCAT('%',#{paramCondition.spuClassId},'%')
+                </if>
+                <if test="paramCondition.storehouseId != null">
+                        and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.tenantId != null">
+                        and tenant_id like CONCAT('%',#{paramCondition.tenantId},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.deptId != null">
+                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.storehouse.model.result.StorehouseSpuClassBindResult" parameterType="cn.atsoft.dasheng.storehouse.model.params.StorehouseSpuClassBindParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_storehouse_spu_class_bind where 1 = 1 and display = 1
+                <if test="paramCondition.storehouseSpuClassBindId != null">
+                        and storehouse_spu_class_bind_id like CONCAT('%',#{paramCondition.storehouseSpuClassBindId},'%')
+                </if>
+                <if test="paramCondition.spuClassId != null">
+                        and spu_class_id like CONCAT('%',#{paramCondition.spuClassId},'%')
+                </if>
+                <if test="paramCondition.storehouseId != null">
+                        and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.tenantId != null">
+                        and tenant_id like CONCAT('%',#{paramCondition.tenantId},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.deptId != null">
+                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.storehouse.model.params.StorehouseSpuClassBindParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_storehouse_spu_class_bind where 1 = 1 and display = 1
+                <if test="paramCondition.storehouseSpuClassBindId != null">
+                        and storehouse_spu_class_bind_id like CONCAT('%',#{paramCondition.storehouseSpuClassBindId},'%')
+                </if>
+                <if test="paramCondition.spuClassId != null">
+                        and spu_class_id like CONCAT('%',#{paramCondition.spuClassId},'%')
+                </if>
+                <if test="paramCondition.storehouseId != null">
+                        and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
+                </if>
+                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+                </if>
+                <if test="paramCondition.tenantId != null">
+                        and tenant_id like CONCAT('%',#{paramCondition.tenantId},'%')
+                </if>
+                <if test="paramCondition.createUser != null">
+                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+                </if>
+                <if test="paramCondition.updateUser != null">
+                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+                </if>
+                <if test="paramCondition.display != null">
+                        and display like CONCAT('%',#{paramCondition.display},'%')
+                </if>
+                <if test="paramCondition.deptId != null">
+                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+    </select>
+
+</mapper>
