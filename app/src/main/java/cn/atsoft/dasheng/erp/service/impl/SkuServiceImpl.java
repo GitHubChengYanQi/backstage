@@ -2217,9 +2217,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Spu spu = new Spu();
 
         if (ToolUtil.isNotEmpty(param.getSpu().getSpuId())) {
-            spu = spuService.lambdaQuery().eq(Spu::getSpuId, param.getSpu().getSpuId()).and(i -> i.eq(Spu::getDisplay, 1)).one();
+            spu = spuService.getById(param.getSpu().getSpuId());
         } else if (ToolUtil.isNotEmpty(param.getSpu().getName())) {
-            spu = spuService.lambdaQuery().eq(Spu::getName, param.getSpu().getName()).and(i -> i.eq(Spu::getSpuClassificationId, spuClassificationId)).and(i -> i.eq(Spu::getDisplay, 1)).one();
+            spu = spuService.lambdaQuery().eq(Spu::getName, param.getSpu().getName()).eq(Spu::getSpuClassificationId, spuClassificationId).eq(Spu::getDisplay, 1).last(" limit 1").one();
         }
         Spu spuEntity = new Spu();
 
