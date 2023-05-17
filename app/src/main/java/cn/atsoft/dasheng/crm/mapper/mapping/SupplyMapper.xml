@@ -103,7 +103,9 @@
         daoxin_crm_order_detail.create_user AS "createUser",
         daoxin_supply.update_user AS "updateUser",
         daoxin_supply.create_time AS "createTime",
-        daoxin_supply.update_time AS "updateTime"
+        daoxin_supply.update_time AS "updateTime",
+        daoxin_supply.deptId AS "deptId",
+        daoxin_supply.tenant_id AS "tenantId"
         FROM
         daoxin_supply
         LEFT JOIN ( SELECT * FROM ( SELECT * FROM daoxin_crm_order_detail ORDER BY create_time ) AS
