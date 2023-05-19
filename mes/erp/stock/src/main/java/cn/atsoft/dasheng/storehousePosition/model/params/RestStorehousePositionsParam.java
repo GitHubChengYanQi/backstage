@@ -26,6 +26,8 @@ public class RestStorehousePositionsParam extends AbstractDictMap implements Ser
 
     private Long brandId;
 
+    private List<Sort> sortList;
+
     private List<Long> skuIds;
 
 
@@ -125,5 +127,10 @@ public class RestStorehousePositionsParam extends AbstractDictMap implements Ser
     @Override
     protected void initBeWrapped() {
 
+    }
+    @Data
+    public static class Sort{
+        private Long storehousePositionsId;
+        private Integer sort;
     }
 }

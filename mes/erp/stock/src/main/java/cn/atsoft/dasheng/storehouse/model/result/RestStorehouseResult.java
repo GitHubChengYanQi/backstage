@@ -29,7 +29,7 @@ public class RestStorehouseResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     List<RestStorehouseResult> childrenList;
-
+    private String description;
     private List<RestCategoryResult>spuClassResults;
 
     /**

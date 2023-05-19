@@ -141,10 +141,40 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
 //        }
 
         //删除职位关联
-        restUserPosService.remove(new QueryWrapper<RestUserPos>().eq("user_id", user.getUserId()));
+        restUserPosService.remove(new QueryWrapper<RestUserPos>().eq("user_id", user.getUserId()).eq("tenant_id", LoginContextHolder.getContext().getTenantId()));
 
         //添加职位关联
         addPosition(user.getPosition(), user.getUserId());
+    }
+    /**
+     * 修改部门
+     *
+     * @author fengshuonan
+     * @Date 2018/12/24 22:53
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void changeDept(UserDto user) {
+        RestUser oldUser = this.getById(user.getUserId());
+        if (oldUser == null) {
+            throw new ServiceException(BizExceptionEnum.NO_THIS_USER);
+        }
+        user.setPhone(null);
+        if (oldUser == null) {
+            throw new ServiceException(BizExceptionEnum.NO_THIS_USER);
+        }
+        deptBind(user);
+//        if (LoginContextHolder.getContext().hasRole(Const.ADMIN_NAME)) {
+            this.updateById(RestUserFactory.editRestUser(user, oldUser));
+//        } else {
+//            this.assertAuth(user.getUserId());
+//            LoginUser shiroUser = LoginContextHolder.getContext().getUser();
+//            if (shiroUser.getId().equals(user.getUserId())) {
+//                this.updateById(RestUserFactory.editRestUser(user, oldUser));
+//            } else {
+//                throw new ServiceException(BizExceptionEnum.NO_PERMITION);
+//            }
+//        }
+
     }
     public void deptBind(UserDto user){
         //删除部门关联
@@ -510,8 +540,9 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
         hashMap.put("roleName", ConstantFactory.me().getRoleName(user.getRoleId()));
         hashMap.put("deptName", ConstantFactory.me().getDeptName(user.getDeptId()));
         hashMap.put("deptList", new ArrayList<>());
-        if (ToolUtil.isNotEmpty(user.getTenantId())){
-            List<DeptBindResult> deptBindResults = BeanUtil.copyToList(deptBindService.lambdaQuery().eq(DeptBind::getUserId, user.getUserId()).eq(DeptBind::getTenantId, user.getTenantId()).list(), DeptBindResult.class);
+        if (ToolUtil.isNotEmpty(LoginContextHolder.getContext().getTenantId())){
+            List<DeptBindResult> deptBindResults = BeanUtil.copyToList(deptBindService.lambdaQuery().eq(DeptBind::getUserId, user.getUserId()).eq(DeptBind::getTenantId, LoginContextHolder.getContext().getTenantId()).list(), DeptBindResult.class);
+
             deptBindService.format(deptBindResults);
             hashMap.put("deptList",deptBindResults);
 

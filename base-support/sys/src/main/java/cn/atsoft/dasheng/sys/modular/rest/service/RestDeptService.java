@@ -69,7 +69,9 @@ public class RestDeptService extends ServiceImpl<RestDeptMapper, RestDept> {
         if (ToolUtil.isOneEmpty(dept, dept.getDeptId(), dept.getSimpleName(), dept.getFullName(), dept.getPid(), dept.getDescription())) {
             throw new ServiceException(BizExceptionEnum.REQUEST_NULL);
         }
-
+        if(dept.getPid().equals(dept.getDeptId())){
+            throw new ServiceException(500,"参数错误");
+        }
         //完善pids,根据pid拿到pid的pids
         this.deptSetPids(dept);
 

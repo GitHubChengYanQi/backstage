@@ -172,6 +172,22 @@ public class RestUserMgrController extends BaseController {
         return SUCCESS_TIP;
     }
 
+    /**
+     * 修改管理员
+     *
+     * @author fengshuonan
+     * @Date 2018/12/24 22:44
+     */
+    @RequestMapping("/changeDept")
+    @BussinessLog(value = "修改管理员", key = "account", dict = UserDict.class)
+    public ResponseData changeDept(@RequestBody UserDto user) {
+        UserDto userDto = new UserDto();
+        userDto.setUserId(user.getUserId());
+        userDto.setDeptList(user.getDeptList());
+        this.restUserService.changeDept(userDto);
+        return SUCCESS_TIP;
+    }
+
 
     /**
      * 修改管理员

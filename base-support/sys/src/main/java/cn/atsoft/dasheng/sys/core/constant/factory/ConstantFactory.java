@@ -15,6 +15,7 @@
  */
 package cn.atsoft.dasheng.sys.core.constant.factory;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.sys.modular.system.entity.*;
 import cn.atsoft.dasheng.sys.modular.system.mapper.*;
 import cn.hutool.core.convert.Convert;
@@ -408,7 +409,7 @@ public class ConstantFactory implements IConstantFactory {
         StringBuilder positionIds = new StringBuilder();
 
         List<UserPos> userPosList = this.userPosService.list(
-                new QueryWrapper<UserPos>().eq("user_id", userId));
+                new QueryWrapper<UserPos>().eq("user_id", userId).eq("tenant_id", LoginContextHolder.getContext().getTenantId()));
         if (userPosList != null && userPosList.size() > 0) {
             for (UserPos userPos : userPosList) {
                 Position position = positionService.getById(userPos.getPosId());
