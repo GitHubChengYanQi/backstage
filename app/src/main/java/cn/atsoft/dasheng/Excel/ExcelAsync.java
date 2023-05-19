@@ -441,20 +441,9 @@ public class ExcelAsync {
 
                 newSpu.setSpuClassificationId(spuClassificationId);
                 for (Spu spu : spuList) {
-                    if (ToolUtil.isNotEmpty(newSpu.getSpecifications()) && !newSpu.getSpecifications().equals("")) {
-                        if (ToolUtil.isNotEmpty(spu.getSpecifications()) &&
-                                newSpu.getSpuClassificationId().equals(spu.getSpuClassificationId()) &&
-                                newSpu.getName().equals(spu.getName()) &&
-                                newSpu.getSpecifications().equals(spu.getSpecifications())
-                        ) {
-                            throw new ServiceException(500, "相同规格产品已存在");
-                        }
-                    } else {
-                        if (newSpu.getSpuClassificationId().equals(spu.getSpuClassificationId()) && newSpu.getName().equals(spu.getName())) {
-                            throw new ServiceException(500, "相同分类产品已存在");
-                        }
+                    if (newSpu.getSpuClassificationId().equals(spu.getSpuClassificationId()) && newSpu.getName().equals(spu.getName())) {
+                        throw new ServiceException(500, "相同分类产品已存在");
                     }
-
                 }
 
                 //------------------------------------------------------------------------------

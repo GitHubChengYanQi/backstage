@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -243,6 +244,8 @@ public class RestStorehouseServiceImpl extends ServiceImpl<RestStorehouseMapper,
             eq("display",1);
         }});
         List<RestStorehouseResult> restStorehouseResults = BeanUtil.copyToList(restStorehouses, RestStorehouseResult.class);
+        restStorehouseResults.sort(Comparator.comparing(RestStorehouseResult::getSort).reversed());
+
         // 获取所有仓库
         List<RestStorehouseResult> roots = restStorehouseResults.stream()
                 .filter(restStorehouse -> restStorehouse.getPid() == null || restStorehouse.getPid() == 0) // 找到所有根节点
