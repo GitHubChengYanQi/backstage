@@ -79,6 +79,7 @@ public class RestStorehousePositionsServiceImpl extends ServiceImpl<RestStorehou
     private RestStorehouseService storehouseService;
     @Autowired
     private RestStockDetailsService stockDetailsService;
+
 //    @Autowired
 //    private SkuService skuService;
 //    @Autowired

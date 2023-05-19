@@ -31,6 +31,8 @@ public class RestStorehouseParam implements Serializable, BaseValidatingParam {
     private Integer sort;
 
     private List<Sort> sortList;
+
+    private String description;
     /**
      * 纬度
      */

@@ -96,7 +96,9 @@ public class DeptBindServiceImpl extends ServiceImpl<DeptBindMapper, DeptBind> i
         List<Long> deptIds = dataList.stream().map(DeptBindResult::getDeptId).distinct().collect(Collectors.toList());
         //根据deptIds查询deptResult
         List<Dept> deptResults = deptIds.size() == 0 ? new ArrayList<>() : deptService.listByIds(deptIds);
-
+        deptResults.add(new Dept(){{
+            setDeptId(0L);
+                        }});
         //匹配数据
         dataList.forEach(deptBindResult -> {
             deptResults.forEach(deptResult -> {

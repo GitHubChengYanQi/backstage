@@ -27,6 +27,11 @@ public class RestStorehouse implements Serializable {
     @TableField("latitude")
     private BigDecimal latitude;
 
+    @TableField("description")
+    private String description;
+
+
+
      @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
     private Long deptId;
 
@@ -37,8 +42,10 @@ public class RestStorehouse implements Serializable {
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
     }
-
+    @TableField("children")
     private String children;
+
+    @TableField("childrens")
     private String childrens;
 
     /**
@@ -256,6 +263,30 @@ public class RestStorehouse implements Serializable {
 
     public void setChildren(String children) {
         this.children = children;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getChildrens() {
+        return childrens;
+    }
+
+    public void setChildrens(String childrens) {
+        this.childrens = childrens;
+    }
+
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
     }
 
     @Override

@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -232,6 +233,7 @@ public class RestStorehouseController extends BaseController {
     public ResponseData tree() {
 
         List<RestStorehouseResult> restStorehouseTree = this.storehouseService.getRestStorehouseTree();
+        //restStorehouseTree 按照sort 倒叙排序
 
         return ResponseData.success(restStorehouseTree);
     }
