@@ -4,7 +4,6 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
-import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsDeptBind;
 import cn.atsoft.dasheng.erp.mapper.StorehousePositionsDeptBindMapper;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsDeptBindParam;
@@ -17,6 +16,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -73,6 +73,13 @@ public class StorehousePositionsDeptBindServiceImpl extends ServiceImpl<Storehou
 //        } else {
 //            this.save(entity);
 //        }
+    }
+    @Override
+    @Async
+    public void addBatch(List<StorehousePositionsDeptBindParam> params) {
+        for (StorehousePositionsDeptBindParam param : params) {
+            this.add(param);
+        }
     }
 
     @Override

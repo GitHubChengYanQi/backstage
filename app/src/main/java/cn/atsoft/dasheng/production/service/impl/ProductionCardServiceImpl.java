@@ -133,7 +133,7 @@ public class ProductionCardServiceImpl extends ServiceImpl<ProductionCardMapper,
     @Override
     public void format(List<ProductionCardResult> dataList){
         List<Long> cardIds = dataList.stream().map(ProductionCardResult::getProductionCardId).collect(Collectors.toList());
-        List<ProductionTask> productionTasks = productionTaskService.lambdaQuery().in(ProductionTask::getProductionCardId, cardIds).eq(ProductionTask::getStatus,99).list();
+        List<ProductionTask> productionTasks =cardIds.size() == 0 ? new ArrayList<>() : productionTaskService.lambdaQuery().in(ProductionTask::getProductionCardId, cardIds).eq(ProductionTask::getStatus,99).list();
 
 
         for (ProductionCardResult productionCardResult : dataList) {

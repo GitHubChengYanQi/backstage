@@ -1,12 +1,14 @@
 package cn.atsoft.dasheng.bom.controller;
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.bom.entity.RestBom;
 import cn.atsoft.dasheng.bom.model.params.RestBomDetailParam;
 import cn.atsoft.dasheng.bom.model.params.RestBomParam;
 import cn.atsoft.dasheng.bom.service.RestBomService;
 import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.goods.sku.entity.RestSku;
 import cn.atsoft.dasheng.goods.sku.service.RestSkuService;
@@ -75,8 +77,8 @@ public class RestBomController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo list(@RequestBody RestBomParam bomParam) {
-
-        return this.bomService.findPageBySpec(bomParam);
+        DataScope dataScope = new DataScope(null, LoginContextHolder.getContext().getTenantId());
+        return this.bomService.findPageBySpec(bomParam,dataScope);
     }
     @RequestMapping(value = "/getByBomId", method = RequestMethod.POST)
     @ApiOperation("列表")

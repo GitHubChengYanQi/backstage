@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.bom.entity.RestBom;
 import cn.atsoft.dasheng.bom.model.result.RestBomDetailResult;
 import cn.atsoft.dasheng.bom.model.result.RestBomResult;
 import cn.atsoft.dasheng.bom.service.RestBomService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.model.params.OrderDetailParam;
 import cn.atsoft.dasheng.erp.entity.CodingRules;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
@@ -158,6 +159,7 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
     }
 
     @Override
+    @Transactional
     public void addByBom(ProductionPlanParam param) {
         if (ToolUtil.isEmpty(param.getCoding())) {
             CodingRules codingRules = codingRulesService.query().eq("module", "13").eq("state", 1).one();
@@ -248,9 +250,9 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
     }
 
     @Override
-    public PageInfo<ProductionPlanResult> findPageBySpec(ProductionPlanParam param) {
+    public PageInfo<ProductionPlanResult> findPageBySpec(ProductionPlanParam param, DataScope dataScope) {
         Page<ProductionPlanResult> pageContext = getPageContext();
-        IPage<ProductionPlanResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<ProductionPlanResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         this.format(page.getRecords());
 //        for (ProductionPlanResult record : page.getRecords()) {
 //            record.setWorkOrderResults(null);

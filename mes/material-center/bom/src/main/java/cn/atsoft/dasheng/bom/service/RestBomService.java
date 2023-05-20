@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.bom.entity.RestBom;
 import cn.atsoft.dasheng.bom.model.params.RestBomParam;
 import cn.atsoft.dasheng.bom.model.result.RestBomResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -43,7 +44,7 @@ public interface RestBomService extends IService<RestBom> {
      * 查询分页数据，Specification模式
      *
      */
-    PageInfo<RestBomResult> findPageBySpec(RestBomParam bomParam);
+    PageInfo<RestBomResult> findPageBySpec(RestBomParam bomParam, DataScope dataScope);
 
     void format(List<RestBomResult> dataList);
 

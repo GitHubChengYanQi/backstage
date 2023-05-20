@@ -4,12 +4,14 @@ import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.app.model.result.Item;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
@@ -228,7 +230,8 @@ public class PartsController extends BaseController {
             List<String> pidValue = partsParam.getPidValue();
             partsParam.setPid(Long.valueOf(pidValue.get(pidValue.size() - 1)));
         }
-        return this.partsService.findPageBySpec(partsParam);
+        DataScope  dataScope = new DataScope(null, LoginContextHolder.getContext().getTenantId());
+        return this.partsService.findPageBySpec(partsParam,dataScope);
     }
 
     @RequestMapping(value = "/getdetails", method = RequestMethod.POST)

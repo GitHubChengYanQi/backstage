@@ -39,6 +39,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.*;
@@ -94,10 +95,71 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private ProductionPickListsService productionPickListsService;
 
     @Override
+    @Transactional
     public Long add(StockDetailsParam param) {
         StockDetails entity = getEntity(param);
         this.save(entity);
         return entity.getStockItemId();
+    }
+    @Override
+    @Transactional
+    public void addStockDetials(StockDetailsParam param) {
+        Long skuId = param.getSkuId();
+        Long number = param.getNumber();
+        Long tenantId = param.getTenantId();
+        Sku sku = skuService.getById(skuId);
+        List<StorehousePositionsResult> lowestLevelPositions = positionsService.getLowestLevelPositions(0L, tenantId);
+        if (ToolUtil.isNotEmpty(lowestLevelPositions)) {
+            Long storehousePositionsId = lowestLevelPositions.get(0).getStorehousePositionsId();
+            Long storehouseId = lowestLevelPositions.get(0).getStorehouseId();
+
+            if (sku.getBatch().equals(1)) {
+                Inkind inkind = new Inkind();
+                inkind.setSkuId(skuId);
+                inkind.setBrandId(0L);
+                inkind.setCustomerId(0L);
+                inkind.setNumber(number);
+                inkind.setTenantId(tenantId);
+                inkindService.save(inkind);
+
+                this.save(new StockDetails() {{
+                    setSkuId(sku.getSkuId());
+                    setBrandId(0L);
+                    setCustomerId(0L);
+                    setNumber(number);
+                    setTenantId(tenantId);
+                    setInkindId(inkind.getInkindId());
+                    setStorehousePositionsId(storehousePositionsId);
+                    setStorehouseId(storehouseId);
+                }});
+            }else {
+                List<Inkind> inkinds = new ArrayList<>();
+                for (Long i = 0L; i < number; i++) {
+                    Inkind inkind = new Inkind();
+                    inkind.setSkuId(skuId);
+                    inkind.setBrandId(0L);
+                    inkind.setCustomerId(0L);
+                    inkind.setNumber(1L);
+                    inkind.setTenantId(tenantId);
+                    inkinds.add(inkind);
+                }
+                inkindService.saveBatch(inkinds);
+                List<StockDetails> stockDetails = new ArrayList<>();
+                for (Inkind inkind : inkinds) {
+                    stockDetails.add(new StockDetails() {{
+                        setSkuId(sku.getSkuId());
+                        setBrandId(0L);
+                        setCustomerId(0L);
+                        setNumber(1L);
+                        setStorehousePositionsId(storehousePositionsId);
+                        setStorehouseId(storehouseId);
+                        setInkindId(inkind.getInkindId());
+                        setTenantId(tenantId);
+                    }});
+                }
+                this.saveBatch(stockDetails);
+            }
+        }
     }
 
 
@@ -128,7 +190,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     @Override
     public PageInfo<StockDetailsResult> skuDetailView(StockDetailsParam param, DataScope dataScope) {
         Page<StockDetailsResult> pageContext = getPageContext();
-        Page<StockDetailsResult> stockDetailsResultPage = this.baseMapper.skuDetailView(pageContext,dataScope,param);
+        Page<StockDetailsResult> stockDetailsResultPage = this.baseMapper.skuDetailView(pageContext, dataScope, param);
         this.format(stockDetailsResultPage.getRecords());
         return PageFactory.createPageInfo(stockDetailsResultPage);
     }
@@ -812,7 +874,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         /**
          * 获取购物车中实物
          */
-        List<Long> skuIds = ToolUtil.isEmpty(param.getProductionPickListsCartParams())?new ArrayList<>() : param.getProductionPickListsCartParams().stream().map(ProductionPickListsCartParam::getSkuId).distinct().collect(Collectors.toList());
+        List<Long> skuIds = ToolUtil.isEmpty(param.getProductionPickListsCartParams()) ? new ArrayList<>() : param.getProductionPickListsCartParams().stream().map(ProductionPickListsCartParam::getSkuId).distinct().collect(Collectors.toList());
         List<Long> cartInkindIds = pickListsCartService.getCartInkindIds(skuIds);
         List<Long> inkindIds = new ArrayList<>();
         for (ProductionPickListsCartParam productionPickListsCartParam : param.getProductionPickListsCartParams()) {
@@ -854,8 +916,9 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
         return totalList;
     }
+
     @Override
-    public List<StockDetailView> stockDetailViews(){
+    public List<StockDetailView> stockDetailViews() {
         return this.baseMapper.stockDetailView();
     }
 
@@ -863,13 +926,15 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     public Long getNumberCountBySkuId(Long skuId) {
         return this.baseMapper.getNumberCountBySkuId(skuId);
     }
+
     @Override
     public List<StockDetails> getNumberCountEntityBySkuIds(List<Long> skuIds) {
-        if (ToolUtil.isEmpty(skuIds) || skuIds.size() == 0){
+        if (ToolUtil.isEmpty(skuIds) || skuIds.size() == 0) {
             return new ArrayList<>();
         }
         return this.baseMapper.getNumberCountEntityBySkuId(skuIds);
     }
+
     @Override
     public Integer getAllStockNumber() {
         return this.baseMapper.getAllStockNumber();
@@ -877,6 +942,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
     /**
      * 库存修正
+     *
      * @return
      */
     @Override
@@ -886,48 +952,50 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         List<InventoryCorrectionParam> outstockList = new ArrayList<>();
         for (InventoryCorrectionParam param : params) {
 //            this.getStockNumberBySkuId();
-            if (stockNumber.stream().noneMatch(i->i.getSkuId().equals(param.getSkuId()) && i.getBrandId().equals(param.getBrandId()) && i.getStorehousePositionsId().equals(param.getPositionId()) &&  (ToolUtil.isEmpty(param.getCustomerId()) || param.getCustomerId().equals(i.getCustomerId())))) {
+            if (stockNumber.stream().noneMatch(i -> i.getSkuId().equals(param.getSkuId()) && i.getBrandId().equals(param.getBrandId()) && i.getStorehousePositionsId().equals(param.getPositionId()) && (ToolUtil.isEmpty(param.getCustomerId()) || param.getCustomerId().equals(i.getCustomerId())))) {
                 InventoryCorrectionParam instock = BeanUtil.copyProperties(param, InventoryCorrectionParam.class);
                 instockList.add(instock);
             }
             for (StockDetails stockDetails : stockNumber) {
-                if (param.getSkuId().equals(stockDetails.getSkuId()) && param.getBrandId().equals(stockDetails.getBrandId()) && (ToolUtil.isEmpty(param.getCustomerId()) || param.getCustomerId().equals(stockDetails.getCustomerId())) && param.getPositionId().equals(stockDetails.getStorehousePositionsId())){
+                if (param.getSkuId().equals(stockDetails.getSkuId()) && param.getBrandId().equals(stockDetails.getBrandId()) && (ToolUtil.isEmpty(param.getCustomerId()) || param.getCustomerId().equals(stockDetails.getCustomerId())) && param.getPositionId().equals(stockDetails.getStorehousePositionsId())) {
                     long kickNumber = param.getNumber() - stockDetails.getNumber();
-                    if (kickNumber>0){
+                    if (kickNumber > 0) {
                         InventoryCorrectionParam instock = BeanUtil.copyProperties(param, InventoryCorrectionParam.class);
                         instock.setNumber((int) kickNumber);
                         instockList.add(instock);
-                    }else if (kickNumber<0){
+                    } else if (kickNumber < 0) {
                         //出库
                         InventoryCorrectionParam instock = BeanUtil.copyProperties(param, InventoryCorrectionParam.class);
-                        instock.setNumber((int) kickNumber*-1);
+                        instock.setNumber((int) kickNumber * -1);
                         outstockList.add(instock);
                     }
                 }
             }
         }
 
-       if (instockList.size()>0){
-           //入库
-           instockOrderService.instock(instockList);
-       }
+        if (instockList.size() > 0) {
+            //入库
+            instockOrderService.instock(instockList);
+        }
 
-       if (outstockList.size()>0){
-           //入库
-           productionPickListsService.outStock(outstockList);
-       }
-
+        if (outstockList.size() > 0) {
+            //入库
+            productionPickListsService.outStock(outstockList);
+        }
 
 
     }
+
     @Override
     public ViewCountResult getViewCount() {
         return this.baseMapper.getViewCount();
     }
+
     @Override
     public List<StockDetails> getStockNumber(List<InventoryCorrectionParam> params) {
         return this.baseMapper.getStockNumber(params);
     }
+
     @Override
     public List<StockDetails> getStockNumberDetail(List<InventoryCorrectionParam> params) {
         return this.baseMapper.getStockNumberDetail(params);

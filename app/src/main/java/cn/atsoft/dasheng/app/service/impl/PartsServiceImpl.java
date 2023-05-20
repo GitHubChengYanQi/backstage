@@ -19,6 +19,7 @@ import cn.atsoft.dasheng.bom.model.params.RestBomDetailParam;
 import cn.atsoft.dasheng.bom.model.params.RestBomParam;
 import cn.atsoft.dasheng.bom.service.RestBomService;
 import cn.atsoft.dasheng.bom.service.impl.RestBomServiceImpl;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.Spu;
@@ -568,7 +569,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     }
 
     @Override
-    public PageInfo findPageBySpec(PartsParam param) {
+    public PageInfo findPageBySpec(PartsParam param, DataScope dataScope) {
         Page<PartsResult> pageContext = getPageContext();
         param.setStatus(99);
         param.setDisplay(1);
@@ -586,7 +587,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             }
         }
 
-        IPage<PartsResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<PartsResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         pageFormat(page.getRecords());
         if (ToolUtil.isNotEmpty(param.getChildren())) {  //取配套数量
             formatNumBySku(page.getRecords(), Long.valueOf(param.getChildren()));

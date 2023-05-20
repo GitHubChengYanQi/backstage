@@ -12,7 +12,10 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
+import cn.atsoft.dasheng.erp.entity.StorehousePositionsDeptBind;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
+import cn.atsoft.dasheng.erp.model.params.StorehousePositionsBindParam;
+import cn.atsoft.dasheng.erp.model.params.StorehousePositionsDeptBindParam;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
@@ -20,6 +23,7 @@ import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.pojo.PositionLoop;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsDeptBindService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -62,6 +66,8 @@ public class StorehousePositionsController extends BaseController {
 
     @Autowired
     private StorehousePositionsService storehousePositionsService;
+    @Autowired
+    private StorehousePositionsDeptBindService storehousePositionsDeptBindService;
 
     @Autowired
     private StorehousePositionsBindService storehousePositionsBindService;
@@ -75,7 +81,23 @@ public class StorehousePositionsController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody StorehousePositionsParam storehousePositionsParam) {
-        return ResponseData.success(this.storehousePositionsService.add(storehousePositionsParam));
+        Long storehousePositionId = this.storehousePositionsService.add(storehousePositionsParam);
+        if (ToolUtil.isNotEmpty(storehousePositionsParam.getSkuIds())) {
+            storehousePositionsBindService.bindBatch(new StorehousePositionsBindParam(){{
+                setSkuIds(storehousePositionsParam.getSkuIds());
+                setPositionId(storehousePositionId);
+            }});
+        }
+        if (ToolUtil.isNotEmpty(storehousePositionsParam.getDeptIds())) {
+            List<StorehousePositionsDeptBindParam> collect = storehousePositionsParam.getDeptIds().stream().map(deptId -> new StorehousePositionsDeptBindParam() {{
+                setDeptId(deptId);
+                setStorehousePositionsId(storehousePositionId);
+            }}).collect(Collectors.toList());
+            //部门绑定
+            storehousePositionsDeptBindService.addBatch(collect);
+
+        }
+        return ResponseData.success();
     }
 
 
@@ -146,6 +168,24 @@ public class StorehousePositionsController extends BaseController {
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody StorehousePositionsParam storehousePositionsParam) {
         this.storehousePositionsService.update(storehousePositionsParam);
+        if (storehousePositionsParam.getSkuIds() != null) {
+            storehousePositionsBindService.remove(new QueryWrapper<StorehousePositionsBind>().eq("storehouse_positions_id",storehousePositionsParam.getStorehousePositionsId()));
+            storehousePositionsBindService.bindBatch(new StorehousePositionsBindParam(){{
+                setSkuIds(storehousePositionsParam.getSkuIds());
+                setPositionId(storehousePositionsParam.getStorehousePositionsId());
+            }});
+        }
+        if(storehousePositionsParam.getDeptIds() != null){
+            storehousePositionsDeptBindService.remove(new QueryWrapper<StorehousePositionsDeptBind>().eq("storehouse_positions_id",storehousePositionsParam.getStorehousePositionsId()));
+                List<StorehousePositionsDeptBindParam> collect = storehousePositionsParam.getDeptIds().stream().map(deptId -> new StorehousePositionsDeptBindParam() {{
+                    setDeptId(deptId);
+                    setStorehousePositionsId(storehousePositionsParam.getStorehousePositionsId());
+                }}).collect(Collectors.toList());
+                //部门绑定
+                storehousePositionsDeptBindService.addBatch(collect);
+
+        }
+
         return ResponseData.success();
     }
 
@@ -260,7 +300,7 @@ public class StorehousePositionsController extends BaseController {
 
         QueryWrapper<StorehousePositions> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("display", 1);
-        queryWrapper.orderByAsc("sort");
+        queryWrapper.orderByDesc("sort");
         queryWrapper.eq("tenant_id", LoginContextHolder.getContext().getTenantId());
         if (ToolUtil.isNotEmpty(ids)) {
             queryWrapper.in("storehouse_id", ids);
@@ -270,6 +310,7 @@ public class StorehousePositionsController extends BaseController {
         }
 
         List<Map<String, Object>> list = this.storehousePositionsService.listMaps(queryWrapper);
+
 
         List<TreeNode> treeViewNodes = new ArrayList<>();
 

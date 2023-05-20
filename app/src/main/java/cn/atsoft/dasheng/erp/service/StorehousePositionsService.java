@@ -136,4 +136,6 @@ public interface StorehousePositionsService extends IService<StorehousePositions
     void format(List<StorehousePositionsResult> data);
 
     void skuFormat(List<SkuResult> data);
+
+    List<StorehousePositionsResult> getLowestLevelPositions(Long pid, Long tenantId);
 }

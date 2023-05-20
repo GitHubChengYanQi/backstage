@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.erp.entity.StorehousePositionsDeptBind;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsDeptBindParam;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsDeptBindResult;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 
@@ -25,6 +26,9 @@ public interface StorehousePositionsDeptBindService extends IService<StorehouseP
      * @Date 2022-01-25
      */
     void add(StorehousePositionsDeptBindParam param);
+
+    @Async
+    void addBatch(List<StorehousePositionsDeptBindParam> params);
 
     /**
      * 删除

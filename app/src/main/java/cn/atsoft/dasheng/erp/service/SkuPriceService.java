@@ -27,6 +27,8 @@ public interface SkuPriceService extends IService<SkuPrice> {
      */
     void add(SkuPriceParam param);
 
+    void messageAdd(SkuPriceParam param);
+
     /***
      * 批量
      */

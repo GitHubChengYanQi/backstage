@@ -7,6 +7,8 @@
         <id column="sku_price_id" property="skuPriceId"/>
         <result column="sku_id" property="skuId"/>
         <result column="price" property="price"/>
+        <result column="type" property="type"/>
+        <result column="tenant_id" property="tenantId"/>
         <result column="create_time" property="createTime"/>
         <result column="create_user" property="createUser"/>
         <result column="update_time" property="updateTime"/>
@@ -19,10 +21,12 @@
         sku_price_id AS "skuPriceId",
         sku_id AS "skuId",
         price AS "price",
+        `type` AS "type",
         create_time AS "createTime",
         create_user AS "createUser",
         update_time AS "updateTime",
         update_user AS "updateUser",
+        tenant_id AS "tenantId",
         display AS "display"
     </sql>
 

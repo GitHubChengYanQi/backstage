@@ -41,7 +41,6 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -101,7 +100,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             }
         }
 
-        Integer count = this.query().eq("name", param.getName()).eq("tenant_id", LoginContextHolder.getContext().getTenantId()).eq("pid", param.getPid()).eq("display", 1).count();
+        Integer count = this.query().eq("storehouse_id",param.getStorehouseId()).eq("name", param.getName()).eq("tenant_id", LoginContextHolder.getContext().getTenantId()).eq("pid", param.getPid()).eq("display", 1).count();
         if (count > 0) {
             throw new ServiceException(500, "名字已重复");
         }
@@ -1397,5 +1396,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                 }
             }
         }
+    }
+    @Override
+    public List<StorehousePositionsResult> getLowestLevelPositions(Long pid, Long tenantId){
+        return this.baseMapper.getLowestLevelPositions(pid,tenantId);
     }
 }

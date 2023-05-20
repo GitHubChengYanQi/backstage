@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.bom.model.result.RestBomDetailResult;
 import cn.atsoft.dasheng.bom.model.result.RestBomResult;
 import cn.atsoft.dasheng.bom.service.RestBomDetailService;
 import cn.atsoft.dasheng.bom.service.RestBomService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.goods.sku.entity.RestSku;
 import cn.atsoft.dasheng.goods.sku.model.result.RestSkuResult;
@@ -123,9 +124,9 @@ public class RestBomServiceImpl extends ServiceImpl<RestBomMapper, RestBom> impl
     }
 
     @Override
-    public PageInfo<RestBomResult> findPageBySpec(RestBomParam bomParam) {
+    public PageInfo<RestBomResult> findPageBySpec(RestBomParam bomParam, DataScope dataScope) {
         Page<RestBomResult> pageContext = getPageContext();
-        Page<RestBomResult> page = this.baseMapper.customPageList(pageContext, bomParam);
+        Page<RestBomResult> page = this.baseMapper.customPageList(pageContext, bomParam,dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

@@ -3,11 +3,13 @@ package cn.atsoft.dasheng.bom.mapper;
 import cn.atsoft.dasheng.bom.entity.RestBom;
 import cn.atsoft.dasheng.bom.model.params.RestBomParam;
 import cn.atsoft.dasheng.bom.model.result.RestBomResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.security.core.parameters.P;
 
+import javax.xml.crypto.Data;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +37,7 @@ public interface RestBomMapper extends BaseMapper<RestBom> {
      * @author Captain_Jazz
      * @Date 2022-07-25
      */
-    Page<RestBomResult> customPageList(@Param("page") Page page, @Param("paramCondition") RestBomParam bomParam);
+    Page<RestBomResult> customPageList(@Param("page") Page page, @Param("paramCondition") RestBomParam bomParam, @Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

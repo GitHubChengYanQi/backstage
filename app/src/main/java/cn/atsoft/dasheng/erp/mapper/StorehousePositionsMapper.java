@@ -29,6 +29,7 @@ public interface StorehousePositionsMapper extends BaseMapper<StorehousePosition
      * @Date 2021-10-29
      */
     List<StorehousePositionsResult> customList(@Param("paramCondition") StorehousePositionsParam paramCondition, @Param("dataScope")DataScope dataScope);
+    List<StorehousePositionsResult> getLowestLevelPositions( @Param("pid")Long pid,@Param("tenantId")Long tenantId);
 
     /**
      * 获取map列表

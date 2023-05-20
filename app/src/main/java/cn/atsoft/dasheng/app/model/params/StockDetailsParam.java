@@ -38,6 +38,7 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
     List<Long> brandIds;
     private Long outStockOrderId;
     private Long number;
+    private Long tenantId;
     @ApiModelProperty("二维码id")
 
     private Long qrCodeid;

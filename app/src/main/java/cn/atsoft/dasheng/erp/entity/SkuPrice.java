@@ -32,6 +32,11 @@ public class SkuPrice implements Serializable {
      */
     @TableField("sku_id")
     private Long skuId;
+    /**
+     * type
+     */
+    @TableField("type")
+    private Integer type;
 
     /**
      * 价格
@@ -73,6 +78,14 @@ public class SkuPrice implements Serializable {
 
     @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
     private Long tenantId;
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
 
     public Long getTenantId() {
         return tenantId;
@@ -157,14 +170,17 @@ public class SkuPrice implements Serializable {
     @Override
     public String toString() {
         return "SkuPrice{" +
-        "skuPriceId=" + skuPriceId +
-        ", skuId=" + skuId +
-        ", price=" + price +
-        ", createTime=" + createTime +
-        ", createUser=" + createUser +
-        ", updateTime=" + updateTime +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        "}";
+                "skuPriceId=" + skuPriceId +
+                ", skuId=" + skuId +
+                ", type=" + type +
+                ", price=" + price +
+                ", createTime=" + createTime +
+                ", createUser=" + createUser +
+                ", updateTime=" + updateTime +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                ", tenantId=" + tenantId +
+                '}';
     }
 }
