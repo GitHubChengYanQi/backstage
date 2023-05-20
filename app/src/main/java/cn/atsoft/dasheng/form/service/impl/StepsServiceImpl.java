@@ -113,6 +113,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         }
 
         ActivitiSteps entity = getEntity(param);
+        entity.setSetpsId(null);
         entity.setType(START);
         entity.setSupper(0L);
         entity.setProcessId(processId);
@@ -210,6 +211,7 @@ public class StepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiS
         activitiSteps.setProcessId(processId);
         activitiSteps.setSupper(supper);
         activitiSteps.setStepType(node.getStepType());
+        activitiSteps.setSetpsId(null);
         this.save(activitiSteps);
         //判断配置
         switch (node.getStepType()) {
