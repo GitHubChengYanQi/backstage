@@ -159,6 +159,7 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
     }
 
     @Override
+    @Transactional
     public void addByBom(ProductionPlanParam param) {
         if (ToolUtil.isEmpty(param.getCoding())) {
             CodingRules codingRules = codingRulesService.query().eq("module", "13").eq("state", 1).one();
