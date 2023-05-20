@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.production.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.production.entity.ProductionPlan;
 import cn.atsoft.dasheng.production.model.params.ProductionPlanParam;
 import cn.atsoft.dasheng.production.model.result.ProductionPlanResult;
@@ -117,7 +119,9 @@ public class ProductionPlanController extends BaseController {
         if(ToolUtil.isEmpty(productionPlanParam)){
             productionPlanParam = new ProductionPlanParam();
         }
-        return this.productionPlanService.findPageBySpec(productionPlanParam);
+        DataScope dataScope = new DataScope(null, LoginContextHolder.getContext().getTenantId());
+
+        return this.productionPlanService.findPageBySpec(productionPlanParam,dataScope);
     }
 
 

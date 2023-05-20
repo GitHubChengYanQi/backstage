@@ -49,8 +49,7 @@
         plan.files AS "files",
         plan.status AS "status",
         plan.bom_count AS "bomCount",
-        plan.tenant_id AS "tenantId",
-        plan.deptId AS "deptId"
+        plan.tenant_id AS "tenantId"
     </sql>
 
 

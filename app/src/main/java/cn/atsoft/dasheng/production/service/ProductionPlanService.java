@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.production.entity.ProductionPlan;
 import cn.atsoft.dasheng.production.model.params.ProductionPlanParam;
 import cn.atsoft.dasheng.production.model.result.ProductionPlanResult;
@@ -67,7 +68,7 @@ public interface ProductionPlanService extends IService<ProductionPlan> {
      * @author 
      * @Date 2022-02-25
      */
-     PageInfo<ProductionPlanResult> findPageBySpec(ProductionPlanParam param);
+     PageInfo<ProductionPlanResult> findPageBySpec(ProductionPlanParam param, DataScope dataScope);
 
     void format(List<ProductionPlanResult> param);
 

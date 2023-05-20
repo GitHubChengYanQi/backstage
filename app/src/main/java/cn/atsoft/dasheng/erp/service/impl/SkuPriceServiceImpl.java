@@ -10,7 +10,6 @@ import cn.atsoft.dasheng.erp.model.result.SkuPriceListResult;
 import cn.atsoft.dasheng.erp.model.result.SkuPriceResult;
 import cn.atsoft.dasheng.erp.service.SkuPriceService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -35,12 +34,30 @@ public class SkuPriceServiceImpl extends ServiceImpl<SkuPriceMapper, SkuPrice> i
 
     @Override
     public void add(SkuPriceParam param) {
-        this.update(new SkuPrice() {{
-            setDisplay(0);
-        }}, new QueryWrapper<SkuPrice>() {{
-            eq("sku_id", param.getSkuId());
-        }});
+
         if (ToolUtil.isNotEmpty(param.getPrice()) && ToolUtil.isNotEmpty(param.getSkuId())) {
+            this.update(new SkuPrice() {{
+                setDisplay(0);
+            }}, new QueryWrapper<SkuPrice>() {{
+                eq("sku_id", param.getSkuId());
+                eq("type",param.getType());
+            }});
+            SkuPrice entity = getEntity(param);
+//            entity.setPrice((int)Math.round(param.getPrice() * 100));
+            this.save(entity);
+        }
+
+    }
+    @Override
+    public void messageAdd(SkuPriceParam param) {
+
+        if (ToolUtil.isNotEmpty(param.getPrice()) && ToolUtil.isNotEmpty(param.getSkuId())) {
+            this.update(new SkuPrice() {{
+                setDisplay(0);
+            }}, new QueryWrapper<SkuPrice>() {{
+                eq("sku_id", param.getSkuId());
+                eq("type",param.getType());
+            }});
             SkuPrice entity = getEntity(param);
             entity.setPrice((int)Math.round(param.getPrice() * 100));
             this.save(entity);

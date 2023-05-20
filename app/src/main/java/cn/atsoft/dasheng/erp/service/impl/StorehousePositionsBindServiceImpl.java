@@ -86,7 +86,9 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         for (Long skuId : param.getSkuIds()) {
             StorehousePositionsBind bind = new StorehousePositionsBind();
             bind.setSkuId(skuId);
-            bind.setBrandId(param.getBrandId());
+            if (ToolUtil.isNotEmpty(param.getBrandId())) {
+                bind.setBrandId(param.getBrandId());
+            }
             bind.setPositionId(param.getPositionId());
             binds.add(bind);
         }

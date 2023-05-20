@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import cn.atsoft.dasheng.production.model.params.ProductionPickListsCartParam;
 import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,9 @@ public interface StockDetailsService extends IService<StockDetails> {
      * @Date 2021-07-15
      */
     Long add(StockDetailsParam param);
+
+    @Transactional
+    void addStockDetials(StockDetailsParam param);
 
     /**
      * 删除

@@ -38,7 +38,9 @@
             b.create_time AS "createTime",
             b.update_time AS "updateTime",
             b.create_user AS "createUser",
-            b.update_user AS "updateUser"
+            b.update_user AS "updateUser",
+            b.deptId AS "deptId",
+            b.tenant_id AS tenantId
 
     </sql>
     <select id="customList" resultType="cn.atsoft.dasheng.bom.model.result.RestBomResult" parameterType="cn.atsoft.dasheng.bom.model.params.RestBomParam">

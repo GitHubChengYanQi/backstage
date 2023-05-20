@@ -104,7 +104,7 @@ public class RestStorehouseServiceImpl extends ServiceImpl<RestStorehouseMapper,
             if (oldParentRestStorehouse != null) {
                 // 如果旧的父仓库存在，从旧的父仓库的 children 字段中移除当前仓库的 ID
                 List<String> oldChildrenIds = Arrays.stream(oldParentRestStorehouse.getChildren().split(","))
-                        .filter(id -> !id.equals(String.valueOf(oldRestStorehouse.getStorehouseId())))
+                        .filter(id -> !id.equals(String.valueOf(oldRestStorehouse.getStorehouseId()))) 
                         .collect(Collectors.toList());
                 oldParentRestStorehouse.setChildren(String.join(",", oldChildrenIds));
                 this.updateById(oldParentRestStorehouse);

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -43,7 +44,7 @@ public interface PartsMapper extends BaseMapper<Parts> {
      * @author song
      * @Date 2021-10-21
      */
-    Page<PartsResult> customPageList(@Param("page") Page page, @Param("paramCondition") PartsParam paramCondition);
+    Page<PartsResult> customPageList(@Param("page") Page page, @Param("paramCondition") PartsParam paramCondition, @Param("dataScope") DataScope dataScope);
 
     /**
      * 获取boms列表
