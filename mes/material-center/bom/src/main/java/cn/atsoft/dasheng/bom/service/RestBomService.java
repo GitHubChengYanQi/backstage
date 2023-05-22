@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.bom.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.bom.entity.RestBom;
+import cn.atsoft.dasheng.bom.model.params.RestBomDetailParam;
 import cn.atsoft.dasheng.bom.model.params.RestBomParam;
 import cn.atsoft.dasheng.bom.model.result.RestBomResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
@@ -51,6 +52,8 @@ public interface RestBomService extends IService<RestBom> {
     Integer countBySkuIdAndVersion(Long skuId, String version);
 
     List<RestBom> getBySkuIds(List<Long> skuIds);
+
+    List<RestBom> getBySkuAndVersion(List<RestBomDetailParam> params);
 
     List<RestBomResult> getByBomId(Long bomId, Integer number);
 }

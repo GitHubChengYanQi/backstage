@@ -235,6 +235,9 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             parts.setPartsId(null);
             this.save(parts);
             List<ErpPartsDetail> partsDetails = new ArrayList<>();
+            if(ToolUtil.isEmpty(partsParam.getParts())){
+                throw new ServiceException(500, "请添加物料");
+            }
             for (ErpPartsDetailParam part : partsParam.getParts()) {
                 part.setPartsId(parts.getPartsId());
                 part.setAutoOutstock(part.getAutoOutstock());
