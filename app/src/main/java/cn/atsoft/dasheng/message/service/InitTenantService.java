@@ -85,7 +85,7 @@ public class InitTenantService {
 
 //    @Autowired
 
-
+ 
     public void initTenant(Long tenantId) {
         System.out.println("init tenant data for " + tenantId);
         //初始化租户 创建一些基础信息

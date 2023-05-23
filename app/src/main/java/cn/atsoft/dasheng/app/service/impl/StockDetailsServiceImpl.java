@@ -108,7 +108,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         Long number = param.getNumber();
         Long tenantId = param.getTenantId();
         Sku sku = skuService.getById(skuId);
-        List<StorehousePositionsResult> lowestLevelPositions = positionsService.getLowestLevelPositions(0L, tenantId);
+        List<StorehousePositionsResult> lowestLevelPositions = positionsService.getLowestLevelPositions(null, tenantId);
         if (ToolUtil.isNotEmpty(lowestLevelPositions)) {
             Long storehousePositionsId = lowestLevelPositions.get(0).getStorehousePositionsId();
             Long storehouseId = lowestLevelPositions.get(0).getStorehouseId();

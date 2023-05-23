@@ -63,7 +63,7 @@ public class RestAttributeServiceImpl extends ServiceImpl<RestAttributeMapper, R
          */
         List<RestAttributeValues> resultValue = new ArrayList<>();
         for (RestAttributeValuesParam attributeValuesParam : param.getAttributeValuesParams()) {
-            param.setAttributeId(entity.getAttributeId());
+            attributeValuesParam.setAttributeId(entity.getAttributeId());
             Long attributeValueId = attributeValuesService.add(attributeValuesParam);
 
             resultValue.add(new RestAttributeValues(){{

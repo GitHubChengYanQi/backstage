@@ -4,19 +4,20 @@ import cn.atsoft.dasheng.Excel.service.InstockViewExcel;
 import cn.atsoft.dasheng.Excel.service.OutStockViewExcel;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
+import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.service.OutstockOrderService;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.dynamic.entity.Dynamic;
 import cn.atsoft.dasheng.dynamic.model.params.DynamicParam;
 import cn.atsoft.dasheng.dynamic.service.DynamicService;
 import cn.atsoft.dasheng.erp.entity.Maintenance;
+import cn.atsoft.dasheng.erp.entity.SkuPrice;
 import cn.atsoft.dasheng.erp.model.params.DataStatisticsViewParam;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
-import cn.atsoft.dasheng.erp.service.AnnouncementsService;
-import cn.atsoft.dasheng.erp.service.InstockOrderService;
-import cn.atsoft.dasheng.erp.service.MaintenanceService;
-import cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.erp.model.params.SkuPriceParam;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.message.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.production.entity.ProductionCard;
 import cn.atsoft.dasheng.production.entity.ProductionPlan;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static cn.atsoft.dasheng.enmu.MicroServiceType.INIT;
+import static cn.atsoft.dasheng.message.enmu.OperationType.INIT_STOCK_DETAIL;
 
 @Service
 public class MicroMessageService {
@@ -73,9 +75,16 @@ public class MicroMessageService {
 
     @Autowired
     private OutStockViewExcel outStockViewExcel;
-//
+    //
     @Autowired
     private InitTenantService initTenantService;
+
+    @Autowired
+    private SkuPriceService skuPriceService;
+
+
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
 
     public void microServiceDo(MicroServiceEntity microServiceEntity) throws IOException {
@@ -143,6 +152,8 @@ public class MicroMessageService {
                         InstockOrderParam instockOrderParam = JSON.parseObject(microServiceEntity.getObject().toString(), InstockOrderParam.class);
                         instockOrderService.addRecord(instockOrderParam);
                         break;
+                    case INIT_STOCK_DETAIL:
+                        break;
                 }
                 break;
             case OUTSTOCKORDER:
@@ -197,8 +208,31 @@ public class MicroMessageService {
                         initTenantService.initTenant((Long) microServiceEntity.getObject());
                         break;
                 }
-                default:
+            case SKU_NUMBER:
+                switch (microServiceEntity.getOperationType()) {
+                    case ADD:
+                        SkuPriceParam skuPriceParam = JSON.parseObject(microServiceEntity.getObject().toString(), SkuPriceParam.class);
+                        skuPriceService.add(skuPriceParam);
+                        break;
+                }
+            case STOCK_DETAIL:
+                switch (microServiceEntity.getOperationType()) {
+                    case ADD:
+                        StockDetailsParam stockDetailsParam = JSON.parseObject(microServiceEntity.getObject().toString(), StockDetailsParam.class);
+                        stockDetailsService.addStockDetials(stockDetailsParam);
+                        break;
+                }
                     break;
+            case SKU_PRICE:
+                switch (microServiceEntity.getOperationType()) {
+                    case ADD:
+                        SkuPriceParam stockDetailsParam = JSON.parseObject(microServiceEntity.getObject().toString(), SkuPriceParam.class);
+                        skuPriceService.add(stockDetailsParam);
+                        break;
+                }
+                    break;
+            default:
+                break;
         }
     }
 }

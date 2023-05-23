@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.model.params;
 
+import cn.atsoft.dasheng.crm.model.params.OrderParam;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.ToStringSerializer;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -41,6 +42,8 @@ public class ProductionPickListsCartParam implements Serializable, BaseValidatin
     private Boolean warning = false;
     //搜索用字段
     private String queryText;
+
+    private OrderParam orderParam;
 
 
     private String type;

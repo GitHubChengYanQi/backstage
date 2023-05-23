@@ -1,8 +1,11 @@
 package cn.atsoft.dasheng.goods.sku.service.impl;
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.codeRule.service.RestCodeRuleService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.enmu.OperationType;
+import cn.atsoft.dasheng.entity.MicroServiceEntity;
 import cn.atsoft.dasheng.goods.brand.model.params.RestSkuBrandBindParam;
 import cn.atsoft.dasheng.goods.brand.service.RestBrandService;
 import cn.atsoft.dasheng.goods.brand.service.RestSkuBrandBindService;
@@ -24,6 +27,7 @@ import cn.atsoft.dasheng.goods.classz.service.RestClassService;
 import cn.atsoft.dasheng.goods.sku.entity.RestSku;
 import cn.atsoft.dasheng.goods.sku.mapper.RestSkuMapper;
 import cn.atsoft.dasheng.goods.sku.model.RestSkuJson;
+import cn.atsoft.dasheng.goods.sku.model.params.RestInitialNumber;
 import cn.atsoft.dasheng.goods.sku.model.params.RestSkuParam;
 import cn.atsoft.dasheng.goods.sku.model.params.SkuListParam;
 import cn.atsoft.dasheng.goods.sku.model.result.RestSkuResult;
@@ -39,6 +43,7 @@ import cn.atsoft.dasheng.goods.unit.entity.RestUnit;
 import cn.atsoft.dasheng.goods.unit.model.result.RestUnitResult;
 import cn.atsoft.dasheng.goods.unit.service.RestUnitService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.producer.RestMessageProducer;
 import cn.atsoft.dasheng.sys.modular.system.entity.Dict;
 import cn.atsoft.dasheng.sys.modular.system.service.DictService;
 import cn.hutool.core.bean.BeanUtil;
@@ -55,6 +60,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+import static cn.atsoft.dasheng.enmu.MicroServiceType.*;
+
 /**
  * <p>
  * sku表	 服务实现类
@@ -69,7 +76,7 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
     private RestSpuService spuService; //spu
 
     @Autowired
-    private RestClassService  classService; //类目
+    private RestClassService classService; //类目
 
     @Autowired
     private RestAttributeValuesService attributeValuesService; //属性
@@ -109,6 +116,8 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 //    @Autowired
 //    private StockForewarnService stockForewarnService; //库存预警
 
+    @Autowired
+    private RestMessageProducer messageProducer; //消息队列
 
     @Transactional(propagation = Propagation.REQUIRED, timeout = 90)
 
@@ -136,13 +145,13 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 //                throw new ServiceException(500, "物料必须添加在最底级分类中");
 //            }
             Long spuClassificationId = 0L;
-            if (!param.getSpuClass().equals(0L) && ToolUtil.isNotEmpty(spuClassification)){
-                spuClassificationId =  spuClassification.getSpuClassificationId();
+            if (!param.getSpuClass().equals(0L) && ToolUtil.isNotEmpty(spuClassification)) {
+                spuClassificationId = spuClassification.getSpuClassificationId();
             }
             /**
              * sku名称（skuName）加型号(spuName)判断防止重复
              */
-            param.setRestClass(new RestClassParam(){{
+            param.setRestClass(new RestClassParam() {{
                 setName(param.getSpu().getName().trim());
             }});
             Long classId = this.classService.add(param.getRestClass());
@@ -156,7 +165,7 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
             /**
              *  查询同名的sku 并返回提示
              */
-            RestSku sku = this.throwDuplicate(param,spuId);
+            RestSku sku = this.throwDuplicate(param, spuId);
             if (ToolUtil.isNotEmpty(sku) && md5Flag) {
                 {
                     return new HashMap<String, RestSku>() {{
@@ -168,9 +177,9 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 
             //生成编码
             if (ToolUtil.isEmpty(param.getStandard())) {
-                    String backCoding = codingRulesService.backCoding("sku", param);
-                    param.setStandard(backCoding);
-                    param.setCoding(backCoding);
+                String backCoding = codingRulesService.backCoding("sku", param);
+                param.setStandard(backCoding);
+                param.setCoding(backCoding);
             }
             /**
              * 判断成品码是否重复
@@ -188,7 +197,7 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
              * 做匹配保存 属性属性值方法
              *
              */
-            List<RestAttributeValues> list = ToolUtil.isEmpty(param.getSkuAttributeAndValues()) ? new ArrayList<>() : this.addAttributeAndValue(param.getSkuAttributeAndValues(), classId);
+            List<RestAttributeValues> list = ToolUtil.isEmpty(param.getSku()) ? new ArrayList<>() : this.addAttributeAndValue(param.getSku(), classId);
 
             RestSku entity = getEntity(param);
 
@@ -274,9 +283,8 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 //                    maintenanceCycleService.save(maintenanceCycle);
 //                }
                 skuId = entity.getSkuId();
-                if(param.getInitialNumber()>0){
 
-                }
+
 
                 ToolUtil.copyProperties(entity, result);
 //                /**
@@ -300,11 +308,60 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 //            }
 //        }
         }
+        if (param.getInitialNumber() > 0) {
+            param.setSkuId(skuId);
+            RestInitialNumber restInitialNumber = new RestInitialNumber();
+            restInitialNumber.setSkuId(skuId);
+            restInitialNumber.setNumber(param.getInitialNumber());
+            restInitialNumber.setTenantId(LoginContextHolder.getContext().getTenantId());
+            messageProducer.microService(
+                    new MicroServiceEntity() {{
+                        setType(STOCK_DETAIL);
+                        setOperationType(OperationType.ADD);
+                        setObject(restInitialNumber);
+                        setTimes(1);
+                        setMaxTimes(3);
+                    }}
+            );
+        }
+        if (ToolUtil.isNotEmpty(param.getInPrice())) {
+            param.setSkuId(skuId);
+            RestInitialNumber restInitialNumber = new RestInitialNumber();
+            restInitialNumber.setSkuId(skuId);
+            restInitialNumber.setPrice(param.getInPrice());
+            restInitialNumber.setType(1);
+            restInitialNumber.setTenantId(LoginContextHolder.getContext().getTenantId());
+            messageProducer.microService(
+                    new MicroServiceEntity() {{
+                        setType(SKU_PRICE);
+                        setOperationType(OperationType.ADD);
+                        setObject(restInitialNumber);
+                        setTimes(1);
+                        setMaxTimes(3);
+                    }}
+            );
+        }
+        if (ToolUtil.isNotEmpty(param.getOutPrice())) {
+            param.setSkuId(skuId);
+            RestInitialNumber restInitialNumber = new RestInitialNumber();
+            restInitialNumber.setType(2);
+            restInitialNumber.setSkuId(skuId);
+            restInitialNumber.setPrice(param.getOutPrice());
+            restInitialNumber.setTenantId(LoginContextHolder.getContext().getTenantId());
+            messageProducer.microService(
+                    new MicroServiceEntity() {{
+                        setType(SKU_PRICE);
+                        setOperationType(OperationType.ADD);
+                        setObject(restInitialNumber);
+                        setTimes(1);
+                        setMaxTimes(3);
+                    }}
+            );
+        }
         return new HashMap<String, RestSku>() {{
             put("success", result);
         }};
     }
-
 
 
     @Transactional
@@ -379,70 +436,70 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
     }
 
 
-        @Override
-        public void format (List < RestSkuResult > param) {
+    @Override
+    public void format(List<RestSkuResult> param) {
 
-            List<Long> spuIds = new ArrayList<>();
-            List<Long> attributeIds = new ArrayList<>();
-            List<Long> userIds = new ArrayList<>();
-            List<Long> skuIds = new ArrayList<>();
-            List<Long> materialIds = new ArrayList<>();
+        List<Long> spuIds = new ArrayList<>();
+        List<Long> attributeIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> materialIds = new ArrayList<>();
 
-            for (RestSkuResult skuResult : param) {
-                skuIds.add(skuResult.getSkuId());
-                spuIds.add(skuResult.getSpuId());
-                userIds.add(skuResult.getCreateUser());
-                JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
-                List<RestAttributeValues> valuesRequests = JSONUtil.toList(jsonArray, RestAttributeValues.class);
-                for (RestAttributeValues valuesRequest : valuesRequests) {
-                    attributeIds.add(valuesRequest.getAttributeId());
-                }
+        for (RestSkuResult skuResult : param) {
+            skuIds.add(skuResult.getSkuId());
+            spuIds.add(skuResult.getSpuId());
+            userIds.add(skuResult.getCreateUser());
+            JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
+            List<RestAttributeValues> valuesRequests = JSONUtil.toList(jsonArray, RestAttributeValues.class);
+            for (RestAttributeValues valuesRequest : valuesRequests) {
+                attributeIds.add(valuesRequest.getAttributeId());
+            }
 //                if (ToolUtil.isNotEmpty(skuResult.getMaterialId())) {
 //                    List<Long> materialIdList = JSON.parseArray(skuResult.getMaterialId(), Long.class);
 //                    skuResult.setMaterialIdList(materialIdList);
 //                    materialIds.addAll(materialIdList);
 //                }
-            }
+        }
 //        List<MaintenanceCycle> maintenanceCycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
 //        List<StockForewarn> stockForewarns = skuIds.size() == 0 ? new ArrayList<>() : stockForewarnService.lambdaQuery().eq(StockForewarn::getType,"sku").in(StockForewarn::getFormId,skuIds).eq(StockForewarn::getDisplay,1).list();
-            List<RestAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
-            List<RestAttributeValues> attributeValues = attributeIds.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
-                    .in(RestAttributeValues::getAttributeId, attributeIds)
-                    .list();
-            List<RestSpu> spus = spuIds.size() == 0 ? new ArrayList<>() : spuService.query().in("spu_id", spuIds).list();
-            List<Long> unitIds = new ArrayList<>();
-            List<Long> spuClassId = new ArrayList<>();
-            Map<Long, RestUnitResult> unitMaps = new HashMap<>();
-            Map<Long, RestCategoryResult> spuClassificationMap = new HashMap<>();
+        List<RestAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
+        List<RestAttributeValues> attributeValues = attributeIds.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
+                .in(RestAttributeValues::getAttributeId, attributeIds)
+                .list();
+        List<RestSpu> spus = spuIds.size() == 0 ? new ArrayList<>() : spuService.query().in("spu_id", spuIds).list();
+        List<Long> unitIds = new ArrayList<>();
+        List<Long> spuClassId = new ArrayList<>();
+        Map<Long, RestUnitResult> unitMaps = new HashMap<>();
+        Map<Long, RestCategoryResult> spuClassificationMap = new HashMap<>();
 //        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
-            for (RestSpu spu : spus) {
-                if (ToolUtil.isNotEmpty(spu.getUnitId())) {
-                    unitIds.add(spu.getUnitId());
-                    spuClassId.add(spu.getSpuClassificationId());
-                }
+        for (RestSpu spu : spus) {
+            if (ToolUtil.isNotEmpty(spu.getUnitId())) {
+                unitIds.add(spu.getUnitId());
+                spuClassId.add(spu.getSpuClassificationId());
             }
+        }
 
-            List<RestUnit> units = unitIds.size() == 0 ? new ArrayList<>() : unitService.query().in("unit_id", unitIds).eq("display", 1).list();
-            List<RestCategory> spuClassifications = spuClassId.size() == 0 ? new ArrayList<>() : spuClassificationService.query().in("spu_classification_id", spuClassId).list();
+        List<RestUnit> units = unitIds.size() == 0 ? new ArrayList<>() : unitService.query().in("unit_id", unitIds).eq("display", 1).list();
+        List<RestCategory> spuClassifications = spuClassId.size() == 0 ? new ArrayList<>() : spuClassificationService.query().in("spu_classification_id", spuClassId).list();
 
-            for (RestSpu spu : spus) {
-                if (ToolUtil.isNotEmpty(units)) {
-                    for (RestUnit unit : units) {
-                        if (spu.getUnitId() != null && spu.getUnitId().equals(unit.getUnitId())) {
-                            RestUnitResult unitResult = new RestUnitResult();
-                            ToolUtil.copyProperties(unit, unitResult);
-                            unitMaps.put(spu.getSpuId(), unitResult);
-                        }
-                    }
-                    for (RestCategory spuClassification : spuClassifications) {
-                        if (spu.getSpuClassificationId() != null && spu.getSpuClassificationId().equals(spuClassification.getSpuClassificationId())) {
-                            RestCategoryResult classification = new RestCategoryResult();
-                            ToolUtil.copyProperties(spuClassification, classification);
-                            spuClassificationMap.put(spu.getSpuId(), classification);
-                        }
+        for (RestSpu spu : spus) {
+            if (ToolUtil.isNotEmpty(units)) {
+                for (RestUnit unit : units) {
+                    if (spu.getUnitId() != null && spu.getUnitId().equals(unit.getUnitId())) {
+                        RestUnitResult unitResult = new RestUnitResult();
+                        ToolUtil.copyProperties(unit, unitResult);
+                        unitMaps.put(spu.getSpuId(), unitResult);
                     }
                 }
+                for (RestCategory spuClassification : spuClassifications) {
+                    if (spu.getSpuClassificationId() != null && spu.getSpuClassificationId().equals(spuClassification.getSpuClassificationId())) {
+                        RestCategoryResult classification = new RestCategoryResult();
+                        ToolUtil.copyProperties(spuClassification, classification);
+                        spuClassificationMap.put(spu.getSpuId(), classification);
+                    }
+                }
             }
+        }
 //
 //        /**
 //         * 查询品牌
@@ -476,23 +533,23 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 //         */
 //        List<StockDetails> lockStockDetail = pickListsCartService.getLockStockDetail();
 //
-            List<RestTextrueResult> materialResults = materialService.details(materialIds);
+        List<RestTextrueResult> materialResults = materialService.details(materialIds);
 
-            for (RestSkuResult skuResult : param) {
-                /**
-                 * 材质
-                 */
-                List<RestTextrueResult> materialResultList = new ArrayList<>();
-                if (ToolUtil.isNotEmpty(skuResult.getMaterialIdList())) {
-                    for (Long materialId : skuResult.getMaterialIdList()) {
-                        for (RestTextrueResult materialResult : materialResults) {
-                            if (materialResult.getMaterialId().equals(materialId)) {
-                                materialResultList.add(materialResult);
-                            }
+        for (RestSkuResult skuResult : param) {
+            /**
+             * 材质
+             */
+            List<RestTextrueResult> materialResultList = new ArrayList<>();
+            if (ToolUtil.isNotEmpty(skuResult.getMaterialIdList())) {
+                for (Long materialId : skuResult.getMaterialIdList()) {
+                    for (RestTextrueResult materialResult : materialResults) {
+                        if (materialResult.getMaterialId().equals(materialId)) {
+                            materialResultList.add(materialResult);
                         }
                     }
                 }
-                skuResult.setMaterialResultList(materialResultList);
+            }
+            skuResult.setMaterialResultList(materialResultList);
 
 //            //图片
 //            List<Long> imageIds = new ArrayList<>();
@@ -591,42 +648,42 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
                 }
             }
 //
-                JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
-                List<RestAttributeValues> valuesRequests = JSONUtil.toList(jsonArray, RestAttributeValues.class);
-                List<RestSkuJson> list = new ArrayList<>();
-                for (RestAttributeValues valuesRequest : valuesRequests) {
-                    if (ToolUtil.isNotEmpty(valuesRequest.getAttributeId()) && ToolUtil.isNotEmpty(valuesRequest.getAttributeValuesId())) {
-                        RestSkuJson skuJson = new RestSkuJson();
-                        for (RestAttribute itemAttribute : itemAttributes) {
-                            if (itemAttribute.getAttributeId().equals(valuesRequest.getAttributeId())) {
-                                RestAttributes attribute = new RestAttributes();
-                                attribute.setAttributeId(itemAttribute.getAttributeId().toString());
-                                attribute.setAttribute(itemAttribute.getAttribute());
-                                skuJson.setAttribute(attribute);
-                            }
+            JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
+            List<RestAttributeValues> valuesRequests = JSONUtil.toList(jsonArray, RestAttributeValues.class);
+            List<RestSkuJson> list = new ArrayList<>();
+            for (RestAttributeValues valuesRequest : valuesRequests) {
+                if (ToolUtil.isNotEmpty(valuesRequest.getAttributeId()) && ToolUtil.isNotEmpty(valuesRequest.getAttributeValuesId())) {
+                    RestSkuJson skuJson = new RestSkuJson();
+                    for (RestAttribute itemAttribute : itemAttributes) {
+                        if (itemAttribute.getAttributeId().equals(valuesRequest.getAttributeId())) {
+                            RestAttributes attribute = new RestAttributes();
+                            attribute.setAttributeId(itemAttribute.getAttributeId().toString());
+                            attribute.setAttribute(itemAttribute.getAttribute());
+                            skuJson.setAttribute(attribute);
                         }
-                        for (RestAttributeValues attributeValue : attributeValues) {
-                            if (valuesRequest.getAttributeValuesId().equals(attributeValue.getAttributeValuesId())) {
-                                RestValues values = new RestValues();
-                                values.setAttributeValuesId(valuesRequest.getAttributeValuesId().toString());
-                                values.setAttributeValues(attributeValue.getAttributeValues());
-                                skuJson.setValues(values);
-                            }
-                        }
-                        list.add(skuJson);
                     }
-                    skuResult.setSkuJsons(list);
+                    for (RestAttributeValues attributeValue : attributeValues) {
+                        if (valuesRequest.getAttributeValuesId().equals(attributeValue.getAttributeValuesId())) {
+                            RestValues values = new RestValues();
+                            values.setAttributeValuesId(valuesRequest.getAttributeValuesId().toString());
+                            values.setAttributeValues(attributeValue.getAttributeValues());
+                            skuJson.setValues(values);
+                        }
+                    }
+                    list.add(skuJson);
                 }
+                skuResult.setSkuJsons(list);
+            }
 //            for (StockForewarn stockForewarn : stockForewarns) {
 //                if(stockForewarn.getFormId().equals(skuResult.getSkuId())){
 //                    skuResult.setStockForewarnResult(BeanUtil.copyProperties(stockForewarn,StockForewarnResult.class));
 //                    break;
 //                }
 //            }
-            }
-//
-//
         }
+//
+//
+    }
 
     @Override
     public List<RestSku> skuResultBySpuId(Long spuId) {
@@ -657,62 +714,61 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
         return skuResults;
     }
 
-        private RestSku getEntity (RestSkuParam param){
-            RestSku entity = new RestSku();
-            ToolUtil.copyProperties(param, entity);
-            return entity;
+    private RestSku getEntity(RestSkuParam param) {
+        RestSku entity = new RestSku();
+        ToolUtil.copyProperties(param, entity);
+        return entity;
+    }
+
+    private RestSpu getOrSaveSpu(RestSkuParam param, Long spuClassificationId, Long categoryId) {
+        RestSpu spu = new RestSpu();
+
+        if (ToolUtil.isNotEmpty(param.getSpu().getSpuId())) {
+            spu = spuService.lambdaQuery().eq(RestSpu::getSpuId, param.getSpu().getSpuId()).and(i -> i.eq(RestSpu::getSpuClassificationId, spuClassificationId)).and(i -> i.eq(RestSpu::getDisplay, 1)).one();
+        } else if (ToolUtil.isNotEmpty(param.getSpu().getName())) {
+            spu = spuService.lambdaQuery().eq(RestSpu::getName, param.getSpu().getName()).and(i -> i.eq(RestSpu::getSpuClassificationId, spuClassificationId)).and(i -> i.eq(RestSpu::getDisplay, 1)).one();
         }
+        RestSpu spuEntity = new RestSpu();
 
-        private RestSpu getOrSaveSpu (RestSkuParam param, Long spuClassificationId, Long categoryId){
-            RestSpu spu = new RestSpu();
-
-            if (ToolUtil.isNotEmpty(param.getSpu().getSpuId())) {
-                spu = spuService.lambdaQuery().eq(RestSpu::getSpuId, param.getSpu().getSpuId()).and(i -> i.eq(RestSpu::getSpuClassificationId, spuClassificationId)).and(i -> i.eq(RestSpu::getDisplay, 1)).one();
-            } else if (ToolUtil.isNotEmpty(param.getSpu().getName())) {
-                spu = spuService.lambdaQuery().eq(RestSpu::getName, param.getSpu().getName()).and(i -> i.eq(RestSpu::getSpuClassificationId, spuClassificationId)).and(i -> i.eq(RestSpu::getDisplay, 1)).one();
+        if (ToolUtil.isNotEmpty(spu)) {
+            if (ToolUtil.isNotEmpty(param.getSpu().getCoding())) {
+                spu.setCoding(param.getSpu().getCoding());
             }
-            RestSpu spuEntity = new RestSpu();
-
-            if (ToolUtil.isNotEmpty(spu)) {
-                if (ToolUtil.isNotEmpty(param.getSpu().getCoding())) {
-                    spu.setCoding(param.getSpu().getCoding());
-                }
-                ToolUtil.copyProperties(spu, spuEntity);
-                spuEntity.setSpuClassificationId(spuClassificationId);
-                spuEntity.setUnitId(param.getUnitId());
-                spuService.updateById(spuEntity);
-                return spuEntity;
-
-            } else {
-                if (ToolUtil.isNotEmpty(param.getSpu().getCoding())) {
-                    spuEntity.setCoding(param.getSpu().getCoding());
-                }
-                spuEntity.setSpuClassificationId(spuClassificationId);
-                spuEntity.setUnitId(param.getUnitId());
-                spuEntity.setName(param.getSpu().getName());
-                spuEntity.setSpuClassificationId(spuClassificationId);
-                spuEntity.setCategoryId(categoryId);
-                spuEntity.setType(0);
-                spuService.save(spuEntity);
-            }
+            ToolUtil.copyProperties(spu, spuEntity);
+            spuEntity.setSpuClassificationId(spuClassificationId);
+            spuEntity.setUnitId(param.getUnitId());
+            spuService.updateById(spuEntity);
             return spuEntity;
-        }
 
-
-
-        private RestSku throwDuplicate (RestSkuParam param, Long spuId){
-            List<RestSku> skus = this.query().eq("sku_name", param.getSkuName()).list();
-            for (RestSku sku : skus) {
-                if (sku.getSpuId().equals(spuId)) {
-                    return sku;
-                }
+        } else {
+            if (ToolUtil.isNotEmpty(param.getSpu().getCoding())) {
+                spuEntity.setCoding(param.getSpu().getCoding());
             }
-            return null;
+            spuEntity.setSpuClassificationId(spuClassificationId);
+            spuEntity.setUnitId(param.getUnitId());
+            spuEntity.setName(param.getSpu().getName());
+            spuEntity.setSpuClassificationId(spuClassificationId);
+            spuEntity.setCategoryId(categoryId);
+            spuEntity.setType(0);
+            spuService.save(spuEntity);
         }
+        return spuEntity;
+    }
+
+
+    private RestSku throwDuplicate(RestSkuParam param, Long spuId) {
+        List<RestSku> skus = this.query().eq("sku_name", param.getSkuName()).list();
+        for (RestSku sku : skus) {
+            if (sku.getSpuId().equals(spuId)) {
+                return sku;
+            }
+        }
+        return null;
+    }
 
     @Override
     public List<SkuListResult> viewResultsByIds(List<Long> ids) {
-        List<SkuListResult> skuListResults =this.baseMapper.customListBySkuView(new SkuListParam(){{
+        List<SkuListResult> skuListResults = this.baseMapper.customListBySkuView(new SkuListParam() {{
             setSkuIds(ids);
         }});
 
@@ -723,7 +779,7 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 
     }
 
-    public void viewFormat(List<SkuListResult> dataList){
+    public void viewFormat(List<SkuListResult> dataList) {
         List<Long> attributeIds = new ArrayList<>();
 
         for (SkuListResult skuListResult : dataList) {
@@ -767,13 +823,14 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
             }
         }
     }
+
     @Override
-    public Boolean skuCheck(RestSkuParam param, Long skuId){
+    public Boolean skuCheck(RestSkuParam param, Long skuId) {
         List<RestSkuResult> restSkuResults = this.formatSkuResult(new ArrayList<Long>() {{
             add(skuId);
         }});
-        if (restSkuResults.size() == 0 ){
-            throw new ServiceException(500,"id未找到");
+        if (restSkuResults.size() == 0) {
+            throw new ServiceException(500, "id未找到");
         }
         RestSkuResult restSkuResult = restSkuResults.get(0);
         RestSkuParam restSkuParam = BeanUtil.copyProperties(restSkuResult, RestSkuParam.class);
@@ -781,11 +838,7 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
         Boolean flag = true;
 
 
-
-
-
-
-    return flag;
+        return flag;
 
 
     }

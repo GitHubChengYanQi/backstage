@@ -1234,19 +1234,12 @@ public class DataStatisticsViewController extends BaseController {
      * 库存总额统计
      */
 
-//    @RequestMapping(value = "/stockTotalView", method = RequestMethod.POST)
-//    @ApiOperation("库存总额统计")
-//    public ResponseData stockTotalView(@RequestBody DataStatisticsViewParam param) {
-//        Double stockMoney = stockDetailsMapper.stockTotalView(LoginContextHolder.getContext().getTenantId());
-//        List<SkuSimpleResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.simpleFormatSkuResult(skuIds);
-//        for (StockTotalView stockTotalView : stockTotalViews) {
-//            for (SkuSimpleResult skuResult : skuResults) {
-//                if (stockTotalView.getSkuId().equals(skuResult.getSkuId())) {
-//                    stockTotalView.setSkuSimpleResult(skuResult);
-//                    break;
-//                }
-//            }
-//        }
-//        return ResponseData.success(stockTotalViews);
-//    }
+    @RequestMapping(value = "/stockTotalView", method = RequestMethod.POST)
+    @ApiOperation("库存总额统计")
+    public ResponseData stockTotalView(@RequestBody DataStatisticsViewParam param) {
+        Double stockMoney = stockDetailsMapper.stockTotalView(LoginContextHolder.getContext().getTenantId());
+        Map<String,Object> result = new HashMap<>();
+        result.put("stockMoney",stockMoney);
+        return ResponseData.success(result);
+    }
 }

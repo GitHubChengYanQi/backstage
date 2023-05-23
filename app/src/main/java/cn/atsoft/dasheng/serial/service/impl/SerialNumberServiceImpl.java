@@ -52,6 +52,9 @@ public class SerialNumberServiceImpl extends ServiceImpl<SerialNumberMapper, Ser
         this.save(entity);
         NumberFormat nf = NumberFormat.getInstance();
         nf.setGroupingUsed(false);
+        if (ToolUtil.isEmpty(entity.getSerialLength())) {
+            entity.setSerialLength(5L);
+        }
         int max = entity.getSerialLength().intValue();
 
         nf.setMaximumIntegerDigits(max);
@@ -61,7 +64,9 @@ public class SerialNumberServiceImpl extends ServiceImpl<SerialNumberMapper, Ser
     }
     @Override
     public String genNumber(){
-       return this.add(new SerialNumberParam());
+       return this.add(new SerialNumberParam(){{
+           setSerialLength(5L);
+       }});
     }
 
     @Override

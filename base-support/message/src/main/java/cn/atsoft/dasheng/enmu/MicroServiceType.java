@@ -16,4 +16,6 @@ public enum MicroServiceType {
     OUTSTOCK_VIEW_EXCEL,
     INIT,
     STOREHOUSE,
+    STOCK_DETAIL,
+    SKU_PRICE
 }

@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.appBase.model.result.MediaResult;
 import cn.atsoft.dasheng.appBase.service.MediaService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -196,26 +197,35 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
             //生成编码
             if (ToolUtil.isEmpty(param.getStandard())) {
-                CodingRules codingRules = codingRulesService.query().eq("module", "0").eq("state", 1).one();
+                try{
+                    param.setTenantId(LoginContextHolder.getContext().getTenantId());
+                }catch (Exception e){
+
+                }
+                CodingRules codingRules = codingRulesService.query().eq("tenant_id", param.getTenantId()).eq("module", "0").eq("state", 1).one();
+                String coding = "";
                 if (ToolUtil.isNotEmpty(codingRules)) {
                     String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId(), spu.getSpuId());
 //                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
                     SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
                     if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
-                        String replace = "";
+
                         if (ToolUtil.isNotEmpty(classification.getCodingClass())) {
-                            replace = backCoding.replace("${skuClass}", classification.getCodingClass());
+                            coding = backCoding.replace("${skuClass}", classification.getCodingClass());
                         } else {
-                            replace = backCoding.replace("${skuClass}", "");
+                            coding = backCoding.replace("${skuClass}", "");
                         }
 
-                        param.setStandard(replace);
-                        param.setCoding(replace);
+
 
                     }
                 } else {
-                    param.setCoding(codingRulesService.genSerial());
+                    coding = codingRulesService.genSerial();
+
+
                 }
+                param.setStandard(coding);
+                param.setCoding(coding);
             }
             /**
              * 判断成品码是否重复
@@ -793,7 +803,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             Long spuId = spu.getSpuId();
             //生成编码
             if (ToolUtil.isEmpty(param.getStandard())) {
-                CodingRules codingRules = codingRulesService.query().eq("module", "0").eq("state", 1).one();
+                CodingRules codingRules = codingRulesService.query().eq("tenant_id",LoginContextHolder.getContext().getTenantId()).eq("module", "0").eq("state", 1).one();
                 if (ToolUtil.isNotEmpty(codingRules)) {
                     String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId(), spu.getSpuId());
                     SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
@@ -875,7 +885,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
      * @return
      */
     private void getCoding(SkuParam param, Long spuId) {
-        CodingRules codingRules = codingRulesService.query().eq("module", "0").eq("state", 1).one();
+        CodingRules codingRules = codingRulesService.query().eq("tenant_id",LoginContextHolder.getContext().getTenantId()).eq("module", "0").eq("state", 1).one();
         if (ToolUtil.isNotEmpty(codingRules)) {
             String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId(), spuId);
 //                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
@@ -1566,7 +1576,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
         List<MaintenanceCycle> maintenanceCycles = skuIds.size() == 0 ? new ArrayList<>() : maintenanceCycleService.query().in("sku_id", skuIds).eq("display", 1).list();
         List<StockForewarn> stockForewarns = skuIds.size() == 0 ? new ArrayList<>() : stockForewarnService.lambdaQuery().eq(StockForewarn::getType, "sku").in(StockForewarn::getFormId, skuIds).eq(StockForewarn::getDisplay, 1).list();
-        List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
+        List<ItemAttribute> itemAttributes =attributeIds.size() == 0 ? new ArrayList<>() : itemAttributeService.lambdaQuery().in(ItemAttribute::getAttributeId,attributeIds).list();
         List<AttributeValues> attributeValues = attributeIds.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
                 .in(AttributeValues::getAttributeId, attributeIds)
                 .list();

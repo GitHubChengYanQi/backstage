@@ -15,6 +15,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,7 +40,7 @@ public class RestSkuParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty(value = "spu分类")
     private RestSpuAttribute spuAttribute;
     @ApiModelProperty(value = "物料属性与属性值")
-    private List<RestSkuAttributeAndValue> skuAttributeAndValues;
+    private List<RestSkuAttributeAndValue> sku;
     @ApiModelProperty(value = "通用表单保存")
     private List<RestGeneralFormDataParam> generalFormDataParams;
     @ApiModelProperty(value = "spu分类")
@@ -48,6 +49,10 @@ public class RestSkuParam implements Serializable, BaseValidatingParam {
     private List<Long> brandIds;
     @ApiModelProperty(value = "spu分类")
     private RestSpuParam spu;
+
+    private Double inPrice;
+
+    private Double outPrice;
 
     private Integer initialNumber;
 
@@ -204,6 +209,12 @@ public class RestSkuParam implements Serializable, BaseValidatingParam {
     private Integer display;
 
 
+    public Long getInPrice() {
+        return inPrice == null ? 0 : BigDecimal.valueOf(inPrice).multiply(BigDecimal.valueOf(100)).longValue();
+    }
+    public Long getOutPrice() {
+        return outPrice == null ? 0 : BigDecimal.valueOf(outPrice).multiply(BigDecimal.valueOf(100)).longValue();
+    }
     @Override
     public String checkParam() {
         return null;

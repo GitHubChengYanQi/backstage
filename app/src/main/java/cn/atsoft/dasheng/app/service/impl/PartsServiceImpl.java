@@ -742,7 +742,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Override
     public List<ErpPartsDetailResult> backDetails(Long skuId, Long partsId, String type) {
         if (ToolUtil.isEmpty(skuId)) {
-            throw new ServiceException(500, "沒傳入skuId");
+            throw new ServiceException(500, "沒传入skuId");
         }
         Parts one;
         if (ToolUtil.isNotEmpty(partsId)) {
