@@ -52,10 +52,17 @@ public class RestBomDetail {
      */
     @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
-
+    /**
+     * 部门id
+     */
+    @TableField(value = "deptId" , fill = FieldFill.INSERT)
+    private Long deptId;
     /**
      * 状态
      */
     @TableField("display")
     private Integer display;
+
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
 }

@@ -147,4 +147,17 @@
             </foreach>
             )
     </select>
+    <select id="getBySkuAndVersion" resultType="cn.atsoft.dasheng.bom.entity.RestBom">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+            daoxin_erp_bom
+        WHERE 1 = 1
+        and
+        <foreach collection="params" index="index" item="param" separator=" or ">
+            (
+              sku_id =  #{param.skuId} and version = #{param.version}
+            )
+            </foreach>
+    </select>
 </mapper>

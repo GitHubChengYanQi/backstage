@@ -846,11 +846,11 @@ public class ProductionTaskServiceImpl extends ServiceImpl<ProductionTaskMapper,
 
 
     private String genCoding() {
-        CodingRules codingRules = codingRulesService.query().eq("module", "18").eq("state", 1).one();
+        CodingRules codingRules = codingRulesService.query().eq("tenant_id",LoginContextHolder.getContext().getTenantId()).eq("module", "18").eq("state", 1).one();
         if (ToolUtil.isNotEmpty(codingRules)) {
             return codingRulesService.backCoding(codingRules.getCodingRulesId());
         } else {
-            throw new ServiceException(500, "请配置生产任务单据编码规则");
+            return codingRulesService.genSerial();
         }
     }
     @Override

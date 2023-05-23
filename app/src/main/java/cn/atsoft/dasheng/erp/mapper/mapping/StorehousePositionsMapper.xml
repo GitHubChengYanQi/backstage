@@ -28,8 +28,13 @@
 
     <select id="getLowestLevelPositions" resultType="cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult">
         SELECT <include refid="Base_Column_List"/> FROM daoxin_erp_storehouse_positions AS t1
-        WHERE t1.pid = #{pid} and tenant_id = #{tenantId} AND NOT EXISTS (
-            SELECT 1 FROM daoxin_erp_storehouse_positions AS t2 WHERE t2.pid = t1.storehouse_positions_id)
+        WHERE
+        1 = 1
+          <if   test="pid!=null">
+            AND pid = #{pid}
+          </if>
+        and tenant_id = #{tenantId} AND NOT EXISTS (
+            SELECT 1 FROM daoxin_erp_storehouse_positions AS t2 WHERE t2.tenant_id = #{tenantId} AND t2.pid = t1.storehouse_positions_id)
     </select>
     <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult"
             parameterType="cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam">

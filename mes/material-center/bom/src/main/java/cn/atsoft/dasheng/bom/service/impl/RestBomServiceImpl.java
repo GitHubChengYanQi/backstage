@@ -85,7 +85,7 @@ public class RestBomServiceImpl extends ServiceImpl<RestBomMapper, RestBom> impl
 
     @Override
     public void cycleJudge(Long skuId, List<RestBom> bomList) {
-        if (bomList.stream().anyMatch(i -> i.getSkuId().equals(skuId))) {
+              if (bomList.stream().anyMatch(i -> i.getSkuId().equals(skuId))) {
             throw new ServiceException(500, "子件中不得出现主件");
         }
         List<String> childrensStrList = bomList.stream().map(RestBom::getChildrens).collect(Collectors.toList());
@@ -94,7 +94,8 @@ public class RestBomServiceImpl extends ServiceImpl<RestBomMapper, RestBom> impl
             childrensIds.addAll(ToolUtil.isEmpty(childrensStr) ? new ArrayList<>() : Arrays.stream(childrensStr.split(",")).map(i -> Long.parseLong(i.trim())).collect(Collectors.toList()));
         }
         List<RestBom> childrens = this.getByBomIds(childrensIds);
-        if (childrens.stream().anyMatch(i -> i.getSkuId().equals(skuId))) {
+        int count =childrensIds.size()== 0 ? 0 :  bomDetailService.lambdaQuery().eq(RestBomDetail::getSkuId, skuId).in(RestBomDetail::getBomId, childrensIds).count();
+        if (childrens.stream().anyMatch(i -> i.getSkuId().equals(skuId)) || count>0) {
             throw new ServiceException(500, "不可循环添加bom");
         }
 
@@ -160,6 +161,11 @@ public class RestBomServiceImpl extends ServiceImpl<RestBomMapper, RestBom> impl
         return this.baseMapper.getBySkuIds(skuIds);
     }
 
+    @Override
+    public List<RestBom> getBySkuAndVersion(List<RestBomDetailParam> params) {
+        return this.baseMapper.getBySkuAndVersion(params);
+    }
+
     public void checkData(RestBomParam bomParam) {
         if (ToolUtil.isEmpty(bomParam.getVersion())) {
             throw new ServiceException(500, "版本号不能为空");
@@ -192,7 +198,8 @@ public class RestBomServiceImpl extends ServiceImpl<RestBomMapper, RestBom> impl
         }
 
 //        int i=0;
-        List<RestBom> bomList = this.getBySkuIds(skuIds);
+//        List<RestBom> bomList = this.getBySkuIds(skuIds);
+        List<RestBom> bomList = this.getBySkuAndVersion(restBomDetailParams);
         //拦截循环添加
         this.cycleJudge(bomParam.getSkuId(), bomList);
 

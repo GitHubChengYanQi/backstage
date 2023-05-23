@@ -108,6 +108,7 @@ public class SkuController extends BaseController {
         skuParam.setCreateUser(null);
         skuParam.setUpdateTime(null);
         skuParam.setUpdateUser(null);
+        skuParam.setTenantId(LoginContextHolder.getContext().getTenantId());
         Map<String, Sku> skuMap = this.skuService.add(skuParam);
 
 

@@ -48,7 +48,11 @@ public class RestBom {
      */
     @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
-
+    /**
+     * 部门id
+     */
+    @TableField(value = "deptId" , fill = FieldFill.INSERT)
+    private Long deptId;
     /**
      * 修改者
      */
@@ -60,4 +64,9 @@ public class RestBom {
      */
     @TableField("display")
     private Integer display;
+
+    @TableField(value = "tenant_id" , fill = FieldFill.INSERT)
+    private Long tenantId;
+
+
 }

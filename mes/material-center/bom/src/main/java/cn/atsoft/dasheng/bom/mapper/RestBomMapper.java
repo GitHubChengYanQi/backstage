@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.bom.mapper;
 
 import cn.atsoft.dasheng.bom.entity.RestBom;
+import cn.atsoft.dasheng.bom.model.params.RestBomDetailParam;
 import cn.atsoft.dasheng.bom.model.params.RestBomParam;
 import cn.atsoft.dasheng.bom.model.result.RestBomResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
@@ -50,5 +51,6 @@ public interface RestBomMapper extends BaseMapper<RestBom> {
     Integer countBySkuIdAndName(@Param("skuId") Long skuId,@Param("version") String version);
 
     List<RestBom> getBySkuIds(@Param("skuIds") List<Long> skuIds);
+    List<RestBom> getBySkuAndVersion(@Param("params") List<RestBomDetailParam> params);
 
 }
