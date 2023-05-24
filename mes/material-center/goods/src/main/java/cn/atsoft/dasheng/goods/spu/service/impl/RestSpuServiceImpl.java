@@ -97,7 +97,7 @@ public class RestSpuServiceImpl extends ServiceImpl<RestSpuMapper, RestSpu> impl
 
         if (ToolUtil.isEmpty(entity.getSpuId())){
             //查询判断是否有相同名称spu
-            entity = this.query().eq("name", param.getName()).eq("display", 1).eq("tenant_id", LoginContextHolder.getContext().getTenantId()).one();
+            entity = this.query().eq("name", param.getName()).eq("spu_classification_id",param.getSpuClassificationId()).eq("display", 1).eq("tenant_id", LoginContextHolder.getContext().getTenantId()).one();
             if (ToolUtil.isEmpty(entity)) {
                 entity = getEntity(param);
                 this.save(entity);
