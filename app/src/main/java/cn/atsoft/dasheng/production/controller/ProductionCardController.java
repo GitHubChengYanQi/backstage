@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.production.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.production.entity.ProductionCard;
 import cn.atsoft.dasheng.production.model.params.ProductionCardParam;
@@ -106,7 +108,8 @@ public class ProductionCardController extends BaseController {
         if(ToolUtil.isEmpty(productionCardParam)){
             productionCardParam = new ProductionCardParam();
         }
-        return this.productionCardService.findPageBySpec(productionCardParam);
+        DataScope dataScope = new DataScope(null, LoginContextHolder.getContext().getTenantId());
+        return this.productionCardService.findPageBySpec(productionCardParam,dataScope);
     }
     /**
      * 查询列表

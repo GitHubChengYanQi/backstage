@@ -320,7 +320,7 @@ public class ProductionPickListsServiceImpl extends ServiceImpl<ProductionPickLi
             }
 
         } else {
-            throw new ServiceException(500, "请创建质检流程！");
+            throw new ServiceException(500, "请创出库流程！");
         }
         return entity;
     }
