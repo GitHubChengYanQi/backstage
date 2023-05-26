@@ -88,14 +88,14 @@ public class RestSpuServiceImpl extends ServiceImpl<RestSpuMapper, RestSpu> impl
     @Transactional
     @Override
     public Long add(RestSpuParam param) {
-        RestSpu entity =new RestSpu();
+        RestSpu entity = new RestSpu();
 
-        if(ToolUtil.isNotEmpty(param.getSpuId())){
+        if (ToolUtil.isNotEmpty(param.getSpuId())) {
             entity = this.getById(param.getSpuId());
 
         }
 
-        if (ToolUtil.isEmpty(entity.getSpuId())){
+        if (ToolUtil.isEmpty(entity.getSpuId())) {
             //查询判断是否有相同名称spu
             entity = this.query().eq("name", param.getName()).eq("display", 1).eq("tenant_id", LoginContextHolder.getContext().getTenantId()).one();
             if (ToolUtil.isEmpty(entity)) {
@@ -104,6 +104,11 @@ public class RestSpuServiceImpl extends ServiceImpl<RestSpuMapper, RestSpu> impl
             }
 
         }
+        if (ToolUtil.isNotEmpty(param.getSpuClassificationId()) && !param.getSpuClassificationId().equals(entity.getSpuClassificationId())) {
+            entity.setSpuClassificationId(param.getSpuClassificationId());
+            this.updateById(entity);
+        }
+
 
         return entity.getSpuId();
 
@@ -197,7 +202,7 @@ public class RestSpuServiceImpl extends ServiceImpl<RestSpuMapper, RestSpu> impl
 //        spuResult.setSku(skuRequest);
 
 
-            //映射材质对象
+        //映射材质对象
 //        if (ToolUtil.isNotEmpty(detail.getMaterialId())) {
 //            RestTextrue material = materialService.getById(detail.getMaterialId());
 //            spuResult.setMaterial(material);

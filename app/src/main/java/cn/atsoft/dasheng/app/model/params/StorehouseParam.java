@@ -23,6 +23,8 @@ import java.util.List;
 public class StorehouseParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+
+    private List<Long> storehouseIds;
     /**
      * 纬度
      */

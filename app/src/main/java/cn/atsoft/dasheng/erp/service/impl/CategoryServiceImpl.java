@@ -5,10 +5,7 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.AttributeValues;
-import cn.atsoft.dasheng.erp.entity.Category;
-import cn.atsoft.dasheng.erp.entity.ItemAttribute;
-import cn.atsoft.dasheng.erp.entity.SpuClassification;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.CategoryMapper;
 import cn.atsoft.dasheng.erp.model.params.AttributeValuesParam;
 import cn.atsoft.dasheng.erp.model.params.CategoryParam;
@@ -19,6 +16,7 @@ import cn.atsoft.dasheng.erp.service.AttributeValuesService;
 import cn.atsoft.dasheng.erp.service.CategoryService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.ItemAttributeService;
+import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
@@ -52,6 +50,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     private ItemAttributeService itemAttributeService;
     @Autowired
     private AttributeValuesService attributeValuesService;
+    @Autowired
+    private SpuService spuService;
 
     @Override
     public Long add(CategoryParam param) {
@@ -132,6 +132,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     @Override
     @Transactional
     public void delete(CategoryParam param) {
+        Integer count = spuService.lambdaQuery().eq(Spu::getCategoryId, param.getCategoryId()).eq(Spu::getDisplay, 1).count();
+        if (count>0){
+            throw new ServiceException(500, "该分类下有产品，不可删除");
+        }
         Category category = new Category();
         category.setDisplay(0);
         QueryWrapper<Category> categoryQueryWrapper = new QueryWrapper<>();

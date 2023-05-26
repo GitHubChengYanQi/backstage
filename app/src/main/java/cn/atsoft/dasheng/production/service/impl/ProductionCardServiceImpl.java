@@ -2,9 +2,11 @@ package cn.atsoft.dasheng.production.service.impl;
 
 
 import cn.atsoft.dasheng.app.service.PartsService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.bom.model.result.RestBomResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.CodingRules;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -124,9 +126,9 @@ public class ProductionCardServiceImpl extends ServiceImpl<ProductionCardMapper,
     }
 
     @Override
-    public PageInfo<ProductionCardResult> findPageBySpec(ProductionCardParam param){
+    public PageInfo<ProductionCardResult> findPageBySpec(ProductionCardParam param, DataScope dataScope){
         Page<ProductionCardResult> pageContext = getPageContext();
-        IPage<ProductionCardResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<ProductionCardResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

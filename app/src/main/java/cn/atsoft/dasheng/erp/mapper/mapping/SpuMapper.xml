@@ -176,19 +176,19 @@ curing_cycle AS "curingCycle", cycle_type AS "cycleType", model AS "model",produ
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
         </if>
         <if test="paramCondition.classId != null">
-            and class_id like CONCAT('%',#{paramCondition.classId},'%')
+            and class_id = #{paramCondition.classId}
         </if>
         <if test="paramCondition.unitId != null">
-            and unit_id like CONCAT('%',#{paramCondition.unitId},'%')
+            and unit_id = #{paramCondition.unitId}
         </if>
         <if test="paramCondition.categoryId != null">
-            and category_id like CONCAT('%',#{paramCondition.categoryId},'%')
+            and category_id = #{paramCondition.categoryId}
         </if>
         <if test="paramCondition.attribute != null">
             and attribute like CONCAT('%',#{paramCondition.attribute},'%')
         </if>
         <if test="paramCondition.spuClassificationId != null">
-            and spu_classification_id like CONCAT('%',#{paramCondition.spuClassificationId},'%')
+            and spu_classification_id  = #{paramCondition.spuClassificationId}
         </if>
         <if test="paramCondition.type != null">
             and type = #{paramCondition.type}

@@ -9,16 +9,14 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
-import cn.atsoft.dasheng.erp.entity.Sku;
-import cn.atsoft.dasheng.erp.entity.StorehousePositions;
-import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
-import cn.atsoft.dasheng.erp.entity.StorehousePositionsDeptBind;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsBindParam;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsDeptBindParam;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuSimpleResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsBindResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.pojo.PositionLoop;
 import cn.atsoft.dasheng.erp.service.SkuService;
@@ -42,6 +40,7 @@ import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -202,6 +201,21 @@ public class StorehousePositionsController extends BaseController {
         this.storehousePositionsService.delete(storehousePositionsParam);
         return ResponseData.success();
     }
+    /**
+     * 删除接口
+     *
+     * @author song
+     * @Date 2021-10-29
+     */
+    @RequestMapping(value = "/deleteBatch", method = RequestMethod.POST)
+    @BussinessLog(value = "删除仓库库位表", key = "name", dict = StorehousePositionsParam.class)
+    @ApiOperation("删除")
+    @Transactional
+    public ResponseData deleteBatch(@RequestBody StorehousePositionsParam storehousePositionsParam) {
+
+        this.storehousePositionsService.deleteBatch(storehousePositionsParam);
+        return ResponseData.success();
+    }
 
 
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
@@ -310,7 +324,12 @@ public class StorehousePositionsController extends BaseController {
         }
 
         List<Map<String, Object>> list = this.storehousePositionsService.listMaps(queryWrapper);
+        //从list中取出 storehouse_positions_id Long 类型集合
+        List<Long> storehousePositionsIds = list.stream().map(item -> Convert.toLong(item.get("storehouse_positions_id"))).collect(Collectors.toList());
 
+        List<StorehousePositionsBind> storehousePositionsBinds = storehousePositionsBindService.lambdaQuery().in(StorehousePositionsBind::getPositionId, storehousePositionsIds).eq(StorehousePositionsBind::getDisplay, 1).list();
+        List<StorehousePositionsBindResult> storehousePositionsBindResults = BeanUtil.copyToList(storehousePositionsBinds, StorehousePositionsBindResult.class);
+        storehousePositionsBindService.format(storehousePositionsBindResults);
 
         List<TreeNode> treeViewNodes = new ArrayList<>();
 
@@ -333,6 +352,15 @@ public class StorehousePositionsController extends BaseController {
             treeNode.setSort(Convert.toStr(item.get("sort")));
             treeNode.setNote(Convert.toStr(item.get("note")));
             treeViewNodes.add(treeNode);
+        }
+        for (TreeNode treeViewNode : treeViewNodes) {
+            List<SkuList> objects = new ArrayList<>();
+            for (StorehousePositionsBindResult storehousePositionsBindResult : storehousePositionsBindResults) {
+                if (Convert.toStr(storehousePositionsBindResult.getPositionId()).equals(treeViewNode.getKey())) {
+                    objects.add(storehousePositionsBindResult.getSkuResult());
+                }
+            }
+            treeViewNode.setObject(objects);
         }
         //构建树
         DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();

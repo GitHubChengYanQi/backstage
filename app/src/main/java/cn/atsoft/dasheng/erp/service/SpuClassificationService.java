@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.service;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.model.params.SpuClassificationParam;
+import cn.atsoft.dasheng.erp.model.result.SkuCountByClassIdResult;
 import cn.atsoft.dasheng.erp.model.result.SpuClassificationResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -33,6 +34,8 @@ public interface SpuClassificationService extends IService<SpuClassification> {
      * @Date 2021-10-25
      */
     void delete(SpuClassificationParam param);
+
+    void  deleteBatch(SpuClassificationParam param);
 
     /**
      * 更新
@@ -69,4 +72,6 @@ public interface SpuClassificationService extends IService<SpuClassification> {
      PageInfo<SpuClassificationResult> findPageBySpec(SpuClassificationParam param);
 
     String getCodings(Long classId);
+
+    List<SkuCountByClassIdResult> skuCountByClassIds(List<Long> classIds);
 }

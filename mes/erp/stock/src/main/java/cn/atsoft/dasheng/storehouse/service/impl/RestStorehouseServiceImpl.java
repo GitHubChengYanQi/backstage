@@ -6,18 +6,23 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.goods.category.model.result.RestCategoryResult;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.storehouse.entity.RestStorehouse;
+import cn.atsoft.dasheng.storehouse.entity.StorehouseSpuClassBind;
 import cn.atsoft.dasheng.storehouse.mapper.RestStorehouseMapper;
 import cn.atsoft.dasheng.storehouse.model.params.RestStorehouseParam;
 import cn.atsoft.dasheng.storehouse.model.result.RestStorehouseResult;
+import cn.atsoft.dasheng.storehouse.model.result.StorehouseSpuClassBindResult;
 import cn.atsoft.dasheng.storehouse.service.RestStorehouseService;
+import cn.atsoft.dasheng.storehouse.service.StorehouseSpuClassBindService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +44,8 @@ import java.util.stream.Collectors;
 @Service
 public class RestStorehouseServiceImpl extends ServiceImpl<RestStorehouseMapper, RestStorehouse> implements RestStorehouseService {
 
+    @Autowired
+    private StorehouseSpuClassBindService storehouseSpuClassBindService;
 
     @Override
     @Transactional
@@ -245,6 +252,21 @@ public class RestStorehouseServiceImpl extends ServiceImpl<RestStorehouseMapper,
         }});
         List<RestStorehouseResult> restStorehouseResults = BeanUtil.copyToList(restStorehouses, RestStorehouseResult.class);
         restStorehouseResults.sort(Comparator.comparing(RestStorehouseResult::getSort).reversed());
+        List<Long> storehouseIds = restStorehouseResults.stream().map(RestStorehouseResult::getStorehouseId).collect(Collectors.toList());
+
+        List<StorehouseSpuClassBind> storehouseSpuClassBinds = storehouseSpuClassBindService.lambdaQuery().in(StorehouseSpuClassBind::getStorehouseId, storehouseIds).eq(StorehouseSpuClassBind::getDisplay, 1).list();
+        List<StorehouseSpuClassBindResult> storehouseSpuClassBindResults = BeanUtil.copyToList(storehouseSpuClassBinds, StorehouseSpuClassBindResult.class);
+        storehouseSpuClassBindService.format(storehouseSpuClassBindResults);
+
+        for (RestStorehouseResult restStorehouseResult : restStorehouseResults) {
+            List<RestCategoryResult> categoryResults = new ArrayList<>();
+            for (StorehouseSpuClassBindResult storehouseSpuClassBindResult : storehouseSpuClassBindResults) {
+                if (restStorehouseResult.getStorehouseId().equals(storehouseSpuClassBindResult.getStorehouseId())) {
+                    categoryResults.add(storehouseSpuClassBindResult.getCategoryResult());
+                }
+            }
+            restStorehouseResult.setSpuClassResults(categoryResults);
+        }
 
         // 获取所有仓库
         List<RestStorehouseResult> roots = restStorehouseResults.stream()

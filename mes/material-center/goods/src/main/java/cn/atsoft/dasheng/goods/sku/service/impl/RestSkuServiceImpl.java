@@ -146,6 +146,9 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 //            }
             Long spuClassificationId = 0L;
             if (!param.getSpuClass().equals(0L) && ToolUtil.isNotEmpty(spuClassification)) {
+                if (spuClassification.getDisplay().equals(0)){
+                    throw new ServiceException(500, "该分类已被删除");
+                }
                 spuClassificationId = spuClassification.getSpuClassificationId();
             }
             /**
@@ -308,7 +311,7 @@ public class RestSkuServiceImpl extends ServiceImpl<RestSkuMapper, RestSku> impl
 //            }
 //        }
         }
-        if (param.getInitialNumber() > 0) {
+        if (ToolUtil.isNotEmpty(param.getInitialNumber()) && param.getInitialNumber() > 0) {
             param.setSkuId(skuId);
             RestInitialNumber restInitialNumber = new RestInitialNumber();
             restInitialNumber.setSkuId(skuId);

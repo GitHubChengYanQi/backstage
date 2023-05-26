@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.production.service;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.bom.model.result.RestBomResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.production.entity.ProductionCard;
 import cn.atsoft.dasheng.production.model.params.ProductionCardParam;
 import cn.atsoft.dasheng.production.model.result.ProductionCardResult;
@@ -68,7 +69,7 @@ public interface ProductionCardService extends IService<ProductionCard> {
      * @author 
      * @Date 2022-02-28
      */
-     PageInfo<ProductionCardResult> findPageBySpec(ProductionCardParam param);
+     PageInfo<ProductionCardResult> findPageBySpec(ProductionCardParam param, DataScope dataScope);
 
     void format(List<ProductionCardResult> dataList);
 

@@ -7,8 +7,11 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.mapper.SpuClassificationMapper;
+import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.params.SpuClassificationParam;
+import cn.atsoft.dasheng.erp.model.result.SkuCountByClassIdResult;
 import cn.atsoft.dasheng.erp.model.result.SpuClassificationResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.SpuClassificationService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SpuService;
@@ -48,6 +51,9 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     @Autowired
     private FormStyleService formStyleService;
 
+    @Autowired
+    private SkuService skuService;
+
     @Override
     @Transactional
     public Long add(SpuClassificationParam param) {
@@ -86,13 +92,13 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
 
     @Override
 
-    public void  delete(SpuClassificationParam param) {
+    public void delete(SpuClassificationParam param) {
         Integer children = this.query().eq("pid", param.getSpuClassificationId()).eq("display", 1).count();
         if (children > 0) {
             throw new ServiceException(500, "此分类下有下级,无法删除");
         } else {
             Integer count = spuService.lambdaQuery().eq(Spu::getSpuClassificationId, param.getSpuClassificationId()).eq(Spu::getDisplay, 1).count();
-            if (count> 0) {
+            if (count > 0) {
                 throw new ServiceException(500, "此分类下有产品,无法删除");
             }
             SpuClassification spuClassification = new SpuClassification();
@@ -101,6 +107,42 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
             this.updateById(spuClassification);
         }
 //        this.removeById(getKey(param));
+    }
+
+    @Override
+    @Transactional
+    public void deleteBatch(SpuClassificationParam param) {
+
+        //批量删除param.getSpuClassificationIds()
+        //验证参数
+        if (ToolUtil.isNotEmpty(param.getSpuClassificationIds())) {
+            List<SpuClassification> spuClassifications = this.listByIds(param.getSpuClassificationIds());
+
+            if (spuClassifications.size() != param.getSpuClassificationIds().size()) {
+                throw new ServiceException(500, "参数错误");
+            }
+            List<SpuClassification> children = this.query().in("pid", param.getSpuClassificationIds()).eq("display", 1).list();
+
+            List<Spu> spuList = spuService.lambdaQuery().in(Spu::getSpuClassificationId, param.getSpuClassificationIds()).eq(Spu::getDisplay, 1).list();
+
+
+            for (SpuClassification spuClassification : spuClassifications) {
+                if (children.stream().anyMatch(i -> i.getPid().equals(spuClassification.getSpuClassificationId()))) {
+                    throw new ServiceException(500, "此分类下有下级,无法删除");
+                } else if (spuList.stream().anyMatch(i -> i.getSpuClassificationId().equals(spuClassification.getSpuClassificationId()))) {
+                    throw new ServiceException(500, "此分类下有产品,无法删除");
+                }
+                spuClassification.setDisplay(0);
+
+            }
+            this.updateBatchById(spuClassifications);
+        }
+        if (ToolUtil.isNotEmpty(param.getSkuIds())) {
+            skuService.deleteBatch(new SkuParam() {{
+                setId(param.getSkuIds());
+            }});
+        }
+
     }
 
     @Override
@@ -296,7 +338,7 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
      */
     @Override
     public String getCodings(Long classId) {
-        if (classId.equals(0L)){
+        if (classId.equals(0L)) {
             return "";
         }
         SpuClassification now = this.getById(classId);
@@ -339,6 +381,11 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
             }
         }
         return coding;
+    }
+
+    @Override
+    public List<SkuCountByClassIdResult> skuCountByClassIds(List<Long> classIds) {
+        return this.baseMapper.getSkuCountByClassIds(classIds, LoginContextHolder.getContext().getTenantId());
     }
 
 }

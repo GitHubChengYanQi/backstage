@@ -156,5 +156,20 @@
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
         </if>
     </select>
+    <select id="getSkuCountByClassIds" resultType="cn.atsoft.dasheng.erp.model.result.SkuCountByClassIdResult">
+    SELECT spu.spu_classification_id AS "classId", COUNT(sku.sku_id) as skuCount
+    FROM goods_spu AS spu
+             JOIN goods_sku AS sku ON spu.spu_id = sku.spu_id
+    where 1 = 1 and spu.display = 1 and sku.display = 1
+    <if test="classIds != null and classIds.size() > 0">
+        and spu.spu_classification_id in
+        <foreach collection="classIds" item="classId" open="(" separator="," close=")">
+            #{classId}
+        </foreach>
+    </if>
+    and spu.tenant_id = #{tenantId}
+    GROUP BY spu.spu_classification_id
 
+
+    </select>
 </mapper>

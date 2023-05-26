@@ -1,23 +1,18 @@
 package cn.atsoft.dasheng.goods.sku.controller;
 
 
-import cn.atsoft.dasheng.base.log.BussinessLog;
-import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.config.api.version.ApiVersion;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.model.params.RestGeneralFormDataParam;
 import cn.atsoft.dasheng.form.service.RestGeneralFormDataService;
-import cn.atsoft.dasheng.goods.category.entity.RestCategory;
 import cn.atsoft.dasheng.goods.category.service.RestCategoryService;
 import cn.atsoft.dasheng.goods.sku.entity.RestSku;
 import cn.atsoft.dasheng.goods.sku.model.params.RestSkuParam;
+import cn.atsoft.dasheng.goods.sku.model.params.SkuBatchParam;
 import cn.atsoft.dasheng.goods.sku.model.result.RestSkuResult;
 import cn.atsoft.dasheng.goods.sku.service.RestSkuService;
-import cn.atsoft.dasheng.goods.sku.wrapper.RestSkuSelectWrapper;
-import cn.atsoft.dasheng.goods.spu.entity.RestSpu;
 import cn.atsoft.dasheng.goods.spu.service.RestSpuService;
-import cn.atsoft.dasheng.goods.unit.entity.RestUnit;
 import cn.atsoft.dasheng.goods.unit.service.RestUnitService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
@@ -114,6 +109,49 @@ public class RestSkuController extends BaseController {
             return ResponseData.error(BizExceptionEnum.USER_CHECK.getCode(), BizExceptionEnum.USER_CHECK.getMessage(), skuResult);
         }
     }
+     /**
+         * 直接物料 新增接口
+         *
+         * @author
+         * @Date 2021-10-18
+         */
+        @RequestMapping(value = "/addBatch", method = RequestMethod.POST)
+        @ApiOperation("新增")
+        public ResponseData addItem(@RequestBody SkuBatchParam param) {
+            List<Map<String, RestSku>> result  = new ArrayList<>();
+            for (RestSkuParam restSkuParam : param.getSkuList()) {
+                restSkuParam.setAddMethod(1);
+                restSkuParam.setSkuId(null);
+                restSkuParam.setCreateTime(null);
+                restSkuParam.setCreateUser(null);
+                restSkuParam.setUpdateTime(null);
+                restSkuParam.setUpdateUser(null);
+                Map<String, RestSku> skuMap = this.skuService.add(restSkuParam);
+                if (ToolUtil.isNotEmpty(restSkuParam.getGeneralFormDataParams()) || restSkuParam.getGeneralFormDataParams().size() > 0) {
+                    for (RestGeneralFormDataParam generalFormDataParam : restSkuParam.getGeneralFormDataParams()) {
+                        generalFormDataParam.setTableName("goods_sku");
+                    }
+                    generalFormDataService.addBatch(restSkuParam.getGeneralFormDataParams());
+                }
+                result.add(skuMap);
+            }
+
+    //
+            for (Map<String, RestSku> stringRestSkuMap : result) {
+                if (ToolUtil.isNotEmpty(stringRestSkuMap.get("success"))) {
+//                    return ResponseData.success(stringRestSkuMap.get("success").getSkuId());
+                } else {
+                    RestSku error = stringRestSkuMap.get("error");
+                    RestSkuResult skuResult = new RestSkuResult();
+                    ToolUtil.copyProperties(error, skuResult);
+                    skuService.format(new ArrayList<RestSkuResult>() {{
+                        add(skuResult);
+                    }});
+//                    return ResponseData.error(BizExceptionEnum.USER_CHECK.getCode(), BizExceptionEnum.USER_CHECK.getMessage(), skuResult);
+                }
+            }
+            return ResponseData.success(result);
+        }
 
 
 //    /**

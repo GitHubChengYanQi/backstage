@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.mapper;
 
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.production.entity.ProductionCard;
 import cn.atsoft.dasheng.production.model.params.ProductionCardParam;
 import cn.atsoft.dasheng.production.model.result.ProductionCardResult;
@@ -46,7 +47,7 @@ public interface ProductionCardMapper extends BaseMapper<ProductionCard> {
      * @author 
      * @Date 2022-02-28
      */
-    Page<ProductionCardResult> customPageList(@Param("page") Page page, @Param("paramCondition") ProductionCardParam paramCondition);
+    Page<ProductionCardResult> customPageList(@Param("page") Page page, @Param("paramCondition") ProductionCardParam paramCondition, @Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

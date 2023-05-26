@@ -75,4 +75,5 @@ public interface StorehouseSpuClassBindService extends IService<StorehouseSpuCla
      */
      PageInfo<StorehouseSpuClassBindResult> findPageBySpec(StorehouseSpuClassBindParam param,DataScope dataScope);
 
+    void format(List<StorehouseSpuClassBindResult> dataList);
 }

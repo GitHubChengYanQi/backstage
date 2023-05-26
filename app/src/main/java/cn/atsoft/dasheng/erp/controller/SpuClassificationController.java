@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
 import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.params.SpuClassificationParam;
+import cn.atsoft.dasheng.erp.model.result.SkuCountByClassIdResult;
 import cn.atsoft.dasheng.erp.model.result.SpuClassificationResult;
 import cn.atsoft.dasheng.erp.service.SpuClassificationService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -29,6 +30,7 @@ import io.swagger.annotations.ApiOperation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -87,6 +89,19 @@ public class SpuClassificationController extends BaseController {
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody SpuClassificationParam spuClassificationParam) {
         this.spuClassificationService.delete(spuClassificationParam);
+        return ResponseData.success();
+    }
+    /**
+     * 删除接口
+     *
+     * @author song
+     * @Date 2021-10-25
+     */
+    @RequestMapping(value = "/deleteBatch", method = RequestMethod.POST)
+    @BussinessLog(value = "删除spu分类", key = "name", dict = SpuClassificationParam.class)
+    @ApiOperation("删除")
+    public ResponseData deleteBatch(@RequestBody SpuClassificationParam spuClassificationParam) {
+        this.spuClassificationService.deleteBatch(spuClassificationParam);
         return ResponseData.success();
     }
 
@@ -159,6 +174,13 @@ public class SpuClassificationController extends BaseController {
 
         List<Map<String, Object>> list = this.spuClassificationService.listMaps(spuClassificationQueryWrapper);
 
+        //从list中取出 spu_classification_id 的 Long类型集合
+        List<Long> spuClassificationIdList = list.stream().map(item -> Convert.toLong(item.get("spu_classification_id"))).collect(Collectors.toList());
+        spuClassificationIdList.add(0L);
+        spuClassificationIdList = spuClassificationIdList.stream().distinct().collect(Collectors.toList());
+        List<SkuCountByClassIdResult> skuCountByClassIdResults = spuClassificationService.skuCountByClassIds(spuClassificationIdList);
+
+
         if (ToolUtil.isEmpty(list)) {
             return ResponseData.success();
         }
@@ -180,6 +202,16 @@ public class SpuClassificationController extends BaseController {
             treeNode.setLabel(Convert.toStr(item.get("name")));
             treeNode.setTitle(Convert.toStr(item.get("name")));
             treeViewNodes.add(treeNode);
+        }
+
+
+        for (TreeNode treeNode : treeViewNodes) {
+            for (SkuCountByClassIdResult skuCountByClassIdResult : skuCountByClassIdResults) {
+                if (treeNode.getKey().equals(Convert.toStr(skuCountByClassIdResult.getClassId()))) {
+                    treeNode.setNumber(skuCountByClassIdResult.getSkuCount());
+                    break;
+                }
+            }
         }
         //构建树
         DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();

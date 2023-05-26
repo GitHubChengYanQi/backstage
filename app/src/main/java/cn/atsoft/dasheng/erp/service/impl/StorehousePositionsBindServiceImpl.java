@@ -12,18 +12,15 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
-import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.entity.SkuList;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.mapper.StorehousePositionsBindMapper;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsBindParam;
 import cn.atsoft.dasheng.erp.model.result.*;
-import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.service.StorehousePositionsDeptBindService;
-import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
@@ -64,6 +61,8 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
 
     @Autowired
     private StockDetailsService stockDetailsService;
+    @Autowired
+    private SkuListService skuListService;
 
     @Override
     public StorehousePositionsBind add(StorehousePositionsBindParam param) {
@@ -452,7 +451,7 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         }
         return null;
     }
-
+    @Override
     public void format(List<StorehousePositionsBindResult> param) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> positionIds = new ArrayList<>();
@@ -462,7 +461,7 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
             positionIds.add(bindResult.getPositionId());
         }
 
-        List<SkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.formatSkuResult(skuIds);
+        List<SkuList> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuListService.listByIds(skuIds);
         List<StorehousePositions> storehousePositions = positionIds.size() == 0 ? new ArrayList<>() : positionsService.listByIds(positionIds);
         List<StorehousePositionsResult> storehousePositionsResults = new ArrayList<>();
         for (StorehousePositions storehousePosition : storehousePositions) {
@@ -472,7 +471,7 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         }
 
         for (StorehousePositionsBindResult storehousePositionsBindResult : param) {
-            for (SkuResult skuResult : skuResults) {
+            for (SkuList skuResult : skuResults) {
                 if (storehousePositionsBindResult.getSkuId().equals(skuResult.getSkuId())) {
                     storehousePositionsBindResult.setSkuResult(skuResult);
                 }

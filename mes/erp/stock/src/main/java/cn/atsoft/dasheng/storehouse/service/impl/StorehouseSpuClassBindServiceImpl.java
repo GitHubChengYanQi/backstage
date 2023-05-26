@@ -4,19 +4,25 @@ package cn.atsoft.dasheng.storehouse.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.goods.category.entity.RestCategory;
+import cn.atsoft.dasheng.goods.category.model.result.RestCategoryResult;
+import cn.atsoft.dasheng.goods.category.service.RestCategoryService;
 import cn.atsoft.dasheng.storehouse.entity.StorehouseSpuClassBind;
 import cn.atsoft.dasheng.storehouse.mapper.StorehouseSpuClassBindMapper;
 import cn.atsoft.dasheng.storehouse.model.params.StorehouseSpuClassBindParam;
 import cn.atsoft.dasheng.storehouse.model.result.StorehouseSpuClassBindResult;
 import  cn.atsoft.dasheng.storehouse.service.StorehouseSpuClassBindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -28,6 +34,9 @@ import java.util.List;
  */
 @Service
 public class StorehouseSpuClassBindServiceImpl extends ServiceImpl<StorehouseSpuClassBindMapper, StorehouseSpuClassBind> implements StorehouseSpuClassBindService {
+
+    @Autowired
+    private RestCategoryService categoryService;
 
     @Override
     public void add(StorehouseSpuClassBindParam param){
@@ -73,6 +82,19 @@ public class StorehouseSpuClassBindServiceImpl extends ServiceImpl<StorehouseSpu
         Page<StorehouseSpuClassBindResult> pageContext = getPageContext();
         IPage<StorehouseSpuClassBindResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         return PageFactory.createPageInfo(page);
+    }
+    @Override
+    public void format(List<StorehouseSpuClassBindResult> dataList){
+        List<Long> classIds = dataList.stream().map(StorehouseSpuClassBindResult::getSpuClassId).distinct().collect(Collectors.toList());
+        List<RestCategory> restCategories = categoryService.listByIds(classIds);
+        List<RestCategoryResult> restCategoryResults = BeanUtil.copyToList(restCategories, RestCategoryResult.class);
+        dataList.forEach(item -> {
+            restCategoryResults.forEach(restCategoryResult -> {
+                if (item.getSpuClassId().equals(restCategoryResult.getSpuClassificationId())) {
+                    item.setCategoryResult(restCategoryResult);
+                }
+            });
+        });
     }
 
     private Serializable getKey(StorehouseSpuClassBindParam param){
