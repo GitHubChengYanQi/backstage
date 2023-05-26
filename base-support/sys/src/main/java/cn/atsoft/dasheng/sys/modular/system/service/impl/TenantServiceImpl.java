@@ -118,7 +118,7 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
 
     @Override
     @Transactional
-    public String update(TenantParam param){
+    public String  update(TenantParam param){
         if (ToolUtil.isEmpty(param.getTenantId())){
             throw new ServiceException(500,"参数错误");
         }
@@ -131,9 +131,9 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
 //        if (!oldEntity.getTelephone().equals(newEntity.getTelephone())){
 //            checkPhone(param.getTelephone());
 //        }
-        if (!oldEntity.getName().equals(newEntity.getName())){
-            checkName(param.getName());
-        }
+//        if (!oldEntity.getName().equals(newEntity.getName())){
+//            checkName(param.getName());
+//        }
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
         return authService.login(LoginContextHolder.getContext().getUser().getAccount());
