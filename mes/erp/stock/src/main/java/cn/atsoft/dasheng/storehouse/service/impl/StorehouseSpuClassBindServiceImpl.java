@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,7 +87,7 @@ public class StorehouseSpuClassBindServiceImpl extends ServiceImpl<StorehouseSpu
     @Override
     public void format(List<StorehouseSpuClassBindResult> dataList){
         List<Long> classIds = dataList.stream().map(StorehouseSpuClassBindResult::getSpuClassId).distinct().collect(Collectors.toList());
-        List<RestCategory> restCategories = categoryService.listByIds(classIds);
+        List<RestCategory> restCategories =classIds.size() == 0?new ArrayList<>() : categoryService.listByIds(classIds);
         List<RestCategoryResult> restCategoryResults = BeanUtil.copyToList(restCategories, RestCategoryResult.class);
         dataList.forEach(item -> {
             restCategoryResults.forEach(restCategoryResult -> {
