@@ -327,7 +327,7 @@ public class StorehousePositionsController extends BaseController {
         //从list中取出 storehouse_positions_id Long 类型集合
         List<Long> storehousePositionsIds = list.stream().map(item -> Convert.toLong(item.get("storehouse_positions_id"))).collect(Collectors.toList());
 
-        List<StorehousePositionsBind> storehousePositionsBinds = storehousePositionsBindService.lambdaQuery().in(StorehousePositionsBind::getPositionId, storehousePositionsIds).eq(StorehousePositionsBind::getDisplay, 1).list();
+        List<StorehousePositionsBind> storehousePositionsBinds =storehousePositionsIds.size() == 0 ? new ArrayList<>() : storehousePositionsBindService.lambdaQuery().in(StorehousePositionsBind::getPositionId, storehousePositionsIds).eq(StorehousePositionsBind::getDisplay, 1).list();
         List<StorehousePositionsBindResult> storehousePositionsBindResults = BeanUtil.copyToList(storehousePositionsBinds, StorehousePositionsBindResult.class);
         storehousePositionsBindService.format(storehousePositionsBindResults);
 
