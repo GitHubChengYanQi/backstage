@@ -356,7 +356,7 @@ public class StorehousePositionsController extends BaseController {
         for (TreeNode treeViewNode : treeViewNodes) {
             List<SkuList> objects = new ArrayList<>();
             for (StorehousePositionsBindResult storehousePositionsBindResult : storehousePositionsBindResults) {
-                if (Convert.toStr(storehousePositionsBindResult.getPositionId()).equals(treeViewNode.getKey())) {
+                if (Convert.toStr(storehousePositionsBindResult.getPositionId()).equals(treeViewNode.getKey()) && ToolUtil.isNotEmpty(storehousePositionsBindResult.getSkuResult())) {
                     objects.add(storehousePositionsBindResult.getSkuResult());
                 }
             }
