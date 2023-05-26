@@ -27,6 +27,10 @@ public class SpuClassificationParam extends AbstractDictMap implements Serializa
 
     private static final long serialVersionUID = 1L;
 
+    private List<Long> spuClassificationIds;
+
+    private List<Long> skuIds;
+
     private String children;
 
     private String typeSetting;

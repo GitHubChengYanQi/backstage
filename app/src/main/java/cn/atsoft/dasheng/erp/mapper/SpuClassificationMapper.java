@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.mapper;
 
 import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.model.params.SpuClassificationParam;
+import cn.atsoft.dasheng.erp.model.result.SkuCountByClassIdResult;
 import cn.atsoft.dasheng.erp.model.result.SpuClassificationResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -52,5 +53,6 @@ public interface SpuClassificationMapper extends BaseMapper<SpuClassification> {
      * @Date 2021-10-25
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") SpuClassificationParam paramCondition);
+    List<SkuCountByClassIdResult> getSkuCountByClassIds(@Param("classIds") List<Long> classIds,@Param("tenantId") Long tenantId);
 
 }

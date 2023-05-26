@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.storehouse.model.result;
 
+import cn.atsoft.dasheng.goods.category.model.result.RestCategoryResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -20,6 +21,7 @@ public class StorehouseSpuClassBindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private RestCategoryResult categoryResult;
 
     @ApiModelProperty("")
     private Long storehouseSpuClassBindId;

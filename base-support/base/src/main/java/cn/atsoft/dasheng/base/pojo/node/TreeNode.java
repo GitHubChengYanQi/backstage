@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * tree 插件的节点
@@ -62,6 +63,14 @@ public class TreeNode implements Tree {
 
     @ApiModelProperty("备注")
     private String note;
+
+    @ApiModelProperty("数量")
+    private Integer number;
+
+    @ApiModelProperty("object")
+    private Object object;
+
+
 
     /**
      * 创建tree的父级节点

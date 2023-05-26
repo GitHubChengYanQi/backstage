@@ -521,9 +521,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Spu spu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
         Long spuId = spu.getSpuId();
         //生成编码
-        if (ToolUtil.isEmpty(param.getStandard())) {
-            getCoding(param, spu.getSpuId());
-        }
+//        if (ToolUtil.isEmpty(param.getStandard())) {
+//            getCoding(param, spu.getSpuId());
+//        }
         /**
          * 判断成品码是否重复
          */
@@ -652,9 +652,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Long categoryId = category.getCategoryId();
         Long spuClassificationId = spuClassification.getSpuClassificationId();
         Spu orSaveSpu = this.getOrSaveSpu(param, spuClassificationId, categoryId);
-        if (ToolUtil.isEmpty(param.getStandard())) {
-            getCoding(param, orSaveSpu.getSpuId());
-        }
+//        if (ToolUtil.isEmpty(param.getStandard())) {
+//            getCoding(param, orSaveSpu.getSpuId());
+//        }
         List<AttributeValues> list = ToolUtil.isEmpty(param.getSku()) ? new ArrayList<>() : this.addAttributeAndValue(param.getSku(), categoryId);
 
 
@@ -700,7 +700,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> skuIds = param.getId();
         Integer stockSku = skuIds.size() == 0 ? 0 : stockDetailsService.query().in("sku_id", skuIds).eq("display", 1).eq("stage", 1).count();
         if (stockSku > 0) {
-            throw new ServiceException(500, "库存中中有此物品数据,删除终止");
+            throw new ServiceException(500, "库存中有此物品数据,删除终止");
 
         }
         List<ErpPartsDetail> partsDetailList = skuIds.size() == 0 ? new ArrayList<>() : partsDetailService.query().in("sku_id", skuIds).eq("display", 1).list();
@@ -940,9 +940,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Spu oldSpu = spuService.getById(spuId);
 
 
-        if (ToolUtil.isEmpty(param.getStandard())) {
-            getCoding(param, orSaveSpu.getSpuId());
-        }
+//        if (ToolUtil.isEmpty(param.getStandard())) {
+//            getCoding(param, orSaveSpu.getSpuId());
+//        }
         Sku newEntity = getEntity(param);
         newEntity.setSpuId(orSaveSpu.getSpuId());
         String json = JSON.toJSONString(list);

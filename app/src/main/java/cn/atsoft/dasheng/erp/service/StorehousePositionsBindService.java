@@ -86,5 +86,7 @@ public interface StorehousePositionsBindService extends IService<StorehousePosit
 
     Brand judgeBrand(String name, List<Brand> brands);
 
+    void format(List<StorehousePositionsBindResult> param);
+
     List<StorehousePositionsResult> sku2position(Long skuId);
 }

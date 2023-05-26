@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Storehouse;
@@ -10,6 +12,8 @@ import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
@@ -40,6 +44,8 @@ import java.util.Map;
 @Service
 public class StorehouseServiceImpl extends ServiceImpl<StorehouseMapper, Storehouse> implements StorehouseService {
 
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
     @Override
     @Transactional
@@ -51,6 +57,12 @@ public class StorehouseServiceImpl extends ServiceImpl<StorehouseMapper, Storeho
 
     @Override
     public void delete(StorehouseParam param) {
+        Storehouse storehouse = this.getOldEntity(param);
+        List<StockDetails> stockDetails = stockDetailsService.lambdaQuery().eq(StockDetails::getStorehouseId, param.getStorehouseId()).eq(StockDetails::getDisplay, 1).eq(StockDetails::getStage, 1).groupBy(StockDetails::getStorehouseId).list();
+
+        if (stockDetails.stream().anyMatch(i -> i.getStorehouseId().equals(storehouse.getStorehouseId()))) {
+            throw new ServiceException(500, "该仓库有库存，不能删除");
+        }
         param.setDisplay(0);
         this.updateById(getEntity(param));
     }
@@ -81,19 +93,20 @@ public class StorehouseServiceImpl extends ServiceImpl<StorehouseMapper, Storeho
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
-//    format
-    public void format(List<StorehouseResult> dataList){
+
+    //    format
+    public void format(List<StorehouseResult> dataList) {
         //取出集合中的storehouseId
         List<Long> storehouseIds = new ArrayList<>();
         for (StorehouseResult storehouseResult : dataList) {
             storehouseIds.add(storehouseResult.getStorehouseId());
         }
         //查询仓库库存数量
-        List<Map<String,Object>> storehouseResults = this.baseMapper.sumNumberByStorehouseIds(storehouseIds);
+        List<Map<String, Object>> storehouseResults = this.baseMapper.sumNumberByStorehouseIds(storehouseIds);
         //dataList 与 storehouseResults 循环用storehouseId匹配
         for (StorehouseResult storehouseResult : dataList) {
             for (Map<String, Object> result : storehouseResults) {
-                if(storehouseResult.getStorehouseId().equals(result.get("storehouseId"))){
+                if (storehouseResult.getStorehouseId().equals(result.get("storehouseId"))) {
                     storehouseResult.setNumber(result.get("number"));
                     break;
                 }
@@ -111,7 +124,6 @@ public class StorehouseServiceImpl extends ServiceImpl<StorehouseMapper, Storeho
         ToolUtil.copyProperties(storehouse, storehouseResult);
         return storehouseResult;
     }
-
 
 
     private Serializable getKey(StorehouseParam param) {

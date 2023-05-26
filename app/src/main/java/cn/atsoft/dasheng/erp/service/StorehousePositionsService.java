@@ -45,6 +45,8 @@ public interface StorehousePositionsService extends IService<StorehousePositions
      */
     void delete(StorehousePositionsParam param);
 
+    void deleteBatch(StorehousePositionsParam param);
+
     /**
      * 更新
      *

@@ -85,14 +85,14 @@ public class InitTenantService {
 
 //    @Autowired
 
- 
+
     public void initTenant(Long tenantId) {
         System.out.println("init tenant data for " + tenantId);
         //初始化租户 创建一些基础信息
         Tenant tenant = tenantService.getById(tenantId);
 
         //初始化物料
-        Long skuId = initSku(tenantId);
+//        Long skuId = initSku(tenantId);
         //初始化仓库
         Long storehousePositionId = initStorehouse(tenantId);
         Brand brand = new Brand() {{
@@ -101,13 +101,13 @@ public class InitTenantService {
         }};
         //初始化品牌
         brandService.save(brand);
-        SkuBrandBind skuBrandBind = new SkuBrandBind() {{
-            setTenantId(tenantId);
-            setBrandId(brand.getBrandId());
-            setCreateUser(tenant.getCreateUser());
-            setSkuId(skuId);
-        }};
-        brandBindService.save(skuBrandBind);
+//        SkuBrandBind skuBrandBind = new SkuBrandBind() {{
+//            setTenantId(tenantId);
+//            setBrandId(brand.getBrandId());
+//            setCreateUser(tenant.getCreateUser());
+//            setSkuId(skuId);
+//        }};
+//        brandBindService.save(skuBrandBind);
         Customer customer = new Customer();
         customer.setCustomerName("默认供应商");
         customer.setTenantId(tenantId);
@@ -119,14 +119,14 @@ public class InitTenantService {
         customer1.setCreateUser(tenant.getCreateUser());
         customerService.save(customer1);
 
-        supplyService.save(new Supply() {{
-            setTenantId(tenantId);
-            setCustomerId(customer.getCustomerId());
-            setBrandId(brand.getBrandId());
-            setSkuBrandBind(skuBrandBind.getSkuBrandBind());
-            setCreateUser(tenant.getCreateUser());
-            setSkuId(skuId);
-        }});
+//        supplyService.save(new Supply() {{
+//            setTenantId(tenantId);
+//            setCustomerId(customer.getCustomerId());
+//            setBrandId(brand.getBrandId());
+//            setSkuBrandBind(skuBrandBind.getSkuBrandBind());
+//            setCreateUser(tenant.getCreateUser());
+//            setSkuId(skuId);
+//        }});
         //初始化自身企业
         Customer selfCustomer = new Customer();
         selfCustomer.setTenantId(tenantId);
@@ -137,81 +137,81 @@ public class InitTenantService {
         customerService.save(selfCustomer);
 
         //初始化采购单
-        OrderParam order = new OrderParam();
-        order.setType(1);
-        order.setCoding("defaultCreate_"+new Date().getTime());
-        order.setCurrency("人民币");
-        order.setDeliveryDate(new Date());
-        order.setCreateUser(tenant.getCreateUser());
-        order.setDetailParams(new ArrayList<OrderDetailParam>(){{
-            add(new OrderDetailParam(){{
-                setSkuId(skuId);
-                setBrandId(brand.getBrandId());
-                setOnePrice(10000.00);
-                setTotalPrice(1000000.00);
-                setPurchaseNumber(100L);
-                setCreateUser(tenant.getCreateUser());
-                setCustomerId(customer.getCustomerId());
-            }});
-        }});
-        order.setRemark("初始化采购单");
-        order.setPaymentParam(new PaymentParam(){{
-            setMoney(1000000.0);
-            setTotalAmount(1000000.0);
-            setFreight(1);
-            setFloatingAmount(0.0);
-        }});
-        order.setSellerId(selfCustomer.getCustomerId());
-        order.setTheme("初始化采购单");
-        order.setUserId(tenant.getCreateUser());
-        order.setTenantId(tenantId);
-        Order orderResult = orderService.add(order);
+//        OrderParam order = new OrderParam();
+//        order.setType(1);
+//        order.setCoding("defaultCreate_"+new Date().getTime());
+//        order.setCurrency("人民币");
+//        order.setDeliveryDate(new Date());
+//        order.setCreateUser(tenant.getCreateUser());
+//        order.setDetailParams(new ArrayList<OrderDetailParam>(){{
+//            add(new OrderDetailParam(){{
+//                setSkuId(skuId);
+//                setBrandId(brand.getBrandId());
+//                setOnePrice(10000.00);
+//                setTotalPrice(1000000.00);
+//                setPurchaseNumber(100L);
+//                setCreateUser(tenant.getCreateUser());
+//                setCustomerId(customer.getCustomerId());
+//            }});
+//        }});
+//        order.setRemark("初始化采购单");
+//        order.setPaymentParam(new PaymentParam(){{
+//            setMoney(1000000.0);
+//            setTotalAmount(1000000.0);
+//            setFreight(1);
+//            setFloatingAmount(0.0);
+//        }});
+//        order.setSellerId(selfCustomer.getCustomerId());
+//        order.setTheme("初始化采购单");
+//        order.setUserId(tenant.getCreateUser());
+//        order.setTenantId(tenantId);
+//        Order orderResult = orderService.add(order);
 
         //入库单
-        InstockOrder instockOrder = new InstockOrder();
-        instockOrder.setCoding("DEFAULT"+new Date().getTime());
-        instockOrder.setCustomerId(customer.getCustomerId());
-        instockOrder.setStatus(99L);
-        instockOrder.setTheme("初始化入库单");
-        instockOrder.setTenantId(tenantId);
-        instockOrder.setUserId(tenant.getCreateUser());
-
-        instockOrder.setSource("order");
-        instockOrder.setSourceId(orderResult.getOrderId());
-        instockOrderService.save(instockOrder);
+//        InstockOrder instockOrder = new InstockOrder();
+//        instockOrder.setCoding("DEFAULT"+new Date().getTime());
+//        instockOrder.setCustomerId(customer.getCustomerId());
+//        instockOrder.setStatus(99L);
+//        instockOrder.setTheme("初始化入库单");
+//        instockOrder.setTenantId(tenantId);
+//        instockOrder.setUserId(tenant.getCreateUser());
+//
+//        instockOrder.setSource("order");
+//        instockOrder.setSourceId(orderResult.getOrderId());
+//        instockOrderService.save(instockOrder);
 
         //入库单详情
-        InstockList instockList = new InstockList();
-        instockList.setInstockOrderId(instockOrder.getInstockOrderId());
-        instockList.setSkuId(skuId);
-        instockList.setBrandId(brand.getBrandId());
-        instockList.setNumber(100L);
-        instockList.setTenantId(tenantId);
-        instockList.setCustomerId(customer.getCustomerId());
-        instockList.setStatus(99L);
-        instockListService.save(instockList);
+//        InstockList instockList = new InstockList();
+//        instockList.setInstockOrderId(instockOrder.getInstockOrderId());
+//        instockList.setSkuId(skuId);
+//        instockList.setBrandId(brand.getBrandId());
+//        instockList.setNumber(100L);
+//        instockList.setTenantId(tenantId);
+//        instockList.setCustomerId(customer.getCustomerId());
+//        instockList.setStatus(99L);
+//        instockListService.save(instockList);
 
 
         //初始化库存
-        Inkind inkind = new Inkind() {{
-            setSkuId(skuId);
-            setNumber(100L);
-            setTenantId(tenantId);
-            setBrandId(brand.getBrandId());
-            setCustomerId(customer.getCustomerId());
-        }};
-        inkindService.save(inkind);
-        StorehousePositions storehousePositions = storehousePositionsService.getById(storehousePositionId);
-        stockDetailsService.save(new StockDetails() {{
-            setSkuId(skuId);
-            setNumber(100L);
-            setTenantId(tenantId);
-            setBrandId(brand.getBrandId());
-            setCustomerId(customer.getCustomerId());
-            setStorehouseId(storehousePositions.getStorehouseId());
-            setStorehousePositionsId(storehousePositionId);
-            setInkindId(inkind.getInkindId());
-        }});
+//        Inkind inkind = new Inkind() {{
+//            setSkuId(skuId);
+//            setNumber(100L);
+//            setTenantId(tenantId);
+//            setBrandId(brand.getBrandId());
+//            setCustomerId(customer.getCustomerId());
+//        }};
+//        inkindService.save(inkind);
+//        StorehousePositions storehousePositions = storehousePositionsService.getById(storehousePositionId);
+//        stockDetailsService.save(new StockDetails() {{
+//            setSkuId(skuId);
+//            setNumber(100L);
+//            setTenantId(tenantId);
+//            setBrandId(brand.getBrandId());
+//            setCustomerId(customer.getCustomerId());
+//            setStorehouseId(storehousePositions.getStorehouseId());
+//            setStorehousePositionsId(storehousePositionId);
+//            setInkindId(inkind.getInkindId());
+//        }});
     }
 
     /**

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.erp.entity.SkuList;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -18,7 +19,7 @@ import java.util.List;
 @ApiModel
 public class StorehousePositionsBindResult implements Serializable {
 
-    private SkuResult skuResult;
+    private SkuList skuResult;
     private StorehousePositionsResult storehousePositionsResult;
 
     private static final long serialVersionUID = 1L;

@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Storehouse;
@@ -35,6 +37,9 @@ public class StorehouseController extends BaseController {
 
     @Autowired
     private StorehouseService storehouseService;
+
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
     /**
      * 新增接口
@@ -93,6 +98,35 @@ public class StorehouseController extends BaseController {
         this.storehouseService.delete(storehouseParam);
         return ResponseData.success();
     }
+    /**
+     * 删除接口
+     *
+     * @author
+     * @Date 2021-07-15
+     */
+    @RequestMapping(value = "/deleteBatch", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData deleteBatch(@RequestBody StorehouseParam storehouseParam) {
+        if (ToolUtil.isEmpty(storehouseParam.getStorehouseIds())) {
+            return ResponseData.error("参数错误");
+        }
+        List<Storehouse> storehouses = storehouseService.listByIds(storehouseParam.getStorehouseIds());
+        if (storehouses.size()!= storehouseParam.getStorehouseIds().size()){
+            return ResponseData.error("参数错误");
+        }
+        List<StockDetails> stockDetails = stockDetailsService.lambdaQuery().in(StockDetails::getStorehouseId, storehouseParam.getStorehouseIds()).eq(StockDetails::getDisplay, 1).eq(StockDetails::getStage, 1).groupBy(StockDetails::getStorehouseId).list();
+
+        for (Storehouse storehouse : storehouses) {
+            if (stockDetails.stream().anyMatch(i->i.getStorehouseId().equals(storehouse.getStorehouseId()))){
+                return ResponseData.error("该仓库有库存，不能删除");
+            }
+            storehouse.setDisplay(0);
+        }
+        this.storehouseService.updateBatchById(storehouses);
+        return ResponseData.success();
+    }
+
+
 
     /**
      * 查看详情接口

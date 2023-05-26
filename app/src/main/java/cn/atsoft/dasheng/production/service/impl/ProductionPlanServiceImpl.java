@@ -189,8 +189,8 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
             detail.setPartsId(detailParam.getPartsId());
             int skuCount = 0;
             byBomId = partsService.getByBomId(partsId, detail.getPlanNumber());
-            byBomId.removeIf(i->(ToolUtil.isEmpty(i.getDetailResults()) || i.getDetailResults().size()==0));
             bomCount = byBomId.size()*detail.getPlanNumber();
+            byBomId.removeIf(i->(ToolUtil.isEmpty(i.getDetailResults()) || i.getDetailResults().size()==0));
             for (RestBomResult restBomResult : byBomId) {
                 for (RestBomDetailResult detailResult : restBomResult.getDetailResults() ) {
                     if (detailResult.getAutoOutstock().equals(1)) {
@@ -284,7 +284,7 @@ public class ProductionPlanServiceImpl extends ServiceImpl<ProductionPlanMapper,
             }});
         }
         List<UserResult> userResultsByIds = userService.getUserResultsByIds(userIds.stream().distinct().collect(Collectors.toList()));
-        List<ProductionTask> productionTasks = productionTaskService.lambdaQuery().eq(ProductionTask::getSource, "productionPlan").in(ProductionTask::getSourceId, planIds).eq(ProductionTask::getStatus, 99).list();
+        List<ProductionTask> productionTasks =planIds.size() == 0 ? new ArrayList<>() : productionTaskService.lambdaQuery().eq(ProductionTask::getSource, "productionPlan").in(ProductionTask::getSourceId, planIds).eq(ProductionTask::getStatus, 99).list();
         /**
          * 查询对应的工单集合
          */

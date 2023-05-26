@@ -109,7 +109,7 @@ public class RestSpuServiceImpl extends ServiceImpl<RestSpuMapper, RestSpu> impl
             this.updateById(entity);
         }
 
-        
+
         return entity.getSpuId();
 
 

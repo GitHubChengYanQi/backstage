@@ -200,6 +200,31 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         positions.setDisplay(0);
         this.updateById(positions);
     }
+    @Override
+    public void deleteBatch(StorehousePositionsParam param) {
+        if (ToolUtil.isEmpty(param.getPositionIds())) {
+            throw new ServiceException(500, "参数错误");
+        }
+        List<StorehousePositions> storehousePositions = this.listByIds(param.getPositionIds());
+        if (storehousePositions.size()!=param.getPositionIds().size()) {
+            throw new ServiceException(500, "参数错误");
+        }
+        for (StorehousePositions storehousePosition : storehousePositions) {
+            List<StockDetails> details = stockDetailsService.query().eq("storehouse_positions_id", storehousePosition.getStorehousePositionsId()).eq("display", 1).list();
+            if (ToolUtil.isNotEmpty(details)) {
+                throw new ServiceException(500, "库位已被使用，不可以删除");
+            }
+            List<StorehousePositions> list = this.query().eq("pid", storehousePosition.getStorehousePositionsId()).eq("display", 1).list();
+            if (ToolUtil.isNotEmpty(list)) {
+                throw new ServiceException(500, "当前仓位不能删除");
+            }
+            storehousePosition.setDisplay(0);
+        }
+        this.updateBatchById(storehousePositions);
+
+
+    }
+
 
     @Override
     @Transactional

@@ -124,9 +124,9 @@ public class ProductionCardServiceImpl extends ServiceImpl<ProductionCardMapper,
     }
 
     @Override
-    public PageInfo<ProductionCardResult> findPageBySpec(ProductionCardParam param){
+    public PageInfo<ProductionCardResult> findPageBySpec(ProductionCardParam param, DataScope dataScope){
         Page<ProductionCardResult> pageContext = getPageContext();
-        IPage<ProductionCardResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<ProductionCardResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
