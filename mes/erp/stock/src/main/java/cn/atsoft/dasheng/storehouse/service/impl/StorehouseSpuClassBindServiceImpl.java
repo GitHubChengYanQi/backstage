@@ -87,7 +87,7 @@ public class StorehouseSpuClassBindServiceImpl extends ServiceImpl<StorehouseSpu
     @Override
     public void format(List<StorehouseSpuClassBindResult> dataList){
         List<Long> classIds = dataList.stream().map(StorehouseSpuClassBindResult::getSpuClassId).distinct().collect(Collectors.toList());
-        List<RestCategory> restCategories =classIds.size() == 0?new ArrayList<>() : categoryService.listByIds(classIds);
+        List<RestCategory> restCategories =classIds.size() == 0?new ArrayList<>() : categoryService. lambdaQuery().in(RestCategory::getSpuClassificationId,classIds).eq(RestCategory::getDisplay,1).list();
         List<RestCategoryResult> restCategoryResults = BeanUtil.copyToList(restCategories, RestCategoryResult.class);
         dataList.forEach(item -> {
             restCategoryResults.forEach(restCategoryResult -> {
